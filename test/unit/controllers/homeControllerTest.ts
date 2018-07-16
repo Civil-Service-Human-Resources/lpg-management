@@ -25,6 +25,6 @@ describe('Home Controller Tests', function() {
 
 		index(request, reponse)
 
-		expect(reponse.render).to.have.been.calledOnceWith('index')
+		expect(reponse.render).to.have.been.calledOnceWith('page/index')
 	})
 })

@@ -35,6 +35,7 @@ export class Auth {
 		app.all(config.AUTHENTICATION_PATH, this.authenticate(), this.redirect())
 
 		app.use(this.checkAuthenticated())
+		app.use(this.addToResponseLocals())
 	}
 
 	initialize(): Handler {
@@ -134,6 +135,14 @@ export class Auth {
 					jsonResponse.accessToken
 				)
 			)
+		}
+	}
+
+	addToResponseLocals() {
+		return (req: Request, res: Response, next: NextFunction) => {
+			res.locals.isAuthenticated = req.isAuthenticated()
+			res.locals.identity = req.user
+			next()
 		}
 	}
 }

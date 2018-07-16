@@ -218,4 +218,24 @@ describe('Auth tests', function() {
 
 		expect(doneCallback).to.have.been.calledOnceWith(null, identity)
 	})
+
+	it('should add authentication and identity to response locals', function() {
+		const addToResponseLocals: (
+			request: Request,
+			response: Response,
+			next: NextFunction
+		) => void = auth.addToResponseLocals()
+
+		const response: Response = mockRes()
+		const request: Request = <Request>{}
+		const next: NextFunction = sinon.stub()
+		request.isAuthenticated = sinon.stub().returns(true)
+		request.user = new Identity('abc123', ['role1'], 'access-token')
+
+		addToResponseLocals(request, response, next)
+
+		expect(response.locals.isAuthenticated).to.eql(true)
+		expect(response.locals.identity).to.eql(request.user)
+		expect(next).to.have.been.calledOnce
+	})
 })

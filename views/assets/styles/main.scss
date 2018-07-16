@@ -1,0 +1,78 @@
+@import 'common/utils';
+@import 'custom';
+@import 'variables';
+
+@import 'common/variables';
+@import 'common/fonts';
+@import 'common/global';
+@import 'common/typography';
+
+@import 'utils/utils';
+
+@import 'components/banner';
+@import 'components/bar-rating';
+@import 'components/discite';
+@import 'components/header';
+@import 'components/footer';
+@import 'components/home';
+@import 'components/course';
+@import 'components/leftSearchBox';
+@import 'components/rightbox';
+@import 'components/basket';
+@import 'components/feedback';
+@import 'components/govuk-related-items';
+
+@import 'components/results';
+@import 'components/booking';
+@import 'components/search';
+@import 'components/search-results';
+@import 'components/resource';
+@import 'components/badge';
+@import 'components/home-tile';
+@import 'components/tables';
+@import 'components/accessible-auto-complete';
+@import 'components/pagination';
+@import 'components/tabs';
+@import 'components/levels';
+
+@import 'components/videojs';
+
+.phase-banner {
+	@extend %site-width-container;
+	@extend %contain-floats;
+}
+.push-bottom {
+	margin-bottom: 30px;
+	display: block;
+}
+
+.view-all {
+	@include e(button) {
+		display: none;
+	}
+	.showing {
+		display: none;
+	}
+	@include m(showing) {
+		.hidden {
+			display: none;
+		}
+		.showing {
+			display: inline;
+		}
+	}
+}
+
+.js-enabled {
+	.js-hidden {
+		display: none;
+	}
+}
+
+body:not(.js-enabled) {
+	.js-only {
+		* {
+			display: none;
+		}
+	}
+}

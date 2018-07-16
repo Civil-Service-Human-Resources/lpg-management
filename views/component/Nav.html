@@ -1,0 +1,36 @@
+<nav id="proposition-menu">
+
+    <a href="/" title="Go to the Learning Platform homepage" id="proposition-name">
+        Civil Service Learning
+    </a>
+
+    <ul id="proposition-links">
+        {% if isAuthenticated %} {% if identity.hasRole('LEARNER') %}
+        <li>
+            <a href=/home>Home</a>
+        </li>
+        <li>
+            <a href="/suggestions-for-you">Suggestions for you</a>
+        </li>
+        <li>
+            <a href="/learning-record">Learning record</a>
+        </li>
+        <li>
+            <a href="/profile">Profile</a>
+        </li>
+        {% endif %}
+        {% if identity.hasRole('COURSE_MANAGER') %}
+        <li>
+            <a href="/profile">Admin</a>
+        </li>
+        {% endif %}
+        <li>
+            <a href="/sign-out">Sign out</a>
+        </li>
+        {% else %}
+        <li>
+            <a href="/sign-in">Sign in</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>

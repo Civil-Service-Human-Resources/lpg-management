@@ -1,10 +1,11 @@
 import * as express from 'express'
-import * as ctx from './ApplicationContext'
+import * as ctx from './applicationContext'
 import * as session from 'express-session'
 import * as sessionFileStore from 'session-file-store'
 import * as cookieParser from 'cookie-parser'
 import * as log4js from 'log4js'
 import * as config from './config'
+import * as serveStatic from 'serve-static'
 
 const logger = log4js.getLogger('server')
 const expressNunjucks = require('express-nunjucks')
@@ -37,6 +38,8 @@ app.use(
 		}),
 	})
 )
+app.use(serveStatic(appRoot + '/views/assets'))
+
 app.use(cookieParser())
 
 ctx.default.auth.configure(app)

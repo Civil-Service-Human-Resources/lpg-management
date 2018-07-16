@@ -1,0 +1,55 @@
+.grid-row {
+	@include m(suggested) {
+		// the rows the .tiles live in
+		position: relative;
+	}
+}
+
+.tile {
+	width: 100%;
+	border-bottom: 1px solid $grey-1;
+	margin-bottom: 30px;
+	padding-bottom: 15px;
+
+	@include media(tablet) {
+		max-width: 360px;
+		border-bottom: 0;
+	}
+
+	@include media(desktop) {
+		max-width: 360px;
+		border-bottom: 0;
+	}
+
+	p {
+		margin: 4px 0;
+	}
+
+	@include e(actions) {
+		a {
+			display: inline-block;
+		}
+
+		a + a {
+			margin-left: 8px;
+		}
+	}
+
+	@include e(properties) {
+		@extend %contain-floats;
+		text-align: left;
+	}
+
+	@include e(value) {
+		@include bold-16;
+	}
+	@include e(key) {
+		display: block;
+		float: left;
+		margin-right: 10px;
+
+		@include media(desktop) {
+			width: 80px;
+		}
+	}
+}

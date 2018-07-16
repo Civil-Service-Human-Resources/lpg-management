@@ -1,0 +1,213 @@
+.booking {
+	@include e(notice) {
+		margin-top: 20px;
+	}
+
+	@include e(list) {
+		@include m(cancel) {
+			list-style-type: disc;
+			margin-left: 20px;
+		}
+	}
+
+	@include e(details) {
+		margin-top: 20px;
+	}
+
+	@include e(col-heading) {
+		padding: 10px 0;
+		border-top: 5px solid #000;
+	}
+	@include e(select-container) {
+		width: 88px;
+		display: block;
+	}
+	@include e(select) {
+		color: $turquoise;
+		border: 2px solid $turquoise;
+		border-radius: 5px;
+		padding: 2px 5px;
+		display: inline-block;
+		cursor: pointer;
+
+		@include m(selected) {
+			background-color: $turquoise;
+			color: #fff;
+		}
+	}
+	@include e(date) {
+		display: none;
+		+ label .booking__select--selected {
+			display: none;
+		}
+		&:checked + label {
+			.booking__select--select {
+				display: none;
+			}
+			.booking__select--selected {
+				display: inline-block;
+			}
+		}
+	}
+	@include e(detail-h) {
+		width: 33%;
+	}
+	@include e(panel) {
+		border-top: 1px solid $grey-2;
+		padding-bottom: 20px;
+		position: relative;
+	}
+	@include e(change) {
+		position: absolute;
+		top: 50%;
+		right: 0;
+		transform: translateY(-50%);
+		@media (max-width: 640px) {
+			top: 20px;
+			right: 15px;
+		}
+	}
+
+	@include e(table) {
+		th {
+			border: none;
+			padding: 0;
+			span {
+				display: none;
+			}
+		}
+
+		td {
+			padding-top: 0;
+			padding-bottom: 0;
+			border: none;
+		}
+	}
+}
+
+.cancel {
+	fieldset {
+		margin-bottom: 10px !important;
+	}
+}
+
+.confirmed {
+	@include e(heading) {
+		margin-top: 0;
+		margin-bottom: 0;
+		@include m(caps) {
+			text-transform: uppercase;
+		}
+	}
+}
+
+.booking {
+	@include e(key) {
+		display: inline-block;
+		width: 50%;
+		float: left;
+
+		@include media($tablet-breakpoint) {
+			width: 25%;
+			float: none;
+		}
+		@include m(centre) {
+			@include media($tablet-breakpoint) {
+				position: absolute;
+				top: 50%;
+				transform: translateY(-50%);
+				width: 25%;
+			}
+		}
+	}
+	@include e(tr) {
+		position: relative;
+	}
+	@include e(value) {
+		@extend .bold-small;
+		width: 50%;
+		display: inline-block;
+		@include m(li) {
+			width: 100%;
+		}
+	}
+	@include e(values) {
+		display: inline-block;
+		width: 50%;
+		@include media($tablet-breakpoint) {
+			width: 70%;
+		}
+	}
+}
+
+.cancel {
+	@include e(row) {
+		@extend %clearfix;
+		@extend %p;
+		width: 100%;
+	}
+
+	@include e(list) {
+		float: left;
+		width: 100%;
+	}
+	@include e(return) {
+		float: right;
+	}
+	@include e(item) {
+		width: 50%;
+		display: inline-block;
+		float: left;
+	}
+}
+
+.multiple-choice {
+	@include m(booking) {
+		float: none;
+		padding-left: 0;
+
+		@include media(desktop) {
+			position: absolute;
+			left: 0;
+			top: 10px;
+		}
+	}
+
+	@include e(spanner) {
+		display: block;
+		position: relative;
+		width: 136px;
+		height: 24px;
+		// text-indent: 400px;
+		overflow: hidden;
+
+		&:before {
+			position: absolute;
+			display: block;
+			content: 'Select';
+			width: 136px;
+			text-align: left;
+			height: 24px;
+			// border: 2px solid $mauve;
+			// border-radius: 4px;
+			left: 32px;
+			top: 0;
+			cursor: pointer;
+		}
+	}
+
+	@include e(input) {
+		&:checked + .multiple-choice__label {
+			.multiple-choice__spanner:before {
+				content: 'Selected';
+			}
+		}
+	}
+	@include e(input) {
+		&:disabled + .multiple-choice__label {
+			.multiple-choice__spanner:before {
+				content: 'Unavailable';
+			}
+		}
+	}
+}
