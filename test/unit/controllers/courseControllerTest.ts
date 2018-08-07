@@ -171,7 +171,7 @@ describe('Course Controller Tests', function() {
 		])
 		expect(response.render).to.have.been.calledWith(
 			'page/add-course-title',
-			{errors: errors}
+			{errors: errors, edit: false}
 		)
 	})
 
@@ -265,6 +265,7 @@ describe('Course Controller Tests', function() {
 				title: 'New Course',
 				errors: errors,
 				course: course,
+				edit: false,
 			}
 		)
 	})

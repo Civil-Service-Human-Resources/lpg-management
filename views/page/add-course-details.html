@@ -71,11 +71,11 @@
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
 
-            {% if edit == false %}
-            <form action="/content-management/add-course-details" method="post">
-            {% endif %}
+
             {% if edit == true %}
             <form action="/content-management/edit-course-details/{{course.id}}" method="post">
+            {% else %}
+            <form action="/content-management/add-course-details" method="post">
             {% endif %}
 
                 <input id="title" name="title" type="hidden" value="{{title}}">
@@ -98,10 +98,15 @@
                 }) }}
             </form>
 
+            {% if edit == true %}
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/course/{{course.id}}">Cancel</a>
+            {% else %}
             <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+            {% endif %}
         </div>
 
         <div class="govuk-grid-column-one-third">
+
         </div>
     </div>
 {% endblock %}

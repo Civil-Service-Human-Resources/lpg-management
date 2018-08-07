@@ -71,6 +71,7 @@ export class CourseController {
 			if (errors.size) {
 				return response.render('page/add-course-title', {
 					errors: errors,
+					edit: false,
 				})
 			}
 			response.render('page/add-course-details', {title})
@@ -102,6 +103,7 @@ export class CourseController {
 					title: data.title,
 					errors: errors,
 					course: course,
+					edit: false,
 				})
 			}
 			await self.learningCatalogue.create(course)
@@ -127,13 +129,9 @@ export class CourseController {
 		const self = this;
 
 		return async (request: Request, response: Response) => {
-			const title = request.body.title
-
             const req = request as CourseRequest
 
             const course = req.course
-
-			course.title = title;
 
             const errors = await this.courseValidator.check(request.body, [
                 'title',
@@ -142,9 +140,12 @@ export class CourseController {
 			if(errors.size){
 				return response.render('page/add-course-title', {
 					errors: errors,
-					edit: true
+					course: course,
+					edit: true,
 				})
 			}
+
+            course.title = request.body.title;
 
 			await self.learningCatalogue.update(course)
 
@@ -179,16 +180,16 @@ export class CourseController {
 			const newCourse = this.courseFactory.create(data)
 			const errors = await this.courseValidator.check(newCourse, ['description', 'shortDescription'])
 
+            let course = req.course;
+
             if (errors.size) {
                 return response.render('page/add-course-details', {
                     title: data.title,
                     errors: errors,
-                    course: newCourse,
+                    course: course,
 					edit: true,
                 })
             }
-
-			var course = req.course;
 
             course.description = newCourse.description
 			course.shortDescription = newCourse.shortDescription

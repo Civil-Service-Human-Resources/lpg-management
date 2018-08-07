@@ -70,11 +70,10 @@
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
 
-            {% if edit == false %}
-            <form action="/content-management/add-course" method="post">
-            {% endif %}
             {% if edit == true %}
-            <form action="/content-management/edit-course-title/{{course.id}}" method="post">
+                <form action="/content-management/edit-course-title/{{course.id}}" method="post">
+            {% else %}
+                <form action="/content-management/add-course" method="post">
             {% endif %}
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields %}
@@ -102,7 +101,11 @@
                     text: "Continue"
                 }) }}
 
+                {% if edit == true %}
+                <a class="cancel-button govuk-body govuk-link" href="/content-management/course/{{course.id}}">Cancel</a>
+                {% else %}
                 <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+                {% endif%}
             </form>
         </div>
 

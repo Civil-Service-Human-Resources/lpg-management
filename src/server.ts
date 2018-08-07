@@ -86,7 +86,7 @@ app.get(
 	'/content-management/course/:courseId',
 	ctx.courseController.courseOverview()
 )
-app.get('/content-management/add-course',
+app.get('/content-management/add-course/:edit',
 	ctx.courseController.getCourseTitle()
 )
 app.post(
