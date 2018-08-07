@@ -86,11 +86,25 @@ app.get(
 	'/content-management/course/:courseId',
 	ctx.courseController.courseOverview()
 )
-app.get('/content-management/add-course', ctx.courseController.getCourseTitle())
+app.get('/content-management/add-course',
+	ctx.courseController.getCourseTitle()
+)
 app.post(
 	'/content-management/add-course',
 	ctx.courseController.setCourseTitle()
 )
+
+app.get('/content-management/edit-course-title/:courseId',
+    ctx.courseController.getEditCourseTitle()
+)
+app.post('/content-management/edit-course-title/:courseId',
+	ctx.courseController.editCourseTitle()
+)
+app.get('/content-management/edit-course-details/:courseId',
+    ctx.courseController.getEditCourseDetails()
+)
+app.post('/content-management/edit-course-details/:courseId',
+    ctx.courseController.editCourseDetails())
 
 app.get(
 	'/content-management/add-course-details',

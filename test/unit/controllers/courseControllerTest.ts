@@ -264,6 +264,7 @@ describe('Course Controller Tests', function() {
 			{
 				title: 'New Course',
 				errors: errors,
+				course: course,
 			}
 		)
 	})

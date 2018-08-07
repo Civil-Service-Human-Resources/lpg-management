@@ -57,7 +57,7 @@ export class CourseController {
 
 	public getCourseTitle() {
 		return async (request: Request, response: Response) => {
-			response.render('page/add-course-title')
+			response.render('page/add-course-title', {edit: false})
 		}
 	}
 
@@ -79,7 +79,7 @@ export class CourseController {
 
 	public getCourseDetails() {
 		return async (request: Request, response: Response) => {
-			response.render('page/add-course-details', {})
+			response.render('page/add-course-details', {edit: false})
 		}
 	}
 
@@ -107,6 +107,81 @@ export class CourseController {
 			await self.learningCatalogue.create(course)
 
 			response.redirect('/content-management')
+		}
+	}
+
+	public getEditCourseTitle(){
+		return async (request: Request, response: Response) => {
+            const req = request as CourseRequest
+
+            const course = req.course
+
+            response.render('page/add-course-title', {
+				edit: true,
+				course: course,
+			})
+		}
+	}
+
+	public editCourseTitle(){
+		const self = this;
+
+		return async (request: Request, response: Response) => {
+			const title = request.body.title
+
+            const req = request as CourseRequest
+
+            const course = req.course
+
+			course.title = title;
+
+            const errors = await this.courseValidator.check(request.body, [
+                'title',
+            ])
+
+			if(errors.size){
+				return response.render('page/add-course-title', {
+					errors: errors,
+					edit: true
+				})
+			}
+
+			await self.learningCatalogue.update(course)
+
+			response.redirect('/content-management/course/' + course.id)
+		}
+	}
+
+	public getEditCourseDetails(){
+		return async (request: Request, response: Response) => {
+			response.render('page/add-course-details', {edit: true})
+		}
+	}
+
+	public editCourseDetails(){
+		//const self = this
+
+		return async (request: Request, response: Response) => {
+			const req = request as CourseRequest
+
+			const data = {
+				...req.body
+			}
+
+			const course = this.courseFactory.create(data);
+			const errors = await this.courseValidator.check(course);
+
+            if (errors.size) {
+                return response.render('page/add-course-details', {
+                    title: data.title,
+                    errors: errors,
+                    course: course,
+					edit: true,
+                })
+            }
+
+			console.log(course)
+
 		}
 	}
 }

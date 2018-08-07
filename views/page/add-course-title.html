@@ -1,6 +1,7 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "../component/course/macro.njk" import courseDetails with context %}
 
 {% extends "../component/Page.njk" %}
 {% block pageTitle %}Add Course - Civil Service Learning{% endblock %}
@@ -64,10 +65,17 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            {% if edit == false %}
+                <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
-            <form action="/content-management/add-course" method="post">
 
+            {% if edit == false %}
+            <form action="/content-management/add-course" method="post">
+            {% endif %}
+            {% if edit == true %}
+            <form action="/content-management/edit-course-title/{{course.id}}" method="post">
+            {% endif %}
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields %}
                         {{ govukInput({

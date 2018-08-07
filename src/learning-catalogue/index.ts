@@ -70,6 +70,25 @@ export class LearningCatalogue {
 		}
 	}
 
+	async update(course: Course): Promise<Course> {
+		try{
+			await this._http.put(
+				`${this._config.url}/courses/${course.id}`,
+				course,
+                {
+                    auth: {
+                        username: this._config.username,
+                        password: this._config.password,
+                    },
+                }
+			)
+
+            return this.get(course.id);
+		} catch(e) {
+		    throw new Error(`Error updating course: ${e}`)
+        }
+	}
+
 	async get(courseId: string): Promise<Course> {
 		try {
 			const response = await this._http.get(
