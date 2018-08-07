@@ -154,12 +154,20 @@ export class CourseController {
 
 	public getEditCourseDetails(){
 		return async (request: Request, response: Response) => {
-			response.render('page/add-course-details', {edit: true})
+
+            const req = request as CourseRequest
+
+            const course = req.course
+
+			response.render('page/add-course-details', {
+				edit: true,
+				course: course,
+			})
 		}
 	}
 
 	public editCourseDetails(){
-		//const self = this
+		const self = this
 
 		return async (request: Request, response: Response) => {
 			const req = request as CourseRequest
@@ -168,20 +176,27 @@ export class CourseController {
 				...req.body
 			}
 
-			const course = this.courseFactory.create(data);
-			const errors = await this.courseValidator.check(course);
+			const newCourse = this.courseFactory.create(data)
+			const errors = await this.courseValidator.check(newCourse, ['description', 'shortDescription'])
 
             if (errors.size) {
                 return response.render('page/add-course-details', {
                     title: data.title,
                     errors: errors,
-                    course: course,
+                    course: newCourse,
 					edit: true,
                 })
             }
 
-			console.log(course)
+			var course = req.course;
 
+            course.description = newCourse.description
+			course.shortDescription = newCourse.shortDescription
+			course.learningOutcomes = newCourse.learningOutcomes
+
+			await self.learningCatalogue.update(course)
+
+            response.redirect('/content-management/course/' + course.id)
 		}
 	}
 }
