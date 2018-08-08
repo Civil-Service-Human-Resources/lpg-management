@@ -47,18 +47,16 @@ describe('Learning Catalogue tests', () => {
 		}
 
 		const get = sinon.stub()
-		get
-			.withArgs(`${config.url}/courses?page=0&size=10`, {
-				auth: {
-					username: config.username,
-					password: config.password,
-				},
+		get.withArgs(`${config.url}/courses?page=0&size=10`, {
+			auth: {
+				username: config.username,
+				password: config.password,
+			},
+		}).returns(
+			new Promise(resolve => {
+				resolve(response)
 			})
-			.returns(
-				new Promise(resolve => {
-					resolve(response)
-				})
-			)
+		)
 
 		http.get = get
 
@@ -395,5 +393,96 @@ describe('Learning Catalogue tests', () => {
 		return await expect(
 			learningCatalogue.create(course)
 		).to.be.rejectedWith(`Error creating course: ${error}`)
+	})
+
+	it('should update and return result of get', async () => {
+		const course: Course = <Course>{
+			id: 'test-course-id',
+			title: 'Course Title',
+			shortDescription: 'Course short description',
+			description: 'Course description',
+		}
+
+		const putUrl = `${config.url}/courses/${course.id}`
+
+		const requestConfig = {
+			auth: {
+				username: config.username,
+				password: config.password,
+			},
+		}
+
+		const putResponse = {
+			data: {
+				id: 'test-course-id',
+				title: 'Course Title',
+				shortDescription: 'Course short description',
+				description: 'Course description',
+			},
+		}
+
+		const put = sinon
+			.stub()
+			.withArgs(putUrl, course, requestConfig)
+			.returns(putResponse)
+
+		http.put = put
+
+		const getUrl = `${config.url}/courses/${course.id}`
+
+		const getResponse = {
+			data: {
+				id: 'test-course-id',
+				title: 'Course Title',
+				shortDescription: 'Course short description',
+				description: 'Course description',
+			},
+		}
+
+		const get = sinon
+			.stub()
+			.withArgs(getUrl, requestConfig)
+			.returns(getResponse)
+
+		http.get = get
+
+		const learningCatalogueGet = sinon.stub().returns(course)
+		learningCatalogue.get = learningCatalogueGet
+
+		const result: Course = await learningCatalogue.update(course)
+
+		expect(learningCatalogue.get).to.have.been.calledOnceWith(course.id)
+		expect(http.put).to.have.been.calledOnceWith(
+			putUrl,
+			course,
+			requestConfig
+		)
+		expect(result).to.equal(course)
+	})
+
+	it('should throw error if update fails', async () => {
+		const course: Course = <Course>{}
+
+		const putUrl = `${config.url}/courses/${course.id}`
+
+		const requestConfig = {
+			auth: {
+				username: config.username,
+				password: config.password,
+			},
+		}
+
+		const error = new Error('test-error')
+
+		const put = sinon
+			.stub()
+			.withArgs(putUrl, course, requestConfig)
+			.throws(error)
+
+		http.put = put
+
+		return await expect(
+			learningCatalogue.update(course)
+		).to.be.rejectedWith(`Error updating course: ${error}`)
 	})
 })

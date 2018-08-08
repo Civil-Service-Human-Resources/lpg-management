@@ -160,6 +160,9 @@ describe('Course Controller Tests', function() {
 		const response: Response = mockRes()
 		request.body = {title: ''}
 
+        const req = request as CourseRequest
+        const course = req.course
+
 		const errors = {fields: ['validation.course.title.empty'], size: 1}
 		const check = sinon.stub().returns(errors)
 		courseValidator.check = check
@@ -171,7 +174,7 @@ describe('Course Controller Tests', function() {
 		])
 		expect(response.render).to.have.been.calledWith(
 			'page/add-course-title',
-			{errors: errors, edit: false}
+			{errors: errors, edit: false, course: course}
 		)
 	})
 
@@ -331,6 +334,7 @@ describe('Course Controller Tests', function() {
 		expect(response.render).to.have.been.calledWith('page/add-course-title', {
             errors: errors,
             edit: true,
+			course: course,
         })
     })
 
@@ -345,8 +349,6 @@ describe('Course Controller Tests', function() {
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
-
-		request.body = {title: 'New Course'}
 
 		const check = sinon.stub().returns({fields: [], size: 0})
 		courseValidator.check = check
@@ -363,6 +365,7 @@ describe('Course Controller Tests', function() {
 		await setCourseDetails(request, response)
 
         expect(courseFactory.create).to.have.been.calledWith(request.body)
+		expect(learningCatalogue.update).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.been.calledWith(course, [
             'description', 'shortDescription'
 		])
@@ -403,7 +406,7 @@ describe('Course Controller Tests', function() {
             title: 'New Course',
             errors: errors,
             course: course,
-            edit: false,
+            edit: true,
         })
 	})
 })

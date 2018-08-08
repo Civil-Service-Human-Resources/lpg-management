@@ -4,7 +4,15 @@
 {% from "../component/course/macro.njk" import courseDetails with context %}
 
 {% extends "../component/Page.njk" %}
-{% block pageTitle %}Add Course - Civil Service Learning{% endblock %}
+
+{% block pageTitle %}
+    {% if edit == false %}
+        Add Course - Civil Service Learning
+    {% else %}
+        Edit Course - Civil Service Learning
+    {% endif %}
+{% endblock %}
+
 {% block header %}
     {{ govukHeader({
         homepageUrl: "#",
@@ -67,6 +75,8 @@
         <div class="govuk-grid-column-two-thirds">
             {% if edit == false %}
                 <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            {% else %}
+            <p class="govuk-body form-header govuk-!-font-size-24">Edit course</p>
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
 
@@ -86,6 +96,15 @@
                             errorMessage: {
                                 text: "Title is required"
                             }
+                        }) }}
+                    {% elif edit == true %}
+                        {{ govukInput({
+                        label: {
+                            text: "Course title"
+                            },
+                            id: "title",
+                            name: "title",
+                            value: course.title
                         }) }}
                     {% else %}
                         {{ govukInput({
