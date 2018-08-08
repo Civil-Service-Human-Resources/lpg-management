@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from 'express'
+import {Request, Response} from 'express'
 import {CourseValidator} from '../learning-catalogue/validator/courseValidator'
 import {CourseRequest} from '../extended'
 import {CourseFactory} from '../learning-catalogue/model/factory/courseFactory'
@@ -23,35 +23,14 @@ export class CourseController {
 	}
 
 	public courseOverview() {
-		logger.debug('Loading Course Overview page')
+		logger.debug('Course Overview page')
+
 		return async (request: Request, response: Response) => {
-			const req = request as CourseRequest
-
-			const course = req.course
-
-			response.render(`page/course`, {
-				course,
-			})
-		}
-	}
-
-	public loadCourse() {
-		const self = this
-
-		return async (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => {
-			const req = request as CourseRequest
-			const courseId: string = req.params.courseId
-			const course = await self.learningCatalogue.get(courseId)
-			if (course) {
-				req.course = course
-				next()
-			} else {
-				response.sendStatus(404)
-			}
+			await this.getCourseAndRenderTemplate(
+				request,
+				response,
+				`page/course`
+			)
 		}
 	}
 
@@ -60,6 +39,8 @@ export class CourseController {
 			const req = request as CourseRequest
 
 			const course = req.course
+
+			console.log(request.params)
 
 			response.render('page/add-course-title', {
 				edit: edit,
@@ -92,13 +73,14 @@ export class CourseController {
 			if (edit) {
 				course.title = request.body.title
 
-				await self.learningCatalogue.update(course)
+				await self.learningCatalogue.updateCourse(course)
 
 				response.redirect('/content-management/course/' + course.id)
 			} else {
 				response.render('page/add-course-details', {
 					title: title,
 					edit: edit,
+					course: course,
 				})
 			}
 		}
@@ -150,7 +132,7 @@ export class CourseController {
 				course.shortDescription = newCourse.shortDescription
 				course.learningOutcomes = newCourse.learningOutcomes
 
-				await self.learningCatalogue.update(course)
+				await self.learningCatalogue.updateCourse(course)
 
 				response.redirect('/content-management/course/' + course.id)
 			} else {
@@ -164,11 +146,46 @@ export class CourseController {
 						edit: edit,
 					})
 				}
-
-				await self.learningCatalogue.create(newCourse)
+				await self.learningCatalogue.createCourse(newCourse)
 
 				response.redirect('/content-management')
 			}
+		}
+	}
+
+	public coursePreview() {
+		return async (request: Request, response: Response) => {
+			await this.getCourseAndRenderTemplate(
+				request,
+				response,
+				`page/course-preview`
+			)
+		}
+	}
+
+	private async getCourseAndRenderTemplate(
+		request: Request,
+		response: Response,
+		view: string
+	) {
+		const courseId: string = request.params.courseId
+		const course = await this.learningCatalogue.getCourse(courseId)
+		if (course) {
+			response.render(view, {course})
+		} else {
+			response.sendStatus(404)
+		}
+	}
+
+	public addModule() {
+		return async (request: Request, response: Response) => {
+			response.render(`page/add-module`)
+		}
+	}
+
+	public addModuleBlog() {
+		return async (request: Request, response: Response) => {
+			response.render(`page/add-module-blog`)
 		}
 	}
 }

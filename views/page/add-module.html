@@ -1,0 +1,120 @@
+{% from "select/macro.njk" import govukSelect %}
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../component/Page.njk" %} {% block pageTitle %}Add a module - Civil Service Learning{% endblock %}
+{% block header %}
+    {{ govukHeader({
+        homepageUrl: "#",
+        containerClasses: "govuk-width-container",
+        serviceName: "Civil Service Learning",
+        serviceUrl: "#",
+        navigation: [
+            {
+                href: lpgUiUrl + "/home",
+                text: "Home",
+                active: true
+            },
+            {
+                href: lpgUiUrl + "/suggestions-for-you",
+                text: "Suggestions for you"
+            },
+            {
+                href: lpgUiUrl + "/learning-record",
+                text: "Learning record"
+            },
+            {
+                href: lpgUiUrl + "/profile",
+                text: "Profile"
+            },
+            {
+                href: "/content-management",
+                text: "Admin"
+            },
+            {
+                href: lpgUiUrl + "/sign-out",
+                text: "Sign out"
+            }
+            ]
+    }) }}
+{% endblock %}
+{% block content %}
+ <a href="#" class="govuk-back-link">Back</a>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Course modules</h2>
+            
+            <div class="aded-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
+                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Added modules</h3>
+
+                {% if Modules.length > 1 %}
+                    <ul class="list">
+                        {% for Module in pageResults.results %}
+                            <li class="list-details u--border--bgrey">
+                                <p class="govuk-body">{{Modules._title}}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="govuk-body">This course does not have any modules yet</p>
+                {% endif %}
+
+            </div>
+
+            <form action="/form-handler" method="post">
+                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Add a module</h3>
+                <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
+        
+                <fieldset class="govuk-fieldset module-selector">
+        
+                        {{ govukSelect({
+                        id: "modules",
+                        name: "module",
+                        classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
+                        label: {
+                            text: "Add a new module" 
+                        },
+                        items: [
+                            {
+                            value: " ",
+                            text: "Type of learning",
+                            selected: true
+                            },
+                            {
+                            value: "blog",
+                            text: "Blog"
+                            },
+                            {
+                            value: "book",
+                            text: "Book"
+                            },
+                            {
+                            value: "f2f",
+                            text: "Face to face"
+                            },
+                            {
+                            value: "video",
+                            text: "Video"
+                            }
+                        ]
+                        }) }}
+                        {{ govukButton({
+                            text: "Add item",
+                            classes: "button-blue"
+                        }) }}
+
+                </fieldset>
+            </form>
+
+            {{ govukButton({
+                text: "Continue",
+                type: "button"
+            }) }}
+
+            <a class="cancel-button govuk-body govuk-link" href="#">Cancel</a>          
+        </div>
+        <div class="govuk-grid-column-one-third">
+       
+        </div>
+    </div>
+{% endblock %}

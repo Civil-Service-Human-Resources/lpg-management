@@ -2,13 +2,13 @@ import {Module} from './module'
 import {IsNotEmpty, MaxLength} from 'class-validator'
 
 export class Course {
-	public id: string
+	id: string
 
 	@IsNotEmpty({
 		groups: ['all', 'title'],
 		message: 'validation.course.title.empty',
 	})
-	public title: string
+	title: string
 
 	@IsNotEmpty({
 		groups: ['all', 'shortDescription'],
@@ -18,7 +18,7 @@ export class Course {
 		groups: ['all', 'shortDescription'],
 		message: 'validation.course.shortDescription.maxLength',
 	})
-	public shortDescription: string
+	shortDescription: string
 
 	@IsNotEmpty({
 		groups: ['all', 'description'],
@@ -31,7 +31,7 @@ export class Course {
 	description: string
 	duration: number
 	learningOutcomes: string
-	price: number | 'Free'
+	price: number
 	modules: Module[]
 
 	getCost() {

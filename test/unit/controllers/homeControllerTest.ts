@@ -34,7 +34,7 @@ describe('Home Controller Tests', function() {
 		} as PageResults<Course>
 
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
-		learningCatalogue.listAll = listAll
+		learningCatalogue.listCourses = listAll
 
 		const index: (
 			request: Request,
@@ -45,7 +45,7 @@ describe('Home Controller Tests', function() {
 		const response: Response = mockRes()
 		await index(request, response)
 
-		expect(learningCatalogue.listAll).to.have.been.calledWith(0, 10)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(0, 10)
 
 		expect(response.render).to.have.been.calledOnceWith('page/index')
 	})
@@ -63,7 +63,7 @@ describe('Home Controller Tests', function() {
 		} as PageResults<Course>
 
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
-		learningCatalogue.listAll = listAll
+		learningCatalogue.listCourses = listAll
 
 		const index: (
 			request: Request,
@@ -78,7 +78,7 @@ describe('Home Controller Tests', function() {
 
 		await index(request, response)
 
-		expect(learningCatalogue.listAll).to.have.been.calledWith(3, 5)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(3, 5)
 
 		expect(response.render).to.have.been.calledOnceWith('page/index', {
 			pageResults,

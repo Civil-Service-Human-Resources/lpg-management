@@ -11,7 +11,7 @@ describe('ValidationErrorMapper tests', () => {
 			{
 				target: {shortDescription: undefined, description: undefined},
 				value: undefined,
-				property: '_shortDescription',
+				property: 'shortDescription',
 				children: [],
 				constraints: {
 					length:
@@ -22,7 +22,7 @@ describe('ValidationErrorMapper tests', () => {
 			{
 				target: {shortDescription: undefined, description: undefined},
 				value: undefined,
-				property: '_description',
+				property: 'description',
 				children: [],
 				constraints: {
 					length:

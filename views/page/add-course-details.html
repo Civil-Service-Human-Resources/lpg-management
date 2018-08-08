@@ -1,9 +1,9 @@
-{% extends "../component/Page.njk" %}
-{% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "../component/textarea/macro.njk" import textarea with context %}
-{% from "button/macro.njk" import govukButton %}
 {% from "back-link/macro.njk" import govukBackLink %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
 
+{% extends "../component/Page.njk" %}
 {% block pageTitle %}
     {% if edit == false %}
         Add Course - Civil Service Learning
@@ -12,46 +12,10 @@
     {% endif %}
 {% endblock %}
 
-{% block header %}
-    {{ govukHeader({
-        homepageUrl: "#",
-        containerClasses: "govuk-width-container",
-        serviceName: "Civil Service Learning",
-        serviceUrl: "#",
-        navigation: [
-            {
-                href: lpgUiUrl + "/home",
-                text: "Home",
-                active: true
-            },
-            {
-                href: lpgUiUrl + "/suggestions-for-you",
-                text: "Suggestions for you"
-            },
-            {
-                href: lpgUiUrl + "/learning-record",
-                text: "Learning record"
-            },
-            {
-                href: lpgUiUrl + "/profile",
-                text: "Profile"
-            },
-            {
-                href: "/",
-                text: "Admin"
-            },
-            {
-                href: lpgUiUrl + "/sign-out",
-                text: "Sign out"
-            }
-            ]
-    }) }}
-{% endblock %}
-
 {% block content %}
     {{ govukBackLink({
         text: "Back",
-        href: "#"
+        href: "/content-management/add-course"
     }) }}
 
 
@@ -63,7 +27,7 @@
             <div class="govuk-error-summary__body">
                 <ul class="govuk-list govuk-error-summary__list">
                     {% for field, message in errors.fields %}
-                        <li class="custom-error-message">{{ i18n[message] }}</li>
+                        <li><a href="#">{{ i18n[message] }}</a></li>
                     {% endfor %}
                 </ul>
             </div>
@@ -115,7 +79,6 @@
         </div>
 
         <div class="govuk-grid-column-one-third">
-
         </div>
     </div>
 {% endblock %}

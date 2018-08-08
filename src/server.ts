@@ -75,7 +75,6 @@ app.use(bodyParser.urlencoded({extended: false}))
 
 ctx.auth.configure(app)
 app.use(ctx.addToResponseLocals())
-app.param('courseId', ctx.courseController.loadCourse())
 
 app.get('/', function(req, res) {
 	res.redirect('/content-management')
@@ -86,33 +85,44 @@ app.get(
 	'/content-management/course/:courseId',
 	ctx.courseController.courseOverview()
 )
-app.get('/content-management/add-course/',
+app.get(
+	'/content-management/add-course/',
 	ctx.courseController.getCourseTitle(false)
 )
-app.get('/content-management/add-course/:courseId',
-    ctx.courseController.getCourseTitle(true)
+app.get(
+	'/content-management/edit-course/:courseId',
+	ctx.courseController.getCourseTitle(true)
 )
 app.post(
 	'/content-management/add-course',
 	ctx.courseController.setCourseTitle(false)
 )
 app.post(
-    '/content-management/edit-course/:courseId',
-    ctx.courseController.setCourseTitle(true)
+	'/content-management/edit-course/:courseId',
+	ctx.courseController.setCourseTitle(true)
 )
+app.get(
+	'/content-management/course-preview/:courseId',
+	ctx.courseController.coursePreview()
+)
+
 app.get(
 	'/content-management/add-course-details',
 	ctx.courseController.getCourseDetails(false)
 )
-app.get('/content-management/edit-course-details/:courseId',
-    ctx.courseController.getCourseDetails(true)
+app.get(
+	'/content-management/edit-course-details/:courseId',
+	ctx.courseController.getCourseDetails(true)
 )
 app.post(
 	'/content-management/add-course-details',
 	ctx.courseController.setCourseDetails(false)
 )
-app.post('/content-management/edit-course-details/:courseId',
-    ctx.courseController.setCourseDetails(true)
+app.post(
+	'/content-management/edit-course-details/:courseId',
+	ctx.courseController.setCourseDetails(true)
 )
+app.get('/add-module', ctx.courseController.addModule())
+app.get('/add-module-blog', ctx.courseController.addModuleBlog())
 
 app.listen(PORT, () => logger.info(`LPG Management listening on port ${PORT}`))

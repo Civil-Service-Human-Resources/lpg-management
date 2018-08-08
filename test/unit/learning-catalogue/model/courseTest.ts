@@ -2,6 +2,9 @@ import {Course} from '../../../../src/learning-catalogue/model/course'
 import {beforeEach, describe, it} from 'mocha'
 import {expect} from 'chai'
 import {Module} from '../../../../src/learning-catalogue/model/module'
+import {VideoModule} from '../../../../src/learning-catalogue/model/videoModule'
+import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
+import {FaceToFaceModule} from '../../../../src/learning-catalogue/model/faceToFaceModule'
 
 describe('Course tests', () => {
 	let course: Course
@@ -54,13 +57,13 @@ describe('Course tests', () => {
 	})
 
 	it('should be able to get costs by sum of module costs', () => {
-		const module1 = new Module()
+		const module1 = new VideoModule()
 		module1.price = 100
 
-		const module2 = new Module()
+		const module2 = new LinkModule()
 		module2.price = 50
 
-		const module3 = new Module()
+		const module3 = new FaceToFaceModule()
 		module3.price = 25.25
 
 		course.modules = [module1, module2, module3]

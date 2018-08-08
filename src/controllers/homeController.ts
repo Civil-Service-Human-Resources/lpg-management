@@ -30,7 +30,7 @@ export class HomeController {
 			}
 
 			// prettier-ignore
-			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.listAll(page, size)
+			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.listCourses(page, size)
 
 			response.render('page/index', {
 				pageResults,

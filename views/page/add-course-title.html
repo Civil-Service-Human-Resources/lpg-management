@@ -1,7 +1,7 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
-{% from "../component/course/macro.njk" import courseDetails with context %}
+{% from "../component/course-details/macro.njk" import courseDetails with context %}
 
 {% extends "../component/Page.njk" %}
 
@@ -11,42 +11,6 @@
     {% else %}
         Edit Course - Civil Service Learning
     {% endif %}
-{% endblock %}
-
-{% block header %}
-    {{ govukHeader({
-        homepageUrl: "#",
-        containerClasses: "govuk-width-container",
-        serviceName: "Civil Service Learning",
-        serviceUrl: "#",
-        navigation: [
-            {
-                href: lpgUiUrl + "/home",
-                text: "Home",
-                active: true
-            },
-            {
-                href: lpgUiUrl + "/suggestions-for-you",
-                text: "Suggestions for you"
-            },
-            {
-                href: lpgUiUrl + "/learning-record",
-                text: "Learning record"
-            },
-            {
-                href: lpgUiUrl + "/profile",
-                text: "Profile"
-            },
-            {
-                href: "/",
-                text: "Admin"
-            },
-            {
-                href: lpgUiUrl + "/sign-out",
-                text: "Sign out"
-            }
-            ]
-    }) }}
 {% endblock %}
 
 {% block content %}

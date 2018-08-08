@@ -3,14 +3,15 @@ import {mockReq, mockRes} from 'sinon-express-mock'
 import * as chai from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {expect} from 'chai'
-import {NextFunction, Request, Response} from 'express'
+import {Request, Response} from 'express'
 import {LearningCatalogue} from '../../../src/learning-catalogue'
 import {Course} from '../../../src/learning-catalogue/model/course'
 import * as sinon from 'sinon'
-import {CourseRequest} from '../../../src/extended'
+// import {CourseRequest} from '../../../src/extended'
 import {CourseController} from '../../../src/controllers/courseController'
 import {CourseValidator} from '../../../src/learning-catalogue/validator/courseValidator'
 import {CourseFactory} from '../../../src/learning-catalogue/model/factory/courseFactory'
+import {CourseRequest} from '../../../src/extended'
 
 chai.use(sinonChai)
 
@@ -45,70 +46,13 @@ describe('Course Controller Tests', function() {
 		const request: Request = mockReq()
 		const response: Response = mockRes()
 
-		const req = request as CourseRequest
-		req.course = course
+		learningCatalogue.getCourse = sinon.stub().returns(course)
 
-		await courseOverview(req, response)
+		await courseOverview(request, response)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course', {
 			course,
 		})
-	})
-
-	it('should call loadCourse', async function() {
-		const courseId: string = 'abc'
-
-		const loadCourse: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = courseController.loadCourse()
-
-		const request: Request = mockReq()
-		const response: Response = mockRes()
-		const next: NextFunction = sinon.stub()
-
-		const course: Course = new Course()
-		course.id = 'course-id'
-
-		const get = sinon.stub().returns(course)
-		learningCatalogue.get = get
-
-		const req = request as CourseRequest
-		req.params.courseId = courseId
-
-		await loadCourse(req, response, next)
-
-		expect(learningCatalogue.get).to.have.been.calledWith(courseId)
-		expect(req.course).to.have.be.eql(course)
-		expect(next).to.have.been.calledOnce
-	})
-
-	it('should return 404 if course does not exist', async function() {
-		const courseId: string = 'abc'
-
-		const loadCourse: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = courseController.loadCourse()
-
-		const request: Request = mockReq()
-		const response: Response = mockRes()
-		const next: NextFunction = sinon.stub()
-
-		const get = sinon.stub().returns(null)
-		learningCatalogue.get = get
-
-		const req = request as CourseRequest
-		req.params.courseId = courseId
-
-		await loadCourse(req, response, next)
-
-		expect(learningCatalogue.get).to.have.been.calledWith(courseId)
-		expect(req.course).to.have.be.eql(undefined)
-		expect(next).to.have.not.been.calledOnce
-		expect(response.sendStatus).to.have.been.calledWith(404)
 	})
 
 	it('should render add-course-title page', async function() {
@@ -136,8 +80,7 @@ describe('Course Controller Tests', function() {
 
 		request.body = {title: 'New Course'}
 
-		const check = sinon.stub().returns({fields: [], size: 0})
-		courseValidator.check = check
+		courseValidator.check = sinon.stub().returns({fields: [], size: 0})
 
 		await setCourseTitle(request, response)
 
@@ -160,12 +103,8 @@ describe('Course Controller Tests', function() {
 		const response: Response = mockRes()
 		request.body = {title: ''}
 
-        const req = request as CourseRequest
-        const course = req.course
-
 		const errors = {fields: ['validation.course.title.empty'], size: 1}
-		const check = sinon.stub().returns(errors)
-		courseValidator.check = check
+		courseValidator.check = sinon.stub().returns(errors)
 
 		await setCourseTitle(request, response)
 
@@ -174,7 +113,7 @@ describe('Course Controller Tests', function() {
 		])
 		expect(response.render).to.have.been.calledWith(
 			'page/add-course-title',
-			{errors: errors, edit: false, course: course}
+			{errors: errors, edit: false, course: undefined}
 		)
 	})
 
@@ -211,20 +150,17 @@ describe('Course Controller Tests', function() {
 		}
 
 		const course = new Course()
-		const learningFactoryCreate = sinon.stub().returns('123')
-		learningCatalogue.create = learningFactoryCreate
+		learningCatalogue.createCourse = sinon.stub().returns('123')
 
-		const courseFactoryCreate = sinon.stub().returns(course)
-		courseFactory.create = courseFactoryCreate
+		courseFactory.create = sinon.stub().returns(course)
 
 		const errors = {fields: [], size: 0}
-		const check = sinon.stub().returns(errors)
-		courseValidator.check = check
+		courseValidator.check = sinon.stub().returns(errors)
 
 		await setCourseDetails(request, response)
 		expect(courseFactory.create).to.have.been.calledWith(request.body)
 		expect(courseValidator.check).to.have.been.calledWith(course)
-		expect(learningCatalogue.create).to.have.been.calledWith(course)
+		expect(learningCatalogue.createCourse).to.have.been.calledWith(course)
 		expect(response.redirect).to.have.been.calledWith('/content-management')
 	})
 
@@ -245,18 +181,15 @@ describe('Course Controller Tests', function() {
 		}
 
 		const course = new Course()
-		const learningFactoryCreate = sinon.stub().returns('123')
-		learningCatalogue.create = learningFactoryCreate
-
-		const courseFactoryCreate = sinon.stub().returns(course)
-		courseFactory.create = courseFactoryCreate
+		learningCatalogue.createCourse = sinon.stub().returns('123')
+		courseFactory.create = sinon.stub().returns(course)
 
 		const errors = {
 			fields: ['validation.course.description.empty'],
 			size: 1,
 		}
-		const check = sinon.stub().returns(errors)
-		courseValidator.check = check
+
+		courseValidator.check = sinon.stub().returns(errors)
 
 		await setCourseDetails(request, response)
 
@@ -273,78 +206,83 @@ describe('Course Controller Tests', function() {
 		)
 	})
 
-	it('should check for title errors and redirect to course', async function(){
+	it('should check for title errors and redirect to course', async function() {
 		const course: Course = new Course()
 		course.id = 'abc'
 
 		const setCourseTitle: (
 			request: Request,
-			response: Response,
+			response: Response
 		) => void = courseController.setCourseTitle(true)
 
-        const request: Request = mockReq()
-        const response: Response = mockRes()
+		const request: Request = mockReq()
+		const response: Response = mockRes()
 
-        request.body = {title: 'New Course'}
+		request.body = {title: 'New Course'}
 
-        const check = sinon.stub().returns({fields: [], size: 0})
-        courseValidator.check = check
+		const check = sinon.stub().returns({fields: [], size: 0})
+		courseValidator.check = check
 
-        const req = request as CourseRequest
-        req.course = course
+		const req = request as CourseRequest
+		req.course = course
 
-		const learningCatalogueUpdate = sinon.stub().returns(course);
-		learningCatalogue.update = learningCatalogueUpdate
+		const learningCatalogueUpdate = sinon.stub().returns(course)
+		learningCatalogue.updateCourse = learningCatalogueUpdate
 
-        await setCourseTitle(request, response)
+		await setCourseTitle(request, response)
 
-        expect(courseValidator.check).to.have.been.calledWith(request.body, [
-            'title',
-        ])
-        expect(response.redirect).to.have.been.calledWith('/content-management/course/' + course.id)
+		expect(courseValidator.check).to.have.been.calledWith(request.body, [
+			'title',
+		])
+		expect(response.redirect).to.have.been.calledWith(
+			'/content-management/course/' + course.id
+		)
 		expect(course.title).to.have.be.eql('New Course')
 	})
 
-    it('should check for title errors and render add-course-details', async function(){
-        const course: Course = new Course()
-        course.id = 'abc'
+	it('should check for title errors and render add-course-details', async function() {
+		const course: Course = new Course()
+		course.id = 'abc'
 
-        const setCourseTitle: (
-            request: Request,
-            response: Response,
-        ) => void = courseController.setCourseTitle(true)
+		const setCourseTitle: (
+			request: Request,
+			response: Response
+		) => void = courseController.setCourseTitle(true)
 
-        const request: Request = mockReq()
-        const response: Response = mockRes()
+		const request: Request = mockReq()
+		const response: Response = mockRes()
 
-        request.body = {title: 'New Course'}
+		request.body = {title: 'New Course'}
 
-        const errors = {fields: ['validation.course.title.empty'], size: 1}
-        const check = sinon.stub().returns(errors)
-        courseValidator.check = check
+		const errors = {fields: ['validation.course.title.empty'], size: 1}
+		const check = sinon.stub().returns(errors)
+		courseValidator.check = check
 
-        const req = request as CourseRequest
-        req.course = course
+		const req = request as CourseRequest
+		req.course = course
 
-        await setCourseTitle(request, response)
+		await setCourseTitle(request, response)
 
-        expect(courseValidator.check).to.have.been.calledWith(request.body, [
-            'title',
-        ])
-		expect(response.render).to.have.been.calledWith('page/add-course-title', {
-            errors: errors,
-            edit: true,
-			course: course,
-        })
-    })
+		expect(courseValidator.check).to.have.been.calledWith(request.body, [
+			'title',
+		])
+		expect(response.render).to.have.been.calledWith(
+			'page/add-course-title',
+			{
+				errors: errors,
+				edit: true,
+				course: course,
+			}
+		)
+	})
 
-	it('should check for description errors and redirect to courses', async function(){
+	it('should check for description errors and redirect to courses', async function() {
 		const course: Course = new Course()
 		course.id = 'abc'
 
 		const setCourseDetails: (
 			request: Request,
-			response: Response,
+			response: Response
 		) => void = courseController.setCourseDetails(true)
 
 		const request: Request = mockReq()
@@ -356,57 +294,64 @@ describe('Course Controller Tests', function() {
 		const req = request as CourseRequest
 		req.course = course
 
-        const courseFactoryCreate = sinon.stub().returns(course)
-        courseFactory.create = courseFactoryCreate
+		const courseFactoryCreate = sinon.stub().returns(course)
+		courseFactory.create = courseFactoryCreate
 
-        const learningCatalogueUpdate = sinon.stub().returns(course);
-        learningCatalogue.update = learningCatalogueUpdate
+		const learningCatalogueUpdate = sinon.stub().returns(course)
+		learningCatalogue.updateCourse = learningCatalogueUpdate
 
 		await setCourseDetails(request, response)
 
-        expect(courseFactory.create).to.have.been.calledWith(request.body)
-		expect(learningCatalogue.update).to.have.been.calledWith(course)
+		expect(courseFactory.create).to.have.been.calledWith(request.body)
+		expect(learningCatalogue.updateCourse).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.been.calledWith(course, [
-            'description', 'shortDescription'
+			'description',
+			'shortDescription',
 		])
-		expect(response.redirect).to.have.been.calledWith('/content-management/course/' + course.id)
+		expect(response.redirect).to.have.been.calledWith(
+			'/content-management/course/' + course.id
+		)
 	})
 
-	it('should check for description errors and render add-course-details', async function(){
-        const course: Course = new Course()
-        course.id = 'abc'
+	it('should check for description errors and render add-course-details', async function() {
+		const course: Course = new Course()
+		course.id = 'abc'
 
-        const setCourseDetails: (
-            request: Request,
-            response: Response,
-        ) => void = courseController.setCourseDetails(true)
+		const setCourseDetails: (
+			request: Request,
+			response: Response
+		) => void = courseController.setCourseDetails(true)
 
-        const request: Request = mockReq()
-        const response: Response = mockRes()
+		const request: Request = mockReq()
+		const response: Response = mockRes()
 
-        request.body = {title: 'New Course'}
+		request.body = {title: 'New Course'}
 
-        const errors = {fields: ['validation.course.title.empty'], size: 1}
-        const check = sinon.stub().returns(errors)
-        courseValidator.check = check
+		const errors = {fields: ['validation.course.title.empty'], size: 1}
+		const check = sinon.stub().returns(errors)
+		courseValidator.check = check
 
-        const req = request as CourseRequest
-        req.course = course
+		const req = request as CourseRequest
+		req.course = course
 
-        const courseFactoryCreate = sinon.stub().returns(course)
-        courseFactory.create = courseFactoryCreate
+		const courseFactoryCreate = sinon.stub().returns(course)
+		courseFactory.create = courseFactoryCreate
 
-        await setCourseDetails(request, response)
+		await setCourseDetails(request, response)
 
-        expect(courseFactory.create).to.have.been.calledWith(request.body)
-        expect(courseValidator.check).to.have.been.calledWith(course, [
-            'description', 'shortDescription'
-        ])
-        expect(response.render).to.have.been.calledWith('page/add-course-details', {
-            title: 'New Course',
-            errors: errors,
-            course: course,
-            edit: true,
-        })
+		expect(courseFactory.create).to.have.been.calledWith(request.body)
+		expect(courseValidator.check).to.have.been.calledWith(course, [
+			'description',
+			'shortDescription',
+		])
+		expect(response.render).to.have.been.calledWith(
+			'page/add-course-details',
+			{
+				title: 'New Course',
+				errors: errors,
+				course: course,
+				edit: true,
+			}
+		)
 	})
 })

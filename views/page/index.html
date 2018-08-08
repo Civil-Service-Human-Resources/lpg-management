@@ -1,46 +1,9 @@
 {% from "../component/list/macro.njk" import list %}
-{% from "../component/menu-box/macro.njk" import menuBox %}
+{% from "../component/menu/macro.njk" import menu %}
 
-{% extends "../component/Page.njk" %} {% block pageTitle %}{{__[home.page.title]}}{% endblock %}
+{% extends "../component/Page.njk" %} {% block pageTitle %}{{ i18n['content_management_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block header %}
-   {{ govukHeader({
-       homepageUrl: "#",
-       containerClasses: "govuk-width-container",
-       serviceName: "Civil Service Learning",
-       serviceUrl: "#",
-       navigation: [
-           {
-               href: lpgUiUrl + "/home",
-               text: "Home",
-               active: true
-           },
-           {
-               href: lpgUiUrl + "/suggestions-for-you",
-               text: "Suggestions for you"
-           },
-           {
-               href: lpgUiUrl + "/learning-record",
-               text: "Learning record"
-           },
-           {
-               href: lpgUiUrl + "/profile",
-               text: "Profile"
-           },
-           {
-               href: "/content-management",
-               text: "Admin"
-           },
-           {
-               href: lpgUiUrl + "/sign-out",
-               text: "Sign out"
-           }
-           ]
-   }) }}
-{% endblock %}
 {% block content %}
-
-
 <div class="u--border--bgrey">
    <h1 class="govuk-heading-l">Content management</h1>
 </div>
@@ -74,18 +37,19 @@
                            {% endif %}
                        </div>
                    {% endif %}
-
-                   <div class="pager__summary">
-                           <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
-                   </div>
-               </div>
-           </div>
-       {% endif %}
-   </div>
-   <div class="govuk-grid-column-one-third govuk-!-padding-top-6 ">
-       {% block menuBox %}
-           {{ menuBox("Actions") }}
-       {% endblock %}
-   </div>
+                    <div class="pager__summary">
+                            <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <div class="govuk-grid-column-one-third govuk-!-padding-top-6 ">
+        <div class="right-menu">
+            {% block menu %}
+                {{ menu("Actions") }}
+            {% endblock %}
+        </div>
+    </div>
 </div>
 {% endblock %}

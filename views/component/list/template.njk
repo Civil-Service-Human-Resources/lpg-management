@@ -1,14 +1,14 @@
-<h2 class="govuk-heading-m">{{listTitle}}</h2>
+<h2 class="govuk-heading-m">{{ listTitle }}</h2>
 <ul class="list">
     {% for Course in pageResults.results %}
 
     <li class="list-details u--border--bgrey">
         <a class="govuk-link list-title" href="/content-management/course/{{ Course.id }}">{{ Course.title }}</a>
         {% if Course._modules.length > 1 %}
-            <p class="govuk-body">This course comprises of {{Course.modules.length}} modules</p>
+            <p class="govuk-body">This course comprises of {{ Course._modules.length }} modules</p>
         {% endif %}
         <p class="govuk-body">{{ Course.shortDescription }}</p>
-        <a class="govuk-link list-link list-padding" href="/content-management/course/{{ Course.id }}">Edit</a>
+        <a class="govuk-link list-link list-padding" href="/content-management/course-preview/{{ Course.id }}">Edit</a>
     </li>
     {% endfor %}
 </ul>

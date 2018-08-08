@@ -18,6 +18,9 @@ import {NextFunction, Request, Response} from 'express'
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
+	@EnvValue('LPG_UI_URL')
+	private lpgUiUrl: String
+
 	homeController: HomeController
 	courseController: CourseController
 	identityService: IdentityService
@@ -27,7 +30,6 @@ export class ApplicationContext {
 	learningCatalogue: LearningCatalogue
 	courseValidator: CourseValidator
 	courseFactory: CourseFactory
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -50,14 +52,16 @@ export class ApplicationContext {
 			passport,
 			this.identityService
 		)
+
 		this.learningCatalogueConfig = new LearningCatalogueConfig(
-			config.COURSE_CATALOGUE.auth.username,
-			config.COURSE_CATALOGUE.auth.password,
+			{
+				username: config.COURSE_CATALOGUE.auth.username,
+				password: config.COURSE_CATALOGUE.auth.password,
+			},
 			config.COURSE_CATALOGUE.url
 		)
 
 		this.learningCatalogue = new LearningCatalogue(
-			this.axiosInstance,
 			this.learningCatalogueConfig
 		)
 

@@ -1,0 +1,137 @@
+{% from "input/macro.njk" import govukInput %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "button/macro.njk" import govukButton %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% extends "../component/Page.njk" %} {% block pageTitle %}Add a blog- Civil Service Learning{% endblock %}
+{% block header %}
+    {{ govukHeader({
+        homepageUrl: "#",
+        containerClasses: "govuk-width-container",
+        serviceName: "Civil Service Learning",
+        serviceUrl: "#",
+        navigation: [
+            {
+                href: lpgUiUrl + "/home",
+                text: "Home",
+                active: true
+            },
+            {
+                href: lpgUiUrl + "/suggestions-for-you",
+                text: "Suggestions for you"
+            },
+            {
+                href: lpgUiUrl + "/learning-record",
+                text: "Learning record"
+            },
+            {
+                href: lpgUiUrl + "/profile",
+                text: "Profile"
+            },
+            {
+                href: "/content-management",
+                text: "Admin"
+            },
+            {
+                href: lpgUiUrl + "/sign-out",
+                text: "Sign out"
+            }
+            ]
+    }) }}
+{% endblock %}
+{% block content %}
+ <a href="#" class="govuk-back-link">Back</a>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
+            <p class="govuk-body">You are adding a <strong>blog</strong> module</p>
+                  
+            <form action="/form-handler" method="post">
+                <fieldset class="govuk-fieldset">
+                    {{ govukInput({
+                    label: {
+                        text: "Module title"
+                    },
+                    id: "moduleTitle",
+                    name: "moduleTitle"
+                    }) }}
+
+                    {{ govukTextarea({
+                    name: "description",
+                    id: "description",
+                    label: {
+                        text: "Description"
+                    }
+                    }) }}
+
+                    {{ govukInput({
+                    label: {
+                        text: "URL"
+                    },
+                    id: "url",
+                    name: "url"
+                    }) }}
+
+                    <p class="govuk-body govuk-!-margin-bottom-1 font-bold">Reading duration</p>
+                    <div class="time-inputs">
+   
+                        {{ govukInput({
+                            type: "number",
+                            label: {
+                                text: "Hours"
+                            },
+                             attributes: {
+                                  maxlength: "3"
+                            },
+                            id: "hours",
+                            name: "hours",
+                            classes: "govuk-date-input__input govuk-input--width-3 font-light"
+                        }) }}
+                        {{ govukInput({
+                            type: "number",
+                            label: {
+                                text: "Minutes"
+                            },
+                            attributes: {
+                                maxlength: "2"
+                            },
+                            id: "minutes",
+                            name: "miniutes",
+                            classes: "govuk-date-input__input govuk-input--width-3"
+                        }) }}
+                    </div>
+                </fieldset>
+                    {{ govukCheckboxes({
+                        idPrefix: "isOptional",
+                        name: "isOptional",
+                        classes: "font-light",
+                        fieldset: {
+                            legend: {
+                                text: "Is this an optional module?",
+                                isPageHeading: true,
+                                classes: "font-bold"
+                            }
+                        },
+                        items: [
+                        {
+                            value: "isOptional",
+                            text: "Yes, this is optional"
+                        }
+                    ]
+                    }) }}
+
+                {{ govukButton({
+                    text: "Continue",
+                    type: "button"
+                }) }}
+            </form>
+
+            <a class="cancel-button govuk-body govuk-link" href="#">Cancel</a>        
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+       
+        </div>
+    </div>
+{% endblock %}

@@ -1,40 +1,31 @@
-import * as moment from 'moment'
+import {IsNotEmpty, IsPositive, MinDate} from 'class-validator'
 
 export class Event {
-	private _id: string
-	private _date: Date
-	private _location: string
-	private _capacity: number
+	id: string
 
-	get id(): string {
-		return this._id
-	}
+	@IsNotEmpty({
+		groups: ['all', 'event.all', 'event.date'],
+		message: 'validation.module.event.date.empty',
+	})
+	@MinDate(new Date(Date.now()), {
+		groups: ['all', 'event.all', 'event.date'],
+		message: 'validation.module.event.date.past',
+	})
+	date: Date
 
-	set id(value: string) {
-		this._id = value
-	}
+	@IsNotEmpty({
+		groups: ['all', 'event.all', 'event.location'],
+		message: 'validation.module.event.location.empty',
+	})
+	location: string
 
-	get date(): Date {
-		return this._date
-	}
-
-	set date(value: Date) {
-		this._date = moment.utc(value).toDate()
-	}
-
-	get location(): string {
-		return this._location
-	}
-
-	set location(value: string) {
-		this._location = value
-	}
-
-	get capacity(): number {
-		return this._capacity
-	}
-
-	set capacity(value: number) {
-		this._capacity = value
-	}
+	@IsNotEmpty({
+		groups: ['all', 'event.all', 'event.capacity'],
+		message: 'validation.module.event.capacity.empty',
+	})
+	@IsPositive({
+		groups: ['all', 'event.all', 'event.capacity'],
+		message: 'validation.module.event.capacity.positive',
+	})
+	capacity: number
 }

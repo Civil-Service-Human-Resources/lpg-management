@@ -1,0 +1,26 @@
+.course-summary {
+	width: 100%;
+}
+
+.item {
+	width: 50%;
+	font-size: $font-mobile;
+}
+
+.course-summary-item {
+	border-bottom: 1px solid $border;
+
+	.item-container {
+		display: flex;
+
+		.item-header {
+			font-weight: 700;
+		}
+	}
+}
+
+@media screen and (min-width: $tablet-small) {
+	.item {
+		font-size: $font-normal;
+	}
+}

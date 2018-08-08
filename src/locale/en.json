@@ -1,5 +1,10 @@
 {
-	"home.page.title": "Content management - Civil Service Learning",
+	"content_management_title": "Content management",
+	"add_course_title_title": "Add course title",
+	"add_course_details_title": "Add course details",
+	"course_overview_title": "Course overview",
+	"course_preview_title": "Course preview",
+	"proposition_name": "Civil Service Learning",
 	"validation.course.title.empty": "Title is required",
 	"validation.course.shortDescription.empty": "Short description is required",
 	"validation.course.shortDescription.maxLength": "Short description is too long",

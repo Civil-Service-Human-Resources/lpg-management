@@ -1,133 +1,159 @@
-import {Module} from '../../../../../src/learning-catalogue/model/module'
 import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
 import {AudienceFactory} from '../../../../../src/learning-catalogue/model/factory/audienceFactory'
 import {ModuleFactory} from '../../../../../src/learning-catalogue/model/factory/moduleFactory'
-import {beforeEach} from 'mocha'
+import {beforeEach, describe, it} from 'mocha'
+import * as chai from 'chai'
 import {expect} from 'chai'
+import * as chaiAsPromised from 'chai-as-promised'
+
+chai.use(chaiAsPromised)
 
 describe('ModuleFactory tests', () => {
 	let eventFactory: EventFactory
 	let audienceFactory: AudienceFactory
 	let moduleFactory: ModuleFactory
+	let data: any
 
 	beforeEach(() => {
-		// eventFactory = <EventFactory>{}
-		// audienceFactory = <AudienceFactory>{}
-
 		eventFactory = new EventFactory()
 		audienceFactory = new AudienceFactory()
 
 		moduleFactory = new ModuleFactory(audienceFactory, eventFactory)
-	})
 
-	it('should create module from data', () => {
-		const type: string = 'face-to-face'
-		const productCode: string = 'F13'
-		const id: string = 'MBlZJv-ZRDCYZsCByjzRuQ'
-		const title: string = 'module title'
-		const description: string = 'module description'
-		const duration: number = 3600
-		const price: number = 100
-		const eventId: string = 'XEbjXzmVQwSQ_7qIvr7Kew'
-		const eventCapacity: number = 99
-		const eventLocation: string = 'London'
-		const eventDate: string = '2018-05-24T00:00:00'
-		const audienceAreasOfWork: string[] = ['digital']
-		const audienceDepartments: string[] = ['co', 'hmrc']
-		const audienceGrades: string[] = ['AA', 'G7']
-		const audienceInterests: string[] = ['project management']
-		const audienceRequiredBy: string = '2019-01-01T00:00:00'
-		const audienceFrequency: string = 'YEARLY'
-		const audienceMandatory: boolean = true
-
-		const data: object = {
-			type: type,
-			productCode: productCode,
-			id: id,
-			title: title,
-			description: description,
-			duration: duration,
-			price: price,
-			events: [
-				{
-					id: eventId,
-					capacity: eventCapacity,
-					location: eventLocation,
-					date: eventDate,
-				},
-			],
+		data = {
+			id: 'MBlZJv-ZRDCYZsCByjzRuQ',
+			title: 'module title',
+			description: 'module description',
+			duration: 3600,
+			price: 100,
 			audiences: [
 				{
-					areasOfWork: audienceAreasOfWork,
-					departments: audienceDepartments,
-					grades: audienceGrades,
-					interests: audienceInterests,
-					requiredBy: audienceRequiredBy,
-					frequency: audienceFrequency,
-					mandatory: audienceMandatory,
+					areasOfWork: ['digital'],
+					departments: ['co', 'hmrc'],
+					grades: ['AA', 'G7'],
+					interests: ['project management'],
+					requiredBy: '2019-01-01T00:00:00',
+					frequency: 'YEARLY',
+					mandatory: true,
 				},
 			],
 		}
-
-		const result: Module = moduleFactory.create(data)
-
-		expect(result.id).to.equal(id)
-		expect(result.type).to.equal(type)
-		expect(result.productCode).to.equal(productCode)
-		expect(result.title).to.equal(title)
-		expect(result.description).to.equal(description)
-		expect(result.duration).to.equal(duration)
-		expect(result.price).to.equal(price)
-
-		expect(result.events[0].id).to.equal(eventId)
-		expect(result.events[0].capacity).to.equal(eventCapacity)
-		expect(result.events[0].location).to.equal(eventLocation)
-		expect(result.events[0].date.toISOString().substr(0, 19)).to.equal(
-			eventDate
-		)
-
-		expect(result.audiences[0].areasOfWork).to.equal(audienceAreasOfWork)
-		expect(result.audiences[0].departments).to.equal(audienceDepartments)
-		expect(result.audiences[0].grades).to.equal(audienceGrades)
-		expect(result.audiences[0].interests).to.equal(audienceInterests)
-		expect(
-			result.audiences[0].requiredBy!.toISOString().substr(0, 19)
-		).to.equal(audienceRequiredBy)
-		expect(result.audiences[0].frequency).to.equal(audienceFrequency)
-		expect(result.audiences[0].mandatory).to.equal(audienceMandatory)
 	})
 
-	it('should set events and audiense to emplty lists if null', () => {
-		const type: string = 'face-to-face'
-		const productCode: string = 'F13'
-		const id: string = 'MBlZJv-ZRDCYZsCByjzRuQ'
-		const title: string = 'module title'
-		const description: string = 'module description'
-		const duration: number = 3600
-		const price: number = 100
+	const testProperties = (module: any, data: any, exclude: string[] = []) => {
+		for (const property in module) {
+			if (exclude.includes(property)) {
+				continue
+			}
 
-		const data: object = {
-			type: type,
-			productCode: productCode,
-			id: id,
-			title: title,
-			description: description,
-			duration: duration,
-			price: price,
-			events: null,
-			audiences: null,
+			if (module.hasOwnProperty(property)) {
+				expect(module[property]).to.equal(data[property])
+			}
 		}
+	}
 
-		const result: Module = moduleFactory.create(data)
+	it('should create LinkModule', async () => {
+		data.location = 'http://example.org'
+		data.type = 'link'
 
-		expect(result.id).to.equal(id)
-		expect(result.type).to.equal(type)
-		expect(result.productCode).to.equal(productCode)
-		expect(result.title).to.equal(title)
-		expect(result.description).to.equal(description)
-		expect(result.duration).to.equal(duration)
-		expect(result.price).to.equal(price)
-		expect(result.events).to.eql([])
-		expect(result.audiences).to.eql([])
+		const module = await moduleFactory.create(data)
+
+		testProperties(module, data, ['audiences'])
+		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
+
+		expect(
+			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
+		).to.equal(data.audiences[0].requiredBy)
+	})
+
+	it('should create ELearningModule', async () => {
+		data.startPage = 'start-page'
+		data.type = 'elearning'
+
+		const module = await moduleFactory.create(data)
+
+		testProperties(module, data, ['audiences'])
+
+		expect(
+			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
+		).to.equal(data.audiences[0].requiredBy)
+
+		expect(module.startPage).to.equal(data.startPage)
+	})
+
+	it('should create FaceToFaceModule', async () => {
+		data.type = 'face-to-face'
+		data.productCode = 'product-code'
+		data.events = [
+			{
+				id: 'XEbjXzmVQwSQ_7qIvr7Kew',
+				capacity: 99,
+				location: 'London',
+				date: '2018-05-24T00:00:00',
+			},
+		]
+
+		const module = await moduleFactory.create(data)
+
+		testProperties(module, data, ['audiences', 'events'])
+
+		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
+		testProperties(module.events[0], data.events[0], ['date'])
+
+		expect(
+			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
+		).to.equal(data.audiences[0].requiredBy)
+		expect(module.events[0].date!.toISOString().substr(0, 19)).to.equal(
+			data.events[0].date
+		)
+	})
+
+	it('should set events and audiences to empt lists of missing', async () => {
+		data.type = 'face-to-face'
+		data.productCode = 'product-code'
+		data.audiences = undefined
+
+		const module = await moduleFactory.create(data)
+
+		testProperties(module, data, ['audiences', 'events'])
+
+		expect(module.audiences).to.eql([])
+		expect(module.events).to.eql([])
+	})
+
+	it('should create FileModule', async () => {
+		data.type = 'file'
+		data.fileSize = 99
+		data.url = 'http://example.org'
+
+		const module = await moduleFactory.create(data)
+
+		testProperties(module, data, ['audiences'])
+		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
+
+		expect(
+			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
+		).to.equal(data.audiences[0].requiredBy)
+	})
+
+	it('should create VideoModule', async () => {
+		data.type = 'video'
+		data.location = 'http://example.org'
+
+		const module = await moduleFactory.create(data)
+
+		testProperties(module, data, ['audiences'])
+		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
+
+		expect(
+			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
+		).to.equal(data.audiences[0].requiredBy)
+	})
+
+	it('should throw error if type is not recognised', async () => {
+		data.type = 'unknown'
+		return expect(moduleFactory.create(data)).to.be.rejectedWith(
+			`Unknown module type: unknown ${JSON.stringify(data)}`
+		)
 	})
 })

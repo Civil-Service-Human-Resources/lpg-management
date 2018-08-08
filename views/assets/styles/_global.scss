@@ -3,16 +3,19 @@
 	-webkit-font-smoothing: antialiased;
 }
 
+.pre {
+	white-space: pre-wrap; /* css-3 */
+	white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+	white-space: -pre-wrap; /* Opera 4-6 */
+	white-space: -o-pre-wrap; /* Opera 7 */
+	word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
 .govuk-header__navigation-item--active a:link,
 .govuk-header__navigation-item--active a:hover,
 .govuk-header__navigation-item--active a:visited {
 	color: $white;
 }
-
-.govuk-heading-l {
-	padding-left: 0;
-}
-
 .govuk-grid-column-two-thirds {
 	.govuk-heading-m {
 		margin-top: 30px;
@@ -49,6 +52,12 @@ a {
 	}
 }
 
+.right-menu {
+	border: 1px solid $border;
+	border-top: 4px solid $theme;
+	margin-bottom: 50px;
+}
+
 .pager__controls {
 	display: flex;
 	width: 100%;
@@ -56,13 +65,67 @@ a {
 	flex-direction: row-reverse;
 }
 
+.button-blue {
+	background-color: $govuk-link-colour;
+
+	&:hover {
+		background-color: darken($govuk-link-colour, 10%);
+	}
+
+	&:focus {
+		background-color: $govuk-link-colour;
+	}
+}
+
+.font-bold {
+	font-weight: 700;
+}
+
+.font-light {
+	font-weight: 400;
+}
+
 .cancel-button {
 	display: block;
 	width: 57px;
 }
 
+.panel {
+	width: 100%;
+	padding: 20px;
+	margin-bottom: 20px;
+	box-sizing: border-box;
+
+	&.panel-blue {
+		background-color: $govuk-link-colour;
+	}
+
+	.govuk-heading-s {
+		color: $white;
+		margin-bottom: 0;
+	}
+
+	.govuk-body {
+		color: $white;
+	}
+
+	.panel-links {
+		font-weight: bold;
+		color: $white;
+		margin: 0 2px;
+	}
+}
+
 @media screen and (min-width: $tablet-small) {
 	.pager__controls {
 		font-size: $font-normal;
+	}
+
+	.govuk-grid-column-one-third {
+		width: 33.3334%;
+	}
+
+	.button-blue {
+		margin-left: 5px;
 	}
 }

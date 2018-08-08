@@ -1,9 +1,9 @@
 {% from "../component/list/macro.njk" import list %}
-{% from "../component/menu-box/macro.njk" import menuBox %}
-{% from "../component/course/macro.njk" import courseDetails with context %}
+{% from "../component/menu/macro.njk" import menu %}
+{% from "../component/course-details/macro.njk" import courseDetails with context %}
 {% from "back-link/macro.njk" import govukBackLink %}
 
-{% extends "../component/Page.njk" %} {% block pageTitle %}Course overview - Civil Service Learning{% endblock %}
+{% extends "../component/Page.njk" %} {% block pageTitle %}{{ i18n['course_overview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% block header %}
     {{ govukHeader({
@@ -51,7 +51,7 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-        <a class="govuk-link govuk-body" href="/content-management/add-course/{{ course.id }}">Edit title</a><br>
+        <a class="govuk-link govuk-body" href="/content-management/edit-course/{{ course.id }}">Edit title</a><br>
         <a class="govuk-link govuk-body" href="/content-management/edit-course-details/{{ course.id }}">Edit details</a><br>
 
         <h1 class="govuk-heading-l">{{ course.title }}</h1>
@@ -62,9 +62,11 @@
     </div>
 
     <div class="govuk-grid-column-one-third">
-        {% block menuBox %}
-            {{ menuBox("Actions") }}
-        {% endblock %} 
+        <div class="right-menu">
+            {% block menu %}
+                {{ menu("Actions") }}
+            {% endblock %} 
+        </div>
     </div>
 </div>
 {% endblock %}

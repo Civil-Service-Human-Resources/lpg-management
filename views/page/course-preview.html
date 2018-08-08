@@ -1,0 +1,84 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "table/macro.njk" import govukTable %}
+{% from "../component/course-preview/macro.njk" import coursePreview with context %}
+
+{% extends "../component/Page.njk" %} {% block pageTitle %}{{ i18n['course_preview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% block content %}
+    {{ govukBackLink({
+        text: "Back",
+        href: "/content-management/course/"+ course.id
+    }) }}
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
+            <div class="panel panel-blue">
+                <h5 class="govuk-heading-s">This page is in preview and has not been published yet.</h5>
+                <p class="govuk-body govuk-!-margin-bottom-0">Edit: <a href="#" class="govuk-link panel-links">Details</a> <a href="#" class="govuk-link panel-links">Content</a> <a href="#" class="govuk-link panel-links">Files</a> <a href="#" class="govuk-link panel-links">Modules</a> <a href="#" class="govuk-link panel-links">Audiences</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% block coursePreview %}
+                {{ coursePreview(course) }}
+            {% endblock %}
+        </div>
+
+        <div class="govuk-grid-column-one-third">
+            <div class="right-menu">
+                <ul class="course-summary">
+                    <li class="course-summary-item govuk-!-padding-1">
+                        <div class="item-container">
+                            <span class="item item-header">Course type</span>
+                            <span class="item item-value">{{ course.getType() }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item govuk-!-padding-1">
+                        <div class="item-container">
+                            <span class="item item-header">Duration</span>
+                            <span class="item item-value">1 day</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item govuk-!-padding-1">
+                        <div class="item-container">
+                            <span class="item item-header">Dates and Location</span>
+                            <span class="item item-value"></span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item govuk-!-padding-1">
+                        <div class="item-container">
+                            <span class="item item-header">Level</span>
+                            <span class="item item-value">EO to HEO/SEO</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item govuk-!-padding-1">
+                        <div class="item-container">
+                            <span class="item item-header">Cost</span>
+                            <span class="item item-value">£{{ course.getCost() }} (ex VAT)</span>
+                        </div>  
+                        <a href="#" class="govuk-link">See cost for group bookings</a>
+                    </li>
+                </ul>
+                <div class="pre-learning govuk-!-padding-1 govuk-!-padding-bottom-6">
+                    <p class="govuk-!-font-weight-bold govuk-body govuk-!-margin-bottom-1">Pre-learning required</p>
+                    <a href="#" class="govuk-link">See all pre-learning</a>
+                </div>
+            </div> 
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div class="panel panel-blue">
+                <h5 class="govuk-heading-s">When you have completed the course page, save it using the button below</h5>
+                <p class="govuk-body govuk-!-margin-bottom-0">You can make edits later, and add events to the course.</p>
+            </div>
+            {{ govukButton({
+                text: "Return to course",
+                href: "/content-management/course/"+ course.id
+            }) }}
+        </div>
+    </div>
+{% endblock %}
+
