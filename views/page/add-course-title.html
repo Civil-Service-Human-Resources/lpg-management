@@ -71,7 +71,7 @@
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
 
             {% if edit == true %}
-                <form action="/content-management/edit-course-title/{{course.id}}" method="post">
+                <form action="/content-management/edit-course/{{course.id}}" method="post">
             {% else %}
                 <form action="/content-management/add-course" method="post">
             {% endif %}

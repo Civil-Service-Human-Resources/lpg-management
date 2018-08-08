@@ -86,33 +86,33 @@ app.get(
 	'/content-management/course/:courseId',
 	ctx.courseController.courseOverview()
 )
-app.get('/content-management/add-course/:edit',
-	ctx.courseController.getCourseTitle()
+app.get('/content-management/add-course/',
+	ctx.courseController.getCourseTitle(false)
+)
+app.get('/content-management/add-course/:courseId',
+    ctx.courseController.getCourseTitle(true)
 )
 app.post(
 	'/content-management/add-course',
-	ctx.courseController.setCourseTitle()
+	ctx.courseController.setCourseTitle(false)
 )
-
-app.get('/content-management/edit-course-title/:courseId',
-    ctx.courseController.getEditCourseTitle()
+app.post(
+    '/content-management/edit-course/:courseId',
+    ctx.courseController.setCourseTitle(true)
 )
-app.post('/content-management/edit-course-title/:courseId',
-	ctx.courseController.editCourseTitle()
-)
-app.get('/content-management/edit-course-details/:courseId',
-    ctx.courseController.getEditCourseDetails()
-)
-app.post('/content-management/edit-course-details/:courseId',
-    ctx.courseController.editCourseDetails())
-
 app.get(
 	'/content-management/add-course-details',
-	ctx.courseController.getCourseDetails()
+	ctx.courseController.getCourseDetails(false)
+)
+app.get('/content-management/edit-course-details/:courseId',
+    ctx.courseController.getCourseDetails(true)
 )
 app.post(
 	'/content-management/add-course-details',
-	ctx.courseController.setCourseDetails()
+	ctx.courseController.setCourseDetails(false)
+)
+app.post('/content-management/edit-course-details/:courseId',
+    ctx.courseController.setCourseDetails(true)
 )
 
 app.listen(PORT, () => logger.info(`LPG Management listening on port ${PORT}`))

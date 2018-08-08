@@ -55,14 +55,27 @@ export class CourseController {
 		}
 	}
 
-	public getCourseTitle() {
+	public getCourseTitle(edit: Boolean) {
 		return async (request: Request, response: Response) => {
-			response.render('page/add-course-title', {edit: false})
+            const req = request as CourseRequest
+
+            const course = req.course
+
+			response.render('page/add-course-title', {
+				edit: edit,
+				course: course,
+			})
 		}
 	}
 
-	public setCourseTitle() {
+	public setCourseTitle(edit: Boolean) {
+		const self = this;
+
 		return async (request: Request, response: Response) => {
+            const req = request as CourseRequest
+
+            const course = req.course
+
 			const title = request.body.title
 
 			const errors = await this.courseValidator.check(request.body, [
@@ -71,20 +84,40 @@ export class CourseController {
 			if (errors.size) {
 				return response.render('page/add-course-title', {
 					errors: errors,
-					edit: false,
+					edit: edit,
+					course: course,
 				})
 			}
-			response.render('page/add-course-details', {title})
+
+			if(edit){
+                course.title = request.body.title;
+
+                await self.learningCatalogue.update(course)
+
+                response.redirect('/content-management/course/' + course.id)
+			} else {
+                response.render('page/add-course-details', {
+                	title: title,
+                	edit: edit,
+                })
+            }
 		}
 	}
 
-	public getCourseDetails() {
+	public getCourseDetails(edit: Boolean) {
 		return async (request: Request, response: Response) => {
-			response.render('page/add-course-details', {edit: false})
+			const req = request as CourseRequest
+
+			const course = req.course
+
+			response.render('page/add-course-details', {
+				edit: edit,
+				course: course,
+			})
 		}
 	}
 
-	public setCourseDetails() {
+	public setCourseDetails(edit: Boolean) {
 		const self = this
 
 		return async (request: Request, response: Response) => {
@@ -94,110 +127,47 @@ export class CourseController {
 				...req.body,
 			}
 
-			const course = this.courseFactory.create(data)
-
-			const errors = await this.courseValidator.check(course)
-
-			if (errors.size) {
-				return response.render('page/add-course-details', {
-					title: data.title,
-					errors: errors,
-					course: course,
-					edit: false,
-				})
-			}
-			await self.learningCatalogue.create(course)
-
-			response.redirect('/content-management')
-		}
-	}
-
-	public getEditCourseTitle(){
-		return async (request: Request, response: Response) => {
-            const req = request as CourseRequest
-
-            const course = req.course
-
-            response.render('page/add-course-title', {
-				edit: true,
-				course: course,
-			})
-		}
-	}
-
-	public editCourseTitle(){
-		const self = this;
-
-		return async (request: Request, response: Response) => {
-            const req = request as CourseRequest
-
-            const course = req.course
-
-            const errors = await this.courseValidator.check(request.body, [
-                'title',
-            ])
-
-			if(errors.size){
-				return response.render('page/add-course-title', {
-					errors: errors,
-					course: course,
-					edit: true,
-				})
-			}
-
-            course.title = request.body.title;
-
-			await self.learningCatalogue.update(course)
-
-			response.redirect('/content-management/course/' + course.id)
-		}
-	}
-
-	public getEditCourseDetails(){
-		return async (request: Request, response: Response) => {
-
-            const req = request as CourseRequest
-
-            const course = req.course
-
-			response.render('page/add-course-details', {
-				edit: true,
-				course: course,
-			})
-		}
-	}
-
-	public editCourseDetails(){
-		const self = this
-
-		return async (request: Request, response: Response) => {
-			const req = request as CourseRequest
-
-			const data = {
-				...req.body
-			}
-
 			const newCourse = this.courseFactory.create(data)
-			const errors = await this.courseValidator.check(newCourse, ['description', 'shortDescription'])
 
-            let course = req.course;
+			if(edit){
+				let course = req.course
 
-            if (errors.size) {
-                return response.render('page/add-course-details', {
-                    title: data.title,
-                    errors: errors,
-                    course: course,
-					edit: true,
-                })
-            }
+                const errors = await this.courseValidator.check(newCourse,
+					['description', 'shortDescription'
+					])
 
-            course.description = newCourse.description
-			course.shortDescription = newCourse.shortDescription
-			course.learningOutcomes = newCourse.learningOutcomes
+                if (errors.size) {
+                    return response.render('page/add-course-details', {
+                        title: data.title,
+                        errors: errors,
+                        course: course,
+                        edit: edit,
+                    })
+                }
 
-			await self.learningCatalogue.update(course)
+                course.description = newCourse.description
+                course.shortDescription = newCourse.shortDescription
+                course.learningOutcomes = newCourse.learningOutcomes
 
-            response.redirect('/content-management/course/' + course.id)
+                await self.learningCatalogue.update(course)
+
+                response.redirect('/content-management/course/' + course.id)
+			} else {
+                const errors = await this.courseValidator.check(newCourse)
+
+                if (errors.size) {
+                    return response.render('page/add-course-details', {
+                        title: data.title,
+                        errors: errors,
+                        course: newCourse,
+                        edit: false,
+                    })
+                }
+
+                await self.learningCatalogue.create(newCourse)
+
+                response.redirect('/content-management')
+			}
 		}
 	}
 }
