@@ -52,6 +52,7 @@ describe('Course Controller Tests', function() {
 
 		expect(response.render).to.have.been.calledOnceWith('page/course', {
 			course,
+			edit: false,
 		})
 	})
 
@@ -73,7 +74,7 @@ describe('Course Controller Tests', function() {
 		const setCourseTitle: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseTitle(false)
+		) => void = courseController.setCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -89,7 +90,7 @@ describe('Course Controller Tests', function() {
 		])
 		expect(response.render).to.have.been.calledWith(
 			'page/add-course-details',
-			{title: 'New Course', edit: false}
+			{title: 'New Course'}
 		)
 	})
 
@@ -97,7 +98,7 @@ describe('Course Controller Tests', function() {
 		const setCourseTitle: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseTitle(false)
+		) => void = courseController.setCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -113,7 +114,7 @@ describe('Course Controller Tests', function() {
 		])
 		expect(response.render).to.have.been.calledWith(
 			'page/add-course-title',
-			{errors: errors, edit: false, course: undefined}
+			{errors: errors}
 		)
 	})
 
@@ -137,7 +138,7 @@ describe('Course Controller Tests', function() {
 		const setCourseDetails: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseDetails(false)
+		) => void = courseController.setCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -168,7 +169,7 @@ describe('Course Controller Tests', function() {
 		const setCourseDetails: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseDetails(false)
+		) => void = courseController.setCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -213,7 +214,7 @@ describe('Course Controller Tests', function() {
 		const setCourseTitle: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseTitle(true)
+		) => void = courseController.editCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -228,6 +229,9 @@ describe('Course Controller Tests', function() {
 
 		const learningCatalogueUpdate = sinon.stub().returns(course)
 		learningCatalogue.updateCourse = learningCatalogueUpdate
+
+		const learningCatalogueGet = sinon.stub().returns(course)
+		learningCatalogue.getCourse = learningCatalogueGet
 
 		await setCourseTitle(request, response)
 
@@ -247,7 +251,7 @@ describe('Course Controller Tests', function() {
 		const setCourseTitle: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseTitle(true)
+		) => void = courseController.editCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -260,6 +264,9 @@ describe('Course Controller Tests', function() {
 
 		const req = request as CourseRequest
 		req.course = course
+
+		const learningCatalogueGet = sinon.stub().returns(course)
+		learningCatalogue.getCourse = learningCatalogueGet
 
 		await setCourseTitle(request, response)
 
@@ -283,7 +290,7 @@ describe('Course Controller Tests', function() {
 		const setCourseDetails: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseDetails(true)
+		) => void = courseController.editCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -300,9 +307,11 @@ describe('Course Controller Tests', function() {
 		const learningCatalogueUpdate = sinon.stub().returns(course)
 		learningCatalogue.updateCourse = learningCatalogueUpdate
 
+		const learningCatalogueGet = sinon.stub().returns(course)
+		learningCatalogue.getCourse = learningCatalogueGet
+
 		await setCourseDetails(request, response)
 
-		expect(courseFactory.create).to.have.been.calledWith(request.body)
 		expect(learningCatalogue.updateCourse).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.been.calledWith(course, [
 			'description',
@@ -320,7 +329,7 @@ describe('Course Controller Tests', function() {
 		const setCourseDetails: (
 			request: Request,
 			response: Response
-		) => void = courseController.setCourseDetails(true)
+		) => void = courseController.editCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -337,9 +346,11 @@ describe('Course Controller Tests', function() {
 		const courseFactoryCreate = sinon.stub().returns(course)
 		courseFactory.create = courseFactoryCreate
 
+		const learningCatalogueGet = sinon.stub().returns(course)
+		learningCatalogue.getCourse = learningCatalogueGet
+
 		await setCourseDetails(request, response)
 
-		expect(courseFactory.create).to.have.been.calledWith(request.body)
 		expect(courseValidator.check).to.have.been.calledWith(course, [
 			'description',
 			'shortDescription',

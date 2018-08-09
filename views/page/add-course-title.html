@@ -14,11 +14,17 @@
 {% endblock %}
 
 {% block content %}
-
-    {{ govukBackLink({
+    {% if edit == true %}
+        {{ govukBackLink({
         text: "Back",
-        href: "/content-management"
-    }) }}
+        href: "/content-management/course/" + course.id
+        }) }}
+    {% else %}
+        {{ govukBackLink({
+            text: "Back",
+            href: "/content-management"
+        }) }}
+    {% endif %}
 
     {% if errors.fields %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">

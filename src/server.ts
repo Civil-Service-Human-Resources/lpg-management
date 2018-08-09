@@ -95,11 +95,11 @@ app.get(
 )
 app.post(
 	'/content-management/add-course',
-	ctx.courseController.setCourseTitle(false)
+	ctx.courseController.setCourseTitle()
 )
 app.post(
 	'/content-management/edit-course/:courseId',
-	ctx.courseController.setCourseTitle(true)
+	ctx.courseController.editCourseTitle()
 )
 app.get(
 	'/content-management/course-preview/:courseId',
@@ -116,11 +116,11 @@ app.get(
 )
 app.post(
 	'/content-management/add-course-details',
-	ctx.courseController.setCourseDetails(false)
+	ctx.courseController.setCourseDetails()
 )
 app.post(
 	'/content-management/edit-course-details/:courseId',
-	ctx.courseController.setCourseDetails(true)
+	ctx.courseController.editCourseDetails()
 )
 app.get('/add-module', ctx.courseController.addModule())
 app.get('/add-module-blog', ctx.courseController.addModuleBlog())

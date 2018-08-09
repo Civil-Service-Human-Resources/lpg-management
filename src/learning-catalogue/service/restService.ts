@@ -41,9 +41,9 @@ export class RestService {
 
 	async put(path: string, resource: any) {
 		try {
-			const response: AxiosResponse = await this._http.put(path, resource)
+			await this._http.put(path, resource)
 
-			return this.get(url.parse(response.headers.location).path!)
+			return this.get(path)
 		} catch (e) {
 			throw new Error(
 				`Error with PUT request: ${e} when putting ${JSON.stringify(
