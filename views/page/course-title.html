@@ -6,7 +6,7 @@
 {% extends "../component/Page.njk" %}
 
 {% block pageTitle %}
-    {% if edit == false %}
+    {% if isEdit == false %}
         Add Course - Civil Service Learning
     {% else %}
         Edit Course - Civil Service Learning
@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if edit == true %}
+    {% if isEdit == true %}
         {{ govukBackLink({
         text: "Back",
         href: "/content-management/course/" + course.id
@@ -43,14 +43,14 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            {% if edit == false %}
+            {% if isEdit == false %}
                 <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
             {% else %}
             <p class="govuk-body form-header govuk-!-font-size-24">Edit course</p>
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
 
-            {% if edit == true %}
+            {% if isEdit == true %}
                 <form action="/content-management/edit-course/{{course.id}}" method="post">
             {% else %}
                 <form action="/content-management/add-course" method="post">
@@ -67,7 +67,7 @@
                                 text: "Title is required"
                             }
                         }) }}
-                    {% elif edit == true %}
+                    {% elif isEdit == true %}
                         {{ govukInput({
                         label: {
                             text: "Course title"
@@ -90,7 +90,7 @@
                     text: "Continue"
                 }) }}
 
-                {% if edit == true %}
+                {% if isEdit == true %}
                 <a class="cancel-button govuk-body govuk-link" href="/content-management/course/{{course.id}}">Cancel</a>
                 {% else %}
                 <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>

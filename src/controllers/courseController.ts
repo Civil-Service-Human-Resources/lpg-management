@@ -12,11 +12,7 @@ export class CourseController {
 	courseValidator: CourseValidator
 	courseFactory: CourseFactory
 
-	constructor(
-		learningCatalogue: LearningCatalogue,
-		courseValidator: CourseValidator,
-		courseFactory: CourseFactory
-	) {
+	constructor(learningCatalogue: LearningCatalogue, courseValidator: CourseValidator, courseFactory: CourseFactory) {
 		this.learningCatalogue = learningCatalogue
 		this.courseValidator = courseValidator
 		this.courseFactory = courseFactory
@@ -26,27 +22,17 @@ export class CourseController {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			await this.getCourseAndRenderTemplate(
-				request,
-				response,
-				`page/course`,
-				false
-			)
+			await this.getCourseAndRenderTemplate(request, response, `page/course`, false)
 		}
 	}
 
-	public getCourseTitle(edit: Boolean) {
+	public getCourseTitle(isEdit: Boolean) {
 		return async (request: Request, response: Response) => {
-			if (edit) {
-				await this.getCourseAndRenderTemplate(
-					request,
-					response,
-					'page/add-course-title',
-					edit
-				)
+			if (isEdit) {
+				await this.getCourseAndRenderTemplate(request, response, 'page/course-title', isEdit)
 			} else {
-				response.render('page/add-course-title', {
-					edit: edit,
+				response.render('page/course-title', {
+					isEdit: isEdit,
 				})
 			}
 		}
@@ -56,16 +42,14 @@ export class CourseController {
 		return async (request: Request, response: Response) => {
 			const title = request.body.title
 
-			const errors = await this.courseValidator.check(request.body, [
-				'title',
-			])
+			const errors = await this.courseValidator.check(request.body, ['title'])
 			if (errors.size) {
-				return response.render('page/add-course-title', {
+				return response.render('page/course-title', {
 					errors: errors,
 				})
 			}
 
-			response.render('page/add-course-details', {
+			response.render('page/course-details', {
 				title: title,
 			})
 		}
@@ -75,18 +59,14 @@ export class CourseController {
 		const self = this
 
 		return async (request: Request, response: Response) => {
-			const course = await this.learningCatalogue.getCourse(
-				request.params.courseId
-			)
+			const course = await this.learningCatalogue.getCourse(request.params.courseId)
 
-			const errors = await this.courseValidator.check(request.body, [
-				'title',
-			])
+			const errors = await this.courseValidator.check(request.body, ['title'])
 
 			if (errors.size) {
-				return response.render('page/add-course-title', {
+				return response.render('page/course-title', {
 					errors: errors,
-					edit: true,
+					isEdit: true,
 					course: course,
 				})
 			}
@@ -99,18 +79,13 @@ export class CourseController {
 		}
 	}
 
-	public getCourseDetails(edit: Boolean) {
+	public getCourseDetails(isEdit: Boolean) {
 		return async (request: Request, response: Response) => {
-			if (edit) {
-				await this.getCourseAndRenderTemplate(
-					request,
-					response,
-					'page/add-course-details',
-					edit
-				)
+			if (isEdit) {
+				await this.getCourseAndRenderTemplate(request, response, 'page/course-details', isEdit)
 			} else {
-				response.render('page/add-course-details', {
-					edit: edit,
+				response.render('page/course-details', {
+					idEdit: isEdit,
 				})
 			}
 		}
@@ -126,19 +101,19 @@ export class CourseController {
 				...req.body,
 			}
 
-			const newCourse = this.courseFactory.create(data)
+			const course = this.courseFactory.create(data)
 
-			const errors = await this.courseValidator.check(newCourse)
+			const errors = await this.courseValidator.check(course)
 
 			if (errors.size) {
-				return response.render('page/add-course-details', {
+				return response.render('page/course-details', {
 					title: data.title,
 					errors: errors,
-					course: newCourse,
-					edit: false,
+					course: course,
+					isEdit: false,
 				})
 			}
-			await self.learningCatalogue.createCourse(newCourse)
+			await self.learningCatalogue.createCourse(course)
 
 			response.redirect('/content-management')
 		}
@@ -154,25 +129,20 @@ export class CourseController {
 				...req.body,
 			}
 
-			let course = await this.learningCatalogue.getCourse(
-				request.params.courseId
-			)
+			let course = await this.learningCatalogue.getCourse(request.params.courseId)
 
 			course.description = data.description
 			course.shortDescription = data.shortDescription
 			course.learningOutcomes = data.learningOutcomes
 
-			const errors = await this.courseValidator.check(course, [
-				'description',
-				'shortDescription',
-			])
+			const errors = await this.courseValidator.check(course, ['description', 'shortDescription'])
 
 			if (errors.size) {
-				return response.render('page/add-course-details', {
+				return response.render('page/course-details', {
 					title: data.title,
 					errors: errors,
 					course: course,
-					edit: true,
+					isEdit: true,
 				})
 			}
 
@@ -184,26 +154,16 @@ export class CourseController {
 
 	public coursePreview() {
 		return async (request: Request, response: Response) => {
-			await this.getCourseAndRenderTemplate(
-				request,
-				response,
-				`page/course-preview`,
-				false
-			)
+			await this.getCourseAndRenderTemplate(request, response, `page/course-preview`, false)
 		}
 	}
 
-	private async getCourseAndRenderTemplate(
-		request: Request,
-		response: Response,
-		view: string,
-		edit: Boolean
-	) {
+	private async getCourseAndRenderTemplate(request: Request, response: Response, view: string, isEdit: Boolean) {
 		const courseId: string = request.params.courseId
 		const course = await this.learningCatalogue.getCourse(courseId)
 
 		if (course) {
-			response.render(view, {course: course, edit: edit})
+			response.render(view, {course: course, isEdit: isEdit})
 		} else {
 			response.sendStatus(404)
 		}
