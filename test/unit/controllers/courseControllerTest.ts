@@ -26,11 +26,7 @@ describe('Course Controller Tests', function() {
 		courseValidator = <CourseValidator>{}
 		courseFactory = <CourseFactory>{}
 
-		courseController = new CourseController(
-			learningCatalogue,
-			courseValidator,
-			courseFactory
-		)
+		courseController = new CourseController(learningCatalogue, courseValidator, courseFactory)
 	})
 
 	it('should call course overview page', async function() {
@@ -38,10 +34,7 @@ describe('Course Controller Tests', function() {
 		course.id = 'courseOverview-id'
 		course.title = 'courseOverview-title'
 
-		const courseOverview: (
-			request: Request,
-			response: Response
-		) => void = courseController.courseOverview()
+		const courseOverview: (request: Request, response: Response) => void = courseController.courseOverview()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -52,29 +45,23 @@ describe('Course Controller Tests', function() {
 
 		expect(response.render).to.have.been.calledOnceWith('page/course', {
 			course,
-			edit: false,
+			isEdit: false,
 		})
 	})
 
-	it('should render add-course-title page', async function() {
-		const getCourseTitle: (
-			request: Request,
-			response: Response
-		) => void = courseController.getCourseTitle(false)
+	it('should render course-title page', async function() {
+		const getCourseTitle: (request: Request, response: Response) => void = courseController.getCourseTitle(false)
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
 
 		await getCourseTitle(request, response)
 
-		expect(response.render).to.have.been.calledWith('page/add-course-title')
+		expect(response.render).to.have.been.calledWith('page/course-title')
 	})
 
 	it('should check for title errors and render details page', async function() {
-		const setCourseTitle: (
-			request: Request,
-			response: Response
-		) => void = courseController.setCourseTitle()
+		const setCourseTitle: (request: Request, response: Response) => void = courseController.setCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -85,20 +72,12 @@ describe('Course Controller Tests', function() {
 
 		await setCourseTitle(request, response)
 
-		expect(courseValidator.check).to.have.been.calledWith(request.body, [
-			'title',
-		])
-		expect(response.render).to.have.been.calledWith(
-			'page/add-course-details',
-			{title: 'New Course'}
-		)
+		expect(courseValidator.check).to.have.been.calledWith(request.body, ['title'])
+		expect(response.render).to.have.been.calledWith('page/course-details', {title: 'New Course'})
 	})
 
 	it('should check for title errors and render title page with errors', async function() {
-		const setCourseTitle: (
-			request: Request,
-			response: Response
-		) => void = courseController.setCourseTitle()
+		const setCourseTitle: (request: Request, response: Response) => void = courseController.setCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -109,36 +88,25 @@ describe('Course Controller Tests', function() {
 
 		await setCourseTitle(request, response)
 
-		expect(courseValidator.check).to.have.been.calledWith(request.body, [
-			'title',
-		])
-		expect(response.render).to.have.been.calledWith(
-			'page/add-course-title',
-			{errors: errors}
-		)
+		expect(courseValidator.check).to.have.been.calledWith(request.body, ['title'])
+		expect(response.render).to.have.been.calledWith('page/course-title', {errors: errors})
 	})
 
-	it('should render add-course-details page', async function() {
-		const getCourseDetails: (
-			request: Request,
-			response: Response
-		) => void = courseController.getCourseDetails(false)
+	it('should render course-details page', async function() {
+		const getCourseDetails: (request: Request, response: Response) => void = courseController.getCourseDetails(
+			false
+		)
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
 
 		await getCourseDetails(request, response)
 
-		expect(response.render).to.have.been.calledWith(
-			'page/add-course-details'
-		)
+		expect(response.render).to.have.been.calledWith('page/course-details')
 	})
 
 	it('should check for description errors and redirect to content-management page', async function() {
-		const setCourseDetails: (
-			request: Request,
-			response: Response
-		) => void = courseController.setCourseDetails()
+		const setCourseDetails: (request: Request, response: Response) => void = courseController.setCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -165,11 +133,8 @@ describe('Course Controller Tests', function() {
 		expect(response.redirect).to.have.been.calledWith('/content-management')
 	})
 
-	it('should check for description errors and render add-course-details', async function() {
-		const setCourseDetails: (
-			request: Request,
-			response: Response
-		) => void = courseController.setCourseDetails()
+	it('should check for description errors and render course-details', async function() {
+		const setCourseDetails: (request: Request, response: Response) => void = courseController.setCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -196,25 +161,19 @@ describe('Course Controller Tests', function() {
 
 		expect(courseFactory.create).to.have.been.calledWith(request.body)
 		expect(courseValidator.check).to.have.been.calledWith(course)
-		expect(response.render).to.have.been.calledWith(
-			'page/add-course-details',
-			{
-				title: 'New Course',
-				errors: errors,
-				course: course,
-				edit: false,
-			}
-		)
+		expect(response.render).to.have.been.calledWith('page/course-details', {
+			title: 'New Course',
+			errors: errors,
+			course: course,
+			isEdit: false,
+		})
 	})
 
 	it('should check for title errors and redirect to course', async function() {
 		const course: Course = new Course()
 		course.id = 'abc'
 
-		const setCourseTitle: (
-			request: Request,
-			response: Response
-		) => void = courseController.editCourseTitle()
+		const setCourseTitle: (request: Request, response: Response) => void = courseController.editCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -235,23 +194,16 @@ describe('Course Controller Tests', function() {
 
 		await setCourseTitle(request, response)
 
-		expect(courseValidator.check).to.have.been.calledWith(request.body, [
-			'title',
-		])
-		expect(response.redirect).to.have.been.calledWith(
-			'/content-management/course/' + course.id
-		)
+		expect(courseValidator.check).to.have.been.calledWith(request.body, ['title'])
+		expect(response.redirect).to.have.been.calledWith('/content-management/course/' + course.id)
 		expect(course.title).to.have.be.eql('New Course')
 	})
 
-	it('should check for title errors and render add-course-details', async function() {
+	it('should check for title errors and render course-details', async function() {
 		const course: Course = new Course()
 		course.id = 'abc'
 
-		const setCourseTitle: (
-			request: Request,
-			response: Response
-		) => void = courseController.editCourseTitle()
+		const setCourseTitle: (request: Request, response: Response) => void = courseController.editCourseTitle()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -270,27 +222,19 @@ describe('Course Controller Tests', function() {
 
 		await setCourseTitle(request, response)
 
-		expect(courseValidator.check).to.have.been.calledWith(request.body, [
-			'title',
-		])
-		expect(response.render).to.have.been.calledWith(
-			'page/add-course-title',
-			{
-				errors: errors,
-				edit: true,
-				course: course,
-			}
-		)
+		expect(courseValidator.check).to.have.been.calledWith(request.body, ['title'])
+		expect(response.render).to.have.been.calledWith('page/course-title', {
+			errors: errors,
+			isEdit: true,
+			course: course,
+		})
 	})
 
 	it('should check for description errors and redirect to courses', async function() {
 		const course: Course = new Course()
 		course.id = 'abc'
 
-		const setCourseDetails: (
-			request: Request,
-			response: Response
-		) => void = courseController.editCourseDetails()
+		const setCourseDetails: (request: Request, response: Response) => void = courseController.editCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -313,23 +257,15 @@ describe('Course Controller Tests', function() {
 		await setCourseDetails(request, response)
 
 		expect(learningCatalogue.updateCourse).to.have.been.calledWith(course)
-		expect(courseValidator.check).to.have.been.calledWith(course, [
-			'description',
-			'shortDescription',
-		])
-		expect(response.redirect).to.have.been.calledWith(
-			'/content-management/course/' + course.id
-		)
+		expect(courseValidator.check).to.have.been.calledWith(course, ['description', 'shortDescription'])
+		expect(response.redirect).to.have.been.calledWith('/content-management/course/' + course.id)
 	})
 
-	it('should check for description errors and render add-course-details', async function() {
+	it('should check for description errors and render course-details', async function() {
 		const course: Course = new Course()
 		course.id = 'abc'
 
-		const setCourseDetails: (
-			request: Request,
-			response: Response
-		) => void = courseController.editCourseDetails()
+		const setCourseDetails: (request: Request, response: Response) => void = courseController.editCourseDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -351,18 +287,12 @@ describe('Course Controller Tests', function() {
 
 		await setCourseDetails(request, response)
 
-		expect(courseValidator.check).to.have.been.calledWith(course, [
-			'description',
-			'shortDescription',
-		])
-		expect(response.render).to.have.been.calledWith(
-			'page/add-course-details',
-			{
-				title: 'New Course',
-				errors: errors,
-				course: course,
-				edit: true,
-			}
-		)
+		expect(courseValidator.check).to.have.been.calledWith(course, ['description', 'shortDescription'])
+		expect(response.render).to.have.been.calledWith('page/course-details', {
+			title: 'New Course',
+			errors: errors,
+			course: course,
+			isEdit: true,
+		})
 	})
 })
