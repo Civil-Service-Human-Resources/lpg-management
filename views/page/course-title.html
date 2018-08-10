@@ -43,10 +43,10 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            {% if isEdit == false %}
-                <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            {% if isEdit == true %}
+                <p class="govuk-body form-header govuk-!-font-size-24">Edit course</p>
             {% else %}
-            <p class="govuk-body form-header govuk-!-font-size-24">Edit course</p>
+                <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
 
