@@ -47,10 +47,17 @@ describe('Course Controller Tests', function() {
 
 		learningCatalogue.getCourse = sinon.stub().returns(course)
 
+		const successMessage = `${
+			course.title
+		} has been created and saved as a draft`
+
+		request.flash('Added', successMessage)
+
 		await courseOverview(request, response)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course', {
 			course,
+			message: request.flash('Added'),
 		})
 	})
 
@@ -132,7 +139,7 @@ describe('Course Controller Tests', function() {
 		)
 	})
 
-	it('should check for description errors and redirect to content-management page', async function() {
+	it('should check for description errors and redirect to course page', async function() {
 		const setCourseDetails: (
 			request: Request,
 			response: Response
@@ -149,6 +156,7 @@ describe('Course Controller Tests', function() {
 		}
 
 		const course = new Course()
+
 		learningCatalogue.createCourse = sinon.stub().returns('123')
 
 		courseFactory.create = sinon.stub().returns(course)
@@ -160,7 +168,13 @@ describe('Course Controller Tests', function() {
 		expect(courseFactory.create).to.have.been.calledWith(request.body)
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(learningCatalogue.createCourse).to.have.been.calledWith(course)
-		expect(response.redirect).to.have.been.calledWith('/content-management')
+		expect(response.redirect).to.have.been.calledWith(
+			'/content-management/course/' + course.id
+		)
+		expect(request.flash).to.have.been.calledWith(
+			'Added',
+			`${course.title} has been created and saved as a draft`
+		)
 	})
 
 	it('should check for description errors and render add-course-details', async function() {
@@ -202,5 +216,6 @@ describe('Course Controller Tests', function() {
 				course: course,
 			}
 		)
+		expect(request.flash).to.not.have.been.called
 	})
 })
