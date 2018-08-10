@@ -18,7 +18,8 @@ import {NextFunction, Request, Response} from 'express'
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
-	@EnvValue('LPG_UI_URL') private lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	private lpgUiUrl: String
 
 	homeController: HomeController
 	courseController: CourseController

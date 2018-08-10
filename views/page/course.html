@@ -50,6 +50,9 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        {% if message %}
+            {{message}}
+        {% endif %}
         <h1 class="govuk-heading-l">{{ course.title }}</h1>
         <h3 class="govuk-heading-m">Course Overview</h3>
         {% block courseDetails %}
