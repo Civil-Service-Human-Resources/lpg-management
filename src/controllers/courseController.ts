@@ -12,11 +12,7 @@ export class CourseController {
 	courseValidator: CourseValidator
 	courseFactory: CourseFactory
 
-	constructor(
-		learningCatalogue: LearningCatalogue,
-		courseValidator: CourseValidator,
-		courseFactory: CourseFactory
-	) {
+	constructor(learningCatalogue: LearningCatalogue, courseValidator: CourseValidator, courseFactory: CourseFactory) {
 		this.learningCatalogue = learningCatalogue
 		this.courseValidator = courseValidator
 		this.courseFactory = courseFactory
@@ -26,11 +22,7 @@ export class CourseController {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			await this.getCourseAndRenderTemplate(
-				request,
-				response,
-				`page/course`
-			)
+			await this.getCourseAndRenderTemplate(request, response, `page/course`)
 		}
 	}
 
@@ -44,9 +36,7 @@ export class CourseController {
 		return async (request: Request, response: Response) => {
 			const title = request.body.title
 
-			const errors = await this.courseValidator.check(request.body, [
-				'title',
-			])
+			const errors = await this.courseValidator.check(request.body, ['title'])
 			if (errors.size) {
 				return response.render('page/add-course-title', {
 					errors: errors,
@@ -98,19 +88,11 @@ export class CourseController {
 
 	public coursePreview() {
 		return async (request: Request, response: Response) => {
-			await this.getCourseAndRenderTemplate(
-				request,
-				response,
-				`page/course-preview`
-			)
+			await this.getCourseAndRenderTemplate(request, response, `page/course-preview`)
 		}
 	}
 
-	private async getCourseAndRenderTemplate(
-		request: Request,
-		response: Response,
-		view: string
-	) {
+	private async getCourseAndRenderTemplate(request: Request, response: Response, view: string) {
 		const courseId: string = request.params.courseId
 		const course = await this.learningCatalogue.getCourse(courseId)
 

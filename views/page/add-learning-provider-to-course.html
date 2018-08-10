@@ -1,0 +1,65 @@
+{% from "select/macro.njk" import govukSelect %}
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../component/Page.njk" %}
+{% block pageTitle %}Add Learning Provider to Course - Civil Service Learning{% endblock %}
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management") }}
+  {% endblock%}
+{% endblock %}
+
+{% block content %}   
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h3 class="govuk-body form-header govuk-!-font-size-24">Add a new course</h3>
+            <h1 class="govuk-heading-m govuk-!-font-size-36">Learning Providers</h1>
+
+            <form action="/form-hander" method="post">
+                <fieldset class="govuk-fieldset select-with-button">
+                    {{ govukSelect({
+                        id: "learning-providers",
+                        name: "learning-providers",
+                        label: {
+                            text: "Learning providers"
+                        },
+                        items: [
+                            {
+                            value: "",
+                            text: "Select a learning provider",
+                            selected: true
+                            },
+                            {
+                            value: "kpmg",
+                            text: "KPMG"
+                            },
+                            {
+                            value: "kornferry",
+                            text: "Kornferry"
+                            }
+                        ]
+                    }) }}
+                    {{ govukButton({
+                        text: "Add provider",
+                        classes: "button-blue"
+                    }) }}
+                </fieldset>
+            </form>
+
+            <a href="#" class="govuk-button">Continue without adding a learning provider</a>
+
+             <a href="#" class="cancel-button">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyEnd %}
+  <script src="/govuk-frontend/all.js"></script>
+  <script src="/js/selector.js"></script>
+{% endblock %}

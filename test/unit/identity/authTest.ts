@@ -80,7 +80,9 @@ describe('Auth tests', function() {
 			'redirectTo',
 			originalUrl
 		)
-		expect(response.redirect).to.have.been.calledOnceWith(authenticationPath)
+		expect(response.redirect).to.have.been.calledOnceWith(
+			authenticationPath
+		)
 	})
 
 	it('should call passportStatic initialize', function() {
@@ -112,11 +114,14 @@ describe('Auth tests', function() {
 		identityService.getDetails = getDetails
 		const passportCallback = sinon.stub()
 
-		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(
-			function() {
-				expect(passportCallback).to.have.been.calledOnceWith(null, identity)
-			}
-		)
+		verifyCallback(
+			accessToken,
+			'refresh-token',
+			null,
+			passportCallback
+		).then(function() {
+			expect(passportCallback).to.have.been.calledOnceWith(null, identity)
+		})
 	})
 
 	it('verify should catch and log errors', function() {
@@ -134,11 +139,14 @@ describe('Auth tests', function() {
 		identityService.getDetails = getDetails
 		const passportCallback = sinon.stub()
 
-		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(
-			function() {
-				expect(passportCallback).to.have.been.calledOnceWith(error)
-			}
-		)
+		verifyCallback(
+			accessToken,
+			'refresh-token',
+			null,
+			passportCallback
+		).then(function() {
+			expect(passportCallback).to.have.been.calledOnceWith(error)
+		})
 	})
 
 	it('should call authenticate', function() {
@@ -193,7 +201,9 @@ describe('Auth tests', function() {
 	it('should configure passport with serialize methods and strategy', () => {
 		const deserializeUser = sinon.stub()
 		const serializeUser = sinon.stub()
-		const useStrategy = sinon.stub().withArgs(sinon.match.instanceOf(Strategy))
+		const useStrategy = sinon
+			.stub()
+			.withArgs(sinon.match.instanceOf(Strategy))
 
 		passportStatic.deserializeUser = deserializeUser
 		passportStatic.serializeUser = serializeUser
@@ -210,7 +220,11 @@ describe('Auth tests', function() {
 		const deserializeCallback = auth.deserializeUser()
 		const data: string =
 			'{"uid": "abc123", "roles": ["role1"], "accessToken": "access-token"}'
-		const identity: Identity = new Identity('abc123', ['role1'], 'access-token')
+		const identity: Identity = new Identity(
+			'abc123',
+			['role1'],
+			'access-token'
+		)
 
 		const doneCallback = sinon.stub()
 

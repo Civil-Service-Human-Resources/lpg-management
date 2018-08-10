@@ -2,43 +2,15 @@
 {% from "button/macro.njk" import govukButton %}
 
 {% extends "../component/Page.njk" %} {% block pageTitle %}Add a module - Civil Service Learning{% endblock %}
-{% block header %}
-    {{ govukHeader({
-        homepageUrl: "#",
-        containerClasses: "govuk-width-container",
-        serviceName: "Civil Service Learning",
-        serviceUrl: "#",
-        navigation: [
-            {
-                href: lpgUiUrl + "/home",
-                text: "Home",
-                active: true
-            },
-            {
-                href: lpgUiUrl + "/suggestions-for-you",
-                text: "Suggestions for you"
-            },
-            {
-                href: lpgUiUrl + "/learning-record",
-                text: "Learning record"
-            },
-            {
-                href: lpgUiUrl + "/profile",
-                text: "Profile"
-            },
-            {
-                href: "/content-management",
-                text: "Admin"
-            },
-            {
-                href: lpgUiUrl + "/sign-out",
-                text: "Sign out"
-            }
-            ]
-    }) }}
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management") }}
+  {% endblock%}
 {% endblock %}
 {% block content %}
- <a href="#" class="govuk-back-link">Back</a>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>

@@ -12,17 +12,11 @@ export class CourseService {
 		this._courseFactory = new CourseFactory()
 	}
 
-	async listAll(
-		page: number = 0,
-		size: number = 10
-	): Promise<DefaultPageResults<Course>> {
-		const data = await this._restService.get(
-			`/courses?page=${page}&size=${size}`
-		)
+	async listAll(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
+		const data = await this._restService.get(`/courses?page=${page}&size=${size}`)
 
 		data.results = (data.results || []).map(this._courseFactory.create)
 
-		// prettier-ignore
 		const coursePageResults: DefaultPageResults<Course> = new DefaultPageResults()
 
 		coursePageResults.size = data.size

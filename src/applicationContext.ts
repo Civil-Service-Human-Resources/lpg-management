@@ -13,16 +13,18 @@ import {CourseValidator} from './learning-catalogue/validator/courseValidator'
 import {EnvValue} from 'ts-json-properties'
 import {CourseController} from './controllers/courseController'
 import {CourseFactory} from './learning-catalogue/model/factory/courseFactory'
+import {LearningProviderController} from './controllers/learningProviderController'
+import {LearningProviderFactory} from './learning-catalogue/model/factory/learningProviderFactory'
 import {NextFunction, Request, Response} from 'express'
+import {LearningProviderValidator} from './learning-catalogue/validator/learningProviderValidator'
+import {Pagination} from './lib/pagination'
 
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
-	@EnvValue('LPG_UI_URL')
-	private lpgUiUrl: String
-
 	homeController: HomeController
 	courseController: CourseController
+	learningProviderController: LearningProviderController
 	identityService: IdentityService
 	axiosInstance: AxiosInstance
 	auth: Auth
@@ -30,6 +32,11 @@ export class ApplicationContext {
 	learningCatalogue: LearningCatalogue
 	courseValidator: CourseValidator
 	courseFactory: CourseFactory
+	learningProviderFactory: LearningProviderFactory
+	learningProviderValidator: LearningProviderValidator
+	pagination: Pagination
+
+	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -61,19 +68,21 @@ export class ApplicationContext {
 			config.COURSE_CATALOGUE.url
 		)
 
-		this.learningCatalogue = new LearningCatalogue(
-			this.learningCatalogueConfig
-		)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig)
 
 		this.courseValidator = new CourseValidator()
 		this.courseFactory = new CourseFactory()
+		this.learningProviderValidator = new LearningProviderValidator()
+		this.learningProviderFactory = new LearningProviderFactory()
+		this.pagination = new Pagination()
 
-		this.homeController = new HomeController(this.learningCatalogue)
-
-		this.courseController = new CourseController(
+		this.courseController = new CourseController(this.learningCatalogue, this.courseValidator, this.courseFactory)
+		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
+		this.learningProviderController = new LearningProviderController(
 			this.learningCatalogue,
-			this.courseValidator,
-			this.courseFactory
+			this.learningProviderValidator,
+			this.learningProviderFactory,
+			this.pagination
 		)
 	}
 

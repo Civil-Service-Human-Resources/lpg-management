@@ -5,49 +5,16 @@
 
 {% extends "../component/Page.njk" %} {% block pageTitle %}{{ i18n['course_overview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block header %}
-    {{ govukHeader({
-        homepageUrl: "#",
-        containerClasses: "govuk-width-container",
-        serviceName: "Civil Service Learning",
-        serviceUrl: "#",
-        navigation: [
-            {
-                href: lpgUiUrl + "/home",
-                text: "Home",
-                active: true
-            },
-            {
-                href: lpgUiUrl + "/suggestions-for-you",
-                text: "Suggestions for you"
-            },
-            {
-                href: lpgUiUrl + "/learning-record",
-                text: "Learning record"
-            },
-            {
-                href: lpgUiUrl + "/profile",
-                text: "Profile"
-            },
-            {
-                href: "/",
-                text: "Admin"
-            },
-            {
-                href: lpgUiUrl + "/sign-out",
-                text: "Sign out"
-            }
-            ]
-    }) }}
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management") }}
+  {% endblock%}
 {% endblock %}
 
 {% block content %}
-
-    {{ govukBackLink({
-        text: "Back",
-        href: "/content-management"
-    }) }}
-
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         {% if courseAddedSuccessMessage %}
@@ -60,15 +27,25 @@
         <h1 class="govuk-heading-l">{{ course.title }}</h1>
         <h3 class="govuk-heading-m">Course Overview</h3>
         {% block courseDetails %}
-        {{ courseDetails(course) }}
+            {{ courseDetails(course) }}
         {% endblock %} 
     </div>
 
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
             {% block menu %}
-                {{ menu("Actions") }}
-            {% endblock %} 
+                {% set actions = [
+                    {
+                        link: '/content-management/add-course',
+                        text: 'Add a new course'
+                    },
+                    {
+                        link: '/content-management/learning-providers',
+                        text: 'Manage learning providers'
+                    }
+                ] %}
+                {{ menu("Actions", actions) }}
+            {% endblock %}
         </div>
     </div>
 </div>

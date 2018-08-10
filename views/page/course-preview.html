@@ -4,12 +4,16 @@
 
 {% extends "../component/Page.njk" %} {% block pageTitle %}{{ i18n['course_preview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block content %}
-    {{ govukBackLink({
-        text: "Back",
-        href: "/content-management/course/"+ course.id
-    }) }}
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management") }}
+  {% endblock%}
+{% endblock %}
 
+{% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
             <div class="panel panel-blue">

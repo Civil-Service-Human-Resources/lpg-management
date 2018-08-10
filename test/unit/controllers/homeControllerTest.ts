@@ -9,16 +9,19 @@ import {LearningCatalogue} from '../../../src/learning-catalogue'
 import {Course} from '../../../src/learning-catalogue/model/course'
 import * as sinon from 'sinon'
 import {PageResults} from '../../../src/learning-catalogue/model/pageResults'
+import {Pagination} from '../../../src/lib/pagination'
 
 chai.use(sinonChai)
 
 describe('Home Controller Tests', function() {
 	let homeController: HomeController
 	let learningCatalogue: LearningCatalogue
+	let pagination: Pagination
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
-		homeController = new HomeController(learningCatalogue)
+		pagination = new Pagination()
+		homeController = new HomeController(learningCatalogue, pagination)
 	})
 
 	it('should render index template with default page and size', async function() {
@@ -36,10 +39,7 @@ describe('Home Controller Tests', function() {
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
 		learningCatalogue.listCourses = listAll
 
-		const index: (
-			request: Request,
-			response: Response
-		) => void = homeController.index()
+		const index: (request: Request, response: Response) => void = homeController.index()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -65,10 +65,7 @@ describe('Home Controller Tests', function() {
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
 		learningCatalogue.listCourses = listAll
 
-		const index: (
-			request: Request,
-			response: Response
-		) => void = homeController.index()
+		const index: (request: Request, response: Response) => void = homeController.index()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
