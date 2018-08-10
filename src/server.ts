@@ -44,10 +44,7 @@ app.set('view engine', 'html')
 app.use('/assets', serveStatic(appRoot + '/node_modules/govuk-frontend/assets'))
 app.use('/js', serveStatic(appRoot + '/views/assets/js'))
 app.use(serveStatic(appRoot + '/dist/views/assets'))
-app.use(
-	'/govuk-frontend',
-	serveStatic(appRoot + '/node_modules/govuk-frontend/')
-)
+app.use('/govuk-frontend', serveStatic(appRoot + '/node_modules/govuk-frontend/'))
 
 log4js.configure(config.LOGGING)
 
@@ -61,8 +58,7 @@ app.use(
 		name: 'lpg-management',
 		resave: true,
 		saveUninitialized: true,
-		secret:
-			'dcOVe-ZW3ul77l23GiQSNbTJtMRio87G2yUOUAk_otcbL3uywfyLMZ9NBmDMuuOt',
+		secret: 'dcOVe-ZW3ul77l23GiQSNbTJtMRio87G2yUOUAk_otcbL3uywfyLMZ9NBmDMuuOt',
 		store: new FileStore({
 			path: process.env.NOW ? `/tmp/sessions` : `.sessions`,
 		}),
@@ -81,47 +77,17 @@ app.get('/', function(req, res) {
 })
 
 app.get('/content-management', ctx.homeController.index())
-app.get(
-	'/content-management/course/:courseId',
-	ctx.courseController.courseOverview()
-)
-app.get(
-	'/content-management/add-course/',
-	ctx.courseController.getCourseTitle(false)
-)
-app.get(
-	'/content-management/edit-course/:courseId',
-	ctx.courseController.getCourseTitle(true)
-)
-app.post(
-	'/content-management/add-course',
-	ctx.courseController.setCourseTitle()
-)
-app.post(
-	'/content-management/edit-course/:courseId',
-	ctx.courseController.editCourseTitle()
-)
-app.get(
-	'/content-management/course-preview/:courseId',
-	ctx.courseController.coursePreview()
-)
+app.get('/content-management/course/:courseId', ctx.courseController.courseOverview())
+app.get('/content-management/add-course/', ctx.courseController.getCourseTitle(false))
+app.get('/content-management/edit-course/:courseId', ctx.courseController.getCourseTitle(true))
+app.post('/content-management/add-course', ctx.courseController.setCourseTitle())
+app.post('/content-management/edit-course/:courseId', ctx.courseController.editCourseTitle())
+app.get('/content-management/course-preview/:courseId', ctx.courseController.coursePreview())
 
-app.get(
-	'/content-management/add-course-details',
-	ctx.courseController.getCourseDetails(false)
-)
-app.get(
-	'/content-management/edit-course-details/:courseId',
-	ctx.courseController.getCourseDetails(true)
-)
-app.post(
-	'/content-management/add-course-details',
-	ctx.courseController.setCourseDetails()
-)
-app.post(
-	'/content-management/edit-course-details/:courseId',
-	ctx.courseController.editCourseDetails()
-)
+app.get('/content-management/add-course-details', ctx.courseController.getCourseDetails(false))
+app.get('/content-management/edit-course-details/:courseId', ctx.courseController.getCourseDetails(true))
+app.post('/content-management/add-course-details', ctx.courseController.setCourseDetails())
+app.post('/content-management/edit-course-details/:courseId', ctx.courseController.editCourseDetails())
 app.get('/add-module', ctx.courseController.addModule())
 app.get('/add-module-blog', ctx.courseController.addModuleBlog())
 

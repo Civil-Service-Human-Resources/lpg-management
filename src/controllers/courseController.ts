@@ -75,7 +75,7 @@ export class CourseController {
 
 			await self.learningCatalogue.updateCourse(course)
 
-			response.redirect('/content-management/course/' + course.id)
+			response.redirect('/content-management/course-preview/' + course.id)
 		}
 	}
 
@@ -148,7 +148,7 @@ export class CourseController {
 
 			await self.learningCatalogue.updateCourse(course)
 
-			response.redirect('/content-management/course/' + course.id)
+			response.redirect('/content-management/course-preview/' + course.id)
 		}
 	}
 

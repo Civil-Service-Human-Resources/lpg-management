@@ -17,10 +17,7 @@ export class LearningCatalogue {
 		this._moduleService = new ModuleService(this._restService)
 	}
 
-	async listCourses(
-		page: number = 0,
-		size: number = 10
-	): Promise<DefaultPageResults<Course>> {
+	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
 		return await this._courseService.listAll(page, size)
 	}
 

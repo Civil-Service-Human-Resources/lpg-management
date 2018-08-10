@@ -16,7 +16,7 @@
     {% if isEdit == true %}
         {{ govukBackLink({
             text: "Back",
-            href: "/content-management/course/" + course.id
+            href: "/content-management/course-preview/" + course.id
         }) }}
     {% else %}
         {{ govukBackLink({
@@ -78,7 +78,7 @@
             </form>
 
             {% if isEdit == true %}
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/course/{{course.id}}">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/course-preview/{{course.id}}">Cancel</a>
             {% else %}
             <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
             {% endif %}

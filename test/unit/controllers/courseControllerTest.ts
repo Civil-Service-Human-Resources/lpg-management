@@ -195,7 +195,7 @@ describe('Course Controller Tests', function() {
 		await setCourseTitle(request, response)
 
 		expect(courseValidator.check).to.have.been.calledWith(request.body, ['title'])
-		expect(response.redirect).to.have.been.calledWith('/content-management/course/' + course.id)
+		expect(response.redirect).to.have.been.calledWith('/content-management/course-preview/' + course.id)
 		expect(course.title).to.have.be.eql('New Course')
 	})
 
@@ -258,7 +258,7 @@ describe('Course Controller Tests', function() {
 
 		expect(learningCatalogue.updateCourse).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.been.calledWith(course, ['description', 'shortDescription'])
-		expect(response.redirect).to.have.been.calledWith('/content-management/course/' + course.id)
+		expect(response.redirect).to.have.been.calledWith('/content-management/course-preview/' + course.id)
 	})
 
 	it('should check for description errors and render course-details', async function() {
