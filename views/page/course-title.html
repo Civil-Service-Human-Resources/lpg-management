@@ -6,10 +6,10 @@
 {% extends "../component/Page.njk" %}
 
 {% block pageTitle %}
-    {% if isEdit == false %}
-        Add Course - Civil Service Learning
-    {% else %}
+    {% if isEdit == true %}
         Edit Course - Civil Service Learning
+    {% else %}
+        Add Course - Civil Service Learning
     {% endif %}
 {% endblock %}
 
