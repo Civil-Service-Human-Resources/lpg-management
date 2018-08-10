@@ -85,9 +85,7 @@ export class CourseController {
 			}
 			course = await self.learningCatalogue.createCourse(course)
 
-			const successMessage = `${
-				course.title
-			} has been created and saved as a draft`
+			const successMessage = ` has been created and saved as a draft`
 
 			request.flash('Added', successMessage)
 
