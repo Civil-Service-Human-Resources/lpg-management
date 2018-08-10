@@ -62,7 +62,7 @@ export class CourseController {
 				...req.body,
 			}
 
-			const course = this.courseFactory.create(data)
+			let course = this.courseFactory.create(data)
 
 			const errors = await this.courseValidator.check(course)
 
@@ -73,9 +73,13 @@ export class CourseController {
 					course: course,
 				})
 			}
-			await self.learningCatalogue.createCourse(course)
+			course = await self.learningCatalogue.createCourse(course)
 
-			response.redirect('/content-management')
+			const courseAddedSuccessMessage = ` has been created and saved as a draft`
+
+			request.flash('courseAddedSuccessMessage', courseAddedSuccessMessage)
+
+			response.redirect(`/content-management/course/${course.id}`)
 		}
 	}
 
@@ -88,8 +92,12 @@ export class CourseController {
 	private async getCourseAndRenderTemplate(request: Request, response: Response, view: string) {
 		const courseId: string = request.params.courseId
 		const course = await this.learningCatalogue.getCourse(courseId)
+
 		if (course) {
-			response.render(view, {course})
+			response.render(view, {
+				course,
+				courseAddedSuccessMessage: request.flash('courseAddedSuccessMessage')[0],
+			})
 		} else {
 			response.sendStatus(404)
 		}

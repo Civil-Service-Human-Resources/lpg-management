@@ -11,6 +11,7 @@ import * as bodyParser from 'body-parser'
 
 Properties.initialize()
 
+const flash = require('connect-flash')
 const logger = log4js.getLogger('server')
 const nunjucks = require('nunjucks')
 const appRoot = require('app-root-path')
@@ -64,6 +65,8 @@ app.use(
 		}),
 	})
 )
+app.use(flash())
+
 app.use(cookieParser())
 
 app.use(bodyParser.json())

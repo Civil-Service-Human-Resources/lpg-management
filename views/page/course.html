@@ -17,6 +17,13 @@
 {% block content %}
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+        {% if courseAddedSuccessMessage %}
+            <div class="panel govuk-panel govuk-panel--confirmation">
+                <div class="govuk-panel__body custom-panel">
+                    <p class="govuk-body"><strong>{{ course.title }}</strong>{{courseAddedSuccessMessage}}</p>
+                </div>
+            </div>
+        {% endif %}
         <h1 class="govuk-heading-l">{{ course.title }}</h1>
         <h3 class="govuk-heading-m">Course Overview</h3>
         {% block courseDetails %}
