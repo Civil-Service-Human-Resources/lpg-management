@@ -50,10 +50,10 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        {% if message %}
+        {% if courseAddedSuccessMessage %}
             <div class="panel govuk-panel govuk-panel--confirmation">
                 <div class="govuk-panel__body custom-panel">
-                    <p class="govuk-body"><strong>{{ course.title }}</strong>{{message}}</p>
+                    <p class="govuk-body"><strong>{{ course.title }}</strong>{{courseAddedSuccessMessage}}</p>
                 </div>
             </div>
         {% endif %}

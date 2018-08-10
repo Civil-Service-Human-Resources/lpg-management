@@ -85,9 +85,12 @@ export class CourseController {
 			}
 			course = await self.learningCatalogue.createCourse(course)
 
-			const successMessage = ` has been created and saved as a draft`
+			const courseAddedSuccessMessage = ` has been created and saved as a draft`
 
-			request.flash('Added', successMessage)
+			request.flash(
+				'courseAddedSuccessMessage',
+				courseAddedSuccessMessage
+			)
 
 			response.redirect(`/content-management/course/${course.id}`)
 		}
@@ -112,7 +115,12 @@ export class CourseController {
 		const course = await this.learningCatalogue.getCourse(courseId)
 
 		if (course) {
-			response.render(view, {course, message: request.flash('Added')})
+			response.render(view, {
+				course,
+				courseAddedSuccessMessage: request.flash(
+					'courseAddedSuccessMessage'
+				)[0],
+			})
 		} else {
 			response.sendStatus(404)
 		}
