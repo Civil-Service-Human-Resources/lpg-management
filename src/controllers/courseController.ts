@@ -77,10 +77,7 @@ export class CourseController {
 
 			const courseAddedSuccessMessage = ` has been created and saved as a draft`
 
-			request.flash(
-				'courseAddedSuccessMessage',
-				courseAddedSuccessMessage
-			)
+			request.flash('courseAddedSuccessMessage', courseAddedSuccessMessage)
 
 			response.redirect(`/content-management/course/${course.id}`)
 		}
@@ -99,9 +96,7 @@ export class CourseController {
 		if (course) {
 			response.render(view, {
 				course,
-				courseAddedSuccessMessage: request.flash(
-					'courseAddedSuccessMessage'
-				)[0],
+				courseAddedSuccessMessage: request.flash('courseAddedSuccessMessage')[0],
 			})
 		} else {
 			response.sendStatus(404)
