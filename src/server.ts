@@ -91,4 +91,13 @@ app.post('/content-management/edit-course-details/:courseId', ctx.courseControll
 app.get('/add-module', ctx.courseController.addModule())
 app.get('/add-module-blog', ctx.courseController.addModuleBlog())
 
+app.get('/content-management/learning-providers', ctx.learningProviderController.index())
+app.get(
+	'/content-management/learning-providers/:learningProviderId',
+	ctx.learningProviderController.getLearningProvider()
+)
+
+app.get('/content-management/add-learning-provider', ctx.learningProviderController.getLearningProvider())
+app.post('/content-management/add-learning-provider', ctx.learningProviderController.setLearningProvider())
+
 app.listen(PORT, () => logger.info(`LPG Management listening on port ${PORT}`))

@@ -2,54 +2,66 @@
 {% from "../component/menu/macro.njk" import menu %}
 
 {% extends "../component/Page.njk" %} {% block pageTitle %}{{ i18n['content_management_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
-
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+{% endblock %}
 {% block content %}
-<div class="u--border--bgrey">
-   <h1 class="govuk-heading-l">Content management</h1>
-</div>
-
-<div class="govuk-grid-row">
-   <div class="govuk-grid-column-two-thirds">
-       {% if pageResults %}
-           {% block list %}
-               {{ list("Courses", pageResults) }}
-           {% endblock %}
-
-       {% endif %}
-       {% if pageResults.totalResults !== 0 %}
-           <div class="pager">
-               <div class="pager__controls">
-                   {% if pageResults.getPageCount() != 1 %}
-                       <div class="pager-buttons">
-                           {% if pageResults.page > 0 %}
-                               <a class="pager__prev govuk-link" href="/content-management?s={{pageResults.size}}&p={{pageResults.getPreviousPage()}}">Prev</a>
-                           {% endif %}
-                           {% for x in range(pageResults.getPageCount()) %}
-                               {% if x == pageResults.page %}
-                                   <span>{{ x + 1 }}</span>
-                               {% else %}
-                                   <a class="govuk-link" href="/content-management/?s={{pageResults.size}}&p={{x}}">{{ x+1 }}</a>
-                               {% endif %}
-                           {% endfor %}
-
-                           {% if pageResults.page != pageResults.getPageCount() - 1 %}
-                               <a class="pager__next govuk-link" href="/content-management/?s={{pageResults.size}}&p={{pageResults.getNextPage()}}">Next</a>
-                           {% endif %}
-                       </div>
-                   {% endif %}
-                    <div class="pager__summary">
-                            <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-    <div class="govuk-grid-column-one-third govuk-!-padding-top-6 ">
-        <div class="right-menu">
-            {% block menu %}
-                {{ menu("Actions") }}
-            {% endblock %}
+    <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">Content management</h1>
         </div>
     </div>
-</div>
+
+    <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        {% if pageResults %}
+            {% block list %}
+                {{ list("Courses", pageResults) }}
+            {% endblock %}
+
+        {% endif %}
+        {% if pageResults.totalResults !== 0 %}
+            <div class="pager">
+                <div class="pager__controls">
+                    {% if pageResults.getPageCount() != 1 %}
+                        <div class="pager-buttons">
+                            {% if pageResults.page > 0 %}
+                                <a class="pager__prev govuk-link" href="/content-management?s={{pageResults.size}}&p={{pageResults.getPreviousPage()}}">Prev</a>
+                            {% endif %}
+                            {% for x in range(pageResults.getPageCount()) %}
+                                {% if x == pageResults.page %}
+                                    <span>{{ x + 1 }}</span>
+                                {% else %}
+                                    <a class="govuk-link" href="/content-management/?s={{pageResults.size}}&p={{x}}">{{ x+1 }}</a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if pageResults.page != pageResults.getPageCount() - 1 %}
+                                <a class="pager__next govuk-link" href="/content-management/?s={{pageResults.size}}&p={{pageResults.getNextPage()}}">Next</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                        <div class="pager__summary">
+                                <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="govuk-grid-column-one-third govuk-!-padding-top-6 ">
+            <div class="right-menu">
+                {% block menu %}
+                {% set actions = [
+                        {
+                            link: '/content-management/add-course',
+                            text: 'Add a new course'
+                        }
+                    ] %}
+                    {{ menu("Actions", actions) }}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -1,14 +1,13 @@
-{% from "back-link/macro.njk" import govukBackLink %}
 {% from "skip-link/macro.njk" import govukSkipLink %}
 {% from "header/macro.njk" import govukHeader %}
-{% from "phase-banner/macro.njk" import govukPhaseBanner %}
 {% from "footer/macro.njk" import govukFooter %}
+{% from "./phaseBanner/macro.njk" import phaseBanner %}
+{% from "./backLink/macro.njk" import backLink %}
 
 {% extends "template.njk" %}
 
 {% set htmlClasses = "app-html-class" %}
 {% set htmlLang = "en" %}
-{% set assetPath = "" %}
 {% set themeColor = "red" %}
 {% set bodyClasses = "app-body-class" %}
 
@@ -49,50 +48,50 @@
 {% endblock %}
 
 {% block header %}
-    {{ govukHeader({
+  {{ govukHeader({
         homepageUrl: "#",
         containerClasses: "govuk-width-container",
         serviceName: "Civil Service Learning",
         serviceUrl: "#",
         navigation: [
-           {
-               href: lpgUiUrl + "/home",
-               text: "Home",
-               active: true
-           },
-           {
-               href: lpgUiUrl + "/suggestions-for-you",
-               text: "Suggestions for you"
-           },
-           {
-               href: lpgUiUrl + "/learning-record",
-               text: "Learning record"
-           },
-           {
-               href: lpgUiUrl + "/profile",
-               text: "Profile"
-           },
-           {
-               href: "/content-management",
-               text: "Admin"
-           },
-           {
-               href: lpgUiUrl + "/sign-out",
-               text: "Sign out"
-           }
-        ]
+            {
+                href: lpgUiUrl + "/home",
+                text: "Home",
+                active: true
+            },
+            {
+                href: lpgUiUrl + "/suggestions-for-you",
+                text: "Suggestions for you"
+            },
+            {
+                href: lpgUiUrl + "/learning-record",
+                text: "Learning record"
+            },
+            {
+                href: lpgUiUrl + "/profile",
+                text: "Profile"
+            },
+            {
+                href: "/content-management",
+                text: "Admin"
+            },
+            {
+                href: lpgUiUrl + "/sign-out",
+                text: "Sign out"
+            }
+            ]
     }) }}
 {% endblock %}
 
 {% set mainClasses = "app-main-class" %}
 
 {% block beforeContent %}
-  {{ govukPhaseBanner({
-    tag: {
-      text: "beta"
-    },
-    html: 'This is a new service – your <a class="govuk-link" href="#">feedback</a> will help us to improve it.'
-  }) }}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("#") }}
+  {% endblock%}
 {% endblock %}
 
 {% block content %}

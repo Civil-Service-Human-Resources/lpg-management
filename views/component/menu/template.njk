@@ -1,14 +1,18 @@
 {% from "button/macro.njk" import govukButton %}
 
 <div class="menu-container">
-    {% block boxContent %}
-        <h4 class="menu-header">{{ boxTitle }}</h4>
-        <a class="govuk-link govuk-body" href="/content-management/add-course">Add a new course</a>
-        {% if (delete === true} %}
-            {{ govukButton({
-                text: "Delete",
-                "classes": "govuk-button--delete"
-            }) }}
-        {% endif %}
-    {% endblock %}
+    <h4 class="menu-header">{{ boxTitle }}</h4>
+    <ul class="action-links">
+        {% for action in actions %}
+            <li>
+                <a class="govuk-link govuk-body" href="{{ action.link }}">{{ action.text }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% if (delete === true} %}
+        {{ govukButton({
+            text: "Delete",
+            "classes": "govuk-button--delete"
+        }) }}
+    {% endif %}
 </div>

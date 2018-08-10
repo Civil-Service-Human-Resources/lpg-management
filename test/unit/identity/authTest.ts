@@ -26,13 +26,7 @@ describe('Auth tests', function() {
 	const authenticationPath = 'authentication-path'
 
 	beforeEach(() => {
-		const config = new AuthConfig(
-			clientId,
-			clientSecret,
-			authenticationServiceUrl,
-			callbackUrl,
-			authenticationPath
-		)
+		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath)
 
 		auth = new Auth(config, passportStatic, identityService)
 	})
@@ -76,10 +70,7 @@ describe('Auth tests', function() {
 
 		authenticate(request, response, next)
 
-		expect(response.cookie).to.have.been.calledOnceWith(
-			'redirectTo',
-			originalUrl
-		)
+		expect(response.cookie).to.have.been.calledOnceWith('redirectTo', originalUrl)
 		expect(response.redirect).to.have.been.calledOnceWith(authenticationPath)
 	})
 
@@ -112,11 +103,9 @@ describe('Auth tests', function() {
 		identityService.getDetails = getDetails
 		const passportCallback = sinon.stub()
 
-		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(
-			function() {
-				expect(passportCallback).to.have.been.calledOnceWith(null, identity)
-			}
-		)
+		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(function() {
+			expect(passportCallback).to.have.been.calledOnceWith(null, identity)
+		})
 	})
 
 	it('verify should catch and log errors', function() {
@@ -134,11 +123,9 @@ describe('Auth tests', function() {
 		identityService.getDetails = getDetails
 		const passportCallback = sinon.stub()
 
-		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(
-			function() {
-				expect(passportCallback).to.have.been.calledOnceWith(error)
-			}
-		)
+		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(function() {
+			expect(passportCallback).to.have.been.calledOnceWith(error)
+		})
 	})
 
 	it('should call authenticate', function() {
@@ -162,10 +149,7 @@ describe('Auth tests', function() {
 	})
 
 	it('should call redirect to / if redirectTo value is not present', function() {
-		const redirect: (
-			request: Request,
-			response: Response
-		) => void = auth.redirect()
+		const redirect: (request: Request, response: Response) => void = auth.redirect()
 
 		const reponse: Response = mockRes()
 		const request: Request = <Request>{cookies: {}}
@@ -176,10 +160,7 @@ describe('Auth tests', function() {
 	})
 
 	it('should call redirect if redirectTo value is present in cookie', function() {
-		const redirect: (
-			request: Request,
-			response: Response
-		) => void = auth.redirect()
+		const redirect: (request: Request, response: Response) => void = auth.redirect()
 
 		const reponse: Response = mockRes()
 		const request: Request = <Request>{cookies: {redirectTo: '/'}}
@@ -208,8 +189,7 @@ describe('Auth tests', function() {
 
 	it('should deserialize json to identity', () => {
 		const deserializeCallback = auth.deserializeUser()
-		const data: string =
-			'{"uid": "abc123", "roles": ["role1"], "accessToken": "access-token"}'
+		const data: string = '{"uid": "abc123", "roles": ["role1"], "accessToken": "access-token"}'
 		const identity: Identity = new Identity('abc123', ['role1'], 'access-token')
 
 		const doneCallback = sinon.stub()

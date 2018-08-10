@@ -1,0 +1,48 @@
+{% from "../component/list/macro.njk" import list %}
+{% from "table/macro.njk" import govukTable %}
+{% from "../component/menu/macro.njk" import menu %}
+{% from "../component/providerList/macro.njk" import providerList %}
+{% from "table/macro.njk" import govukTable %}
+
+{% extends "../component/Page.njk" %}
+{% block pageTitle %}Learning Providers - Civil Service Learning{% endblock %}
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management") }}
+  {% endblock%}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% if pageResults %}
+                {% block providerList %}
+                    {{ providerList(pageResults) }}
+                {% endblock %}
+            {% else %}
+                <p class="govuk-body">There are currently no learning providers</p>
+            {% endif %}
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <div class="right-menu">
+                {% block menu %}
+                    {% set actions = [                           
+                        {
+                            link: '/content-management/add-learning-provider',
+                            text: 'Add a new learning provider'    
+                        }
+                    ] %}
+
+                    {{ menu("Actions", actions)}}
+
+                {% endblock %}    
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

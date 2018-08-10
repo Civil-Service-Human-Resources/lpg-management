@@ -13,18 +13,20 @@
     {% endif %}
 {% endblock %}
 
-{% block content %}
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
     {% if isEdit == true %}
-        {{ govukBackLink({
-        text: "Back",
-        href: "/content-management/course-preview/" + course.id
-        }) }}
+        {{ backLink("/content-management/course-preview/" + course.id) }}
     {% else %}
-        {{ govukBackLink({
-            text: "Back",
-            href: "/content-management"
-        }) }}
+        {{ backLink("/content-management") }}
     {% endif %}
+  {% endblock%}
+{% endblock %}
+{% block content %}
+
 
     {% if errors.fields %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">

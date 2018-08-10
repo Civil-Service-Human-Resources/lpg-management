@@ -28,6 +28,47 @@
 		color: $error-message;
 	}
 }
-@media screen and (min-width: $tablet-small) {
 
+.button-blue {
+	background-color: govuk-colour('blue');
+
+	&:hover {
+		background-color: govuk-colour('blue');
+	}
+
+	&:focus {
+		background-color: govuk-colour('blue');
+	}
+}
+
+.bottom-button {
+	margin-bottom: 60px;
+}
+
+.cancel-button {
+	display: block;
+}
+
+.select-with-button {
+	.govuk-form-group {
+		width: 100%;
+		display: inline-block;
+		margin-bottom: 30px;
+	}
+	.govuk-button {
+		margin: 0 0 30px 0;
+	}
+}
+
+@media screen and (min-width: $tablet-small) {
+	.select-with-button {
+		.govuk-form-group {
+			width: 66%;
+			margin: 0 10px 30px 0;
+		}
+
+		.govuk-button {
+			margin: 30px 0 0 0;
+		}
+	}
 }

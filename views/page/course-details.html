@@ -12,6 +12,15 @@
     {% endif %}
 {% endblock %}
 
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management/add-course") }}
+  {% endblock%}
+{% endblock %}
+
 {% block content %}
     {% if isEdit == true %}
         {{ govukBackLink({

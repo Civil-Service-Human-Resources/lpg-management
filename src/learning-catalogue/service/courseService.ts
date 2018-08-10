@@ -17,7 +17,6 @@ export class CourseService {
 
 		data.results = (data.results || []).map(this._courseFactory.create)
 
-		// prettier-ignore
 		const coursePageResults: DefaultPageResults<Course> = new DefaultPageResults()
 
 		coursePageResults.size = data.size
