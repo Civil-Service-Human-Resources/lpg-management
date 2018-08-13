@@ -17,7 +17,7 @@
     {{ phaseBanner("beta") }}
   {% endblock%}
   {% block backLink %}
-    {{ backLink("/content-management/add-learning-provider") }}
+    {{ backLink("/content-management/learning-providers/" + learningProvider.id) }}
   {% endblock%}
 {% endblock %}
 
@@ -127,7 +127,7 @@
                     }) }}
                 {% endif %}
             </form>
-            <a href="/content-management/add-learning-provider">Cancel</a>
+            <a href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>
