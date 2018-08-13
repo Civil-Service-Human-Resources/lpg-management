@@ -38,7 +38,7 @@ export class RestService {
 		try {
 			await this._http.put(path, resource)
 
-			return this.get(path)
+			return resource
 		} catch (e) {
 			throw new Error(
 				`Error with PUT request: ${e} when putting ${JSON.stringify(resource)} to ${this.config.url}${path} `
