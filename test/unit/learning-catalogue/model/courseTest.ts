@@ -74,7 +74,7 @@ describe('Course tests', () => {
 	it('should get type to be null if no modules', () => {
 		course.modules = []
 
-		expect(course.getType()).to.equal(null)
+		expect(course.getType()).to.equal('Course')
 	})
 
 	it('should get type to be blended if more than one module', () => {

@@ -12,6 +12,7 @@ import {CourseController} from '../../../src/controllers/courseController'
 import {CourseValidator} from '../../../src/learning-catalogue/validator/courseValidator'
 import {CourseFactory} from '../../../src/learning-catalogue/model/factory/courseFactory'
 import {CourseRequest} from '../../../src/extended'
+import * as extended from '../../../src/extended'
 
 chai.use(sinonChai)
 
@@ -39,9 +40,11 @@ describe('Course Controller Tests', function() {
 		const request: Request = mockReq()
 		const response: Response = mockRes()
 
-		learningCatalogue.getCourse = sinon.stub().returns(course)
+		const req = request as extended.CourseRequest
 
-		await courseOverview(request, response)
+		req.course = course
+
+		await courseOverview(req, response)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course', {
 			course,
