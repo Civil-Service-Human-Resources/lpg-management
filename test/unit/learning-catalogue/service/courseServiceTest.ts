@@ -63,9 +63,7 @@ describe('CourseService tests', () => {
 		expect(result.page).to.eql(0)
 		expect(result.size).to.eql(10)
 		expect(result.totalResults).to.eql(32)
-		expect(restService.get).to.have.been.calledOnceWith(
-			`/courses?page=0&size=10`
-		)
+		expect(restService.get).to.have.been.calledOnceWith(`/courses?page=0&size=10`)
 	})
 
 	it('should pass page parameters to http call', async () => {
@@ -88,9 +86,7 @@ describe('CourseService tests', () => {
 
 		await courseService.listAll(page, size)
 
-		return expect(restService.get).to.have.been.calledOnceWith(
-			`/courses?page=${page}&size=${size}`
-		)
+		return expect(restService.get).to.have.been.calledOnceWith(`/courses?page=${page}&size=${size}`)
 	})
 
 	it('should return empty list of results if results are null', async () => {
@@ -144,9 +140,7 @@ describe('CourseService tests', () => {
 		const result: Course = await courseService.get(courseId)
 
 		expect(result).to.equal(course)
-		expect(restService.get).to.have.been.calledOnceWith(
-			`/courses/${courseId}`
-		)
+		expect(restService.get).to.have.been.calledOnceWith(`/courses/${courseId}`)
 		expect(courseFactory.create).to.have.been.calledOnceWith(data)
 	})
 

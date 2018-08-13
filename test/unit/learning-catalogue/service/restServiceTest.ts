@@ -13,10 +13,7 @@ chai.use(chaiAsPromised)
 
 describe('RestService tests', () => {
 	let http: AxiosInstance
-	let config = new LearningCatalogueConfig(
-		{username: 'test-user', password: 'test-pass'},
-		'http://example.org'
-	)
+	let config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
 
 	let restService: RestService
 
@@ -103,8 +100,6 @@ describe('RestService tests', () => {
 			.withArgs(path)
 			.throws(new Error('Error thrown from test'))
 
-		return expect(restService.post(path, course)).to.be.rejectedWith(
-			errorMessage
-		)
+		return expect(restService.post(path, course)).to.be.rejectedWith(errorMessage)
 	})
 })

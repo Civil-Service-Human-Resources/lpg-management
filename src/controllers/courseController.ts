@@ -1,9 +1,11 @@
-import {Request, Response} from 'express'
+import {Request, Response, Router} from 'express'
 import {CourseValidator} from '../learning-catalogue/validator/courseValidator'
 import {CourseRequest} from '../extended'
 import {CourseFactory} from '../learning-catalogue/model/factory/courseFactory'
 import * as log4js from 'log4js'
 import {LearningCatalogue} from '../learning-catalogue'
+import * as extended from '../extended'
+import * as express from 'express'
 
 const logger = log4js.getLogger('controllers/courseController')
 
@@ -11,30 +13,28 @@ export class CourseController {
 	learningCatalogue: LearningCatalogue
 	courseValidator: CourseValidator
 	courseFactory: CourseFactory
+	router: Router
 
 	constructor(learningCatalogue: LearningCatalogue, courseValidator: CourseValidator, courseFactory: CourseFactory) {
 		this.learningCatalogue = learningCatalogue
 		this.courseValidator = courseValidator
 		this.courseFactory = courseFactory
+		this.router = express.Router()
+
+		this.setRouterPaths()
 	}
 
 	public courseOverview() {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			await this.getCourseAndRenderTemplate(request, response, `page/course`, false)
+			this.getCourseFromReq(request, response)
 		}
 	}
 
 	public getCourseTitle(isEdit: Boolean) {
 		return async (request: Request, response: Response) => {
-			if (isEdit) {
-				await this.getCourseAndRenderTemplate(request, response, 'page/course-title', isEdit)
-			} else {
-				response.render('page/course-title', {
-					isEdit: isEdit,
-				})
-			}
+			await this.getEdit(request, response, 'page/course-title', isEdit)
 		}
 	}
 
@@ -56,10 +56,9 @@ export class CourseController {
 	}
 
 	public editCourseTitle() {
-		const self = this
-
 		return async (request: Request, response: Response) => {
-			const course = await this.learningCatalogue.getCourse(request.params.courseId)
+			const req = request as extended.CourseRequest
+			const course = req.course
 
 			const errors = await this.courseValidator.check(request.body, ['title'])
 
@@ -73,7 +72,7 @@ export class CourseController {
 
 			course.title = request.body.title
 
-			await self.learningCatalogue.updateCourse(course)
+			await this.learningCatalogue.updateCourse(course)
 
 			response.redirect('/content-management/course-preview/' + course.id)
 		}
@@ -81,19 +80,11 @@ export class CourseController {
 
 	public getCourseDetails(isEdit: Boolean) {
 		return async (request: Request, response: Response) => {
-			if (isEdit) {
-				await this.getCourseAndRenderTemplate(request, response, 'page/course-details', isEdit)
-			} else {
-				response.render('page/course-details', {
-					idEdit: isEdit,
-				})
-			}
+			await this.getEdit(request, response, 'page/course-details', isEdit)
 		}
 	}
 
 	public setCourseDetails() {
-		const self = this
-
 		return async (request: Request, response: Response) => {
 			const req = request as CourseRequest
 
@@ -113,15 +104,13 @@ export class CourseController {
 					isEdit: false,
 				})
 			}
-			await self.learningCatalogue.createCourse(course)
+			await this.learningCatalogue.createCourse(course)
 
 			response.redirect('/content-management')
 		}
 	}
 
 	public editCourseDetails() {
-		const self = this
-
 		return async (request: Request, response: Response) => {
 			const req = request as CourseRequest
 
@@ -129,7 +118,7 @@ export class CourseController {
 				...req.body,
 			}
 
-			let course = await this.learningCatalogue.getCourse(request.params.courseId)
+			let course = req.course
 
 			course.description = data.description
 			course.shortDescription = data.shortDescription
@@ -146,7 +135,7 @@ export class CourseController {
 				})
 			}
 
-			await self.learningCatalogue.updateCourse(course)
+			await this.learningCatalogue.updateCourse(course)
 
 			response.redirect('/content-management/course-preview/' + course.id)
 		}
@@ -154,18 +143,28 @@ export class CourseController {
 
 	public coursePreview() {
 		return async (request: Request, response: Response) => {
-			await this.getCourseAndRenderTemplate(request, response, `page/course-preview`, false)
+			this.getCourseFromReq(request, response)
 		}
 	}
 
-	private async getCourseAndRenderTemplate(request: Request, response: Response, view: string, isEdit: Boolean) {
-		const courseId: string = request.params.courseId
-		const course = await this.learningCatalogue.getCourse(courseId)
+	private getCourseFromReq(request: Request, response: Response) {
+		const req = request as extended.CourseRequest
+		const course = req.course
 
 		if (course) {
-			response.render(view, {course: course, isEdit: isEdit})
+			response.render(`page/course-preview`, {course: course, isEdit: false})
 		} else {
 			response.sendStatus(404)
+		}
+	}
+
+	private async getEdit(request: Request, response: Response, view: string, isEdit: Boolean) {
+		if (isEdit) {
+			this.getCourseFromReq(request, response)
+		} else {
+			response.render(view, {
+				idEdit: isEdit,
+			})
 		}
 	}
 
@@ -179,5 +178,36 @@ export class CourseController {
 		return async (request: Request, response: Response) => {
 			response.render(`page/add-module-blog`)
 		}
+	}
+
+	private setRouterPaths() {
+		this.router.param('courseId', async (ireq, res, next, courseId) => {
+			const req = ireq as extended.CourseRequest
+			console.log('getting course ' + courseId)
+
+			const course = await this.learningCatalogue.getCourse(courseId)
+
+			if (course) {
+				req.course = course
+			} else {
+				res.sendStatus(404)
+			}
+			next()
+		})
+
+		this.router.get('/content-management/course/:courseId', this.courseOverview())
+		this.router.get('/content-management/add-course/', this.getCourseTitle(false))
+		this.router.get('/content-management/edit-course/:courseId', this.getCourseTitle(true))
+		this.router.post('/content-management/add-course', this.setCourseTitle())
+		this.router.post('/content-management/edit-course/:courseId', this.editCourseTitle())
+		this.router.get('/content-management/course-preview/:courseId', this.coursePreview())
+
+		this.router.get('/content-management/add-course-details', this.getCourseDetails(false))
+		this.router.get('/content-management/edit-course-details/:courseId', this.getCourseDetails(true))
+		this.router.post('/content-management/add-course-details', this.setCourseDetails())
+		this.router.post('/content-management/edit-course-details/:courseId', this.editCourseDetails())
+
+		this.router.get('/add-module', this.addModule())
+		this.router.get('/add-module-blog', this.addModuleBlog())
 	}
 }

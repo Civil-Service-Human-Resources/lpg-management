@@ -18,10 +18,7 @@ describe('Learning Catalogue tests', () => {
 	let courseService: CourseService
 	let moduleService: ModuleService
 
-	const config = new LearningCatalogueConfig(
-		{username: 'test-user', password: 'test-pass'},
-		'http://example.org'
-	)
+	const config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
 
 	let learningCatalogue: LearningCatalogue
 
@@ -63,10 +60,7 @@ describe('Learning Catalogue tests', () => {
 		moduleService.create = sinon.stub()
 
 		await learningCatalogue.createModule(courseId, module)
-		return expect(moduleService.create).to.have.been.calledOnceWith(
-			courseId,
-			module
-		)
+		return expect(moduleService.create).to.have.been.calledOnceWith(courseId, module)
 	})
 
 	it('should call moduleService when getting a module', async () => {
@@ -75,9 +69,6 @@ describe('Learning Catalogue tests', () => {
 		moduleService.get = sinon.stub()
 
 		await learningCatalogue.getModule(courseId, moduleId)
-		return expect(moduleService.get).to.have.been.calledOnceWith(
-			courseId,
-			moduleId
-		)
+		return expect(moduleService.get).to.have.been.calledOnceWith(courseId, moduleId)
 	})
 })
