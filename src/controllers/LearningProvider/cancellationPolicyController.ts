@@ -21,14 +21,14 @@ export class CancellationPolicyController {
 		this.cancellationPolicyFactory = cancellationPolicyFactory
 	}
 
-	public getCancellationPolicy() {
+	public getCancellationPolicy(isEdit: Boolean) {
 		logger.debug('Getting cancellation policy')
 		return async (request: Request, response: Response) => {
-			await this.getLearningProviderAndRenderTemplate(request, response, 'page/add-cancellation-policy')
+			await this.getLearningProviderAndRenderTemplate(request, response, 'page/add-cancellation-policy', isEdit)
 		}
 	}
 
-	public setCancellationPolicy() {
+	public setCancellationPolicy(isEdit: Boolean) {
 		const self = this
 
 		return async (request: Request, response: Response) => {
@@ -42,21 +42,46 @@ export class CancellationPolicyController {
 			if (errors.size) {
 				return response.render('page/add-cancellation-policy', {
 					errors: errors,
+					isEdit: isEdit,
 				})
 			}
 			const learningProviderId: string = request.params.learningProviderId
 
-			await self.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
+			if (isEdit) {
+				const cancellationPolicyId = request.params.cancellationPolicyId
+
+				await self.learningCatalogue.updateCancellationPolicy(
+					learningProviderId,
+					cancellationPolicyId,
+					cancellationPolicy
+				)
+			} else {
+				await self.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
+			}
 
 			response.redirect('/content-management/learning-providers/' + learningProviderId)
 		}
 	}
 
-	private async getLearningProviderAndRenderTemplate(request: Request, response: Response, view: string) {
+	private async getLearningProviderAndRenderTemplate(
+		request: Request,
+		response: Response,
+		view: string,
+		isEdit: Boolean
+	) {
 		const learningProviderId: string = request.params.learningProviderId
 		const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+
+		const cancellationPolicyId: string = request.params.cancellationPolicyId
+		const cancellationPolicy = await this.learningCatalogue.getCancellationPolicy(
+			learningProviderId,
+			cancellationPolicyId
+		)
+
+		console.log(learningProviderId + ' , ' + cancellationPolicy)
+
 		if (learningProvider) {
-			response.render(view, {learningProvider})
+			response.render(view, {learningProvider, cancellationPolicy, isEdit})
 		} else {
 			response.sendStatus(404)
 		}

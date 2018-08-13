@@ -48,7 +48,8 @@ export class ApplicationContext {
 	learningProviderValidator: LearningProviderValidator
 	pagination: Pagination
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({

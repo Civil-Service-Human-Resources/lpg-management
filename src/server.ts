@@ -107,12 +107,22 @@ app.get(
 
 app.get(
 	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
-	ctx.cancellationPolicyController.getCancellationPolicy()
+	ctx.cancellationPolicyController.getCancellationPolicy(false)
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy/:cancellationPolicyId',
+	ctx.cancellationPolicyController.getCancellationPolicy(true)
 )
 
 app.post(
 	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
-	ctx.cancellationPolicyController.setCancellationPolicy()
+	ctx.cancellationPolicyController.setCancellationPolicy(false)
+)
+
+app.post(
+	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy/:cancellationPolicyId',
+	ctx.cancellationPolicyController.setCancellationPolicy(true)
 )
 
 app.get(

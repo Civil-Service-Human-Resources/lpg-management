@@ -34,9 +34,13 @@
             {%endif%}
         </div>
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">Add new cancellation policy</h1>
-
-            <form action="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy" method="post">
+            {% if isEdit == true %}
+                <h1 class="govuk-heading-l">Edit cancellation policy</h1>
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy/{{cancellationPolicy.id}}" method="post">
+            {% else %}
+                <h1 class="govuk-heading-l">Add new cancellation policy</h1>
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy" method="post">
+            {% endif %}
 
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.name %}

@@ -27,6 +27,19 @@ export class CancellationPolicyService {
 		return this._cancellationPolicyFactory.create(data)
 	}
 
+	async update(
+		learningProviderId: string,
+		cancellationPolicyId: string,
+		cancellationPolicy: CancellationPolicy
+	): Promise<CancellationPolicy> {
+		const data = this._restService.put(
+			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`,
+			cancellationPolicy
+		)
+
+		return data
+	}
+
 	set cancellationPolicyFactory(value: CancellationPolicyFactory) {
 		this._cancellationPolicyFactory = value
 	}

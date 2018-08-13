@@ -1,6 +1,7 @@
 import * as url from 'url'
 import axios, {AxiosInstance, AxiosResponse} from 'axios'
 import {LearningCatalogueConfig} from '../learningCatalogueConfig'
+import {CancellationPolicy} from '../model/cancellationPolicy'
 
 export class RestService {
 	private _http: AxiosInstance
@@ -24,17 +25,12 @@ export class RestService {
 
 	async post(path: string, resource: any) {
 		try {
-			const response: AxiosResponse = await this._http.post(
-				path,
-				resource
-			)
+			const response: AxiosResponse = await this._http.post(path, resource)
 
 			return this.get(url.parse(response.headers.location).path!)
 		} catch (e) {
 			throw new Error(
-				`Error with POST request: ${e} when posting ${JSON.stringify(
-					resource
-				)} to ${this.config.url}${path} `
+				`Error with POST request: ${e} when posting ${JSON.stringify(resource)} to ${this.config.url}${path} `
 			)
 		}
 	}
@@ -43,11 +39,17 @@ export class RestService {
 		try {
 			return (await this._http.get(path)).data
 		} catch (e) {
-			throw new Error(
-				`Error with GET request: ${e} when getting ${
-					this.config.url
-				}${path}`
-			)
+			throw new Error(`Error with GET request: ${e} when getting ${this.config.url}${path}`)
+		}
+	}
+
+	async put(path: string, resource: CancellationPolicy) {
+		try {
+			await this._http.put(path, resource)
+
+			return resource
+		} catch (e) {
+			throw new Error(`Error with PUT requqest: ${e} when putting ${this.config.url}${path}`)
 		}
 	}
 
