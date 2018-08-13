@@ -20,7 +20,7 @@ export class CancellationPolicyService {
 	}
 
 	async get(learningProviderId: string, cancellationPolicyId: string): Promise<CancellationPolicy> {
-		const data = this._restService.get(
+		const data = await this._restService.get(
 			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`
 		)
 
@@ -32,9 +32,17 @@ export class CancellationPolicyService {
 		cancellationPolicyId: string,
 		cancellationPolicy: CancellationPolicy
 	): Promise<CancellationPolicy> {
-		const data = this._restService.put(
+		const data = await this._restService.put(
 			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`,
 			cancellationPolicy
+		)
+
+		return data
+	}
+
+	async delete(learningProviderId: string, cancellationPolicyId: string) {
+		const data = await this._restService.delete(
+			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`
 		)
 
 		return data

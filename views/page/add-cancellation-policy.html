@@ -4,7 +4,13 @@
 
 {% extends "../component/Page.njk" %}
 
-{% block pageTitle %}Add Cancellation Policy - Civil Service Learning{% endblock %}
+{% block pageTitle %}
+    {% if isEdit %}
+        Edit Cancellation Policy - Civil Service Learning
+    {% else %}
+        Add Cancellation Policy - Civil Service Learning
+    {% endif %}
+{% endblock %}
 
 {% block beforeContent %}
   {% block phaseBanner %}
@@ -50,6 +56,7 @@
                         },
                         id: "name",
                         name: "name",
+                        value: cancellationPolicy.name,
                         errorMessage: {
                             text: "Name is required" 
                         }
@@ -59,6 +66,7 @@
                             label: {
                                 text: "Policy name"
                             },
+                            value: cancellationPolicy.name,
                             id: "name",
                             name: "name"
                         }) }}
@@ -68,6 +76,7 @@
                     {{ govukTextarea({
                         name: "shortVersion",
                         id: "shortVersion",
+                        value: cancellationPolicy.shortVersion,
                         label: {
                             text: "Short version"
                         },
@@ -79,6 +88,7 @@
                     {{ govukTextarea({
                         name: "shortVersion",
                         id: "shortVersion",
+                        value: cancellationPolicy.shortVersion,
                         label: {
                             text: "Short version"
                         }
@@ -88,6 +98,7 @@
                     {{ govukTextarea({
                         name: "fullVersion",
                         id: "fullVersion",
+                        value: cancellationPolicy.longVersion,
                         label: {
                             text: "Full version"
                         },
@@ -99,15 +110,22 @@
                     {{ govukTextarea({
                         name: "fullVersion",
                         id: "fullVersion",
+                        value: cancellationPolicy.fullVersion,
                         label: {
                             text: "Full version"
                         }
                     }) }}
                 {% endif %}
                 </fieldset>
-                {{ govukButton({
-                    text: "Add cancellation policy"
-                }) }}
+                {% if isEdit %}
+                    {{ govukButton({
+                    text: "Update cancellation policy"
+                    }) }}
+                {% else %}
+                    {{ govukButton({
+                        text: "Add cancellation policy"
+                    }) }}
+                {% endif %}
             </form>
             <a href="/content-management/add-learning-provider">Cancel</a>
         </div>

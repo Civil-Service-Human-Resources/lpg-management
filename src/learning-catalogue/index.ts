@@ -80,6 +80,10 @@ export class LearningCatalogue {
 		return this._cancellationPolicyService.update(learningProviderId, cancellationPolicyId, cancellationPolicy)
 	}
 
+	async deleteCancellationPolicy(learningProviderId: string, cancellationPolicyId: string) {
+		return this._cancellationPolicyService.delete(learningProviderId, cancellationPolicyId)
+	}
+
 	async getTermsAndConditions(learningProviderId: string, termsAndConditionsId: string): Promise<TermsAndConditions> {
 		return this._termsAndConditionsService.get(learningProviderId, termsAndConditionsId)
 	}
