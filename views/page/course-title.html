@@ -1,19 +1,33 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "../component/course-details/macro.njk" import courseDetails with context %}
 
-{% extends "../component/Page.njk" %} {% block pageTitle %}{{i18n['add_course_title_title'] }} - {{ i18n['proposition_name']}}{% endblock %}
+{% extends "../component/Page.njk" %}
+
+{% block pageTitle %}
+    {% if isEdit == true %}
+        Edit Course - Civil Service Learning
+    {% else %}
+        Add Course - Civil Service Learning
+    {% endif %}
+{% endblock %}
 
 {% block beforeContent %}
   {% block phaseBanner %}
     {{ phaseBanner("beta") }}
   {% endblock%}
   {% block backLink %}
-    {{ backLink("/content-management") }}
+    {% if isEdit == true %}
+        {{ backLink("/content-management/course-preview/" + course.id) }}
+    {% else %}
+        {{ backLink("/content-management") }}
+    {% endif %}
   {% endblock%}
 {% endblock %}
-
 {% block content %}
+
+
     {% if errors.fields %}
         <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
             <h2 class="govuk-error-summary__title" id="error-summary-title">
@@ -31,10 +45,18 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            {% if isEdit == true %}
+                <p class="govuk-body form-header govuk-!-font-size-24">Edit course</p>
+            {% else %}
+                <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
-            <form action="/content-management/add-course" method="post">
 
+            {% if isEdit == true %}
+                <form action="/content-management/edit-course/{{course.id}}" method="post">
+            {% else %}
+                <form action="/content-management/add-course" method="post">
+            {% endif %}
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields %}
                         {{ govukInput({
@@ -46,6 +68,15 @@
                             errorMessage: {
                                 text: "Title is required"
                             }
+                        }) }}
+                    {% elif isEdit == true %}
+                        {{ govukInput({
+                        label: {
+                            text: "Course title"
+                            },
+                            id: "title",
+                            name: "title",
+                            value: course.title
                         }) }}
                     {% else %}
                         {{ govukInput({
@@ -61,7 +92,11 @@
                     text: "Continue"
                 }) }}
 
+                {% if isEdit == true %}
+                <a class="cancel-button govuk-body govuk-link" href="/content-management/course-preview/{{course.id}}">Cancel</a>
+                {% else %}
                 <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+                {% endif%}
             </form>
         </div>
 

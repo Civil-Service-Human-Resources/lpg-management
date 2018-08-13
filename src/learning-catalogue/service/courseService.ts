@@ -38,6 +38,12 @@ export class CourseService {
 		return this._courseFactory.create(data)
 	}
 
+	async update(course: Course): Promise<Course> {
+		const data = await this._restService.put(`/courses/${course.id}`, course)
+
+		return this._courseFactory.create(data)
+	}
+
 	set courseFactory(value: CourseFactory) {
 		this._courseFactory = value
 	}

@@ -6,11 +6,7 @@ describe('LearningCatalogueConfig tests', () => {
 	let config: LearningCatalogueConfig
 
 	beforeEach(() => {
-		config = new LearningCatalogueConfig(
-			{username: 'username', password: 'password'},
-			'url',
-			120
-		)
+		config = new LearningCatalogueConfig({username: 'username', password: 'password'}, 'url', 120)
 	})
 
 	it('should set properties in constructor', () => {
@@ -41,10 +37,7 @@ describe('LearningCatalogueConfig tests', () => {
 	})
 
 	it('should have default timeout of 15000', () => {
-		const config = new LearningCatalogueConfig(
-			{username: 'username', password: 'password'},
-			'url'
-		)
+		const config = new LearningCatalogueConfig({username: 'username', password: 'password'}, 'url')
 		expect(config.timeout).to.equal(15000)
 	})
 })

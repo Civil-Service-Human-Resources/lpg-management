@@ -61,9 +61,7 @@ describe('ModuleFactory tests', () => {
 		testProperties(module, data, ['audiences'])
 		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
 
-		expect(
-			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
-		).to.equal(data.audiences[0].requiredBy)
+		expect(module.audiences[0].requiredBy!.toISOString().substr(0, 19)).to.equal(data.audiences[0].requiredBy)
 	})
 
 	it('should create ELearningModule', async () => {
@@ -74,9 +72,7 @@ describe('ModuleFactory tests', () => {
 
 		testProperties(module, data, ['audiences'])
 
-		expect(
-			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
-		).to.equal(data.audiences[0].requiredBy)
+		expect(module.audiences[0].requiredBy!.toISOString().substr(0, 19)).to.equal(data.audiences[0].requiredBy)
 
 		expect(module.startPage).to.equal(data.startPage)
 	})
@@ -100,12 +96,8 @@ describe('ModuleFactory tests', () => {
 		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
 		testProperties(module.events[0], data.events[0], ['date'])
 
-		expect(
-			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
-		).to.equal(data.audiences[0].requiredBy)
-		expect(module.events[0].date!.toISOString().substr(0, 19)).to.equal(
-			data.events[0].date
-		)
+		expect(module.audiences[0].requiredBy!.toISOString().substr(0, 19)).to.equal(data.audiences[0].requiredBy)
+		expect(module.events[0].date!.toISOString().substr(0, 19)).to.equal(data.events[0].date)
 	})
 
 	it('should set events and audiences to empt lists of missing', async () => {
@@ -131,9 +123,7 @@ describe('ModuleFactory tests', () => {
 		testProperties(module, data, ['audiences'])
 		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
 
-		expect(
-			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
-		).to.equal(data.audiences[0].requiredBy)
+		expect(module.audiences[0].requiredBy!.toISOString().substr(0, 19)).to.equal(data.audiences[0].requiredBy)
 	})
 
 	it('should create VideoModule', async () => {
@@ -145,9 +135,7 @@ describe('ModuleFactory tests', () => {
 		testProperties(module, data, ['audiences'])
 		testProperties(module.audiences[0], data.audiences[0], ['requiredBy'])
 
-		expect(
-			module.audiences[0].requiredBy!.toISOString().substr(0, 19)
-		).to.equal(data.audiences[0].requiredBy)
+		expect(module.audiences[0].requiredBy!.toISOString().substr(0, 19)).to.equal(data.audiences[0].requiredBy)
 	})
 
 	it('should throw error if type is not recognised', async () => {

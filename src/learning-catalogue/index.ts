@@ -33,6 +33,10 @@ export class LearningCatalogue {
 		return this._courseService.get(courseId)
 	}
 
+	async updateCourse(course: Course): Promise<Course> {
+		return this._courseService.update(course)
+	}
+
 	async createModule(courseId: string, module: Module): Promise<Module> {
 		return this._moduleService.create(courseId, module)
 	}
