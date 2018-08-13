@@ -28,13 +28,13 @@ export class CourseController {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			this.getCourseFromReq(request, response)
+			this.getCourseFromReqAndRenderTemplate(request, response, 'page/course', false)
 		}
 	}
 
 	public getCourseTitle(isEdit: Boolean) {
 		return async (request: Request, response: Response) => {
-			await this.getEdit(request, response, 'page/course-title', isEdit)
+			await this.getCourseFromReqAndRenderTemplate(request, response, 'page/course-title', isEdit)
 		}
 	}
 
@@ -80,7 +80,7 @@ export class CourseController {
 
 	public getCourseDetails(isEdit: Boolean) {
 		return async (request: Request, response: Response) => {
-			await this.getEdit(request, response, 'page/course-details', isEdit)
+			await this.getCourseFromReqAndRenderTemplate(request, response, 'page/course-details', isEdit)
 		}
 	}
 
@@ -143,29 +143,15 @@ export class CourseController {
 
 	public coursePreview() {
 		return async (request: Request, response: Response) => {
-			this.getCourseFromReq(request, response)
+			this.getCourseFromReqAndRenderTemplate(request, response, 'page/course-preview', false)
 		}
 	}
 
-	private getCourseFromReq(request: Request, response: Response) {
+	private getCourseFromReqAndRenderTemplate(request: Request, response: Response, view: string, isEdit: Boolean) {
 		const req = request as extended.CourseRequest
 		const course = req.course
 
-		if (course) {
-			response.render(`page/course-preview`, {course: course, isEdit: false})
-		} else {
-			response.sendStatus(404)
-		}
-	}
-
-	private async getEdit(request: Request, response: Response, view: string, isEdit: Boolean) {
-		if (isEdit) {
-			this.getCourseFromReq(request, response)
-		} else {
-			response.render(view, {
-				idEdit: isEdit,
-			})
-		}
+		response.render(view, {course: course, isEdit})
 	}
 
 	public addModule() {
