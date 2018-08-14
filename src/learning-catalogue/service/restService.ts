@@ -1,7 +1,6 @@
 import * as url from 'url'
 import axios, {AxiosInstance, AxiosResponse} from 'axios'
 import {LearningCatalogueConfig} from '../learningCatalogueConfig'
-import {CancellationPolicy} from '../model/cancellationPolicy'
 
 export class RestService {
 	private _http: AxiosInstance
@@ -43,7 +42,7 @@ export class RestService {
 		}
 	}
 
-	async put(path: string, resource: CancellationPolicy) {
+	async put(path: string, resource: any) {
 		try {
 			await this._http.put(path, resource)
 

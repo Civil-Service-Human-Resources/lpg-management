@@ -5,8 +5,8 @@
     <li class="list-details plist-details u--border--bgrey">
         <p class="govuk-body list-item list-name" href="/content-management/course/{{ tanc.id }}">{{ tanc.name }}</p>
         <p class="govuk-body list-item list-date">13th August 2018</p>
-        <a class="govuk-link list-link " href="/content-management/terms-and-conditions/{{ tanc.id }}">Delete</a>
-        <a class="govuk-link list-link " href="/content-management/terms-and-conditions/{{ tanc.id }}">Edit</a>
+        <a class="govuk-link list-link " href="/content-management/learning-providers/{{learningProvider.id}}/delete-terms-and-conditions/{{ tanc.id }}">Delete</a>
+        <a class="govuk-link list-link " href="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions/{{ tanc.id }}">Edit</a>
     </li>
     {% endfor %}
 </ul>

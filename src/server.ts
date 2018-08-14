@@ -132,12 +132,27 @@ app.get(
 
 app.get(
 	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions',
-	ctx.termsAndConditionsController.getTermsAndConditions()
+	ctx.termsAndConditionsController.getTermsAndConditions(false)
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions/:termsAndConditionsId',
+	ctx.termsAndConditionsController.getTermsAndConditions(true)
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/delete-terms-and-conditions/:termsAndConditionsId',
+	ctx.termsAndConditionsController.deleteTermsAndConditions()
 )
 
 app.post(
 	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions',
 	ctx.termsAndConditionsController.setTermsAndConditions()
+)
+
+app.post(
+	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions/:termsAndConditionsId',
+	ctx.termsAndConditionsController.updateTermsAndConditions()
 )
 
 app.listen(PORT, () => logger.info(`LPG Management listening on port ${PORT}`))

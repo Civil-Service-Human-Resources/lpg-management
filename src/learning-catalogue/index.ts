@@ -95,6 +95,21 @@ export class LearningCatalogue {
 		return this._termsAndConditionsService.create(learningProviderId, termsAndConditions)
 	}
 
+	async updateTermsAndConditions(
+		learningProviderId: string,
+		termsAndConditionsId: string,
+		termsAndConditions: TermsAndConditions
+	): Promise<TermsAndConditions> {
+		return this._termsAndConditionsService.update(learningProviderId, termsAndConditionsId, termsAndConditions)
+	}
+
+	async deleteTermsAndConditions(
+		learningProviderId: string,
+		termsAndConditionsId: string
+	): Promise<TermsAndConditions> {
+		return this._termsAndConditionsService.delete(learningProviderId, termsAndConditionsId)
+	}
+
 	set courseService(value: CourseService) {
 		this._courseService = value
 	}

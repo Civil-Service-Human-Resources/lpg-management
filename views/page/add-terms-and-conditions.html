@@ -5,21 +5,33 @@
 {% from "button/macro.njk" import govukButton %}
 
 {% extends "../component/Page.njk" %}
-{% block pageTitle %}Add Terms and Conditions - Civil Service Learning{% endblock %}
+{% block pageTitle %}
+    {% if isEdit %}
+        Edit Terms and Conditions - Civil Service Learning
+    {% else %}
+        Add Terms and Conditions - Civil Service Learning
+    {% endif %}
+
+{% endblock %}
 
 {% block beforeContent %}
     {% block phaseBanner %}
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/add-learning-provider") }}
+        {{ backLink("/content-management/learning-providers/" + learningProvider.id) }}
     {% endblock%}
 {% endblock %}
 
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Add new terms and conditions</h2>
+
+            {% if isEdit %}
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Edit terms and conditions</h2>
+            {% else %}
+                <h2 class="govuk-heading-m govuk-!-font-size-36">Add new terms and conditions</h2>
+            {% endif %}
 
             {% if errors.fields %}
                 <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
@@ -39,7 +51,12 @@
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <form action="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions" method="post">
+            {% if isEdit %}
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions/{{termsAndConditions.id}}" method="post">
+            {% else %}
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions" method="post">
+            {% endif %}
+
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields %}
                         {{ govukInput({
@@ -47,7 +64,8 @@
                             text: "Title"
                             },
                             id: "title",
-                            name: "title",
+                            name: "name",
+                            value: termsAndConditions.name,
                             errorMessage: {
                                 text: "Title is required"
                             }
@@ -58,22 +76,30 @@
                             text: "Title"
                             },
                             id: "title",
-                            name: "title"
+                            name: "name",
+                            value: termsAndConditions.name
                         }) }}
                     {% endif %}
                      
                     {% block textarea %}
                         {% if errors.fields%}
-                            {{ textareaError("termsAndConditions", "termsAndConditions", "", null, "Terms and conditions", "Terms and conditions is required") }}                         
+                            {{ textareaError("content", "termsAndConditions", "", null, termsAndConditions.content, "Terms and conditions", "Terms and conditions is required") }}
                         {% else %}
-                            {{ textarea("termsAndConditions", "termsAndConditions", "", null, "", "Content") }}
+                            {{ textarea("content", "termsAndConditions", "", null, termsAndConditions.content, "Content") }}
                         {% endif %}
                     {% endblock %}               
-                </fieldset> 
-                {{ govukButton({
-                    text: "Add terms and conditions"
-                }) }} 
-            </form>                    
+                </fieldset>
+                {% if isEdit %}
+                    {{ govukButton({
+                        text: "Update terms and conditions"
+                    }) }}
+                {% else %}
+                    {{ govukButton({
+                        text: "Add terms and conditions"
+                    }) }}
+                {% endif %}
+            </form>
+            <a href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
             <div class="right-menu">

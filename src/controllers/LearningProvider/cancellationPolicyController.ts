@@ -79,8 +79,6 @@ export class CancellationPolicyController {
 				...request.body,
 			}
 
-			const newCancellationPolicy = this.cancellationPolicyFactory.create(data)
-
 			const errors = await this.cancellationPolicyValidator.check(request.body, ['name'])
 
 			const learningProviderId: string = request.params.learningProviderId
@@ -100,10 +98,14 @@ export class CancellationPolicyController {
 				})
 			}
 
+			cancellationPolicy.name = data.name
+			cancellationPolicy.shortVersion = data.shortVersion
+			cancellationPolicy.fullVersion = data.fullVersion
+
 			await self.learningCatalogue.updateCancellationPolicy(
 				learningProviderId,
 				cancellationPolicyId,
-				newCancellationPolicy
+				cancellationPolicy
 			)
 
 			response.redirect('/content-management/learning-providers/' + learningProviderId)
