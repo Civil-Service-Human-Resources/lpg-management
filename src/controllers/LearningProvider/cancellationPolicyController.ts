@@ -52,6 +52,9 @@ export class CancellationPolicyController {
 				...request.body,
 			}
 
+			const learningProviderId: string = request.params.learningProviderId
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+
 			const cancellationPolicy = this.cancellationPolicyFactory.create(data)
 
 			const errors = await this.cancellationPolicyValidator.check(request.body, ['name'])
@@ -60,10 +63,9 @@ export class CancellationPolicyController {
 				return response.render('page/add-cancellation-policy', {
 					errors: errors,
 					isEdit: isEdit,
+					learningProvider: learningProvider,
 				})
 			}
-
-			const learningProviderId: string = request.params.learningProviderId
 
 			await self.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
 

@@ -47,15 +47,18 @@ export class TermsAndConditionsController {
 				...request.body,
 			}
 
+			const learningProviderId = request.params.learningProviderId
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+
 			const termsAndConditions = this.termsAndConditionsFactory.create(data)
 
 			const errors = await this.termsAndConditionsValidator.check(request.body, ['title'])
 			if (errors.size) {
 				return response.render('page/add-terms-and-conditions', {
 					errors: errors,
+					learningProvider: learningProvider,
 				})
 			}
-			const learningProviderId: string = request.params.learningProviderId
 
 			await self.learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions)
 
