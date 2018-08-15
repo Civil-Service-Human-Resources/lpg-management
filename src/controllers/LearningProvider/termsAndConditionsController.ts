@@ -57,6 +57,7 @@ export class TermsAndConditionsController {
 				return response.render('page/add-terms-and-conditions', {
 					errors: errors,
 					learningProvider: learningProvider,
+					termsAndConditions: termsAndConditions,
 				})
 			}
 

@@ -117,7 +117,7 @@ app.get(
 
 app.post(
 	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
-	ctx.cancellationPolicyController.setCancellationPolicy(false)
+	ctx.cancellationPolicyController.setCancellationPolicy()
 )
 
 app.post(

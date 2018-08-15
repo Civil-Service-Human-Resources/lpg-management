@@ -44,7 +44,7 @@ export class CancellationPolicyController {
 		}
 	}
 
-	public setCancellationPolicy(isEdit: Boolean) {
+	public setCancellationPolicy() {
 		const self = this
 
 		return async (request: Request, response: Response) => {
@@ -62,8 +62,8 @@ export class CancellationPolicyController {
 			if (errors.size) {
 				return response.render('page/add-cancellation-policy', {
 					errors: errors,
-					isEdit: isEdit,
 					learningProvider: learningProvider,
+					cancellationPolicy: cancellationPolicy,
 				})
 			}
 
