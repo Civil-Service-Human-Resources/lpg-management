@@ -54,8 +54,6 @@ export class TermsAndConditionsController {
 
 			const errors = await this.termsAndConditionsValidator.check(request.body, ['title', 'termsAndConditions'])
 
-			console.log(errors.fields)
-
 			if (errors.size) {
 				return response.render('page/add-terms-and-conditions', {
 					errors: errors,
