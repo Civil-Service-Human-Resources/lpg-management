@@ -73,7 +73,7 @@ export class CancellationPolicyController {
 		}
 	}
 
-	public updateCancellationPolicy(isEdit: Boolean) {
+	public updateCancellationPolicy() {
 		const self = this
 
 		return async (request: Request, response: Response) => {
@@ -96,7 +96,7 @@ export class CancellationPolicyController {
 					errors: errors,
 					learningProvider: learningProvider,
 					cancellationPolicy: cancellationPolicy,
-					isEdit: isEdit,
+					isEdit: true,
 				})
 			}
 
