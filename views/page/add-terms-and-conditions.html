@@ -58,7 +58,7 @@
             {% endif %}
 
                 <fieldset class="govuk-fieldset">
-                    {% if errors.fields %}
+                    {% if errors.fields.name %}
                         {{ govukInput({
                         label: {
                             text: "Title"
@@ -82,7 +82,7 @@
                     {% endif %}
                      
                     {% block textarea %}
-                        {% if errors.fields%}
+                        {% if errors.fields.content %}
                             {{ textareaError("content", "termsAndConditions", "", null, termsAndConditions.content, "Terms and conditions", "Terms and conditions is required") }}
                         {% else %}
                             {{ textarea("content", "termsAndConditions", "", null, termsAndConditions.content, "Content") }}
