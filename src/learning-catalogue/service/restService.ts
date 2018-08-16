@@ -48,7 +48,9 @@ export class RestService {
 
 			return resource
 		} catch (e) {
-			throw new Error(`Error with PUT request: ${e} when putting ${this.config.url}${path}`)
+			throw new Error(
+				`Error with PUT request: ${e} when putting ${JSON.stringify(resource)} to ${this.config.url}${path}`
+			)
 		}
 	}
 
@@ -56,7 +58,7 @@ export class RestService {
 		try {
 			return (await this._http.delete(path)).data
 		} catch (e) {
-			throw new Error(`Error with DELETE request: ${e} when deleting ${this.config.url}${path}`)
+			throw new Error(`Error with DELETE request: ${e} when deleting course from ${this.config.url}${path}`)
 		}
 	}
 
