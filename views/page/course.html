@@ -29,12 +29,8 @@
             {% block menu %}
                 {% set actions = [
                     {
-                        link: '/content-management/add-course',
-                        text: 'Add a new course'
-                    },
-                    {
-                        link: '/content-management/learning-providers',
-                        text: 'Manage learning providers'
+                        link: '/content-management/course-preview/' + course.id ,
+                        text: 'Preview and edit'
                     }
                 ] %}
                 {{ menu("Actions", actions) }}

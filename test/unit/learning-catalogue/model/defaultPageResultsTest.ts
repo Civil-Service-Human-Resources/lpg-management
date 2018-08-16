@@ -1,7 +1,7 @@
-import {Course} from '../../../../src/learning-catalogue/model/course'
 import {beforeEach, describe, it} from 'mocha'
 import {expect} from 'chai'
 import {DefaultPageResults} from '../../../../src/learning-catalogue/model/defaultPageResults'
+import {Course} from '../../../../src/learning-catalogue/model/course'
 
 describe('CoursePageResults tests', () => {
 	let course: DefaultPageResults<Course>

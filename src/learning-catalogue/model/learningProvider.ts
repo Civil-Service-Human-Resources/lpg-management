@@ -1,4 +1,6 @@
 import {IsNotEmpty} from 'class-validator'
+import {CancellationPolicy} from './cancellationPolicy'
+import {TermsAndConditions} from './termsAndConditions'
 
 export class LearningProvider {
 	public id: string
@@ -9,5 +11,7 @@ export class LearningProvider {
 	})
 	public name: string
 
-	public dateAdded: string
+	cancellationPolicies: CancellationPolicy[]
+
+	termsAndConditions: TermsAndConditions[]
 }

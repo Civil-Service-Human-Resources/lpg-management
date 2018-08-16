@@ -1,12 +1,11 @@
-<h1 class="govuk-heading-l">Learning providers</h1>
 <ul class="list">
     <li class="provider-headers"><span class="govuk-body first-header">Learning provider name</span><span class="govuk-body">Added on</span></li>
     {% for learningProvider in pageResults.results %}
 
     <li class="list-details plist-details u--border--bgrey">
-        <p class="govuk-body list-item list-name" href="/content-management/course/{{ learningProvider.id }}">{{ learningProvider.name }}</p>
-        <p class="govuk-body list-item list-date">24th Jan 2018</p>
-        <a class="govuk-link list-link " href="#">Edit</a>
+        <p class="govuk-body list-name">{{ learningProvider.name }}</p>
+        <p class="govuk-body list-item list-date">13th August 2018</p>
+        <a class="govuk-link list-link list-padding" href="/content-management/learning-providers/{{ learningProvider.id }}">Edit</a>
     </li>
     {% endfor %}
 </ul>

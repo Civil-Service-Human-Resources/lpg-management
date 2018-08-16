@@ -4,6 +4,7 @@
 	"add_course_details_title": "Add course details",
 	"course_overview_title": "Course overview",
 	"course_preview_title": "Course preview",
+	"learning_provider_overview_title": "Learning provider overview",
 	"proposition_name": "Civil Service Learning",
 	"validation.course.title.empty": "Title is required",
 	"validation.course.shortDescription.empty": "Short description is required",
@@ -11,6 +12,15 @@
 		"Short description is too long",
 	"validation.course.description.empty": "Description is required",
 	"validation.course.description.maxLength": "Description is too long",
+	"validation.learningProvider.name.empty": "Name is required",
+	"validation.cancellationPolicy.name.empty": "Name is required",
+	"validation.cancellationPolicy.shortVersion.empty":
+		"Short version is required",
+	"validation.cancellationPolicy.fullVersion.empty":
+		"Full version is required",
+	"validation.termsAndConditions.title.empty": "Title is required",
+	"validation.termsAndConditions.termsAndConditions.empty":
+		"Terms and conditions is required is required",
 	"validation_learningProvider_name_empty": "Name is required",
 	"blended": "Blended",
 	"face-to-face": "Face to Face"

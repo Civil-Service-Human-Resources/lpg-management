@@ -1,0 +1,35 @@
+.list {
+	.provider-headers {
+		display: flex;
+		justify-content: flex-start;
+
+		.first-header {
+			flex-basis: 50%;
+		}
+
+		span {
+			font-weight: 700;
+		}
+	}
+
+	.plist-details {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+
+		.list-item {
+			display: inline-block;
+			margin: 0;
+			padding: 0;
+		}
+
+		.list-name {
+			flex-basis: 50%;
+		}
+
+		.list-link {
+			margin: 0;
+			margin-left: auto;
+		}
+	}
+}

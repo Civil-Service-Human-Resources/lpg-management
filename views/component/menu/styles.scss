@@ -14,9 +14,7 @@
 
 .govuk-button--delete {
 	background-color: $theme;
-	width: 81px;
-	font-weight: 700;
-	margin-top: 30px;
+	margin-top: 20px;
 
 	&:hover {
 		background-color: darken($theme, 10%);
@@ -36,4 +34,20 @@
 
 	transition: background-color, 0.3s;
 	text-decoration: none;
+}
+
+.right-menu {
+	border: 1px solid $border;
+	border-top: 4px solid $theme;
+	padding: 10px;
+
+	.menu-header {
+		font-weight: 700;
+		font-size: 20px;
+		margin: 10px 0;
+	}
+
+	.menu-link {
+		font-size: $font-normal;
+	}
 }

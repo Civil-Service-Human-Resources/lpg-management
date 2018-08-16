@@ -35,7 +35,7 @@
                     </div>
                 </div>
             {%endif%}
-            <form action="/content-management/add-learning-provider" method="post">
+            <form action="/content-management/learning-providers/add-learning-provider" method="post">
                 <fieldset class="govuk-fieldset">
                  {% if errors.fields %}
                     {{ govukInput({
@@ -69,27 +69,6 @@
                     {% endif %}
                     {% endif %}
                 </fieldset>
-                <div class="cancellation-policie">
-                    <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-!-margin-bottom-1">Cancelation policies</h3>
-                    
-                        {% if cancelationPolicies %}
-                        {% else %}
-                            <p class="govuk-body">This course does not have any policies yet</p>
-                        {% endif %}
-
-                        <a href="#" class="govuk-button button-blue">Add cancellation policy</a>
-                </div>
-                <div class="terms-conditions">
-                    <h3 class="govuk-heading-s govuk-!-font-weight-regular govuk-!-margin-bottom-1">Terms and conditions</h3>
-               
-                    {% if termsAndConditions %}
-                    {% else %}
-                        <p class="govuk-body">This course does not have any terms and conditions yet</p>
-                    {% endif %}
-                
-                    <a href="/content-management/terms-and-conditions" class="govuk-button button-blue">Add terms and conditions</a>
-                </div>
-                
                 {{ govukButton({
                     text: "Add a new learning provider"
                 }) }}

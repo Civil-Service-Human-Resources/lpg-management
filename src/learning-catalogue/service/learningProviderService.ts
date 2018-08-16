@@ -13,7 +13,7 @@ export class LearningProviderService {
 	}
 
 	async listAll(page: number = 0, size: number = 10): Promise<DefaultPageResults<LearningProvider>> {
-		const data = await this._restService.get(`/learning-provider/list?page=${page}&size=${size}`)
+		const data = await this._restService.get(`/learning-providers?page=${page}&size=${size}`)
 
 		data.results = (data.results || []).map(this._learningProviderFactory.create)
 
@@ -28,17 +28,17 @@ export class LearningProviderService {
 	}
 
 	async create(learningProvider: LearningProvider): Promise<LearningProvider> {
-		const data = await this._restService.post('/learning-provider/', learningProvider)
+		const data = await this._restService.post('/learning-providers/', learningProvider)
 		return this._learningProviderFactory.create(data)
 	}
 
 	async get(learningProviderId: string): Promise<LearningProvider> {
-		const data = await this._restService.get(`/learning-provider/${learningProviderId}`)
+		const data = await this._restService.get(`/learning-providers/${learningProviderId}`)
 
 		return this._learningProviderFactory.create(data)
 	}
 
-	set courseFactory(value: LearningProviderFactory) {
+	set learningProviderFactory(value: LearningProviderFactory) {
 		this._learningProviderFactory = value
 	}
 }

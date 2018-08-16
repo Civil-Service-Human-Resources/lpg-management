@@ -1,13 +1,13 @@
-import {Course} from '../../../../src/learning-catalogue/model/course'
-import {CourseFactory} from '../../../../src/learning-catalogue/model/factory/courseFactory'
 import {beforeEach, describe, it} from 'mocha'
 import * as sinonChai from 'sinon-chai'
 import * as sinon from 'sinon'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
-import {CourseService} from '../../../../src/learning-catalogue/service/courseService'
 import {RestService} from '../../../../src/learning-catalogue/service/restService'
+import {CourseFactory} from '../../../../src/learning-catalogue/model/factory/courseFactory'
+import {CourseService} from '../../../../src/learning-catalogue/service/courseService'
+import {Course} from '../../../../src/learning-catalogue/model/course'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -63,9 +63,7 @@ describe('CourseService tests', () => {
 		expect(result.page).to.eql(0)
 		expect(result.size).to.eql(10)
 		expect(result.totalResults).to.eql(32)
-		expect(restService.get).to.have.been.calledOnceWith(
-			`/courses?page=0&size=10`
-		)
+		expect(restService.get).to.have.been.calledOnceWith(`/courses?page=0&size=10`)
 	})
 
 	it('should pass page parameters to http call', async () => {
@@ -88,9 +86,7 @@ describe('CourseService tests', () => {
 
 		await courseService.listAll(page, size)
 
-		return expect(restService.get).to.have.been.calledOnceWith(
-			`/courses?page=${page}&size=${size}`
-		)
+		return expect(restService.get).to.have.been.calledOnceWith(`/courses?page=${page}&size=${size}`)
 	})
 
 	it('should return empty list of results if results are null', async () => {
@@ -144,9 +140,7 @@ describe('CourseService tests', () => {
 		const result: Course = await courseService.get(courseId)
 
 		expect(result).to.equal(course)
-		expect(restService.get).to.have.been.calledOnceWith(
-			`/courses/${courseId}`
-		)
+		expect(restService.get).to.have.been.calledOnceWith(`/courses/${courseId}`)
 		expect(courseFactory.create).to.have.been.calledOnceWith(data)
 	})
 

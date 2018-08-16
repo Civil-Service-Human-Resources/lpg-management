@@ -1,11 +1,11 @@
 import {beforeEach, describe, it} from 'mocha'
-import {ModuleValidator} from '../../../../src/learning-catalogue/validator/moduleValidator'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as moment from 'moment'
-import {ValidationErrorMapper} from '../../../../src/learning-catalogue/validator/validationErrorMapper'
 import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/moduleFactory'
+import {ValidationErrorMapper} from '../../../../src/learning-catalogue/validator/validationErrorMapper'
+import {ModuleValidator} from '../../../../src/learning-catalogue/validator/moduleValidator'
 
 chai.use(chaiAsPromised)
 
@@ -25,9 +25,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['title'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['title']).to.eql([
-				'validation.module.title.empty',
-			])
+			expect(errors.fields['title']).to.eql(['validation.module.title.empty'])
 		})
 
 		it('should pass validation if title is present', async () => {
@@ -48,9 +46,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['description'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['description']).to.eql([
-				'validation.module.description.empty',
-			])
+			expect(errors.fields['description']).to.eql(['validation.module.description.empty'])
 		})
 
 		it('should pass validation if description is present', async () => {
@@ -86,9 +82,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['duration'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['duration']).to.eql([
-				'validation.module.duration.positive',
-			])
+			expect(errors.fields['duration']).to.eql(['validation.module.duration.positive'])
 		})
 
 		it('should pass validation if duration is a positive number', async () => {
@@ -118,15 +112,10 @@ describe('ModuleValidator tests', () => {
 				audiences: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'audiences',
-				'audience.areasOfWork',
-			])
+			const errors = await validator.check(params, ['audiences', 'audience.areasOfWork'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['areasOfWork']).to.eql([
-				'validation.module.areasOfWork.empty',
-			])
+			expect(errors.fields['areasOfWork']).to.eql(['validation.module.areasOfWork.empty'])
 		})
 
 		it('should fail validation if audience present but audience departments is not', async () => {
@@ -135,15 +124,10 @@ describe('ModuleValidator tests', () => {
 				audiences: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'audiences',
-				'audience.departments',
-			])
+			const errors = await validator.check(params, ['audiences', 'audience.departments'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['departments']).to.eql([
-				'validation.module.departments.empty',
-			])
+			expect(errors.fields['departments']).to.eql(['validation.module.departments.empty'])
 		})
 
 		it('should fail validation if audience present but audience grades is not', async () => {
@@ -152,15 +136,10 @@ describe('ModuleValidator tests', () => {
 				audiences: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'audiences',
-				'audience.grades',
-			])
+			const errors = await validator.check(params, ['audiences', 'audience.grades'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['grades']).to.eql([
-				'validation.module.grades.empty',
-			])
+			expect(errors.fields['grades']).to.eql(['validation.module.grades.empty'])
 		})
 
 		it('should fail validation if audience present but audience interests is not', async () => {
@@ -169,15 +148,10 @@ describe('ModuleValidator tests', () => {
 				audiences: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'audiences',
-				'audience.interests',
-			])
+			const errors = await validator.check(params, ['audiences', 'audience.interests'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['interests']).to.eql([
-				'validation.module.interests.empty',
-			])
+			expect(errors.fields['interests']).to.eql(['validation.module.interests.empty'])
 		})
 
 		it('should fail validation if audience present but audience mandatory is not', async () => {
@@ -186,15 +160,10 @@ describe('ModuleValidator tests', () => {
 				audiences: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'audiences',
-				'audience.mandatory',
-			])
+			const errors = await validator.check(params, ['audiences', 'audience.mandatory'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['mandatory']).to.eql([
-				'validation.module.mandatory.empty',
-			])
+			expect(errors.fields['mandatory']).to.eql(['validation.module.mandatory.empty'])
 		})
 
 		it('should fail validation if location is not present on LinkModule', async () => {
@@ -205,9 +174,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['location'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['location']).to.eql([
-				'validation.module.location.empty',
-			])
+			expect(errors.fields['location']).to.eql(['validation.module.location.empty'])
 		})
 
 		it('should pass validation if location is present on LinkModule', async () => {
@@ -229,9 +196,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['location'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['location']).to.eql([
-				'validation.module.location.empty',
-			])
+			expect(errors.fields['location']).to.eql(['validation.module.location.empty'])
 		})
 
 		it('should pass validation if location is present on VideoModule', async () => {
@@ -253,9 +218,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['startPage'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['startPage']).to.eql([
-				'validation.module.startPage.empty',
-			])
+			expect(errors.fields['startPage']).to.eql(['validation.module.startPage.empty'])
 		})
 
 		it('should pass validation if startPage is present', async () => {
@@ -312,9 +275,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['fileSize'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['fileSize']).to.eql([
-				'validation.module.fileSize.positive',
-			])
+			expect(errors.fields['fileSize']).to.eql(['validation.module.fileSize.positive'])
 		})
 
 		it('should pass validation if fileSize is a positive number', async () => {
@@ -335,9 +296,7 @@ describe('ModuleValidator tests', () => {
 			const errors = await validator.check(params, ['productCode'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['productCode']).to.eql([
-				'validation.module.productCode.empty',
-			])
+			expect(errors.fields['productCode']).to.eql(['validation.module.productCode.empty'])
 		})
 
 		it('should pass validation if productCode is present', async () => {
@@ -356,10 +315,7 @@ describe('ModuleValidator tests', () => {
 				events: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.date',
-			])
+			const errors = await validator.check(params, ['events', 'event.date'])
 
 			expect(errors.size).to.equal(2)
 			expect(errors.fields['date']).to.eql([
@@ -380,15 +336,10 @@ describe('ModuleValidator tests', () => {
 				],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.date',
-			])
+			const errors = await validator.check(params, ['events', 'event.date'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['date']).to.eql([
-				'validation.module.event.date.past',
-			])
+			expect(errors.fields['date']).to.eql(['validation.module.event.date.past'])
 		})
 
 		it('should pass validation if event date is in future', async () => {
@@ -403,10 +354,7 @@ describe('ModuleValidator tests', () => {
 				],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.date',
-			])
+			const errors = await validator.check(params, ['events', 'event.date'])
 			expect(errors.size).to.equal(0)
 		})
 
@@ -416,15 +364,10 @@ describe('ModuleValidator tests', () => {
 				events: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.location',
-			])
+			const errors = await validator.check(params, ['events', 'event.location'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['location']).to.eql([
-				'validation.module.event.location.empty',
-			])
+			expect(errors.fields['location']).to.eql(['validation.module.event.location.empty'])
 		})
 
 		it('should pass validation if event location is present', async () => {
@@ -437,10 +380,7 @@ describe('ModuleValidator tests', () => {
 				],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.location',
-			])
+			const errors = await validator.check(params, ['events', 'event.location'])
 
 			expect(errors.size).to.equal(0)
 		})
@@ -451,10 +391,7 @@ describe('ModuleValidator tests', () => {
 				events: [{}],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.capacity',
-			])
+			const errors = await validator.check(params, ['events', 'event.capacity'])
 
 			expect(errors.size).to.equal(2)
 			expect(errors.fields['capacity']).to.eql([
@@ -473,15 +410,10 @@ describe('ModuleValidator tests', () => {
 				],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.capacity',
-			])
+			const errors = await validator.check(params, ['events', 'event.capacity'])
 
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['capacity']).to.eql([
-				'validation.module.event.capacity.positive',
-			])
+			expect(errors.fields['capacity']).to.eql(['validation.module.event.capacity.positive'])
 		})
 
 		it('should pass validation if event capacity is a positive number', async () => {
@@ -494,10 +426,7 @@ describe('ModuleValidator tests', () => {
 				],
 			}
 
-			const errors = await validator.check(params, [
-				'events',
-				'event.capacity',
-			])
+			const errors = await validator.check(params, ['events', 'event.capacity'])
 
 			expect(errors.size).to.equal(0)
 		})
@@ -524,9 +453,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['title']).to.eql([
-				'validation.module.title.empty',
-			])
+			expect(errors.fields['title']).to.eql(['validation.module.title.empty'])
 		})
 
 		it('should fail validation if description is not present', async () => {
@@ -549,9 +476,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['description']).to.eql([
-				'validation.module.description.empty',
-			])
+			expect(errors.fields['description']).to.eql(['validation.module.description.empty'])
 		})
 
 		it('should fail validation if duration is not present', async () => {
@@ -601,9 +526,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['duration']).to.eql([
-				'validation.module.duration.positive',
-			])
+			expect(errors.fields['duration']).to.eql(['validation.module.duration.positive'])
 		})
 
 		it('should fail validation if startPage is not present', async () => {
@@ -626,9 +549,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['startPage']).to.eql([
-				'validation.module.startPage.empty',
-			])
+			expect(errors.fields['startPage']).to.eql(['validation.module.startPage.empty'])
 		})
 
 		it('should fail validation if audience areasOfWork is empty', async () => {
@@ -652,9 +573,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['areasOfWork']).to.eql([
-				'validation.module.areasOfWork.empty',
-			])
+			expect(errors.fields['areasOfWork']).to.eql(['validation.module.areasOfWork.empty'])
 		})
 
 		it('should fail validation if audience departments is empty', async () => {
@@ -678,9 +597,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['departments']).to.eql([
-				'validation.module.departments.empty',
-			])
+			expect(errors.fields['departments']).to.eql(['validation.module.departments.empty'])
 		})
 
 		it('should fail validation if audience grades is empty', async () => {
@@ -704,9 +621,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['grades']).to.eql([
-				'validation.module.grades.empty',
-			])
+			expect(errors.fields['grades']).to.eql(['validation.module.grades.empty'])
 		})
 
 		it('should fail validation if audience interests is empty', async () => {
@@ -730,9 +645,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['interests']).to.eql([
-				'validation.module.interests.empty',
-			])
+			expect(errors.fields['interests']).to.eql(['validation.module.interests.empty'])
 		})
 
 		it('should fail validation if audience mandatory is missing', async () => {
@@ -756,9 +669,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['mandatory']).to.eql([
-				'validation.module.mandatory.empty',
-			])
+			expect(errors.fields['mandatory']).to.eql(['validation.module.mandatory.empty'])
 		})
 
 		it('should pass validation if all properties are valid', async () => {
@@ -814,9 +725,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['title']).to.eql([
-				'validation.module.title.empty',
-			])
+			expect(errors.fields['title']).to.eql(['validation.module.title.empty'])
 		})
 
 		it('should fail validation if productCode is not present', async () => {
@@ -847,9 +756,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['productCode']).to.eql([
-				'validation.module.productCode.empty',
-			])
+			expect(errors.fields['productCode']).to.eql(['validation.module.productCode.empty'])
 		})
 
 		it('should fail validation if description is not present', async () => {
@@ -880,9 +787,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['description']).to.eql([
-				'validation.module.description.empty',
-			])
+			expect(errors.fields['description']).to.eql(['validation.module.description.empty'])
 		})
 
 		it('should fail validation if duration is not present', async () => {
@@ -948,9 +853,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['duration']).to.eql([
-				'validation.module.duration.positive',
-			])
+			expect(errors.fields['duration']).to.eql(['validation.module.duration.positive'])
 		})
 
 		it('should fail validation if audience areasOfWork is empty', async () => {
@@ -982,9 +885,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['areasOfWork']).to.eql([
-				'validation.module.areasOfWork.empty',
-			])
+			expect(errors.fields['areasOfWork']).to.eql(['validation.module.areasOfWork.empty'])
 		})
 
 		it('should fail validation if audience departments is empty', async () => {
@@ -1016,9 +917,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['departments']).to.eql([
-				'validation.module.departments.empty',
-			])
+			expect(errors.fields['departments']).to.eql(['validation.module.departments.empty'])
 		})
 
 		it('should fail validation if audience grades is empty', async () => {
@@ -1050,9 +949,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['grades']).to.eql([
-				'validation.module.grades.empty',
-			])
+			expect(errors.fields['grades']).to.eql(['validation.module.grades.empty'])
 		})
 
 		it('should fail validation if audience interests is empty', async () => {
@@ -1084,9 +981,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['interests']).to.eql([
-				'validation.module.interests.empty',
-			])
+			expect(errors.fields['interests']).to.eql(['validation.module.interests.empty'])
 		})
 
 		it('should fail validation if audience mandatory is missing', async () => {
@@ -1118,9 +1013,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['mandatory']).to.eql([
-				'validation.module.mandatory.empty',
-			])
+			expect(errors.fields['mandatory']).to.eql(['validation.module.mandatory.empty'])
 		})
 
 		it('should fail validation if event date missing', async () => {
@@ -1183,9 +1076,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['location']).to.eql([
-				'validation.module.event.location.empty',
-			])
+			expect(errors.fields['location']).to.eql(['validation.module.event.location.empty'])
 		})
 
 		it('should fail validation if event capacity is missing', async () => {
@@ -1251,9 +1142,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['capacity']).to.eql([
-				'validation.module.event.capacity.positive',
-			])
+			expect(errors.fields['capacity']).to.eql(['validation.module.event.capacity.positive'])
 		})
 
 		it('should fail validation if event date is in the past', async () => {
@@ -1285,9 +1174,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['date']).to.eql([
-				'validation.module.event.date.past',
-			])
+			expect(errors.fields['date']).to.eql(['validation.module.event.date.past'])
 		})
 
 		it('should pass validation if all properties are valid', async () => {
@@ -1344,9 +1231,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['title']).to.eql([
-				'validation.module.title.empty',
-			])
+			expect(errors.fields['title']).to.eql(['validation.module.title.empty'])
 		})
 
 		it('should fail validation if description is not present', async () => {
@@ -1370,9 +1255,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['description']).to.eql([
-				'validation.module.description.empty',
-			])
+			expect(errors.fields['description']).to.eql(['validation.module.description.empty'])
 		})
 
 		it('should fail validation if duration is not present', async () => {
@@ -1424,9 +1307,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['duration']).to.eql([
-				'validation.module.duration.positive',
-			])
+			expect(errors.fields['duration']).to.eql(['validation.module.duration.positive'])
 		})
 
 		it('should fail validation if url is not present', async () => {
@@ -1526,9 +1407,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['fileSize']).to.eql([
-				'validation.module.fileSize.positive',
-			])
+			expect(errors.fields['fileSize']).to.eql(['validation.module.fileSize.positive'])
 		})
 
 		it('should fail validation if audience areasOfWork is empty', async () => {
@@ -1553,9 +1432,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['areasOfWork']).to.eql([
-				'validation.module.areasOfWork.empty',
-			])
+			expect(errors.fields['areasOfWork']).to.eql(['validation.module.areasOfWork.empty'])
 		})
 
 		it('should fail validation if audience departments is empty', async () => {
@@ -1580,9 +1457,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['departments']).to.eql([
-				'validation.module.departments.empty',
-			])
+			expect(errors.fields['departments']).to.eql(['validation.module.departments.empty'])
 		})
 
 		it('should fail validation if audience grades is empty', async () => {
@@ -1607,9 +1482,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['grades']).to.eql([
-				'validation.module.grades.empty',
-			])
+			expect(errors.fields['grades']).to.eql(['validation.module.grades.empty'])
 		})
 
 		it('should fail validation if audience interests is empty', async () => {
@@ -1634,9 +1507,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['interests']).to.eql([
-				'validation.module.interests.empty',
-			])
+			expect(errors.fields['interests']).to.eql(['validation.module.interests.empty'])
 		})
 
 		it('should fail validation if audience mandatory is missing', async () => {
@@ -1661,9 +1532,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['mandatory']).to.eql([
-				'validation.module.mandatory.empty',
-			])
+			expect(errors.fields['mandatory']).to.eql(['validation.module.mandatory.empty'])
 		})
 
 		it('should pass validation if all properties are valid', async () => {
@@ -1711,9 +1580,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['title']).to.eql([
-				'validation.module.title.empty',
-			])
+			expect(errors.fields['title']).to.eql(['validation.module.title.empty'])
 		})
 
 		it('should fail validation if location is not present', async () => {
@@ -1735,9 +1602,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['location']).to.eql([
-				'validation.module.location.empty',
-			])
+			expect(errors.fields['location']).to.eql(['validation.module.location.empty'])
 		})
 
 		it('should fail validation if description is not present', async () => {
@@ -1759,9 +1624,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['description']).to.eql([
-				'validation.module.description.empty',
-			])
+			expect(errors.fields['description']).to.eql(['validation.module.description.empty'])
 		})
 
 		it('should fail validation if duration is not present', async () => {
@@ -1809,9 +1672,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['duration']).to.eql([
-				'validation.module.duration.positive',
-			])
+			expect(errors.fields['duration']).to.eql(['validation.module.duration.positive'])
 		})
 
 		it('should fail validation if audience areasOfWork is empty', async () => {
@@ -1834,9 +1695,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['areasOfWork']).to.eql([
-				'validation.module.areasOfWork.empty',
-			])
+			expect(errors.fields['areasOfWork']).to.eql(['validation.module.areasOfWork.empty'])
 		})
 
 		it('should fail validation if audience departments is empty', async () => {
@@ -1859,9 +1718,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['departments']).to.eql([
-				'validation.module.departments.empty',
-			])
+			expect(errors.fields['departments']).to.eql(['validation.module.departments.empty'])
 		})
 
 		it('should fail validation if audience grades is empty', async () => {
@@ -1884,9 +1741,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['grades']).to.eql([
-				'validation.module.grades.empty',
-			])
+			expect(errors.fields['grades']).to.eql(['validation.module.grades.empty'])
 		})
 
 		it('should fail validation if audience interests is empty', async () => {
@@ -1909,9 +1764,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['interests']).to.eql([
-				'validation.module.interests.empty',
-			])
+			expect(errors.fields['interests']).to.eql(['validation.module.interests.empty'])
 		})
 
 		it('should fail validation if audience mandatory is missing', async () => {
@@ -1934,9 +1787,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['mandatory']).to.eql([
-				'validation.module.mandatory.empty',
-			])
+			expect(errors.fields['mandatory']).to.eql(['validation.module.mandatory.empty'])
 		})
 
 		it('should pass validation if all properties are valid', async () => {
@@ -1982,9 +1833,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['title']).to.eql([
-				'validation.module.title.empty',
-			])
+			expect(errors.fields['title']).to.eql(['validation.module.title.empty'])
 		})
 
 		it('should fail validation if location is not present', async () => {
@@ -2006,9 +1855,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['location']).to.eql([
-				'validation.module.location.empty',
-			])
+			expect(errors.fields['location']).to.eql(['validation.module.location.empty'])
 		})
 
 		it('should fail validation if description is not present', async () => {
@@ -2030,9 +1877,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['description']).to.eql([
-				'validation.module.description.empty',
-			])
+			expect(errors.fields['description']).to.eql(['validation.module.description.empty'])
 		})
 
 		it('should fail validation if duration is not present', async () => {
@@ -2080,9 +1925,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['duration']).to.eql([
-				'validation.module.duration.positive',
-			])
+			expect(errors.fields['duration']).to.eql(['validation.module.duration.positive'])
 		})
 
 		it('should fail validation if audience areasOfWork is empty', async () => {
@@ -2105,9 +1948,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['areasOfWork']).to.eql([
-				'validation.module.areasOfWork.empty',
-			])
+			expect(errors.fields['areasOfWork']).to.eql(['validation.module.areasOfWork.empty'])
 		})
 
 		it('should fail validation if audience departments is empty', async () => {
@@ -2130,9 +1971,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['departments']).to.eql([
-				'validation.module.departments.empty',
-			])
+			expect(errors.fields['departments']).to.eql(['validation.module.departments.empty'])
 		})
 
 		it('should fail validation if audience grades is empty', async () => {
@@ -2155,9 +1994,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['grades']).to.eql([
-				'validation.module.grades.empty',
-			])
+			expect(errors.fields['grades']).to.eql(['validation.module.grades.empty'])
 		})
 
 		it('should fail validation if audience interests is empty', async () => {
@@ -2180,9 +2017,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['interests']).to.eql([
-				'validation.module.interests.empty',
-			])
+			expect(errors.fields['interests']).to.eql(['validation.module.interests.empty'])
 		})
 
 		it('should fail validation if audience mandatory is missing', async () => {
@@ -2205,9 +2040,7 @@ describe('ModuleValidator tests', () => {
 
 			const errors = await validator.check(params)
 			expect(errors.size).to.equal(1)
-			expect(errors.fields['mandatory']).to.eql([
-				'validation.module.mandatory.empty',
-			])
+			expect(errors.fields['mandatory']).to.eql(['validation.module.mandatory.empty'])
 		})
 
 		it('should pass validation if all properties are valid', async () => {

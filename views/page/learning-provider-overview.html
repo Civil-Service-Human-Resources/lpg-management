@@ -1,0 +1,60 @@
+{% from "../component/policyList/macro.njk" import policyList with context %}
+{% from "../component/tandcList/macro.njk" import tandcList with context %}
+{% from "../component/delete/macro.njk" import delete %}
+
+{% extends "../component/Page.njk" %}{% block pageTitle %}{{ i18n['learning_provider_overview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management/learning-providers") }}
+  {% endblock%}
+{% endblock %}
+
+{%  block content%}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">{{ learningProvider.name }}</h1>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h3 class="govuk-heading-m">
+                Learning provider overview
+            </h3>
+            <div class="list-container">
+                <h3 class="govuk-heading-s govuk-!-font-weight-bold govuk-!-margin-bottom-1">Cancellation policies</h3>
+                {% if learningProvider.cancellationPolicies %}
+                    {{ policyList(learningProvider.cancellationPolicies) }}
+                {% else %}
+                    <p class="govuk-body">This course does not have any policies yet</p>
+                {% endif %}
+                <a href="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy" class="govuk-button button-blue">Add cancellation policy</a>
+            </div>
+
+            <div class="list-container">
+                <h3 class="govuk-heading-s govuk-!-font-weight-bold govuk-!-margin-bottom-1">Terms and conditions</h3>
+                {% if learningProvider.termsAndConditions %}
+                    {{ tandcList(learningProvider.termsAndConditions) }}
+                {% else %}
+                    <p class="govuk-body">This course does not have any terms and conditions yet</p>
+                {% endif %}
+                <a href="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions" class="govuk-button button-blue">Add terms and conditions</a>
+            </div>
+            <a href="/content-management/learning-providers" class="govuk-button">Save changes</a>
+            <a href="/content-management/learning-providers" class="govuk-link cancel-button">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <div class="right-menu">
+                {% block delete %}
+                    {% set text1 = "Delete this learning provider" %}
+                    {% set text2 = "This will delete the learning provider and all associated information" %}
+                    {% set buttonText = "Delete learning provider" %}
+                    {{ delete("Actions", text1, text2, buttonText) }}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock%}

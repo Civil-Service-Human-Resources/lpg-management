@@ -1,22 +1,19 @@
 import {AxiosInstance} from 'axios'
-import {RestService} from '../../../../src/learning-catalogue/service/restService'
 import {beforeEach, describe, it} from 'mocha'
-import {LearningCatalogueConfig} from '../../../../src/learning-catalogue/learningCatalogueConfig'
 import * as sinon from 'sinon'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
 
 import {expect} from 'chai'
+import {LearningCatalogueConfig} from '../../../../src/learning-catalogue/learningCatalogueConfig'
+import {RestService} from '../../../../src/learning-catalogue/service/restService'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 
 chai.use(chaiAsPromised)
 
 describe('RestService tests', () => {
 	let http: AxiosInstance
-	let config = new LearningCatalogueConfig(
-		{username: 'test-user', password: 'test-pass'},
-		'http://example.org'
-	)
+	let config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
 
 	let restService: RestService
 
@@ -103,8 +100,70 @@ describe('RestService tests', () => {
 			.withArgs(path)
 			.throws(new Error('Error thrown from test'))
 
-		return expect(restService.post(path, course)).to.be.rejectedWith(
-			errorMessage
-		)
+		return expect(restService.post(path, course)).to.be.rejectedWith(errorMessage)
+	})
+
+	it('should return resource after PUT request', async () => {
+		const path = 'courses/course-id'
+		const course = new Course()
+
+		http.put = sinon
+			.stub()
+			.withArgs(path, course)
+			.returns({
+				headers: {
+					location: `${config.url}${path}`,
+				},
+			})
+
+		const data = await restService.put(path, course)
+
+		return expect(data).to.eql(course)
+	})
+
+	it('should throw error if problem with PUT request', async () => {
+		const path = '/courses/course-id'
+		const course = <Course>{
+			id: 'course-id',
+		}
+		const errorMessage =
+			'Error with PUT request: Error: Error thrown from test when putting {"id":"course-id"} to http://example.org/courses/course-id'
+
+		http.put = sinon
+			.stub()
+			.withArgs(path)
+			.throws(new Error('Error thrown from test'))
+
+		return expect(restService.put(path, course)).to.be.rejectedWith(errorMessage)
+	})
+
+	it('should return no content response after DELETE request', async () => {
+		const path = 'courses/course-id'
+
+		http.delete = sinon
+			.stub()
+			.withArgs(path)
+			.returns({
+				headers: {
+					location: `${config.url}${path}`,
+				},
+			})
+
+		const data = await restService.delete(path)
+
+		return expect(data).to.eql(undefined)
+	})
+
+	it('should throw error if problem with DELETE request', async () => {
+		const path = '/courses/course-id'
+		const errorMessage =
+			'Error with DELETE request: Error: Error thrown from test when deleting course from http://example.org/courses/course-id'
+
+		http.delete = sinon
+			.stub()
+			.withArgs(path)
+			.throws(new Error('Error thrown from test'))
+
+		return expect(restService.delete(path)).to.be.rejectedWith(errorMessage)
 	})
 })

@@ -1,7 +1,7 @@
-import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
-import {Event} from '../../../../../src/learning-catalogue/model/event'
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
+import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
+import {Event} from '../../../../../src/learning-catalogue/model/event'
 
 describe('EventFactory tests', () => {
 	const eventFactory: EventFactory = new EventFactory()
@@ -18,7 +18,6 @@ describe('EventFactory tests', () => {
 			location: location,
 			capacity: capacity,
 		}
-
 		const result: Event = eventFactory.create(data)
 
 		expect(result.id).to.equal(id)

@@ -3,6 +3,7 @@
 {% from "../component/menu/macro.njk" import menu %}
 {% from "../component/providerList/macro.njk" import providerList %}
 {% from "table/macro.njk" import govukTable %}
+  {% from "panel/macro.njk" import govukPanel %}
 
 {% extends "../component/Page.njk" %}
 {% block pageTitle %}Learning Providers - Civil Service Learning{% endblock %}
@@ -17,14 +18,21 @@
 {% endblock %}
 
 {% block content %}
+     <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">Learning providers</h1>
+        </div>
+    </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             {% if pageResults %}
+                {% if pageResults.totalResults !== 0 %}
                 {% block providerList %}
                     {{ providerList(pageResults) }}
                 {% endblock %}
-            {% else %}
-                <p class="govuk-body">There are currently no learning providers</p>
+                {% else %}
+                    <p class="govuk-body">There are currently no learning providers</p>
+                {% endif %}
             {% endif %}
         </div>
         <div class="govuk-grid-column-one-third">
@@ -32,7 +40,7 @@
                 {% block menu %}
                     {% set actions = [                           
                         {
-                            link: '/content-management/add-learning-provider',
+                            link: '/content-management/learning-providers/add-learning-provider',
                             text: 'Add a new learning provider'    
                         }
                     ] %}
@@ -44,5 +52,4 @@
             </div>
         </div>
     </div>
-
 {% endblock %}

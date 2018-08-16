@@ -16,11 +16,6 @@
 .govuk-header__navigation-item--active a:visited {
 	color: $white;
 }
-.govuk-grid-column-two-thirds {
-	.govuk-heading-m {
-		margin-top: 30px;
-	}
-}
 
 .govuk-header__container {
 	border-color: $theme;
@@ -63,18 +58,6 @@ ul {
 	flex-direction: row-reverse;
 }
 
-.button-blue {
-	background-color: $govuk-link-colour;
-
-	&:hover {
-		background-color: darken($govuk-link-colour, 10%);
-	}
-
-	&:focus {
-		background-color: $govuk-link-colour;
-	}
-}
-
 .font-bold {
 	font-weight: 700;
 }
@@ -112,6 +95,24 @@ ul {
 		color: $white;
 		margin: 0 2px;
 	}
+}
+
+.custom-panel {
+	text-align: left;
+	padding: 15px 10px;
+
+	.white {
+		margin: 0;
+		line-height: 1.4;
+	}
+}
+
+.list-container {
+	margin-bottom: 50px;
+}
+
+.white {
+	color: $white;
 }
 
 @media screen and (min-width: $tablet-small) {

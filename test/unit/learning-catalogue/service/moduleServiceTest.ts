@@ -1,13 +1,13 @@
-import {ModuleService} from '../../../../src/learning-catalogue/service/moduleService'
 import {beforeEach, describe, it} from 'mocha'
-import {Module} from '../../../../src/learning-catalogue/model/module'
 import * as sinonChai from 'sinon-chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as sinon from 'sinon'
 import * as chai from 'chai'
 import {expect} from 'chai'
-import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/moduleFactory'
+import {ModuleService} from '../../../../src/learning-catalogue/service/moduleService'
 import {RestService} from '../../../../src/learning-catalogue/service/restService'
+import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/moduleFactory'
+import {Module} from '../../../../src/learning-catalogue/model/module'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)

@@ -1,6 +1,6 @@
 import {describe, it} from 'mocha'
-import {Identity} from '../../../src/identity/identity'
 import {expect} from 'chai'
+import {Identity} from '../../../src/identity/identity'
 
 describe('Identity tests', () => {
 	it('hasRoles() should return true if identity contains role', () => {

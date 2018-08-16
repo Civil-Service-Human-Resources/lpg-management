@@ -1,22 +1,38 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "../component/textarea/macro.njk" import textarea %}
+{% from "../component/textareaError/macro.njk" import textareaError %}
+{% from "../component/menu/macro.njk" import menu %}
 {% from "button/macro.njk" import govukButton %}
 
 {% extends "../component/Page.njk" %}
-{% block pageTitle %}Add Terms and Conditions - Civil Service Learning{% endblock %}
+{% block pageTitle %}
+    {% if isEdit %}
+        Edit Terms and Conditions - Civil Service Learning
+    {% else %}
+        Add Terms and Conditions - Civil Service Learning
+    {% endif %}
+
+{% endblock %}
 
 {% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management") }}
-  {% endblock%}
+    {% block phaseBanner %}
+        {{ phaseBanner("beta") }}
+    {% endblock%}
+    {% block backLink %}
+        {{ backLink("/content-management/learning-providers/" + learningProvider.id) }}
+    {% endblock%}
 {% endblock %}
 
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
+
+            {% if isEdit %}
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Edit terms and conditions</h2>
+            {% else %}
+                <h2 class="govuk-heading-m govuk-!-font-size-36">Add new terms and conditions</h2>
+            {% endif %}
+
             {% if errors.fields %}
                 <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
                     <h2 class="govuk-error-summary__title" id="error-summary-title">
@@ -24,8 +40,8 @@
                     </h2>
                     <div class="govuk-error-summary__body">
                         <ul class="govuk-list govuk-error-summary__list">
-                        {% for field, message in errors.fields %}
-                            <li><a href="#">{{ i18n[message] }}</a></li>
+                            {% for field, message in errors.fields %}
+                                <li><a href="#">{{ i18n[message] }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -35,37 +51,76 @@
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <form action="/form-handler" method="post">
+            {% if isEdit %}
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions/{{termsAndConditions.id}}" method="post">
+            {% else %}
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions" method="post">
+            {% endif %}
+
                 <fieldset class="govuk-fieldset">
-                    {% if errors.fields %}
+                    {% if errors.fields.name %}
                         {{ govukInput({
                         label: {
                             text: "Title"
                             },
                             id: "title",
-                            name: "title",
+                            name: "name",
+                            value: termsAndConditions.name,
                             errorMessage: {
                                 text: "Title is required"
                             }
                         }) }}
-                        {% else %}
-                            {{ govukInput({
-                            label: {
-                                text: "Title"
-                                },
-                                id: "title",
-                                name: "title"
-                            }) }}
-                        {% endif %}
+                    {% else %}
+                        {{ govukInput({
+                        label: {
+                            text: "Title"
+                            },
+                            id: "title",
+                            name: "name",
+                            value: termsAndConditions.name
+                        }) }}
+                    {% endif %}
+                     
                     {% block textarea %}
-                        {{ textarea("termsAndConditions", "termsAndConditions", "Maximum of 10000 characters", 10000, "Terms and Conditions") }}
-                    {% endblock %} 
-                </fieldset> 
-                {{ govukButton({
-                    text: "Add terms and conditions"
-        
-                    }) }} 
-            </form>                    
+                        {% if errors.fields.content %}
+                            {{ textareaError("content", "termsAndConditions", "", null, termsAndConditions.content, "Terms and conditions", "Terms and conditions is required") }}
+                        {% else %}
+                            {{ textarea("content", "termsAndConditions", "", null, termsAndConditions.content, "Content") }}
+                        {% endif %}
+                    {% endblock %}               
+                </fieldset>
+                {% if isEdit %}
+                    {{ govukButton({
+                        text: "Update terms and conditions"
+                    }) }}
+                {% else %}
+                    {{ govukButton({
+                        text: "Add terms and conditions"
+                    }) }}
+                {% endif %}
+            </form>
+            <a href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+            <div class="right-menu">
+                {% block menu %}
+                    {% set actions = [
+                        {
+                            link: '/content-management/headings',
+                            text: 'Headings'
+                        },
+                        {
+                            link: '/content-management/lists',
+                            text: 'Lists'
+                        },
+                        {
+                            link: '/content-management/links',
+                            text: 'Links'
+                        }
+                    ] %}
+                {{ menu("Using markdown", actions) }}
+            {% endblock %}
+        </div>
         </div>
     </div>
 {% endblock %}

@@ -87,16 +87,72 @@ app.get('/content-management/add-course-details', ctx.courseController.getCourse
 app.post('/content-management/add-course-details', ctx.courseController.setCourseDetails())
 app.get('/content-management/course-preview/:courseId', ctx.courseController.coursePreview())
 
-app.get('/add-module', ctx.courseController.addModule())
-app.get('/add-module-blog', ctx.courseController.addModuleBlog())
+app.get('/content-management/:courseId/add-module', ctx.courseController.addModule())
+app.get('/content-management/:courseId/add-module-blog', ctx.courseController.addModuleBlog())
 
 app.get('/content-management/learning-providers', ctx.learningProviderController.index())
+
 app.get(
-	'/content-management/learning-providers/:learningProviderId',
+	'/content-management/learning-providers/add-learning-provider',
 	ctx.learningProviderController.getLearningProvider()
 )
+app.post(
+	'/content-management/learning-providers/add-learning-provider',
+	ctx.learningProviderController.setLearningProvider()
+)
+app.get(
+	'/content-management/learning-providers/:learningProviderId',
+	ctx.learningProviderController.getLearningProviderOverview()
+)
 
-app.get('/content-management/add-learning-provider', ctx.learningProviderController.getLearningProvider())
-app.post('/content-management/add-learning-provider', ctx.learningProviderController.setLearningProvider())
+app.get(
+	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
+	ctx.cancellationPolicyController.getCancellationPolicy(false)
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy/:cancellationPolicyId',
+	ctx.cancellationPolicyController.getCancellationPolicy(true)
+)
+
+app.post(
+	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
+	ctx.cancellationPolicyController.setCancellationPolicy()
+)
+
+app.post(
+	'/content-management/learning-providers/:learningProviderId/add-cancellation-policy/:cancellationPolicyId',
+	ctx.cancellationPolicyController.updateCancellationPolicy()
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/delete-cancellation-policy/:cancellationPolicyId',
+	ctx.cancellationPolicyController.deleteCancellationPolicy()
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions',
+	ctx.termsAndConditionsController.getTermsAndConditions(false)
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions/:termsAndConditionsId',
+	ctx.termsAndConditionsController.getTermsAndConditions(true)
+)
+
+app.get(
+	'/content-management/learning-providers/:learningProviderId/delete-terms-and-conditions/:termsAndConditionsId',
+	ctx.termsAndConditionsController.deleteTermsAndConditions()
+)
+
+app.post(
+	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions',
+	ctx.termsAndConditionsController.setTermsAndConditions()
+)
+
+app.post(
+	'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions/:termsAndConditionsId',
+	ctx.termsAndConditionsController.updateTermsAndConditions()
+)
 
 app.listen(PORT, () => logger.info(`LPG Management listening on port ${PORT}`))

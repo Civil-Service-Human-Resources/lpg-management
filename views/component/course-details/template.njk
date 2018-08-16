@@ -9,7 +9,7 @@
         text: "Added on"
       },
       {
-        text: "24th July 2018",
+        text: "13th August 2018",
         format: "numeric"
       }
     ],
@@ -18,7 +18,7 @@
         text: "Added by"
       },
       {
-        text: "Michael Jones",
+        text: "course-manager@domain.com",
         format: "numeric"
       }
     ],
@@ -27,7 +27,7 @@
         text: "Type"
       },
       {
-        text: i18n[course.getType()],
+        text: i18n[course.getType()]  | default("Course", true),
         format: "numeric"
       }
     ],
@@ -36,7 +36,7 @@
         text: "Cost"
         },
         {
-        text: "£" + course.getCost(),
+        text: "£" + course.getCost() | default("Free", true),
         format: "numeric"
         }
     ],

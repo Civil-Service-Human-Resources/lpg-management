@@ -1,0 +1,135 @@
+{% from "input/macro.njk" import govukInput %}
+{% from "textarea/macro.njk" import govukTextarea %}
+ {% from "button/macro.njk" import govukButton %}
+
+{% extends "../component/Page.njk" %}
+
+{% block pageTitle %}
+    {% if isEdit %}
+        Edit Cancellation Policy - Civil Service Learning
+    {% else %}
+        Add Cancellation Policy - Civil Service Learning
+    {% endif %}
+{% endblock %}
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management/learning-providers/" + learningProvider.id) }}
+  {% endblock%}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            {% if errors.fields %}
+                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
+                    <h2 class="govuk-error-summary__title" id="error-summary-title">
+                        There is a problem
+                    </h2>
+                    <div class="govuk-error-summary__body">
+                        <ul class="govuk-list govuk-error-summary__list">
+                            {% for field, message in errors.fields %}
+                                <li><a href="#">{{ i18n[message] }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {%endif%}
+        </div>
+        <div class="govuk-grid-column-two-thirds">
+            {% if isEdit == true %}
+                <h1 class="govuk-heading-l">Edit cancellation policy</h1>
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy/{{cancellationPolicy.id}}" method="post">
+            {% else %}
+                <h1 class="govuk-heading-l">Add new cancellation policy</h1>
+                <form action="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy" method="post">
+            {% endif %}
+
+                <fieldset class="govuk-fieldset">
+                    {% if errors.fields.name %}
+                        {{ govukInput({
+                        label: {
+                            text: "Policy name"
+                        },
+                        id: "name",
+                        name: "name",
+                        value: cancellationPolicy.name,
+                        errorMessage: {
+                            text: "Name is required" 
+                        }
+                        }) }}
+                    {% else %}
+                        {{ govukInput({
+                            label: {
+                                text: "Policy name"
+                            },
+                            value: cancellationPolicy.name,
+                            id: "name",
+                            name: "name"
+                        }) }}
+                    {% endif %}
+
+                {% if errors.fields.shortVersion %}
+                    {{ govukTextarea({
+                        name: "shortVersion",
+                        id: "shortVersion",
+                        value: cancellationPolicy.shortVersion,
+                        label: {
+                            text: "Short version"
+                        },
+                        errorMessage: {
+                            text: "Short version is required"
+                        }
+                    }) }}
+                {% else %}
+                    {{ govukTextarea({
+                        name: "shortVersion",
+                        id: "shortVersion",
+                        value: cancellationPolicy.shortVersion,
+                        label: {
+                            text: "Short version"
+                        }
+                    }) }}
+                {% endif %}
+                {% if errors.fields.fullVersion %}
+                    {{ govukTextarea({
+                        name: "fullVersion",
+                        id: "fullVersion",
+                        value: cancellationPolicy.longVersion,
+                        label: {
+                            text: "Full version"
+                        },
+                        errorMessage: {
+                            text: "Full version is requred"
+                        }
+                    }) }}
+                {% else %}
+                    {{ govukTextarea({
+                        name: "fullVersion",
+                        id: "fullVersion",
+                        value: cancellationPolicy.fullVersion,
+                        label: {
+                            text: "Full version"
+                        }
+                    }) }}
+                {% endif %}
+                </fieldset>
+                {% if isEdit %}
+                    {{ govukButton({
+                    text: "Update cancellation policy"
+                    }) }}
+                {% else %}
+                    {{ govukButton({
+                        text: "Add cancellation policy"
+                    }) }}
+                {% endif %}
+            </form>
+            <a href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}

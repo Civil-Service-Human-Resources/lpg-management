@@ -1,7 +1,7 @@
 import {describe, it} from 'mocha'
 import {ValidationError} from 'class-validator'
-import {ValidationErrorMapper} from '../../../../src/learning-catalogue/validator/validationErrorMapper'
 import {expect} from 'chai'
+import {ValidationErrorMapper} from '../../../../src/learning-catalogue/validator/validationErrorMapper'
 
 describe('ValidationErrorMapper tests', () => {
 	const errorMapper = new ValidationErrorMapper()
@@ -14,8 +14,7 @@ describe('ValidationErrorMapper tests', () => {
 				property: 'shortDescription',
 				children: [],
 				constraints: {
-					length:
-						'shortDescription must be longer than or equal to 0 characters',
+					length: 'shortDescription must be longer than or equal to 0 characters',
 					isNotEmpty: 'shortDescription should not be empty',
 				},
 			},
@@ -25,8 +24,7 @@ describe('ValidationErrorMapper tests', () => {
 				property: 'description',
 				children: [],
 				constraints: {
-					length:
-						'description must be longer than or equal to 0 characters',
+					length: 'description must be longer than or equal to 0 characters',
 					isNotEmpty: 'description should not be empty',
 				},
 			},

@@ -1,12 +1,8 @@
-import {ModuleFactory} from '../../../../../src/learning-catalogue/model/factory/moduleFactory'
-// import * as sinon from 'sinon'
 import {beforeEach, describe} from 'mocha'
-import {CourseFactory} from '../../../../../src/learning-catalogue/model/factory/courseFactory'
-// import {Course} from '../../../../../src/learning-catalogue/model/course'
-// import {expect} from 'chai'
-// import {Module} from '../../../../../src/learning-catalogue/model/module'
 import * as sinonChai from 'sinon-chai'
 import * as chai from 'chai'
+import {ModuleFactory} from '../../../../../src/learning-catalogue/model/factory/moduleFactory'
+import {CourseFactory} from '../../../../../src/learning-catalogue/model/factory/courseFactory'
 
 chai.use(sinonChai)
 

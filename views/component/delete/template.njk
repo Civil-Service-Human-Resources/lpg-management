@@ -1,0 +1,12 @@
+{% from "button/macro.njk" import govukButton %}
+
+<div class="menu-container">
+    <h4 class="menu-header">{{ boxTitle }}</h4>
+    <p class="govuk-body">{{ text1 }}</p>
+    <p class="govuk-body">{{ text2 }}</p>
+    </ul>
+        {{ govukButton({
+            text: buttonText,
+            "classes": "govuk-button--delete"
+        }) }}
+</div>

@@ -1,10 +1,10 @@
-import {Course} from '../../../../src/learning-catalogue/model/course'
 import {beforeEach, describe, it} from 'mocha'
 import {expect} from 'chai'
-import {Module} from '../../../../src/learning-catalogue/model/module'
+import {Course} from '../../../../src/learning-catalogue/model/course'
 import {VideoModule} from '../../../../src/learning-catalogue/model/videoModule'
 import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
 import {FaceToFaceModule} from '../../../../src/learning-catalogue/model/faceToFaceModule'
+import {Module} from '../../../../src/learning-catalogue/model/module'
 
 describe('Course tests', () => {
 	let course: Course
@@ -74,7 +74,7 @@ describe('Course tests', () => {
 	it('should get type to be null if no modules', () => {
 		course.modules = []
 
-		expect(course.getType()).to.equal(null)
+		expect(course.getType()).to.equal('Course')
 	})
 
 	it('should get type to be blended if more than one module', () => {

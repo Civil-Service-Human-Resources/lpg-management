@@ -10,6 +10,8 @@ export class LearningProviderFactory {
 
 		learningProvider.id = data.id
 		learningProvider.name = data.name
+		learningProvider.cancellationPolicies = data.cancellationPolicies
+		learningProvider.termsAndConditions = data.termsAndConditions
 
 		return learningProvider
 	}

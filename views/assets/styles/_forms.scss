@@ -4,7 +4,7 @@
 
 .form-header {
 	color: $govuk-secondary-text-colour;
-	margin-bottom: -35px;
+	margin: 0;
 }
 
 .time-inputs {
@@ -70,5 +70,23 @@
 		.govuk-button {
 			margin: 30px 0 0 0;
 		}
+	}
+}
+
+.button-blue {
+	background-color: $govuk-link-colour;
+
+	&:hover {
+		background-color: darken($govuk-link-colour, 10%);
+	}
+
+	&:focus {
+		background-color: $govuk-link-colour;
+	}
+}
+
+@media screen and (min-width: $tablet-small) {
+	button.button-blue {
+		margin-left: 10px;
 	}
 }

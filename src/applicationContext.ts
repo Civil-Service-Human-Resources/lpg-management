@@ -13,11 +13,17 @@ import {CourseValidator} from './learning-catalogue/validator/courseValidator'
 import {EnvValue} from 'ts-json-properties'
 import {CourseController} from './controllers/courseController'
 import {CourseFactory} from './learning-catalogue/model/factory/courseFactory'
-import {LearningProviderController} from './controllers/learningProviderController'
+import {LearningProviderController} from './controllers/LearningProvider/learningProviderController'
 import {LearningProviderFactory} from './learning-catalogue/model/factory/learningProviderFactory'
-import {NextFunction, Request, Response} from 'express'
 import {LearningProviderValidator} from './learning-catalogue/validator/learningProviderValidator'
+import {CancellationPolicyFactory} from './learning-catalogue/model/factory/cancellationPolicyFactory'
+import {CancellationPolicyValidator} from './learning-catalogue/validator/cancellationPolicyValidator'
+import {TermsAndConditionsFactory} from './learning-catalogue/model/factory/termsAndConditionsFactory'
+import {TermsAndConditionsValidator} from './learning-catalogue/validator/termsAndConditionsValidator'
+import {NextFunction, Request, Response} from 'express'
 import {Pagination} from './lib/pagination'
+import {CancellationPolicyController} from './controllers/LearningProvider/cancellationPolicyController'
+import {TermsAndConditionsController} from './controllers/LearningProvider/termsAndConditionsController'
 
 log4js.configure(config.LOGGING)
 
@@ -33,10 +39,17 @@ export class ApplicationContext {
 	courseValidator: CourseValidator
 	courseFactory: CourseFactory
 	learningProviderFactory: LearningProviderFactory
+	cancellationPolicyValidator: CancellationPolicyValidator
+	cancellationPolicyFactory: CancellationPolicyFactory
+	cancellationPolicyController: CancellationPolicyController
+	termsAndConditionsValidator: TermsAndConditionsValidator
+	termsAndConditionsFactory: TermsAndConditionsFactory
+	termsAndConditionsController: TermsAndConditionsController
 	learningProviderValidator: LearningProviderValidator
 	pagination: Pagination
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -83,6 +96,24 @@ export class ApplicationContext {
 			this.learningProviderValidator,
 			this.learningProviderFactory,
 			this.pagination
+		)
+
+		this.cancellationPolicyValidator = new CancellationPolicyValidator()
+		this.cancellationPolicyFactory = new CancellationPolicyFactory()
+
+		this.cancellationPolicyController = new CancellationPolicyController(
+			this.learningCatalogue,
+			this.cancellationPolicyValidator,
+			this.cancellationPolicyFactory
+		)
+
+		this.termsAndConditionsValidator = new TermsAndConditionsValidator()
+		this.termsAndConditionsFactory = new TermsAndConditionsFactory()
+
+		this.termsAndConditionsController = new TermsAndConditionsController(
+			this.learningCatalogue,
+			this.termsAndConditionsValidator,
+			this.termsAndConditionsFactory
 		)
 	}
 
