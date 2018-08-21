@@ -1,0 +1,109 @@
+{% from "input/macro.njk" import govukInput %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "button/macro.njk" import govukButton %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% extends "../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n['module_youtube_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% block beforeContent %}
+{% block phaseBanner %}
+{{ phaseBanner("beta") }}
+{% endblock%}
+{% block backLink %}
+{{ backLink("/content-management") }}
+{% endblock%}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+        <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
+        <p class="govuk-body">You are adding a <strong>YouTube Video</strong> module</p>
+
+        {% set errors = sessionFlash.errors%}
+
+        {% if errors.fields %}
+        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+                There is a problem
+            </h2>
+            <div class="govuk-error-summary__body">
+                <ul class="govuk-list govuk-error-summary__list">
+                    {% for field, message in errors.fields %}
+                    <li><a href="#">{{ i18n[message] }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {%endif%}
+
+        {% set module = sessionFlash.module %}
+
+        <form action="/content-management/courses/{{course.id}}/add-youtube-module" method="post">
+            <input name="type" type="hidden" value="video">
+            <fieldset class="govuk-fieldset">
+                {{ govukInput({
+                label: {
+                text: "Module title"
+                },
+                id: "title",
+                name: "title",
+                value: module.title
+                }) }}
+
+                {{ govukTextarea({
+                name: "description",
+                id: "description",
+                label: {
+                text: "Description"
+                },
+                value: module.description
+                }) }}
+
+                {{ govukInput({
+                label: {
+                text: "URL"
+                },
+                id: "location",
+                name: "location",
+                value: module.location
+                }) }}
+
+            </fieldset>
+            {{ govukCheckboxes({
+            idPrefix: "isOptional",
+            name: "isOptional",
+            classes: "font-light",
+            fieldset: {
+            legend: {
+            text: "Is this an optional module?",
+            isPageHeading: true,
+            classes: "font-bold"
+            }
+            },
+            items: [
+            {
+            value: true,
+            text: "Yes, this is optional"
+            }
+            ]
+            })
+            }}
+
+            {{ govukButton({
+            text: "Continue",
+            type: "submit"
+            }) }}
+        </form>
+
+        <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+
+    </div>
+</div>
+{% endblock %}

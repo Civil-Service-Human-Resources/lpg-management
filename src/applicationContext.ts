@@ -12,19 +12,24 @@ import {LearningCatalogue} from './learning-catalogue'
 import {EnvValue} from 'ts-json-properties'
 import {CourseController} from './controllers/courseController'
 import {CourseFactory} from './learning-catalogue/model/factory/courseFactory'
-import {LearningProviderController} from './controllers/learningProvider/learningProviderController'
+import {LearningProviderController} from './controllers/LearningProvider/learningProviderController'
 import {LearningProviderFactory} from './learning-catalogue/model/factory/learningProviderFactory'
 import {CancellationPolicyFactory} from './learning-catalogue/model/factory/cancellationPolicyFactory'
 import {TermsAndConditionsFactory} from './learning-catalogue/model/factory/termsAndConditionsFactory'
 import {NextFunction, Request, Response} from 'express'
 import {Pagination} from './lib/pagination'
-import {CancellationPolicyController} from './controllers/learningProvider/cancellationPolicyController'
-import {TermsAndConditionsController} from './controllers/learningProvider/termsAndConditionsController'
+import {CancellationPolicyController} from './controllers/LearningProvider/cancellationPolicyController'
+import {TermsAndConditionsController} from './controllers/LearningProvider/termsAndConditionsController'
+import {YoutubeModuleController} from './controllers/Module/youtubeModuleController'
 import {Validator} from './learning-catalogue/validator/validator'
 import {LearningProvider} from './learning-catalogue/model/learningProvider'
 import {CancellationPolicy} from './learning-catalogue/model/cancellationPolicy'
 import {TermsAndConditions} from './learning-catalogue/model/termsAndConditions'
 import {Course} from './learning-catalogue/model/course'
+import {ModuleFactory} from './learning-catalogue/model/factory/moduleFactory'
+import {AudienceFactory} from './learning-catalogue/model/factory/audienceFactory'
+import {EventFactory} from './learning-catalogue/model/factory/eventFactory'
+import {ModuleValidator} from './learning-catalogue/validator/moduleValidator'
 
 log4js.configure(config.LOGGING)
 
@@ -47,9 +52,15 @@ export class ApplicationContext {
 	learningProviderController: LearningProviderController
 	cancellationPolicyController: CancellationPolicyController
 	termsAndConditionsController: TermsAndConditionsController
+	moduleController: YoutubeModuleController
+	moduleValidator: ModuleValidator
+	moduleFactory: ModuleFactory
+	audienceFactory: AudienceFactory
+	eventFactory: EventFactory
 	pagination: Pagination
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -93,6 +104,16 @@ export class ApplicationContext {
 		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
 		this.learningProviderFactory = new LearningProviderFactory()
 		this.cancellationPolicyFactory = new CancellationPolicyFactory()
+
+		this.audienceFactory = new AudienceFactory()
+		this.eventFactory = new EventFactory()
+		this.moduleFactory = new ModuleFactory(this.audienceFactory, this.eventFactory)
+		this.moduleValidator = new ModuleValidator()
+		this.moduleController = new YoutubeModuleController(
+			this.learningCatalogue,
+			this.moduleValidator,
+			this.moduleFactory
+		)
 
 		this.termsAndConditionsFactory = new TermsAndConditionsFactory()
 		this.learningProviderValidator = new Validator<LearningProvider>(this.learningProviderFactory)

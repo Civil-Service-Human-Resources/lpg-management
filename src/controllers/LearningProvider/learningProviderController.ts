@@ -5,6 +5,7 @@ import {LearningCatalogue} from '../../learning-catalogue'
 import {LearningProviderFactory} from '../../learning-catalogue/model/factory/learningProviderFactory'
 import {DefaultPageResults} from '../../learning-catalogue/model/defaultPageResults'
 import {LearningProvider} from '../../learning-catalogue/model/learningProvider'
+import {ContentRequest} from '../../extended'
 import {Validator} from '../../learning-catalogue/validator/validator'
 
 const logger = log4js.getLogger('controllers/learningProviderController')
@@ -34,14 +35,16 @@ export class LearningProviderController {
 
 	private setRouterPaths() {
 		this.router.param('learningProviderId', async (ireq, res, next, learningProviderId) => {
+			const req = ireq as ContentRequest
+
 			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
 
 			if (learningProvider) {
-				res.locals.learningProvider = learningProvider
-				next()
+				req.learningProvider = learningProvider
 			} else {
 				res.sendStatus(404)
 			}
+			next()
 		})
 
 		this.router.get('/content-management/learning-providers', this.index())
@@ -73,7 +76,10 @@ export class LearningProviderController {
 
 	public getLearningProviderOverview() {
 		return async (request: Request, response: Response) => {
-			response.render('page/learning-provider-overview')
+			const req = request as ContentRequest
+			const learningProvider = req.learningProvider
+
+			response.render('page/learning-provider-overview', {learningProvider: learningProvider})
 		}
 	}
 
