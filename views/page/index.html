@@ -13,13 +13,13 @@
 
 {% block content %}
     <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
+        <div class="govuk-grid-column-full">
             <h1 class="govuk-heading-l">Content management</h1>
         </div>
     </div>
 
     <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-two-thirds">
         {% if pageResults %}
             {% if pageResults.totalResults !== 0 %}
                 {% block list %}
@@ -50,12 +50,12 @@
                             {% endif %}
                         </div>
                     {% endif %}
-                        <div class="pager__summary">
-                                <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
-                        </div>
+                    <div class="pager__summary">
+                        <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
                     </div>
                 </div>
-            {% endif %}
+            </div>
+        {% endif %}
         </div>
         <div class="govuk-grid-column-one-third govuk-!-padding-top-6 ">
             <div class="right-menu">
