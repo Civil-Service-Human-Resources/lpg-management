@@ -5,6 +5,7 @@ import * as log4js from 'log4js'
 import {LearningCatalogue} from '../learning-catalogue'
 import {Course} from '../learning-catalogue/model/course'
 import {Validator} from '../learning-catalogue/validator/validator'
+import {Module} from "../learning-catalogue/model/module";
 
 const logger = log4js.getLogger('controllers/courseController')
 
@@ -57,7 +58,8 @@ export class CourseController {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			response.render('page/course/course-overview')
+			const faceToFaceModules = response.locals.course.modules.filter( (module: Module) => module.type == 'face-to-face' );
+			response.render('page/course/course-overview', {faceToFaceModules})
 		}
 	}
 

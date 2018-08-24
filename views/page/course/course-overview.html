@@ -1,6 +1,7 @@
 {% from "../../component/list/macro.njk" import list %}
 {% from "../../component/menu/macro.njk" import menu %}
 {% from "../../component/course-details/macro.njk" import courseDetails with context %}
+{% from "../../component/course-events/macro.njk" import courseEvents with context %}
 {% from "back-link/macro.njk" import govukBackLink %}
 
 {% extends "../../component/Page.njk" %}
@@ -32,7 +33,12 @@
         <h3 class="govuk-heading-m">Course Overview</h3>
         {% block courseDetails %}
             {{ courseDetails(course) }}
-        {% endblock %} 
+        {% endblock %}
+
+        <h3 class="govuk-heading-m">Course Events</h3>
+        {% block courseEvents %}
+            {{ courseEvents(course, faceToFaceModules) }}
+        {% endblock %}
     </div>
 
     <div class="govuk-grid-column-one-third">
