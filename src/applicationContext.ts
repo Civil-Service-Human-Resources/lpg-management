@@ -25,6 +25,11 @@ import {LearningProvider} from './learning-catalogue/model/learningProvider'
 import {CancellationPolicy} from './learning-catalogue/model/cancellationPolicy'
 import {TermsAndConditions} from './learning-catalogue/model/termsAndConditions'
 import {Course} from './learning-catalogue/model/course'
+import {ModuleController} from './controllers/moduleController'
+import {ModuleFactory} from './learning-catalogue/model/factory/moduleFactory'
+import {AudienceFactory} from './learning-catalogue/model/factory/audienceFactory'
+import {EventFactory} from './learning-catalogue/model/factory/eventFactory'
+import {Module} from './learning-catalogue/model/module'
 
 log4js.configure(config.LOGGING)
 
@@ -47,9 +52,15 @@ export class ApplicationContext {
 	learningProviderController: LearningProviderController
 	cancellationPolicyController: CancellationPolicyController
 	termsAndConditionsController: TermsAndConditionsController
+	moduleController: ModuleController
+	moduleFactory: ModuleFactory
+	moduleValidator: Validator<Module>
 	pagination: Pagination
+	audienceFactory: AudienceFactory
+	eventFactory: EventFactory
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -84,6 +95,9 @@ export class ApplicationContext {
 		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig)
 
 		this.courseFactory = new CourseFactory()
+
+		this.moduleFactory = new ModuleFactory(new AudienceFactory(), new EventFactory())
+		this.moduleValidator = new Validator<Module>(this.moduleFactory)
 
 		this.pagination = new Pagination()
 
@@ -122,6 +136,8 @@ export class ApplicationContext {
 			this.termsAndConditionsFactory,
 			this.termsAndConditionsValidator
 		)
+
+		this.moduleController = new ModuleController(this.learningCatalogue, this.moduleFactory)
 	}
 
 	addToResponseLocals() {

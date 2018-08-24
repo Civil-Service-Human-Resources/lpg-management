@@ -1,7 +1,7 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
 
-{% extends "../component/Page.njk" %}
+{% extends "../../../component/Page.njk" %}
 
 {% block pageTitle %}{{ i18n['module_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
@@ -36,7 +36,7 @@
 
             </div>
 
-            <form action="/form-handler" method="post">
+            <form action="/content-management/courses/{{ course.id }}/add-module" method="post">
                 <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Add a module</h3>
                 <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
         
@@ -51,7 +51,7 @@
                         },
                         items: [
                             {
-                            value: " ",
+                            value: "",
                             text: "Type of learning",
                             selected: true
                             },
@@ -60,8 +60,8 @@
                             text: "Blog"
                             },
                             {
-                            value: "book",
-                            text: "Book"
+                            value: "file",
+                            text: "File"
                             },
                             {
                             value: "f2f",

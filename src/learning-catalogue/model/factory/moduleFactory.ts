@@ -24,7 +24,9 @@ export class ModuleFactory {
 		module.title = data.title
 		module.description = data.description
 		module.duration = data.duration
+
 		module.price = data.price
+
 		module.audiences = (data.audiences || []).map(this.audienceFactory.create)
 
 		return module
@@ -55,6 +57,7 @@ export class ModuleFactory {
 			module.fileSize = data.fileSize
 			return module
 		},
+
 		'face-to-face': (data: any) => {
 			const module = this.defaultCreate(new FaceToFaceModule(), data)
 			module.events = (data.events || []).map(this.eventFactory.create)
