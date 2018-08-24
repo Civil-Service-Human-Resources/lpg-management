@@ -14,8 +14,6 @@ npm install
 stage "Running the unit tests"
 npm test
 
-npm run compile && find dist -name '*Test.js' | xargs ./node_modules/nyc/bin/nyc.js check-coverage --lines 80 --per-file --reporter=text --reporter=html ./node_modules/mocha/bin/mocha
-
 stage "Pulling the latest lpg-management-ui docker image"
 docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 docker pull cshr/lpg-management-ui || true

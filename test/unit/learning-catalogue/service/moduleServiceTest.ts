@@ -18,7 +18,7 @@ describe('ModuleService tests', () => {
 	let restService: RestService
 	let moduleFactory: ModuleFactory
 
-	const path: string = `/courses/${courseId}/modules`
+	const path: string = `/courses/${courseId}/modules/`
 
 	beforeEach(() => {
 		moduleFactory = <ModuleFactory>{}

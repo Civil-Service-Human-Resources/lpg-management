@@ -20,15 +20,18 @@ import {NextFunction, Request, Response} from 'express'
 import {Pagination} from './lib/pagination'
 import {CancellationPolicyController} from './controllers/learningProvider/cancellationPolicyController'
 import {TermsAndConditionsController} from './controllers/learningProvider/termsAndConditionsController'
+import {YoutubeModuleController} from './controllers/module/youtubeModuleController'
 import {Validator} from './learning-catalogue/validator/validator'
 import {LearningProvider} from './learning-catalogue/model/learningProvider'
 import {CancellationPolicy} from './learning-catalogue/model/cancellationPolicy'
 import {TermsAndConditions} from './learning-catalogue/model/termsAndConditions'
 import {Course} from './learning-catalogue/model/course'
-import {ModuleController} from './controllers/moduleController'
 import {ModuleFactory} from './learning-catalogue/model/factory/moduleFactory'
 import {AudienceFactory} from './learning-catalogue/model/factory/audienceFactory'
 import {EventFactory} from './learning-catalogue/model/factory/eventFactory'
+import {YoutubeService} from './lib/youtubeService'
+import {YoutubeConfig} from './lib/youtubeConfig'
+import {ModuleController} from './controllers/moduleController'
 import {Module} from './learning-catalogue/model/module'
 
 log4js.configure(config.LOGGING)
@@ -52,12 +55,15 @@ export class ApplicationContext {
 	learningProviderController: LearningProviderController
 	cancellationPolicyController: CancellationPolicyController
 	termsAndConditionsController: TermsAndConditionsController
-	moduleController: ModuleController
-	moduleFactory: ModuleFactory
+	youtubeModuleController: YoutubeModuleController
 	moduleValidator: Validator<Module>
-	pagination: Pagination
+	moduleFactory: ModuleFactory
 	audienceFactory: AudienceFactory
 	eventFactory: EventFactory
+	moduleController: ModuleController
+	pagination: Pagination
+	youtubeService: YoutubeService
+	youtubeConfig: YoutubeConfig
 
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
@@ -96,9 +102,6 @@ export class ApplicationContext {
 
 		this.courseFactory = new CourseFactory()
 
-		this.moduleFactory = new ModuleFactory(new AudienceFactory(), new EventFactory())
-		this.moduleValidator = new Validator<Module>(this.moduleFactory)
-
 		this.pagination = new Pagination()
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
@@ -107,6 +110,19 @@ export class ApplicationContext {
 		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
 		this.learningProviderFactory = new LearningProviderFactory()
 		this.cancellationPolicyFactory = new CancellationPolicyFactory()
+
+		this.youtubeConfig = new YoutubeConfig('', 15000)
+		this.youtubeService = new YoutubeService(this.youtubeConfig)
+		this.audienceFactory = new AudienceFactory()
+		this.eventFactory = new EventFactory()
+		this.moduleFactory = new ModuleFactory(this.audienceFactory, this.eventFactory)
+		this.moduleValidator = new Validator<Module>(this.moduleFactory)
+		this.youtubeModuleController = new YoutubeModuleController(
+			this.learningCatalogue,
+			this.moduleValidator,
+			this.moduleFactory,
+			this.youtubeService
+		)
 
 		this.termsAndConditionsFactory = new TermsAndConditionsFactory()
 		this.learningProviderValidator = new Validator<LearningProvider>(this.learningProviderFactory)

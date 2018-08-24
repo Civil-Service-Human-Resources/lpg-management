@@ -10,25 +10,17 @@ export class ModuleService {
 
 	constructor(restService: RestService) {
 		this._restService = restService
-		this._moduleFactory = new ModuleFactory(
-			new AudienceFactory(),
-			new EventFactory()
-		)
+		this._moduleFactory = new ModuleFactory(new AudienceFactory(), new EventFactory())
 	}
 
 	async create(courseId: string, module: Module): Promise<Module> {
-		const data = await this._restService.post(
-			`/courses/${courseId}/modules`,
-			module
-		)
+		const data = await this._restService.post(`/courses/${courseId}/modules/`, module)
 
 		return this._moduleFactory.create(data)
 	}
 
 	async get(courseId: string, moduleId: string): Promise<Module> {
-		const data = await this._restService.get(
-			`/courses/${courseId}/modules/${moduleId}`
-		)
+		const data = await this._restService.get(`/courses/${courseId}/modules/${moduleId}`)
 
 		return this._moduleFactory.create(data)
 	}

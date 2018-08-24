@@ -15,6 +15,7 @@
   "learning_providers_title": "Learning providers",
   "module_add_title": "Add a module",
   "module_blog_add_title": "Add a blog",
+  "module_youtube_add_title": "Add a YouTube video",
   "proposition_name": "Civil Service Learning",
   "terms_and_conditions_add_title": "Add terms and conditions",
   "validation.course.title.empty": "Title is required",
@@ -32,5 +33,9 @@
   "validation.termsAndConditions.name.empty": "Title is required",
   "validation.termsAndConditions.content.empty":
   "Content is required",
-  "validation_learningProvider_name_empty": "Name is required"
+  "validation_learningProvider_name_empty": "Name is required",
+  "validation_module_url_empty": "URL is required",
+  "validation_module_title_empty": "Title is required",
+  "validation_module_video_notFound": "There was a problem finding this video",
+  "validation_module_video_noDuration": "There was a problem finding the length of this video"
 }

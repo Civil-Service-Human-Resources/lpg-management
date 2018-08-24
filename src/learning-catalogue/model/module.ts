@@ -16,7 +16,7 @@ export class Module {
 
 	@IsNotEmpty({
 		groups: ['all', 'title'],
-		message: 'validation.module.title.empty',
+		message: 'validation_module_title_empty',
 	})
 	title: string
 
@@ -37,6 +37,8 @@ export class Module {
 	duration: number
 
 	price?: number
+
+	optional: boolean
 
 	@ValidateNested({
 		groups: ['all', 'audiences'],

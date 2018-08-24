@@ -2,6 +2,7 @@ import {Request, Response, Router} from 'express'
 import * as log4js from 'log4js'
 import {LearningCatalogue} from '../../learning-catalogue'
 import {CancellationPolicyFactory} from '../../learning-catalogue/model/factory/cancellationPolicyFactory'
+import {ContentRequest} from '../../extended'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {CancellationPolicy} from '../../learning-catalogue/model/cancellationPolicy'
 
@@ -28,7 +29,9 @@ export class CancellationPolicyController {
 	}
 
 	private setRouterPaths() {
-		this.router.param('cancellationPolicyId', async (req, res, next, cancellationPolicyId) => {
+		this.router.param('cancellationPolicyId', async (ireq, res, next, cancellationPolicyId) => {
+			const req = ireq as ContentRequest
+
 			const learningProviderId = req.params.learningProviderId
 
 			const cancellationPolicy = await this.learningCatalogue.getCancellationPolicy(
@@ -37,14 +40,14 @@ export class CancellationPolicyController {
 			)
 
 			if (cancellationPolicy) {
-				res.locals.cancellationPolicy = cancellationPolicy
+				req.cancellationPolicy = cancellationPolicy
 				next()
 			} else {
 				res.sendStatus(404)
 			}
 		})
 
-		this.router.param('learningProviderId', async (req, res, next, learningProviderId) => {
+		this.router.param('learningProviderId', async (ireq, res, next, learningProviderId) => {
 			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
 
 			if (learningProvider) {

@@ -26,7 +26,7 @@ export class ModuleFactory {
 		module.duration = data.duration
 
 		module.price = data.price
-
+		module.optional = data.optional
 		module.audiences = (data.audiences || []).map(this.audienceFactory.create)
 
 		return module
@@ -44,6 +44,7 @@ export class ModuleFactory {
 		video: (data: any) => {
 			const module = this.defaultCreate(new VideoModule(), data)
 			module.location = data.location
+			module.url = data.url
 			return module
 		},
 		blog: (data: any) => {
@@ -57,7 +58,6 @@ export class ModuleFactory {
 			module.fileSize = data.fileSize
 			return module
 		},
-
 		'face-to-face': (data: any) => {
 			const module = this.defaultCreate(new FaceToFaceModule(), data)
 			module.events = (data.events || []).map(this.eventFactory.create)
