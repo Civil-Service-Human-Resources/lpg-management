@@ -207,4 +207,14 @@ describe('EntityService tests', () => {
 		expect(restService.put).to.have.been.calledOnceWith(path, learningProvider)
 		expect(learningProviderFactory.create).to.have.been.calledOnceWith(data)
 	})
+
+	it('should delete learning provider and return void', async () => {
+		const path = `/learning-providers/learning-provider-id`
+
+		restService.delete = sinon.stub()
+
+		await entityService.delete(path)
+
+		expect(restService.delete).to.have.been.calledOnceWith(path)
+	})
 })

@@ -4,7 +4,13 @@
 
 {% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['course_title_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}
+{% if course %}
+{{ i18n['course_title_edit_title'] }} - {{ i18n['proposition_name'] }}
+{% else %}
+{{ i18n['course_title_add_title'] }} - {{ i18n['proposition_name'] }}
+{% endif %}
+{% endblock %}
 
 {% block beforeContent %}
   {% block phaseBanner %}

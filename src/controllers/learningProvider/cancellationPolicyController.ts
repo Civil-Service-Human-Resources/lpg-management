@@ -27,6 +27,7 @@ export class CancellationPolicyController {
 		this.setRouterPaths()
 	}
 
+	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('cancellationPolicyId', async (req, res, next, cancellationPolicyId) => {
 			const learningProviderId = req.params.learningProviderId
@@ -56,20 +57,25 @@ export class CancellationPolicyController {
 		})
 
 		this.router.get(
-			'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
+			'/content-management/learning-providers/:learningProviderId/cancellation-policies/:cancellationPolicyId?',
 			this.getCancellationPolicy()
 		)
 
 		this.router.post(
-			'/content-management/learning-providers/:learningProviderId/add-cancellation-policy',
+			'/content-management/learning-providers/:learningProviderId/cancellation-policies/:cancellationPolicyId?',
 			this.setCancellationPolicy()
+		)
+
+		this.router.get(
+			'/content-management/learning-providers/:learningProviderId/cancellation-policies/:cancellationPolicyId/delete',
+			this.deleteCancellationPolicy()
 		)
 	}
 
 	public getCancellationPolicy() {
 		logger.debug('Getting cancellation policy')
 		return async (request: Request, response: Response) => {
-			response.render('page/add-cancellation-policy')
+			response.render('page/learning-provider/cancellation-policy')
 		}
 	}
 
@@ -87,13 +93,44 @@ export class CancellationPolicyController {
 			if (errors.size) {
 				request.session!.sessionFlash = {errors: errors}
 				return response.redirect(
-					'/content-management/learning-providers/' + learningProviderId + '/add-cancellation-policy'
+					`/content-management/learning-providers/${learningProviderId}/cancellation-policies`
 				)
+			}
+
+			if (request.params.cancellationPolicyId) {
+				await this.editCancellationPolicy(request, response)
+
+				return response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 			}
 
 			await this.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
 
-			response.redirect('/content-management/learning-providers/' + learningProviderId)
+			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 		}
+	}
+
+	public deleteCancellationPolicy() {
+		return async (request: Request, response: Response) => {
+			const learningProviderId: string = request.params.learningProviderId
+			const cancellationPolicyId: string = request.params.cancellationPolicyId
+
+			await this.learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicyId)
+
+			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
+		}
+	}
+
+	private async editCancellationPolicy(request: Request, response: Response) {
+		const data = {
+			...request.body,
+			id: response.locals.cancellationPolicy.id,
+			name: request.body.name || response.locals.cancellationPolicy.title,
+			fullVersion: request.body.fullVersion || response.locals.cancellationPolicy.fullVersion,
+			shortVersion: request.body.shortVersion || response.locals.cancellationPolicy.shortVersion,
+		}
+
+		const cancellationPolicy = this.cancellationPolicyFactory.create(data)
+
+		await this.learningCatalogue.updateCancellationPolicy(request.params.learningProviderId, cancellationPolicy)
 	}
 }

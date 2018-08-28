@@ -14,7 +14,6 @@ chai.use(chaiAsPromised)
 describe('RestService tests', () => {
 	let http: AxiosInstance
 	let config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
-
 	let restService: RestService
 
 	beforeEach(() => {
@@ -141,5 +140,28 @@ describe('RestService tests', () => {
 			.throws(new Error('Error thrown from test'))
 
 		return expect(restService.put(path, course)).to.be.rejectedWith(errorMessage)
+	})
+
+	it('should return data from DELETE request', async () => {
+		const path = '/courses/course-id'
+
+		http.delete = sinon.stub().withArgs(path)
+
+		const data = await restService.delete(path)
+
+		return expect(data).to.be.equal(undefined)
+	})
+
+	it('should throw error if problem with DELETE request', async () => {
+		const path = '/courses/course-id'
+		const errorMessage =
+			'Error with DELETE request: Error: Error thrown from test when deleting http://example.org/courses/course-id'
+
+		http.delete = sinon
+			.stub()
+			.withArgs(path)
+			.throws(new Error('Error thrown from test'))
+
+		return expect(restService.delete(path)).to.be.rejectedWith(errorMessage)
 	})
 })

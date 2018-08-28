@@ -24,6 +24,7 @@ describe('ModuleFactory tests', () => {
 			id: 'MBlZJv-ZRDCYZsCByjzRuQ',
 			title: 'module title',
 			description: 'module description',
+			url: 'module url',
 			duration: 3600,
 			price: 100,
 			audiences: [
@@ -53,8 +54,10 @@ describe('ModuleFactory tests', () => {
 	}
 
 	it('should create LinkModule', async () => {
-		data.location = 'http://example.org'
-		data.type = 'blog'
+		data.url = 'http://example.org'
+		data.type = 'link'
+		data.moduleTitle = 'module title'
+		data.description = 'this a description'
 
 		const module = await moduleFactory.create(data)
 

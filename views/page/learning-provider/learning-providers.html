@@ -1,11 +1,10 @@
-{% from "../component/list/macro.njk" import list %}
 {% from "table/macro.njk" import govukTable %}
-{% from "../component/menu/macro.njk" import menu %}
-{% from "../component/providerList/macro.njk" import providerList %}
-{% from "table/macro.njk" import govukTable %}
-  {% from "panel/macro.njk" import govukPanel %}
+{% from "panel/macro.njk" import govukPanel %}
+{% from "../../component/list/macro.njk" import list %}
+{% from "../../component/menu/macro.njk" import menu %}
+{% from "../../component/providerList/macro.njk" import providerList %}
 
-{% extends "../component/Page.njk" %}
+{% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}{{ i18n['learning_providers_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
@@ -41,7 +40,7 @@
                 {% block menu %}
                     {% set actions = [                           
                         {
-                            link: '/content-management/learning-providers/add-learning-provider',
+                            link: '/content-management/learning-providers/learning-provider',
                             text: 'Add a new learning provider'    
                         }
                     ] %}

@@ -6,8 +6,8 @@ export class TermsAndConditionsFactory implements Factory<TermsAndConditions> {
 		const termsAndConditions: TermsAndConditions = new TermsAndConditions()
 
 		termsAndConditions.id = data.id
-		termsAndConditions.name = data.title
-		termsAndConditions.content = data.termsAndConditions
+		termsAndConditions.name = data.name
+		termsAndConditions.content = data.content
 
 		return termsAndConditions
 	}

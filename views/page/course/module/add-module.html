@@ -22,11 +22,11 @@
             <div class="aded-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
                 <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Added modules</h3>
 
-                {% if Modules.length > 1 %}
+                {% if course.modules.length > 0 %}
                     <ul class="list">
-                        {% for Module in pageResults.results %}
+                        {% for module in course.modules %}
                             <li class="list-details u--border--bgrey">
-                                <p class="govuk-body">{{Modules._title}}</p>
+                                <p class="govuk-body">{{module.title}}</p>
                             </li>
                         {% endfor %}
                     </ul>
@@ -56,8 +56,8 @@
                             selected: true
                             },
                             {
-                            value: "blog",
-                            text: "Blog"
+                            value: "link",
+                            text: "Link"
                             },
                             {
                             value: "file",

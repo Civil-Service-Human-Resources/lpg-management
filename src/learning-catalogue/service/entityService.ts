@@ -43,6 +43,10 @@ export class EntityService<T> {
 		return this._factory.create(data)
 	}
 
+	async delete(path: string): Promise<void> {
+		await this._restService.delete(path)
+	}
+
 	set factory(value: Factory<T>) {
 		this._factory = value
 	}

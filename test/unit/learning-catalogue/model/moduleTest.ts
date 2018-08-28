@@ -16,8 +16,8 @@ describe('Course tests', () => {
 	})
 
 	it('should be able to set type', () => {
-		module.type = 'blog'
-		expect(module.type).to.equal('blog')
+		module.type = 'link'
+		expect(module.type).to.equal('link')
 	})
 
 	it('should be able to set title', () => {

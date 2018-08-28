@@ -2,9 +2,15 @@
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 
-{% extends "../component/Page.njk" %}
+{% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['cancellation_policy_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}
+{% if cancellationPolicy %}
+{{ i18n['cancellation_policy_edit_title'] }} - {{ i18n['proposition_name'] }}
+{% else %}
+{{ i18n['cancellation_policy_add_title'] }} - {{ i18n['proposition_name'] }}
+{% endif %}
+{% endblock %}
 
 {% block beforeContent %}
   {% block phaseBanner %}
@@ -36,9 +42,13 @@
             {%endif%}
         </div>
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l">Add new cancellation policy</h1>
+            {% if cancellationPolicy %}
+            <p class="govuk-heading-m govuk-!-font-size-36">Edit cancellation policy</p>
+            {% else %}
+            <p class="govuk-heading-m govuk-!-font-size-36">Add new cancellation policy</p>
+            {% endif %}
 
-            <form action="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy" method="post">
+            <form action="/content-management/learning-providers/{{learningProvider.id}}/cancellation-policies/{{ cancellationPolicy.id }}" method="post">
 
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.name %}
@@ -58,7 +68,8 @@
                                 text: "Policy name"
                             },
                             id: "name",
-                            name: "name"
+                            name: "name",
+                            value: cancellationPolicy.name
                         }) }}
                     {% endif %}
 
@@ -79,7 +90,8 @@
                         id: "shortVersion",
                         label: {
                             text: "Short version"
-                        }
+                        },
+                        value: cancellationPolicy.shortVersion
                     }) }}
                 {% endif %}
                 {% if errors.fields.fullVersion %}
@@ -99,15 +111,16 @@
                         id: "fullVersion",
                         label: {
                             text: "Full version"
-                        }
+                        },
+                        value: cancellationPolicy.fullVersion
                     }) }}
                 {% endif %}
                 </fieldset>
                 {{ govukButton({
-                    text: "Add cancellation policy"
+                    text: "Save"
                 }) }}
+                <a class="cancel-button govuk-body govuk-link" href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
             </form>
-            <a href="/content-management/add-learning-provider">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>

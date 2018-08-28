@@ -32,6 +32,7 @@ export class LearningProviderController {
 		this.setRouterPaths()
 	}
 
+	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('learningProviderId', async (ireq, res, next, learningProviderId) => {
 			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
@@ -45,8 +46,8 @@ export class LearningProviderController {
 		})
 
 		this.router.get('/content-management/learning-providers', this.index())
-		this.router.get('/content-management/learning-providers/add-learning-provider', this.getLearningProvider())
-		this.router.post('/content-management/learning-providers/add-learning-provider', this.setLearningProvider())
+		this.router.get('/content-management/learning-providers/learning-provider', this.getLearningProvider())
+		this.router.post('/content-management/learning-providers/learning-provider', this.setLearningProvider())
 		this.router.get(
 			'/content-management/learning-providers/:learningProviderId',
 			this.getLearningProviderOverview()
@@ -61,19 +62,19 @@ export class LearningProviderController {
 			// prettier-ignore
 			const pageResults: DefaultPageResults<LearningProvider> = await this.learningCatalogue.listLearningProviders(page, size)
 
-			response.render('page/learning-providers', {pageResults})
+			response.render('page/learning-provider/learning-providers', {pageResults})
 		}
 	}
 
 	public getLearningProvider() {
 		return async (request: Request, response: Response) => {
-			response.render('page/add-learning-provider')
+			response.render('page/learning-provider/learning-provider')
 		}
 	}
 
 	public getLearningProviderOverview() {
 		return async (request: Request, response: Response) => {
-			response.render('page/learning-provider-overview')
+			response.render('page/learning-provider/learning-provider-overview')
 		}
 	}
 
@@ -88,7 +89,7 @@ export class LearningProviderController {
 			const errors = await this.learningProviderValidator.check(request.body, ['name'])
 			if (errors.size) {
 				request.session!.sessionFlash = {errors: errors}
-				return response.redirect('/content-management/learning-providers/add-learning-provider')
+				return response.redirect('/content-management/learning-providers/learning-provider')
 			}
 
 			const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider)

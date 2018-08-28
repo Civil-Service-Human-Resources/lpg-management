@@ -2,7 +2,7 @@ import {beforeEach, describe, it} from 'mocha'
 import {expect} from 'chai'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 import {VideoModule} from '../../../../src/learning-catalogue/model/videoModule'
-import {BlogModule} from '../../../../src/learning-catalogue/model/blogModule'
+import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
 import {FaceToFaceModule} from '../../../../src/learning-catalogue/model/faceToFaceModule'
 import {Module} from '../../../../src/learning-catalogue/model/module'
 
@@ -60,7 +60,7 @@ describe('Course tests', () => {
 		const module1 = new VideoModule()
 		module1.price = 100
 
-		const module2 = new BlogModule()
+		const module2 = new LinkModule()
 		module2.price = 50
 
 		const module3 = new FaceToFaceModule()
@@ -69,6 +69,26 @@ describe('Course tests', () => {
 		course.modules = [module1, module2, module3]
 
 		expect(course.getCost()).to.equal(175.25)
+	})
+
+	it('should get null if no module costs', () => {
+		course.modules = []
+
+		expect(course.getCost()).to.equal(null)
+	})
+
+	it('should get 0 if no module costs are 0', () => {
+		const module1 = new VideoModule()
+		module1.price = 0
+
+		const module2 = new LinkModule()
+		module2.price = 0
+
+		const module3 = new FaceToFaceModule()
+		module3.price = 0
+
+		course.modules = [module1, module2, module3]
+		expect(course.getCost()).to.equal(0)
 	})
 
 	it('should get type to be null if no modules', () => {

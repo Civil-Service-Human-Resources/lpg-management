@@ -1,7 +1,7 @@
 import {Request, Response, Router} from 'express'
-import {ModuleFactory} from '../learning-catalogue/model/factory/moduleFactory'
+import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactory'
 import * as log4js from 'log4js'
-import {LearningCatalogue} from '../learning-catalogue'
+import {LearningCatalogue} from '../../learning-catalogue'
 
 const logger = log4js.getLogger('controllers/moduleController')
 
@@ -43,13 +43,12 @@ export class ModuleController {
 		return async (request: Request, response: Response) => {
 			const moduleType = request.body.module
 			const courseId = response.locals.course.id
-			if (moduleType !== '') {
-				// will be implemented in later PR
-				// response.redirect(`/content-management/courses/${courseId}/add-module-${moduleType}`)
-				response.redirect(`/content-management/courses/${courseId}/add-module`)
-			} else {
-				response.redirect(`/content-management/courses/${courseId}/add-module`)
+
+			if (moduleType === '') {
+				return response.redirect(`/content-management/courses/${courseId}/add-module`)
 			}
+
+			return response.redirect(`/content-management/courses/${courseId}/module-${moduleType}`)
 		}
 	}
 }

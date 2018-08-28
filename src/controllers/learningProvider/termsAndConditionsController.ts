@@ -27,6 +27,7 @@ export class TermsAndConditionsController {
 		this.setRouterPaths()
 	}
 
+	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('termsAndConditionsId', async (req, res, next, termsAndConditionsId) => {
 			const learningProviderId = req.params.learningProviderId
@@ -56,20 +57,25 @@ export class TermsAndConditionsController {
 		})
 
 		this.router.get(
-			'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions',
+			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?',
 			this.getTermsAndConditions()
 		)
 
 		this.router.post(
-			'/content-management/learning-providers/:learningProviderId/add-terms-and-conditions',
+			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?',
 			this.setTermsAndConditions()
+		)
+
+		this.router.get(
+			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?/delete',
+			this.deleteTermsAndConditions()
 		)
 	}
 
 	public getTermsAndConditions() {
 		logger.debug('Getting terms and conditions')
 		return async (request: Request, response: Response) => {
-			response.render('page/add-terms-and-conditions')
+			response.render('page/learning-provider/terms-and-conditions')
 		}
 	}
 
@@ -87,13 +93,43 @@ export class TermsAndConditionsController {
 			if (errors.size) {
 				request.session!.sessionFlash = {errors: errors}
 				return response.redirect(
-					'/content-management/learning-providers/' + learningProviderId + '/add-terms-and-conditions'
+					'/content-management/learning-providers/' + learningProviderId + '/terms-and-conditions'
 				)
+			}
+
+			if (request.params.termsAndConditionsId) {
+				await this.editTermsAndConditions(request, response)
+
+				return response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 			}
 
 			await this.learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions)
 
+			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
+		}
+	}
+
+	public deleteTermsAndConditions() {
+		return async (request: Request, response: Response) => {
+			const learningProviderId: string = request.params.learningProviderId
+			const termsAndConditionsId: string = request.params.termsAndConditionsId
+
+			await this.learningCatalogue.deleteTermsAndConditions(learningProviderId, termsAndConditionsId)
+
 			response.redirect('/content-management/learning-providers/' + learningProviderId)
 		}
+	}
+
+	private async editTermsAndConditions(request: Request, response: Response) {
+		const data = {
+			...request.body,
+			id: response.locals.termsAndConditions.id,
+			name: request.body.name || response.locals.termsAndConditions.title,
+			fullVersion: request.body.content || response.locals.termsAndConditions.content,
+		}
+
+		const termsAndConditions = this.termsAndConditionsFactory.create(data)
+
+		await this.learningCatalogue.updateTermsAndConditions(request.params.learningProviderId, termsAndConditions)
 	}
 }

@@ -6,7 +6,7 @@ export class RestService {
 	private _http: AxiosInstance
 	config: LearningCatalogueConfig
 
-	constructor(config: LearningCatalogueConfig) {
+	constructor(config: any) {
 		this._http = axios.create({
 			baseURL: config.url,
 			auth: config.auth,
@@ -29,7 +29,7 @@ export class RestService {
 			return this.get(url.parse(response.headers.location).path!)
 		} catch (e) {
 			throw new Error(
-				`Error with POST request: ${e} when posting ${JSON.stringify(resource)} to ${this.config.url}${path} `
+				`Error with POST request: ${e} when posting ${JSON.stringify(resource)} to ${this.config.url}${path}`
 			)
 		}
 	}
@@ -49,6 +49,14 @@ export class RestService {
 			throw new Error(
 				`Error with PUT request: ${e} when putting ${JSON.stringify(resource)} to ${this.config.url}${path}`
 			)
+		}
+	}
+
+	async delete(path: string) {
+		try {
+			return await this._http.delete(path)
+		} catch (e) {
+			throw new Error(`Error with DELETE request: ${e} when deleting ${this.config.url}${path}`)
 		}
 	}
 

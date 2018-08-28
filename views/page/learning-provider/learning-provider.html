@@ -1,7 +1,7 @@
 {% from "input/macro.njk" import govukInput with context%}
 {% from "button/macro.njk" import govukButton %}
 
-{% extends "../component/Page.njk" %}
+{% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}{{ i18n['learning_provider_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
@@ -38,7 +38,7 @@
                     </div>
                 </div>
             {%endif%}
-            <form action="/content-management/learning-providers/add-learning-provider" method="post">
+            <form action="/content-management/learning-providers/learning-provider" method="post">
                 <fieldset class="govuk-fieldset">
                  {% if errors.fields %}
                     {{ govukInput({

@@ -40,7 +40,7 @@ describe('CourseFactory tests', () => {
 			modules: [
 				{
 					id: moduleId1,
-					type: 'blog',
+					type: 'link',
 				},
 			],
 		}

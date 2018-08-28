@@ -21,8 +21,8 @@ describe('termsAndConditionsFactory tests', () => {
 
 		const data: object = {
 			id: id,
-			title: name,
-			termsAndConditions: content,
+			name: name,
+			content: content,
 		}
 
 		const result: TermsAndConditions = termsAndConditionsFactory.create(data)

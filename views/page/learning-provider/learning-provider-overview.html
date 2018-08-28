@@ -1,8 +1,8 @@
-{% from "../component/policyList/macro.njk" import policyList with context %}
-{% from "../component/tandcList/macro.njk" import tandcList with context %}
-{% from "../component/delete/macro.njk" import delete %}
+{% from "../../component/policyList/macro.njk" import policyList with context %}
+{% from "../../component/tandcList/macro.njk" import tandcList with context %}
+{% from "../../component/delete/macro.njk" import delete %}
 
-{% extends "../component/Page.njk" %}
+{% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}{{ i18n['learning_provider_overview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
@@ -34,7 +34,7 @@
                 {% else %}
                     <p class="govuk-body">This course does not have any policies yet</p>
                 {% endif %}
-                <a href="/content-management/learning-providers/{{learningProvider.id}}/add-cancellation-policy" class="govuk-button button-blue">Add cancellation policy</a>
+                <a href="/content-management/learning-providers/{{learningProvider.id}}/cancellation-policies" class="govuk-button button-blue">Add cancellation policy</a>
             </div>
 
             <div class="list-container">
@@ -46,7 +46,7 @@
                 {% else %}
                     <p class="govuk-body">This course does not have any terms and conditions yet</p>
                 {% endif %}
-                <a href="/content-management/learning-providers/{{learningProvider.id}}/add-terms-and-conditions" class="govuk-button button-blue">Add terms and conditions</a>
+                <a href="/content-management/learning-providers/{{learningProvider.id}}/terms-and-conditions" class="govuk-button button-blue">Add terms and conditions</a>
             </div>
             <a href="/content-management/learning-providers" class="govuk-button">Save changes</a>
             <a href="/content-management/learning-providers" class="govuk-link cancel-button">Cancel</a>

@@ -2,6 +2,7 @@
   "blended": "Blended",
   "content_management_title": "Content management",
   "cancellation_policy_add_title": "Add cancellation policy",
+  "cancellation_policy_edit_title": "Edit cancellation policy",
   "course": "Course",
   "course_added_success_message":" has been created and saved as a draft.",
   "course_details_add_title": "Add course details",
@@ -14,9 +15,11 @@
   "learning_provider_overview_title": "Learning provider overview",
   "learning_providers_title": "Learning providers",
   "module_add_title": "Add a module",
-  "module_blog_add_title": "Add a blog",
+  "module_link_add_title": "Add a link",
+  "module_youtube_add_title": "Add a YouTube video",
   "proposition_name": "Civil Service Learning",
   "terms_and_conditions_add_title": "Add terms and conditions",
+  "terms_and_conditions_edit_title": "Edit terms and conditions",
   "validation.course.title.empty": "Title is required",
   "validation.course.shortDescription.empty": "Short description is required",
   "validation.course.shortDescription.maxLength":
@@ -32,5 +35,9 @@
   "validation.termsAndConditions.name.empty": "Title is required",
   "validation.termsAndConditions.content.empty":
   "Content is required",
-  "validation_learningProvider_name_empty": "Name is required"
+  "validation_learningProvider_name_empty": "Name is required",
+  "validation_module_url_empty": "URL is required",
+  "validation_module_title_empty": "Title is required",
+  "validation_module_video_notFound": "There was a problem finding this video",
+  "validation_module_video_noDuration": "There was a problem finding the length of this video"
 }
