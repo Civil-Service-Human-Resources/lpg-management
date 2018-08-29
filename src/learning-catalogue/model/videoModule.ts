@@ -7,4 +7,6 @@ export class VideoModule extends Module {
 		message: 'validation_module_url_empty',
 	})
 	url: string
+
+	type: Module.Type.VIDEO
 }

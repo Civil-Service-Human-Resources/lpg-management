@@ -7,4 +7,6 @@ export class ELearningModule extends Module {
 		message: 'validation.module.startPage.empty',
 	})
 	startPage: string
+
+	type: Module.Type.E_LEARNING
 }

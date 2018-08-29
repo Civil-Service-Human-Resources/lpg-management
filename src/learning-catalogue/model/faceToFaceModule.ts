@@ -13,4 +13,6 @@ export class FaceToFaceModule extends Module {
 		groups: ['all', 'events'],
 	})
 	events: Event[]
+
+	type: Module.Type.FACE_TO_FACE
 }

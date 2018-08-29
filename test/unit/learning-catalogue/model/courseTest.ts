@@ -105,7 +105,7 @@ describe('Course tests', () => {
 
 	it('should get type to be type of module if only one module', () => {
 		const module1 = new Module()
-		module1.type = 'video'
+		module1.type = Module.Type.VIDEO
 
 		course.modules = [module1]
 

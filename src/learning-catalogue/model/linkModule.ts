@@ -32,5 +32,5 @@ export class LinkModule extends Module {
 	})
 	isOptional: boolean
 
-	type: 'link'
+	type: Module.Type.LINK
 }

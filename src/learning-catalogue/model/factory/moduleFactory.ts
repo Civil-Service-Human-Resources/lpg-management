@@ -5,6 +5,7 @@ import {VideoModule} from '../videoModule'
 import {LinkModule} from '../linkModule'
 import {FileModule} from '../fileModule'
 import {ELearningModule} from '../eLearningModule'
+import {Module} from "../module";
 
 export class ModuleFactory {
 	private audienceFactory: AudienceFactory
@@ -33,13 +34,13 @@ export class ModuleFactory {
 
 	public create(data: any) {
 		if (this.createMethods.hasOwnProperty(data.type)) {
-			return this.createMethods[data.type](data)
+			return (this.createMethods as any)[data.type](data)
 		} else {
 			throw new Error(`Unknown module type: ${data.type} ${JSON.stringify(data)}`)
 		}
 	}
 
-	private createMethods: {[key: string]: any} = {
+	private createMethods: {[key in Module.Type]: any} = {
 		video: (data: any) => {
 			const module = this.defaultCreate(new VideoModule(), data)
 			module.location = data.location
