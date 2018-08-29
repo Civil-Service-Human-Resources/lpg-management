@@ -58,7 +58,7 @@ export class CourseController {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			const faceToFaceModules = response.locals.course.modules.filter( (module: Module) => module.type == Module.Type.FACE_TO_FACE );
+			const faceToFaceModules = response.locals.course.modules.filter((module: Module) => module.type == Module.Type.FACE_TO_FACE);
 			response.render('page/course/course-overview', {faceToFaceModules})
 		}
 	}

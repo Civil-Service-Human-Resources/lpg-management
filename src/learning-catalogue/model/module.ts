@@ -47,11 +47,11 @@ export class Module {
 }
 
 export namespace Module {
-    export enum Type {
-        FACE_TO_FACE = 'face-to-face',
-        LINK = 'link' ,
-        VIDEO = 'video',
-        E_LEARNING = 'elearning',
-        FILE = 'file'
-    }
+	export enum Type {
+		FACE_TO_FACE = 'face-to-face',
+		LINK = 'link' ,
+		VIDEO = 'video',
+		E_LEARNING = 'elearning',
+		FILE = 'file'
+	}
 }

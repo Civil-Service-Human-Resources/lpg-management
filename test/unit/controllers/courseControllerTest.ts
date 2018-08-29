@@ -36,7 +36,7 @@ describe('Course Controller Tests', function() {
 
 		const course = new Course()
 		course.modules = []
-        response.locals.course = course
+		response.locals.course = course
 
 		await courseOverview(request, response)
 
