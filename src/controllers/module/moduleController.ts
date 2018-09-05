@@ -57,4 +57,10 @@ export class ModuleController {
 			response.render('page/course/module/module-file')
 		}
 	}
+
+	public addScorm() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/module/module-e-learning')
+		}
+	}
 }
