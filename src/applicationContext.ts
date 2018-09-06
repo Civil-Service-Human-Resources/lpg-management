@@ -36,6 +36,7 @@ import {Module} from './learning-catalogue/model/module'
 import {FileController} from './controllers/module/fileController'
 import {LinkModuleController} from './controllers/module/linkModuleController'
 import {FaceToFaceModuleController} from './controllers/module/faceToFaceModuleController'
+import {ScormController} from './controllers/module/scormController'
 
 log4js.configure(config.LOGGING)
 
@@ -70,6 +71,7 @@ export class ApplicationContext {
 	youtubeService: YoutubeService
 	youtubeConfig: YoutubeConfig
 	faceToFaceController: FaceToFaceModuleController
+	scormController: ScormController
 
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
@@ -168,6 +170,8 @@ export class ApplicationContext {
 			this.moduleValidator,
 			this.moduleFactory
 		)
+
+		this.scormController = new ScormController(this.learningCatalogue, this.moduleValidator, this.moduleFactory)
 	}
 
 	addToResponseLocals() {
