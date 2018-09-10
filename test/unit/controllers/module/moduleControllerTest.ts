@@ -48,9 +48,7 @@ describe('Module Controller Tests', function() {
 		response.locals.course = course
 		await setModule(request, response)
 
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/courses/${course.id}/module/module-file`
-		)
+		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${course.id}/module-file`)
 	})
 
 	it('should render add module link page', async function() {
@@ -66,10 +64,7 @@ describe('Module Controller Tests', function() {
 		response.locals.course = course
 		await setModule(request, response)
 
-		//To be done - would expect to render form for specific module type
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/courses/${course.id}/module/module-link`
-		)
+		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${course.id}/module-link`)
 	})
 
 	it('should remain on add module page if no course is selected', async function() {

@@ -36,6 +36,8 @@ export class Module {
 	})
 	duration: number
 
+	formattedDuration: string
+
 	price?: number
 
 	optional: boolean
@@ -49,9 +51,9 @@ export class Module {
 export namespace Module {
 	export enum Type {
 		FACE_TO_FACE = 'face-to-face',
-		LINK = 'link' ,
+		LINK = 'link',
 		VIDEO = 'video',
 		E_LEARNING = 'elearning',
-		FILE = 'file'
+		FILE = 'file',
 	}
 }

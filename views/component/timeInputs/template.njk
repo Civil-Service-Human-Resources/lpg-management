@@ -1,0 +1,43 @@
+<h3 class="govuk-heading-s event-time-heading">{{ header }}</h3>
+<div class="time-inputs">  
+    <div class="govuk-date-input__item">
+        {% set hoursList = firstValue %}
+        {% set hours = [] %}
+
+        {% for i in hoursList %}
+        {% set hour = hours.push({
+                "text": i,
+                "value": i
+            }) %}        
+        {% endfor %} 
+
+        {{ govukSelect({
+            id: name,
+            name: name,
+            label: {
+                text: firstLabel
+            },
+            items: hours
+        }) }}
+    </div>
+    <div class="govuk-date-input__item">
+        {% set minutesList = secondValue %}
+        {% set minutes = [] %}
+
+        {% for j in minutesList %}
+            {% set minute = minutes.push({
+                "text": j,
+                "value": j
+            }) %} 
+        {% endfor %}
+
+        {{ govukSelect({
+            id: name,
+            name: name,
+            label: {
+                text: secondLabel
+            },
+            items: minutes
+        }) }}
+    </div>
+</div>

@@ -18,6 +18,10 @@
 	.govuk-label {
 		font-weight: 400;
 	}
+
+	.govuk-select {
+		width: 51px;
+	}
 }
 
 .govuk-error-summary {
@@ -47,6 +51,14 @@
 	&:focus {
 		background-color: govuk-colour('blue');
 	}
+
+	&.left-aligned {
+		margin-left: 0;
+	}
+}
+
+.button-container {
+	padding-top: 50px;
 }
 
 .bottom-button {
@@ -65,6 +77,12 @@
 	}
 	.govuk-button {
 		margin: 0 0 30px 0;
+	}
+}
+
+.date-set {
+	label {
+		font-weight: normal;
 	}
 }
 

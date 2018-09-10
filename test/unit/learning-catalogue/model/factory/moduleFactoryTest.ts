@@ -88,7 +88,7 @@ describe('ModuleFactory tests', () => {
 				id: 'XEbjXzmVQwSQ_7qIvr7Kew',
 				capacity: 99,
 				location: 'London',
-				date: '2018-05-24T00:00:00',
+				dateRanges: [{date: '2019-01-01', startTime: '09:00:00', endTime: '17:00:00'}],
 			},
 		]
 
@@ -100,7 +100,9 @@ describe('ModuleFactory tests', () => {
 		testProperties(module.events[0], data.events[0], ['date'])
 
 		expect(module.audiences[0].requiredBy!.toISOString().substr(0, 19)).to.equal(data.audiences[0].requiredBy)
-		expect(module.events[0].date!.toISOString().substr(0, 19)).to.equal(data.events[0].date)
+		expect(module.events[0].dateRanges[0].date).to.be.equal('2019-01-01')
+		expect(module.events[0].dateRanges[0].startTime).to.be.equal('09:00:00')
+		expect(module.events[0].dateRanges[0].endTime).to.be.equal('17:00:00')
 	})
 
 	it('should set events and audiences to empt lists of missing', async () => {

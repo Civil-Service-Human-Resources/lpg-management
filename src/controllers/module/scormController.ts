@@ -32,12 +32,12 @@ export class ScormController {
 				res.sendStatus(404)
 			}
 		})
-		this.router.get('/content-management/courses/:courseId/module/module-e-learning', this.getScorm())
-		this.router.post('/content-management/courses/:courseId/module/module-e-learning', this.setScorm())
+		this.router.get('/content-management/courses/:courseId/module-elearning', this.getScorm())
+		this.router.post('/content-management/courses/:courseId/module-elearning', this.setScorm())
 	}
 	public getScorm() {
 		return async (request: Request, response: Response) => {
-			response.render('page/course/module/module-e-learning')
+			response.render('page/course/module/module-elearning')
 		}
 	}
 	public setScorm() {
@@ -52,7 +52,7 @@ export class ScormController {
 
 			if (Object.keys(errors.fields).length != 0) {
 				request.session!.sessionFlash = {errors: errors, module: module}
-				return response.redirect(`/content-management/courses/${course.id}/module/module-e-learning`)
+				return response.redirect(`/content-management/courses/${course.id}/module/module-elearning`)
 			}
 
 			const newData = {

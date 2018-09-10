@@ -3,6 +3,7 @@
 {% from "footer/macro.njk" import govukFooter %}
 {% from "./phaseBanner/macro.njk" import phaseBanner %}
 {% from "./backLink/macro.njk" import backLink %}
+{% from "./errorSummary/macro.njk" import errorSummary with context %}
 
 {% extends "template.njk" %}
 
@@ -36,8 +37,7 @@
 
   <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/x-icon" />
   <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" />
-   <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
-{% endblock %}
+  {% endblock %}
 
 {% block bodyStart %}
 {% endblock %}
@@ -128,4 +128,6 @@
 {% block bodyEnd %}
   <script src="/govuk-frontend/all.js"></script>
   <script>window.GOVUKFrontend.initAll()</script>
+  <script>document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');</script>
+
 {% endblock %}

@@ -48,7 +48,7 @@ export class ModuleController {
 				return response.redirect(`/content-management/courses/${courseId}/add-module`)
 			}
 
-			return response.redirect(`/content-management/courses/${courseId}/module/module-${moduleType}`)
+			return response.redirect(`/content-management/courses/${courseId}/module-${moduleType}`)
 		}
 	}
 
@@ -60,7 +60,7 @@ export class ModuleController {
 
 	public addScorm() {
 		return async (request: Request, response: Response) => {
-			response.render('page/course/module/module-e-learning')
+			response.render('page/course/module/module-elearning')
 		}
 	}
 }

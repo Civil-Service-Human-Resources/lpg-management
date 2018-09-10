@@ -1,0 +1,25 @@
+.event-container {
+	margin-bottom: 30px;
+}
+
+.event-list {
+	.events {
+		display: flex;
+
+		.event-header {
+			font-weight: bold;
+		}
+
+		.date {
+			flex-basis: 40%;
+		}
+
+		.time {
+			flex-basis: 25%;
+		}
+
+		.spacer {
+			display: block;
+		}
+	}
+}

@@ -11,6 +11,7 @@ import {CourseController} from '../../../src/controllers/courseController'
 import {CourseFactory} from '../../../src/learning-catalogue/model/factory/courseFactory'
 import {ContentRequest} from '../../../src/extended'
 import {Validator} from '../../../src/learning-catalogue/validator/validator'
+import {Module} from '../../../src/learning-catalogue/model/module'
 
 chai.use(sinonChai)
 
@@ -45,6 +46,10 @@ describe('Course Controller Tests', function() {
 
 	it('should call course preview page', async function() {
 		const course: Course = new Course()
+		const module: Module = new Module()
+
+		module.duration = 3600
+		course.modules = [module]
 
 		const coursePreview: (request: Request, response: Response) => void = courseController.coursePreview()
 
@@ -53,6 +58,8 @@ describe('Course Controller Tests', function() {
 
 		const req = request as ContentRequest
 		req.course = course
+
+		response.locals.course = course
 
 		await coursePreview(request, response)
 

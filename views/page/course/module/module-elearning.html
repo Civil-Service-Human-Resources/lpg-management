@@ -1,0 +1,155 @@
+{% from "input/macro.njk" import govukInput %}
+{% from "textarea/macro.njk" import govukTextarea %}
+{% from "button/macro.njk" import govukButton %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "file-upload/macro.njk" import govukFileUpload %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n['module_file_add'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {{ backLink("/content-management") }}
+  {% endblock%}
+{% endblock %}
+
+{% block content %}
+
+    {% set errors = sessionFlash.errors %}
+    
+    {{ errorSummary(errors.fields) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
+            <p class="govuk-body">You are adding an <strong>elearning</strong> module</p>
+                  
+            <form action="/content-management/courses/{{ course.id }}/module/add-elearning" method="post">
+                <fieldset class="govuk-fieldset">
+                        <input name="type" type="hidden" value="file">
+                        {% if errors.fields.title %}
+                            {{ govukInput({
+                            label: {
+                                text: "Module title"
+                            },
+                            id: "moduleTitle",
+                            name: "moduleTitle",
+                            errorMerssage: {
+                                text: "Module title is required"
+                                }
+                            }) }}
+                        {% else %}
+                            {{ govukInput({
+                            label: {
+                                text: "Module title"
+                            },
+                            id: "moduleTitle",
+                            name: "moduleTitle"
+                            }) }}
+                        {% endif %}
+           
+                        {{ govukTextarea({
+                            name: "description",
+                            id: "description",
+                            label: {
+                                text: "Description"
+                            }
+                        }) }}
+                    </fieldset>
+                    <fieldset class="govuk-fieldset">
+                        {% if errors.fields.duration %}  
+                            <div class="govuk-form-group--error">
+                                <p class="govuk-error-message no-margin">Duration is required</p>
+                                {% set classNames = "govuk-date-input__input govuk-input--width-3 font-light govuk-input--error"%}
+                        {% else %}
+                            {% set classNames = "govuk-date-input__input govuk-input--width-3 font-light" %}
+                        {% endif %}
+                            <h3 class="govuk-heading-s no-margin">Duration</h3>
+                            <div class="time-inputs">
+                                {{ govukInput({
+                                    type: "number",
+                                    label: {
+                                        text: "Days"
+                                    },
+                                    id: "days",
+                                    name: "days",
+                                    classes: classNames
+                                }) }}
+                                {{ govukInput({
+                                    type: "number",
+                                    label: {
+                                        text: "Hours"
+                                    },
+                                    id: "hours",
+                                    name: "hours",
+                                    classes: classNames
+                                }) }}
+                                {{ govukInput({
+                                    type: "number",
+                                    label: {
+                                        text: "Minutes"
+                                    },
+                                    id: "minutes",
+                                    name: "miniutes",
+                                    classes: classNames
+                                }) }}
+                            </div>
+                        {% if errors.fields.duration %}  
+                            </div>
+                        {% endif %}
+                    </fieldset>
+                    {% if errors.fields.file %}
+                        <div class="add-file-form govuk-form-group govuk-form-group--error"> 
+                    {% else %}
+                        <div class="add-file-form govuk-form-group"> 
+                    {% endif %}        
+                            <label class="govuk-label">File</label>
+                            {% if errors.fields.file %}
+                                 <p class="govuk-error-message no-margin">File is required</p>
+                            {% else %}
+                                <div class="add-file-form govuk-form-group"> 
+                            {% endif %} 
+                            <span id="file-upload-hint" class="govuk-hint">You can upload the following file types: .zip</span> 
+                            <input class="govuk-file-upload custom-uploader" id="file-upload" name="file" type="file" aria-describedby="file-upload-hint">
+                            <label class="btn" for="file-upload"><span>Choose file</span></label>
+                        </div>
+                    {{ govukCheckboxes({
+                        idPrefix: "isOptional",
+                        name: "isOptional",
+                        classes: "font-light",
+                        fieldset: {
+                            legend: {
+                                text: "Is this an optional module?",
+                                isPageHeading: true,
+                                classes: "font-bold"
+                            }
+                        },
+                        items: [
+                            {
+                                value: "isOptional",
+                                text: "Yes, this is optional"
+                            }
+                        ]
+                    }) }}
+                    <div class="button-container">
+                        {{ govukButton({
+                            text: "Continue",
+                            type: "submit"
+                        }) }}
+                    </div>
+            </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/:courseId/preview">Cancel</a>        
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script src="/js/file-uploader.js"></script>
+{% endblock %}

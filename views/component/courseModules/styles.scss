@@ -1,0 +1,26 @@
+.module-list {
+	padding: 15px 0 50px 0;
+
+	.govuk-heading-s {
+		margin-bottom: 5px;
+	}
+
+	.type {
+		margin-bottom: 5px;
+	}
+}
+
+.module-item {
+	padding: 15px 0 15px 0;
+	.govuk-link {
+		margin: 0;
+	}
+}
+
+.pre-learning {
+	padding: 15px 5px 30px 5px;
+}
+
+.optional {
+	color: $govuk-secondary-text-colour;
+}

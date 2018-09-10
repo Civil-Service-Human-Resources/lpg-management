@@ -5,7 +5,7 @@ import {VideoModule} from '../videoModule'
 import {LinkModule} from '../linkModule'
 import {FileModule} from '../fileModule'
 import {ELearningModule} from '../eLearningModule'
-import {Module} from "../module";
+import {Module} from '../module'
 
 export class ModuleFactory {
 	private audienceFactory: AudienceFactory

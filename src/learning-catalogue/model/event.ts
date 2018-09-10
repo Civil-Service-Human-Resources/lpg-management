@@ -1,31 +1,28 @@
-import {IsNotEmpty, IsPositive, MinDate} from 'class-validator'
+import {IsNotEmpty, IsPositive} from 'class-validator'
+import {DateRange} from './DateRange'
 
 export class Event {
 	id: string
 
 	@IsNotEmpty({
-		groups: ['all', 'event.all', 'event.date'],
-		message: 'validation.module.event.date.empty',
+		groups: ['all', 'event.all', 'event.dateRanges'],
+		message: 'validation_module_event_dateRanges_empty',
 	})
-	@MinDate(new Date(Date.now()), {
-		groups: ['all', 'event.all', 'event.date'],
-		message: 'validation.module.event.date.past',
-	})
-	date: Date
+	dateRanges: Array<DateRange> | undefined
 
 	@IsNotEmpty({
 		groups: ['all', 'event.all', 'event.location'],
-		message: 'validation.module.event.location.empty',
+		message: 'validation_module_event_location_empty',
 	})
 	location: string
 
 	@IsNotEmpty({
 		groups: ['all', 'event.all', 'event.capacity'],
-		message: 'validation.module.event.capacity.empty',
+		message: 'validation_module_event_capacity_empty',
 	})
 	@IsPositive({
 		groups: ['all', 'event.all', 'event.capacity'],
-		message: 'validation.module.event.capacity.positive',
+		message: 'validation_module_event_capacity_positive',
 	})
 	capacity: number
 }

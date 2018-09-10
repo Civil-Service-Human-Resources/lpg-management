@@ -1,0 +1,28 @@
+<ul class="list module-list">
+    {% for module in modules %}
+        <li class="module-item list-item u--border--bgrey">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    {% set counter = ( counter | default(0) ) + 1 %}
+                    <h3 class="govuk-heading-s">{{ module.title | default("Module "+ counter, true)}}</h3>
+
+                    <p class="govuk-body">{{ module.description }}</p>
+
+                    {% if module.optional === true %}
+                        <p class="optional">This module is optional</p>
+                    {% endif %}
+
+                    <a href="#" class="govuk-body govuk-link">Start</a>
+                </div>
+                <div class="govuk-grid-column-one-third">
+                    <p class="govuk-body type">{{ i18n[module.type] }}</p>
+                    <p class="govuk-body">{{ module.formattedDuration }}</p>
+                </div>
+            </div>
+        </li>
+    {% endfor %}
+</ul>
+
+
+        
+

@@ -5,7 +5,8 @@ import * as log4js from 'log4js'
 import {LearningCatalogue} from '../learning-catalogue'
 import {Course} from '../learning-catalogue/model/course'
 import {Validator} from '../learning-catalogue/validator/validator'
-import {Module} from "../learning-catalogue/model/module";
+import {Module} from '../learning-catalogue/model/module'
+import * as datetime from '../lib/datetime'
 
 const logger = log4js.getLogger('controllers/courseController')
 
@@ -58,13 +59,21 @@ export class CourseController {
 		logger.debug('Course Overview page')
 
 		return async (request: Request, response: Response) => {
-			const faceToFaceModules = response.locals.course.modules.filter((module: Module) => module.type == Module.Type.FACE_TO_FACE);
+			const faceToFaceModules = response.locals.course.modules.filter(
+				(module: Module) => module.type == Module.Type.FACE_TO_FACE
+			)
 			response.render('page/course/course-overview', {faceToFaceModules})
 		}
 	}
 
 	public coursePreview() {
 		return async (request: Request, response: Response) => {
+			const modules: Module[] = response.locals.course.modules
+
+			for (let module of modules) {
+				module.formattedDuration = datetime.formatDuration(module.duration)
+			}
+
 			response.render('page/course/course-preview')
 		}
 	}

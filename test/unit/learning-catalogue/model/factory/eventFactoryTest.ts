@@ -8,20 +8,20 @@ describe('EventFactory tests', () => {
 
 	it('should create Event from data', () => {
 		const id: string = 'LmYAPQseRqm7dk1Q2WjA2w'
-		const date: string = '2018-03-27T00:00:00'
+		const dateRanges = [{date: '2018-01-01', startTime: '6:00:00', endTime: '9:00:00'}]
 		const location: string = 'London'
 		const capacity: number = 100
 
 		const data: object = {
 			id: id,
-			date: date,
+			dateRanges: dateRanges,
 			location: location,
 			capacity: capacity,
 		}
 		const result: Event = eventFactory.create(data)
 
 		expect(result.id).to.equal(id)
-		expect(result.date.toISOString().substr(0, 19)).to.equal(date)
+		expect(result.dateRanges).to.equal(dateRanges)
 		expect(result.location).to.equal(location)
 		expect(result.capacity).to.equal(capacity)
 	})
@@ -41,7 +41,7 @@ describe('EventFactory tests', () => {
 		const result: Event = eventFactory.create(data)
 
 		expect(result.id).to.equal(id)
-		expect(result.date).to.be.undefined
+		expect(result.dateRanges).to.be.undefined
 		expect(result.location).to.equal(location)
 		expect(result.capacity).to.equal(capacity)
 	})

@@ -1,0 +1,132 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "date-input/macro.njk" import govukDateInput %}
+{% from "select/macro.njk" import govukSelect %}
+{% from  "../../../../component/timeInputs/macro.njk" import timeInputs with context %}
+
+{% extends "../../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n['event_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+    {% if event %}
+        {{ backLink("/content-management/courses/" + course.id + "/modules/" + module.id + "/events-preview/" + event.id) }}
+    {% else %}
+        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
+    {% endif %}
+  {% endblock%}
+{% endblock %}
+
+{% block content %}
+
+    {% set errors = sessionFlash.errors %}
+    {% set event = sessionFlash.event %}
+    
+    {{ errorSummary(errors.fields) }}
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24">Add a new event</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Event date and time</h2>
+            <p class="govuk-body">This event is for the <strong>{{ module.title }}</strong> module on the <strong>{{ course.title }}</strong> course.</p>
+
+            {% if events > 0 %}
+                <div class="event-container">
+                    <ul class="event-list headers">
+                        <li class="events">
+                            <p class="govuk-body event-header date">Date</p><p class="govuk-body event-header time">Start time</p><p class="govuk-body event-header time">End time</p><span class="spacer"></span> 
+                        </li> 
+                    </ul>
+                    <ul class="event-list">
+                        {% for event in events %}
+                            <li class="events u--border--bgrey">
+                                <p class="govuk-body event date">{{ event.date }}test</p><p class="govuk-body event time">{{ event.date }}test</p><p class="govuk-body event time">{{ event.date }}test</p><p class="govuk-body event edit"><a href="#" class="govuk-link">Edit</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}" method="post">
+                {% if errors.fields.minDate or errors.fields.dateRanges or errors.fields.invalidDate %}
+                    {{ govukDateInput({
+                        id: "start-date",
+                        name: "start-date",
+                        fieldset: {
+                            legend: {
+                            text: "Start date",
+                            isPageHeading: false,
+                            classes: "govuk-fieldset__legend--s"
+                            },
+                        classes: "event-date"
+                        },
+                        hint: {
+                            text: "For example, 31 3 " + exampleYear
+                        },
+                        errorMessage: {
+                            text: "A valid start date is required"
+                        },
+                        items: [
+                            {
+                            name: "day"
+                            },
+                            {
+                            name: "month"
+                            },
+                            {
+                            name: "year"
+                            }
+                        ]
+                        }) }}
+                    {% else %}
+                     {{ govukDateInput({
+                        id: "start-date",
+                        name: "start-date",
+                        fieldset: {
+                            legend: {
+                            text: "Start date",
+                            isPageHeading: true,
+                            classes: "govuk-fieldset__legend--s"
+                            },
+                        classes: "event-date"
+                        },
+                        hint: {
+                            text: "For example, 31 3 " + exampleYear
+                        },
+                        items: [
+                            {
+                            name: "day"
+                            },
+                            {
+                            name: "month"
+                            },
+                            {
+                            name: "year"
+                            }
+                        ]
+                        }) }}
+                    {% endif %}
+
+                {% set setHours = ["06","07","08","09","10","11","12","13","14","15","16","17","18","19","20"] %}
+                {% set setMinutes = ["00", "15", "30", "45"] %}
+                {{ timeInputs("Start time", setHours, setMinutes , "start-time", "Hours", "Minutes") }}
+                {{ timeInputs("End time", setHours, setMinutes , "end-time", "Hours", "Minutes") }}
+                    
+                {{ govukButton({
+                    text: "Add this date",
+                    classes: "button-blue left-aligned"
+                }) }}
+            </form>
+
+            {% if event > 0 %}
+                <div class="button-container">
+                    <a class="govuk-button" href="#">Continue</a>
+                </div>
+            {% endif %}
+            <a href="/content-management/courses/{{course.id}}/overview">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

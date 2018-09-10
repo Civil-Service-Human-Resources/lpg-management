@@ -37,7 +37,7 @@ ul {
 
 .right-menu {
 	border: 1px solid $border;
-	border-top: 4px solid $theme;
+	border-top: 8px solid $theme;
 	margin-bottom: 50px;
 
 	.menu-header {
@@ -56,6 +56,7 @@ ul {
 	width: 100%;
 	justify-content: space-between;
 	flex-direction: row-reverse;
+	padding: 15px 0;
 }
 
 .font-bold {
@@ -93,7 +94,7 @@ ul {
 	.panel-links {
 		font-weight: bold;
 		color: $white;
-		margin: 0 2px;
+		margin: 0 10px;
 	}
 }
 

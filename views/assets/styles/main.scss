@@ -3,9 +3,16 @@
 @import './_global';
 @import './_forms';
 
-@import './page/add-module';
+@import './page/_add-module';
+@import './page/_course-overview';
+@import './page/_course-preview';
+@import './page/_events';
+@import './page/_events-preview';
+@import '../../component/courseModules/styles';
+@import '../../component/coursePreview/styles';
+@import '../../component/errorSummary/styles';
 @import '../../component/list/styles';
-@import '../../component/providerList/styles';
 @import '../../component/menu/styles';
+@import '../../component/providerList/styles';
+@import '../../component/timeInputs/styles';
 @import '../../component/textarea/styles';
-@import '../../component/course-preview/styles';
