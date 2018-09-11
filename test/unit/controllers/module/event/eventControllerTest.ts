@@ -154,4 +154,20 @@ describe('Event Controller Test', function() {
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/events/events-preview')
 	})
+
+	it('should render event overview page', async function() {
+		let event: Event = new Event()
+		event.dateRanges = [{date: '2019-02-01', startTime: '9:00:00', endTime: '17:00:00'}]
+
+		const getEventOverview: (request: Request, response: Response) => void = eventController.getEventOverview()
+
+		const request: Request = mockReq()
+		const response: Response = mockRes()
+
+		response.locals.event = event
+
+		await getEventOverview(request, response)
+
+		expect(response.render).to.have.been.calledWith('page/course/module/events/events-overview')
+	})
 })

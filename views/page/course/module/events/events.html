@@ -33,7 +33,7 @@
             <h2 class="govuk-heading-m govuk-!-font-size-36">Event date and time</h2>
             <p class="govuk-body">This event is for the <strong>{{ module.title }}</strong> module on the <strong>{{ course.title }}</strong> course.</p>
 
-            {% if events > 0 %}
+            {% if event.dateRanges > 0 %}
                 <div class="event-container">
                     <ul class="event-list headers">
                         <li class="events">
@@ -41,9 +41,9 @@
                         </li> 
                     </ul>
                     <ul class="event-list">
-                        {% for event in events %}
+                        {% for date in event.dateRanges %}
                             <li class="events u--border--bgrey">
-                                <p class="govuk-body event date">{{ event.date }}test</p><p class="govuk-body event time">{{ event.date }}test</p><p class="govuk-body event time">{{ event.date }}test</p><p class="govuk-body event edit"><a href="#" class="govuk-link">Edit</a>
+                                <p class="govuk-body event date">{{ date.date }}</p><p class="govuk-body event time">{{ date.startTime }}</p><p class="govuk-body event time">{{ date.endTime  }}</p><p class="govuk-body event edit"> <a href="#" class="govuk-link">Edit</a>
                             </li>
                         {% endfor %}
                     </ul>

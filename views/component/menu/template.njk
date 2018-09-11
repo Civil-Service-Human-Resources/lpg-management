@@ -4,7 +4,7 @@
     <h4 class="menu-header">{{ boxTitle }}</h4>
     <ul class="action-links">
         {% for action in actions %}
-            <li>
+            <li class="action-link">
                 <a class="govuk-link govuk-body" href="{{ action.link }}">{{ action.text }}</a>
             </li>
         {% endfor %}

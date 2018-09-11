@@ -1,0 +1,139 @@
+{% from "table/macro.njk" import govukTable %}
+{% from "../../../../component/menu/macro.njk" import menu %}
+
+{% extends "../../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n['event_overview'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+
+{% block beforeContent %}
+  {% block phaseBanner %}
+    {{ phaseBanner("beta") }}
+  {% endblock%}
+  {% block backLink %}
+        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
+  {% endblock%}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-l no-margin">{{ date.date | default("Date", true) }}, {{ event.location | default("Location", true) }}</h1>
+     </div>
+  </div>
+     <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <p class="govuk-body">This event is for the <strong>{{module.title | default("Module title", true)}}</strong> module on the <a href="/content-management/courses/{{course.id}}/overview" class="govuk-link">{{course.title}}</a> course</p>
+          <div class="event-overview">
+            <h3 class="govuk-heading-m">Event overview</h3>
+
+              {{ govukTable({
+                firstCellIsHeader: true,
+                classes: "course-table",
+                rows: [
+                  [
+                    {
+                      text: "Added on"
+                    },
+                    {
+                      text: "13th August 2018",
+                      format: "numeric"
+                    }
+                  ],
+                  [
+                    {
+                      text: "Added by"
+                    },
+                    {
+                      text: "Jane Evans",
+                      format: "numeric"
+                    }
+                  ],
+                  [
+                    {
+                      text: "Number of spaces"
+                    },
+                    {
+                      text: "12 of 12 available",
+                      format: "numeric"
+                    }
+                  ],
+                  [
+                      {
+                      text: "Minimum capcity"
+                      },
+                      {
+                      text: "10",
+                      format: "numeric"
+                      }
+                  ],
+                  [
+                    {
+                      text: "Event reminder"
+                    },
+                    {
+                      text: "14 days",
+                      format: "numeric"
+                    }
+                  ],
+                  [
+                    {
+                      text: "Town/city"
+                    },
+                    {
+                      text: "Manchester",
+                      format: "numeric"
+                    }
+                  ],
+                  [
+                    {
+                      text: "Venue address"
+                    },
+                    {
+                      text: "Manchester Business Park, 3000 Aviator Way, Manchester M22 5TG",
+                      format: "numeric"
+                    }
+                  ]
+                ]
+              }) }}
+            </div>
+            <div class="course-attendees">
+              <h3 class="govuk-heading-m">Course attendees</h3>
+              {% if course.attendees > 0 %}
+              {% else %}
+                <p class="govuk-body">This course doesn't have any attendees yet.</p>
+              {% endif %}
+            </div>
+        </div>
+        <div class="govuk-grid-column-one-third">
+          <div class="right-menu">
+                {% block menu %}
+                {% set actions = [
+                        {
+                            link: '#',
+                            text: 'Edit time and date'
+                        },
+                        {
+                            link: '#',
+                            text: 'Edit location and capcity'
+                        },
+                        {
+                            link: '#',
+                            text: 'Edit reminder time'
+                        },
+                        {
+                            link: '#',
+                            text: 'Prevent further signups'
+                        },
+                        {
+                            link: '#',
+                            text: 'Cancel this event'
+                        }
+                    ] %}
+                    {{ menu("Actions", actions) }}
+                {% endblock %}
+            </div>
+        </div>
+     </div> 
+  </div>
+{% endblock %}
