@@ -36,6 +36,7 @@ import {Module} from './learning-catalogue/model/module'
 import {FileController} from './controllers/module/fileController'
 import {LinkModuleController} from './controllers/module/linkModuleController'
 import {FaceToFaceModuleController} from './controllers/module/faceToFaceModuleController'
+import {ScormController} from './controllers/module/scormController'
 import {EventController} from './controllers/module/event/eventController'
 import {Event} from './learning-catalogue/model/event'
 
@@ -73,6 +74,7 @@ export class ApplicationContext {
 	youtubeService: YoutubeService
 	youtubeConfig: YoutubeConfig
 	faceToFaceController: FaceToFaceModuleController
+	scormController: ScormController
 	eventController: EventController
 
 	@EnvValue('LPG_UI_URL')
@@ -173,6 +175,7 @@ export class ApplicationContext {
 			this.moduleFactory
 		)
 
+		this.scormController = new ScormController(this.learningCatalogue, this.moduleValidator, this.moduleFactory)
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 		this.eventController = new EventController(this.learningCatalogue, this.eventValidator, this.eventFactory)
 	}

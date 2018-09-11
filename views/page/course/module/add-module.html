@@ -53,12 +53,12 @@
                     </ul>
                 {% else %}
                     <p class="govuk-body">This course does not have any modules yet</p>
-                {% endif %}      
+                {% endif %}
             </div>
         </div>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <div class="aded-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
+                <div class="added-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
                     <form action="/content-management/courses/{{ course.id }}/add-module" method="post">
                         <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Add a module</h3>
                         <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
@@ -66,35 +66,40 @@
                         <fieldset class="govuk-fieldset module-selector">
         
                             {{ govukSelect({
-                                id: "modules",
-                                name: "module",
-                                classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
-                                label: {
-                                    text: "Add a new module" 
-                                },
-                                items: [
-                                    {
+                            id: "modules",
+                            name: "module",
+                            classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
+                            label: {
+                                text: "Add a new module" 
+                            },
+                        
+                            items: [
+                                {
                                     value: "",
                                     text: "Type of learning",
                                     selected: true
-                                    },
-                                    {
+                                },
+                                {
                                     value: "link",
                                     text: "Link"
-                                    },
-                                    {
+                                },
+                                {
                                     value: "file",
                                     text: "File"
-                                    },
-                                    {
+                                },
+                                {
+                                    value: "elearning",
+                                    text: "elearning"
+                                },
+                                {
                                     value: "face-to-face",
                                     text: "Face-to-face"
-                                    },
-                                    {
+                                },
+                                {
                                     value: "video",
                                     text: "Video"
-                                    }
-                                ]
+                                }
+                            ]
                             }) }}
                             {{ govukButton({
                                 text: "Add item",

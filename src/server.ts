@@ -78,6 +78,7 @@ app.use(ctx.fileController.router)
 app.use(ctx.youtubeModuleController.router)
 app.use(ctx.linkModuleController.router)
 app.use(ctx.faceToFaceController.router)
+app.use(ctx.scormController.router)
 app.use(ctx.eventController.router)
 
 app.get('/', function(req, res) {

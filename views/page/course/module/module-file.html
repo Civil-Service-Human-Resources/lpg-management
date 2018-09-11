@@ -19,22 +19,9 @@
 
 {% block content %}
 
-    {% set errors = sessionFlash.errors%}
-
-    {% if errors.fields %}
-        <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
-            <h2 class="govuk-error-summary__title" id="error-summary-title">
-                There is a problem
-            </h2>
-            <div class="govuk-error-summary__body">
-                <ul class="govuk-list govuk-error-summary__list">
-                    {% for field, message in errors.fields %}
-                        <li><a href="#">{{ i18n[message] }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    {%endif%}
+    {% set errors = sessionFlash.errors %}
+    
+    {{ errorSummary(errors.fields) }}
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
@@ -105,12 +92,9 @@
                     type: "submit"
                 }) }}
             </form>
-
             <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/:courseId/preview">Cancel</a>        
         </div>
-
-        <div class="govuk-grid-column-one-third">
-       
+        <div class="govuk-grid-column-one-third">   
         </div>
     </div>
 {% endblock %}
