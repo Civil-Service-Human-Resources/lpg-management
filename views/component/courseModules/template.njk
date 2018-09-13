@@ -11,12 +11,9 @@
                     {% if module.optional === true %}
                         <p class="optional">This module is optional</p>
                     {% endif %}
-
-                    <a href="#" class="govuk-body govuk-link">Start</a>
                 </div>
                 <div class="govuk-grid-column-one-third">
                     <p class="govuk-body type">{{ i18n[module.type] }}</p>
-                    <p class="govuk-body">{{ module.formattedDuration }}</p>
                 </div>
             </div>
         </li>
