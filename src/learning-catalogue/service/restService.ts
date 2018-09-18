@@ -9,7 +9,6 @@ export class RestService {
 	constructor(config: any) {
 		this._http = axios.create({
 			baseURL: config.url,
-			auth: config.auth,
 			headers: {
 				'Content-Type': 'application/json',
 			},
