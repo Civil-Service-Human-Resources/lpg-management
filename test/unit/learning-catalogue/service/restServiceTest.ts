@@ -15,6 +15,12 @@ describe('RestService tests', () => {
 	let http: AxiosInstance
 	let config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
 	let restService: RestService
+	let accessToken: string = 'access-token'
+	let requestConfig: object = {
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+		},
+	}
 
 	beforeEach(() => {
 		http = <AxiosInstance>{
@@ -35,10 +41,10 @@ describe('RestService tests', () => {
 
 		http.get = sinon
 			.stub()
-			.withArgs(path)
+			.withArgs(path, requestConfig)
 			.returns(response)
 
-		const data = await restService.get(path)
+		const data = await restService.get(path, accessToken)
 
 		return expect(data).to.eql(response.data)
 	})
@@ -50,7 +56,7 @@ describe('RestService tests', () => {
 
 		http.post = sinon
 			.stub()
-			.withArgs(path, course)
+			.withArgs(path, course, requestConfig)
 			.returns({
 				headers: {
 					location: `${config.url}${path}`,
@@ -65,10 +71,10 @@ describe('RestService tests', () => {
 
 		http.get = sinon
 			.stub()
-			.withArgs(path)
+			.withArgs(path, accessToken, requestConfig)
 			.returns(getResponse)
 
-		const data = await restService.get(path)
+		const data = await restService.get(path, accessToken)
 
 		return expect(data).to.eql(getResponse.data)
 	})
@@ -80,10 +86,10 @@ describe('RestService tests', () => {
 
 		http.get = sinon
 			.stub()
-			.withArgs(path)
+			.withArgs(path, requestConfig)
 			.throws(new Error('Error thrown from test'))
 
-		return expect(restService.get(path)).to.be.rejectedWith(errorMessage)
+		return expect(restService.get(path, accessToken)).to.be.rejectedWith(errorMessage)
 	})
 
 	it('should throw error if problem with POST request', async () => {
@@ -96,10 +102,10 @@ describe('RestService tests', () => {
 
 		http.post = sinon
 			.stub()
-			.withArgs(path)
+			.withArgs(path, requestConfig)
 			.throws(new Error('Error thrown from test'))
 
-		return expect(restService.post(path, course)).to.be.rejectedWith(errorMessage)
+		return expect(restService.post(path, course, accessToken)).to.be.rejectedWith(errorMessage)
 	})
 
 	it('should return data from PUT request', async () => {
@@ -117,10 +123,10 @@ describe('RestService tests', () => {
 
 		http.put = sinon
 			.stub()
-			.withArgs(path, course)
+			.withArgs(path, course, requestConfig)
 			.returns(getResponse)
 
-		const data = await restService.put(path, course)
+		const data = await restService.put(path, course, accessToken)
 
 		return expect(data).to.eql(getResponse.data)
 	})
@@ -136,18 +142,18 @@ describe('RestService tests', () => {
 
 		http.put = sinon
 			.stub()
-			.withArgs(path)
+			.withArgs(path, requestConfig)
 			.throws(new Error('Error thrown from test'))
 
-		return expect(restService.put(path, course)).to.be.rejectedWith(errorMessage)
+		return expect(restService.put(path, course, accessToken)).to.be.rejectedWith(errorMessage)
 	})
 
 	it('should return data from DELETE request', async () => {
 		const path = '/courses/course-id'
 
-		http.delete = sinon.stub().withArgs(path)
+		http.delete = sinon.stub().withArgs(path, requestConfig)
 
-		const data = await restService.delete(path)
+		const data = await restService.delete(path, accessToken)
 
 		return expect(data).to.be.equal(undefined)
 	})
@@ -159,9 +165,9 @@ describe('RestService tests', () => {
 
 		http.delete = sinon
 			.stub()
-			.withArgs(path)
+			.withArgs(path, requestConfig)
 			.throws(new Error('Error thrown from test'))
 
-		return expect(restService.delete(path)).to.be.rejectedWith(errorMessage)
+		return expect(restService.delete(path, accessToken)).to.be.rejectedWith(errorMessage)
 	})
 })

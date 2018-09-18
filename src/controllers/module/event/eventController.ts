@@ -23,7 +23,7 @@ export class EventController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
 
 			if (course) {
 				res.locals.course = course
@@ -34,7 +34,7 @@ export class EventController {
 		})
 
 		this.router.param('moduleId', async (req, res, next, moduleId) => {
-			const module = await this.learningCatalogue.getModule(res.locals.course.id, moduleId)
+			const module = await this.learningCatalogue.getModule(res.locals.course.id, moduleId, this.getAccessToken(req))
 
 			if (module) {
 				res.locals.module = module
@@ -45,7 +45,7 @@ export class EventController {
 		})
 
 		this.router.param('eventId', async (req, res, next, eventId) => {
-			const event = await this.learningCatalogue.getEvent(res.locals.course.id, res.locals.module.id, eventId)
+			const event = await this.learningCatalogue.getEvent(res.locals.course.id, res.locals.module.id, eventId, this.getAccessToken(req))
 
 			if (module) {
 				res.locals.event = event
@@ -177,7 +177,8 @@ export class EventController {
 					const savedEvent = await this.learningCatalogue.createEvent(
 						req.params.courseId,
 						req.params.moduleId,
-						mergedEvent
+						mergedEvent,
+						this.getAccessToken(req)
 					)
 
 					delete req.session!.event
@@ -206,5 +207,9 @@ export class EventController {
 			const eventDateWithMonthAsText: string = datetime.convertDate(event.dateRanges[0].date)
 			res.render('page/course/module/events/events-overview', {eventDateWithMonthAsText})
 		}
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

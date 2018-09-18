@@ -35,7 +35,7 @@ export class LearningProviderController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('learningProviderId', async (ireq, res, next, learningProviderId) => {
-			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId, this.getAccessToken(ireq))
 
 			if (learningProvider) {
 				res.locals.learningProvider = learningProvider
@@ -60,7 +60,7 @@ export class LearningProviderController {
 			let {page, size} = this.pagination.getPageAndSizeFromRequest(request)
 
 			// prettier-ignore
-			const pageResults: DefaultPageResults<LearningProvider> = await this.learningCatalogue.listLearningProviders(page, size)
+			const pageResults: DefaultPageResults<LearningProvider> = await this.learningCatalogue.listLearningProviders(this.getAccessToken(request), page, size)
 
 			response.render('page/learning-provider/learning-providers', {pageResults})
 		}
@@ -92,9 +92,13 @@ export class LearningProviderController {
 				return response.redirect('/content-management/learning-providers/learning-provider')
 			}
 
-			const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider)
+			const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider, this.getAccessToken(request))
 
 			response.redirect('/content-management/learning-providers/' + newLearningProvider.id)
 		}
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

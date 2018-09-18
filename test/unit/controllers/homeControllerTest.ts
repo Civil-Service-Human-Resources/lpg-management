@@ -14,6 +14,14 @@ import {Pagination} from '../../../src/lib/pagination'
 chai.use(sinonChai)
 
 describe('Home Controller Tests', function() {
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
 	let homeController: HomeController
 	let learningCatalogue: LearningCatalogue
 	let pagination: Pagination
@@ -41,11 +49,11 @@ describe('Home Controller Tests', function() {
 
 		const index: (request: Request, response: Response) => void = homeController.index()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 		await index(request, response)
 
-		expect(learningCatalogue.listCourses).to.have.been.calledWith(0, 10)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(accessToken, 0, 10)
 
 		expect(response.render).to.have.been.calledOnceWith('page/index')
 	})
@@ -67,7 +75,7 @@ describe('Home Controller Tests', function() {
 
 		const index: (request: Request, response: Response) => void = homeController.index()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.query.p = 3
@@ -75,7 +83,7 @@ describe('Home Controller Tests', function() {
 
 		await index(request, response)
 
-		expect(learningCatalogue.listCourses).to.have.been.calledWith(3, 5)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(accessToken, 3, 5)
 
 		expect(response.render).to.have.been.calledOnceWith('page/index', {
 			pageResults,

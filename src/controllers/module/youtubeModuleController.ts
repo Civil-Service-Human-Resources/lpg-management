@@ -31,7 +31,7 @@ export class YoutubeModuleController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
 
 			if (course) {
 				res.locals.course = course
@@ -97,9 +97,13 @@ export class YoutubeModuleController {
 
 			module = await this.moduleFactory.create(newData)
 
-			await this.learningCatalogue.createModule(course.id, module)
+			await this.learningCatalogue.createModule(course.id, module, this.getAccessToken(req))
 
 			response.redirect(`/content-management/courses/${course.id}/preview`)
 		}
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

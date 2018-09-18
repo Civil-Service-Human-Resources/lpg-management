@@ -17,7 +17,7 @@ export class AudienceController {
 
 	private setPathParametersMapping() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
 			if (course) {
 				res.locals.course = course
 				next()
@@ -46,5 +46,9 @@ export class AudienceController {
 			//To be completed
 			return res.redirect(`/content-management/courses/${req.params.courseId}/audience/`)
 		}
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

@@ -16,6 +16,14 @@ import {Validator} from '../../../../src/learning-catalogue/validator/validator'
 chai.use(sinonChai)
 
 describe('YoutubeService Module Controller Test', function() {
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
 	let youtubeModuleController: YoutubeModuleController
 	let learningCatalogue: LearningCatalogue
 	let moduleValidator: Validator<Module>
@@ -71,7 +79,7 @@ describe('YoutubeService Module Controller Test', function() {
 
 		const setModule: (request: Request, response: Response) => void = youtubeModuleController.setModule()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		response.locals.course = course
@@ -97,7 +105,7 @@ describe('YoutubeService Module Controller Test', function() {
 		expect(youtubeService.checkYoutubeResponse).to.have.been.calledOnceWith(youtubeResponse)
 		expect(youtubeService.getBasicYoutubeInfo).to.have.been.calledOnceWith(youtubeResponse)
 		expect(youtubeService.getDuration).to.have.been.calledOnce
-		expect(learningCatalogue.createModule).to.have.been.calledWith('abc', module)
+		expect(learningCatalogue.createModule).to.have.been.calledWith('abc', module, accessToken)
 		expect(response.redirect).to.have.been.calledWith('/content-management/courses/abc/preview')
 	})
 

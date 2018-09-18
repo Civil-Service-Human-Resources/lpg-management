@@ -34,7 +34,8 @@ export class CancellationPolicyController {
 
 			const cancellationPolicy = await this.learningCatalogue.getCancellationPolicy(
 				learningProviderId,
-				cancellationPolicyId
+				cancellationPolicyId,
+				this.getAccessToken(req)
 			)
 
 			if (cancellationPolicy) {
@@ -46,7 +47,7 @@ export class CancellationPolicyController {
 		})
 
 		this.router.param('learningProviderId', async (req, res, next, learningProviderId) => {
-			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId, this.getAccessToken(req))
 
 			if (learningProvider) {
 				res.locals.learningProvider = learningProvider
@@ -103,7 +104,7 @@ export class CancellationPolicyController {
 				return response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 			}
 
-			await this.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
+			await this.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy, this.getAccessToken(request))
 
 			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 		}
@@ -114,7 +115,7 @@ export class CancellationPolicyController {
 			const learningProviderId: string = request.params.learningProviderId
 			const cancellationPolicyId: string = request.params.cancellationPolicyId
 
-			await this.learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicyId)
+			await this.learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicyId, this.getAccessToken(request))
 
 			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 		}
@@ -131,6 +132,10 @@ export class CancellationPolicyController {
 
 		const cancellationPolicy = this.cancellationPolicyFactory.create(data)
 
-		await this.learningCatalogue.updateCancellationPolicy(request.params.learningProviderId, cancellationPolicy)
+		await this.learningCatalogue.updateCancellationPolicy(request.params.learningProviderId, cancellationPolicy, this.getAccessToken(request))
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

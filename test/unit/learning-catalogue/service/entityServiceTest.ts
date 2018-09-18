@@ -16,6 +16,7 @@ describe('EntityService tests', () => {
 	let restService: RestService
 	let learningProviderFactory: Factory<LearningProvider>
 	let entityService: EntityService<LearningProvider>
+	const accessToken = 'access-token'
 
 	beforeEach(() => {
 		restService = <RestService>{}
@@ -40,7 +41,7 @@ describe('EntityService tests', () => {
 
 		restService.get = sinon
 			.stub()
-			.withArgs(`/learning-providers?page=0&size=10`)
+			.withArgs(`/learning-providers?page=0&size=10`, accessToken)
 			.returns(data)
 
 		const learningProvider1: LearningProvider = new LearningProvider()
@@ -57,7 +58,7 @@ describe('EntityService tests', () => {
 
 		const page = 0
 		const size = 10
-		const result = await entityService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		const result = await entityService.listAll(`/learning-providers?page=${page}&size=${size}`, accessToken)
 
 		expect(learningProviderFactory.create).to.have.been.calledTwice
 		expect(result.results).to.eql([learningProvider1, learningProvider2])
@@ -80,12 +81,12 @@ describe('EntityService tests', () => {
 
 		restService.get = sinon
 			.stub()
-			.withArgs(`/learning-providers?page=${page}&size=${size}`)
+			.withArgs(`/learning-providers?page=${page}&size=${size}`, accessToken)
 			.returns(data)
 
 		learningProviderFactory.create = sinon.stub()
 
-		await entityService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		await entityService.listAll(`/learning-providers?page=${page}&size=${size}`, accessToken)
 
 		return expect(restService.get).to.have.been.calledOnceWith(`/learning-providers?page=2&size=99`)
 	})
@@ -101,13 +102,13 @@ describe('EntityService tests', () => {
 		restService.get = sinon
 			.stub()
 			.returns(data)
-			.withArgs('/learning-providers?page=0&size=10')
+			.withArgs('/learning-providers?page=0&size=10', accessToken)
 
 		learningProviderFactory.create = sinon.stub()
 
 		const page: number = 0
 		const size: number = 10
-		await entityService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		await entityService.listAll(`/learning-providers?page=${page}&size=${size}`, accessToken)
 
 		expect(learningProviderFactory.create).to.not.have.been.called
 		expect(data.results).to.eql([])
@@ -130,7 +131,7 @@ describe('EntityService tests', () => {
 
 		restService.get = sinon
 			.stub()
-			.withArgs(`/learning-providers/${learningProviderId}`)
+			.withArgs(`/learning-providers/${learningProviderId}`, accessToken)
 			.returns(data)
 
 		learningProviderFactory.create = sinon
@@ -138,7 +139,10 @@ describe('EntityService tests', () => {
 			.withArgs(data)
 			.returns(learningProvider)
 
-		const result: LearningProvider = await entityService.get(`/learning-providers/${learningProviderId}`)
+		const result: LearningProvider = await entityService.get(
+			`/learning-providers/${learningProviderId}`,
+			accessToken
+		)
 
 		expect(result).to.equal(learningProvider)
 		expect(restService.get).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}`)
@@ -160,7 +164,7 @@ describe('EntityService tests', () => {
 		}
 		restService.post = sinon
 			.stub()
-			.withArgs(path, learningProvider)
+			.withArgs(path, learningProvider, accessToken)
 			.returns(data)
 
 		learningProviderFactory.create = sinon
@@ -168,7 +172,11 @@ describe('EntityService tests', () => {
 			.withArgs(data)
 			.returns(learningProvider)
 
-		const result: LearningProvider = await entityService.create(`/learning-providers/`, learningProvider)
+		const result: LearningProvider = await entityService.create(
+			`/learning-providers/`,
+			learningProvider,
+			accessToken
+		)
 
 		expect(result).to.equal(learningProvider)
 
@@ -192,7 +200,7 @@ describe('EntityService tests', () => {
 
 		restService.put = sinon
 			.stub()
-			.withArgs(path, learningProvider)
+			.withArgs(path, learningProvider, accessToken)
 			.returns(data)
 
 		learningProviderFactory.create = sinon
@@ -200,7 +208,11 @@ describe('EntityService tests', () => {
 			.withArgs(data)
 			.returns(learningProvider)
 
-		const result: LearningProvider = await entityService.update(`/learning-providers/`, learningProvider)
+		const result: LearningProvider = await entityService.update(
+			`/learning-providers/`,
+			learningProvider,
+			accessToken
+		)
 
 		expect(result).to.equal(learningProvider)
 
@@ -213,8 +225,8 @@ describe('EntityService tests', () => {
 
 		restService.delete = sinon.stub()
 
-		await entityService.delete(path)
+		await entityService.delete(path, accessToken)
 
-		expect(restService.delete).to.have.been.calledOnceWith(path)
+		expect(restService.delete).to.have.been.calledOnceWith(path, accessToken)
 	})
 })

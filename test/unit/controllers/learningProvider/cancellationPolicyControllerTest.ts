@@ -18,7 +18,14 @@ describe('Cancellation Policy Controller Tests', function() {
 	let learningCatalogue: LearningCatalogue
 	let cancellationPolicyValidator: Validator<CancellationPolicy>
 	let cancellationPolicyFactory: CancellationPolicyFactory
-
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		cancellationPolicyFactory = <CancellationPolicyFactory>{}
@@ -82,7 +89,7 @@ describe('Cancellation Policy Controller Tests', function() {
 			response: Response
 		) => void = cancellationPolicyController.setCancellationPolicy()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {name: ''}
@@ -103,7 +110,8 @@ describe('Cancellation Policy Controller Tests', function() {
 		expect(request.session!.sessionFlash).to.not.exist
 		expect(learningCatalogue.createCancellationPolicy).to.have.been.calledWith(
 			learningProviderId,
-			cancellationPolicy
+			cancellationPolicy,
+			accessToken
 		)
 
 		expect(response.redirect).to.have.been.calledOnceWith(
@@ -119,7 +127,7 @@ describe('Cancellation Policy Controller Tests', function() {
 			response: Response
 		) => void = cancellationPolicyController.setCancellationPolicy()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {name: ''}
@@ -144,7 +152,8 @@ describe('Cancellation Policy Controller Tests', function() {
 		expect(request.session!.sessionFlash).to.not.exist
 		expect(learningCatalogue.updateCancellationPolicy).to.have.been.calledWith(
 			learningProviderId,
-			cancellationPolicy
+			cancellationPolicy,
+			accessToken
 		)
 
 		expect(response.redirect).to.have.been.calledOnceWith(
@@ -161,7 +170,7 @@ describe('Cancellation Policy Controller Tests', function() {
 			response: Response
 		) => void = cancellationPolicyController.deleteCancellationPolicy()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.params.learningProviderId = learningProviderId
@@ -173,7 +182,8 @@ describe('Cancellation Policy Controller Tests', function() {
 
 		expect(learningCatalogue.deleteCancellationPolicy).to.have.been.calledOnceWith(
 			learningProviderId,
-			cancellationPolicyId
+			cancellationPolicyId,
+			accessToken
 		)
 		expect(response.redirect).to.have.been.calledOnceWith(
 			`/content-management/learning-providers/${learningProviderId}`

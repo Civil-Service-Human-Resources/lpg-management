@@ -19,7 +19,7 @@ export class ModuleController {
 
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
 			if (course) {
 				res.locals.course = course
 				next()
@@ -56,5 +56,9 @@ export class ModuleController {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/module/module-file')
 		}
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

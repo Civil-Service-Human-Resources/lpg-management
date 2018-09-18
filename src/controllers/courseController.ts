@@ -37,7 +37,7 @@ export class CourseController {
 
 	private getCourseFromRouterParamAndSetOnLocals() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
 
 			if (course) {
 				res.locals.course = course
@@ -145,7 +145,7 @@ export class CourseController {
 
 			request.session!.sessionFlash = {courseAddedSuccessMessage: 'course_added_success_message'}
 
-			const savedCourse = await this.learningCatalogue.createCourse(course)
+			const savedCourse = await this.learningCatalogue.createCourse(course, this.getAccessToken(request))
 
 			return response.redirect(`/content-management/courses/${savedCourse.id}/overview`)
 		}
@@ -153,7 +153,7 @@ export class CourseController {
 
 	public sortModules() {
 		return async (request: Request, response: Response) => {
-			await this.courseService.sortModules(request.params.courseId, request.query.moduleIds)
+			await this.courseService.sortModules(this.getAccessToken(request), request.params.courseId, request.query.moduleIds)
 			return response.redirect(`/content-management/courses/${request.params.courseId}/add-module`)
 		}
 	}
@@ -171,6 +171,10 @@ export class CourseController {
 
 		const course = this.courseFactory.create(data)
 
-		await this.learningCatalogue.updateCourse(course)
+		await this.learningCatalogue.updateCourse(course, this.getAccessToken(request))
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

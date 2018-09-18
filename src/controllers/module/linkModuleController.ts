@@ -21,7 +21,7 @@ export class LinkModuleController {
 
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
 			if (course) {
 				res.locals.course = course
 				next()
@@ -50,9 +50,13 @@ export class LinkModuleController {
 			}
 
 			const linkModule = this.linkFactory.create(data)
-			await this.learningCatalogue.createModule(course.id, linkModule)
+			await this.learningCatalogue.createModule(course.id, linkModule, this.getAccessToken(request))
 
 			return response.redirect(`/content-management/courses/${course.id}/add-module`)
 		}
+	}
+
+	private getAccessToken(request: Request) {
+		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

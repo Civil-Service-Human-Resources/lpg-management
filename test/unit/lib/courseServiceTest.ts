@@ -5,13 +5,14 @@ import {Module} from '../../../src/learning-catalogue/model/module'
 import {expect} from 'chai'
 import * as sinon from 'sinon'
 import * as chai from 'chai'
-import * as chaiAsPromised from 'chai-as-promised'
+import * as sinonChai from 'sinon-chai'
 
-chai.use(chaiAsPromised)
+chai.use(sinonChai)
 
 describe('CourseService tests', () => {
 	let learningCatalogue: any = {}
 	let courseService: CourseService
+	const accessToken = 'access-token'
 
 	before(() => {
 		courseService = new CourseService(learningCatalogue)
@@ -34,18 +35,19 @@ describe('CourseService tests', () => {
 
 		learningCatalogue.getCourse = sinon
 			.stub()
-			.withArgs(courseId)
 			.returns(course)
 		learningCatalogue.updateCourse = sinon
 			.stub()
-			.withArgs(courseId)
 			.returns(course)
 
 		expect(course.modules.map(m => m.id)).to.be.eql(['1', '2', '3'])
 
-		const sortedCourse = await courseService.sortModules(courseId, ['3', '2', '1'])
+		const sortedCourse = await courseService.sortModules(accessToken, courseId, ['3', '2', '1'])
 
 		expect(sortedCourse.modules.map(m => m.id)).to.be.eql(['3', '2', '1'])
+		expect(learningCatalogue.getCourse).to.have.been.calledOnceWith(courseId, accessToken)
+		expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith(course, accessToken)
+
 	})
 
 	it('should throw error if module id does not exist in course', async () => {
@@ -72,7 +74,7 @@ describe('CourseService tests', () => {
 			.withArgs(courseId)
 			.returns(course)
 
-		return expect(courseService.sortModules(courseId, ['4', '2', '1'])).to.be.rejectedWith(
+		return expect(courseService.sortModules(accessToken, courseId, ['4', '2', '1'])).to.be.rejectedWith(
 			'Module (id: 4) not found in course (id: course-id)'
 		)
 	})
@@ -101,7 +103,7 @@ describe('CourseService tests', () => {
 			.withArgs(courseId)
 			.returns(course)
 
-		return expect(courseService.sortModules(courseId, ['3', '2'])).to.be.rejectedWith(
+		return expect(courseService.sortModules(accessToken, courseId, ['3', '2'])).to.be.rejectedWith(
 			'Course modules length(3) does not match module ids length(2)'
 		)
 	})
