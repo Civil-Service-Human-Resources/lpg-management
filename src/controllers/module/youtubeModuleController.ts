@@ -5,6 +5,7 @@ import {ContentRequest} from '../../extended'
 import {YoutubeService} from '../../lib/youtubeService'
 import {Module} from '../../learning-catalogue/model/module'
 import {Validator} from '../../learning-catalogue/validator/validator'
+import {RequestUtil} from '../../lib/requestUtil'
 
 export class YoutubeModuleController {
 	learningCatalogue: LearningCatalogue
@@ -31,7 +32,7 @@ export class YoutubeModuleController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, RequestUtil.getAccessToken(req))
 
 			if (course) {
 				res.locals.course = course
@@ -97,7 +98,7 @@ export class YoutubeModuleController {
 
 			module = await this.moduleFactory.create(newData)
 
-			await this.learningCatalogue.createModule(course.id, module)
+			await this.learningCatalogue.createModule(course.id, module, RequestUtil.getAccessToken(req))
 
 			response.redirect(`/content-management/courses/${course.id}/preview`)
 		}

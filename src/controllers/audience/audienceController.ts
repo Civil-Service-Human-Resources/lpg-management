@@ -1,6 +1,7 @@
 import {Request, Response, Router} from 'express'
 import {AudienceFactory} from '../../learning-catalogue/model/factory/audienceFactory'
 import {LearningCatalogue} from '../../learning-catalogue'
+import {RequestUtil} from '../../lib/requestUtil'
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -17,7 +18,7 @@ export class AudienceController {
 
 	private setPathParametersMapping() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, RequestUtil.getAccessToken(req))
 			if (course) {
 				res.locals.course = course
 				next()

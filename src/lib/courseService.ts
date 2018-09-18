@@ -9,8 +9,8 @@ export class CourseService {
 		this.learningCatalogue = learningCatalogue
 	}
 
-	public async sortModules(courseId: string, moduleIds: string[]): Promise<Course> {
-		const course: Course = await this.learningCatalogue.getCourse(courseId)
+	public async sortModules(accessToken: string, courseId: string, moduleIds: string[]): Promise<Course> {
+		const course: Course = await this.learningCatalogue.getCourse(courseId, accessToken)
 
 		if (course.modules.length !== moduleIds.length) {
 			throw new Error(
@@ -34,6 +34,6 @@ export class CourseService {
 
 		course.modules = modules
 
-		return await this.learningCatalogue.updateCourse(course)
+		return await this.learningCatalogue.updateCourse(course, accessToken)
 	}
 }

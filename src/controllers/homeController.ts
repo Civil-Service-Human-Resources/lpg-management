@@ -5,6 +5,7 @@ import {DefaultPageResults} from '../learning-catalogue/model/defaultPageResults
 
 import * as log4js from 'log4js'
 import {Pagination} from 'lib/pagination'
+import {RequestUtil} from '../lib/requestUtil'
 
 export class HomeController {
 	logger = log4js.getLogger('controllers/homeController')
@@ -25,7 +26,7 @@ export class HomeController {
 			let {page, size} = this.pagination.getPageAndSizeFromRequest(request)
 
 			// prettier-ignore
-			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.listCourses(page, size)
+			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.listCourses(RequestUtil.getAccessToken(request), page, size)
 
 			response.render('page/index', {
 				pageResults,

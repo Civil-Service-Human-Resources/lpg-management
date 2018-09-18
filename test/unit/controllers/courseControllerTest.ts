@@ -22,6 +22,14 @@ describe('Course Controller Tests', function() {
 	let courseValidator: Validator<Course>
 	let courseFactory: CourseFactory
 	let courseService: CourseService
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
@@ -131,7 +139,7 @@ describe('Course Controller Tests', function() {
 	it('should edit title', async function() {
 		const setCourseTitle: (request: Request, response: Response) => void = courseController.setCourseTitle()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {title: ''}
@@ -170,7 +178,7 @@ describe('Course Controller Tests', function() {
 	it('should check for details errors and redirect to content-management page if no errors', async function() {
 		const setCourseDetails: (request: Request, response: Response) => void = courseController.setCourseDetails()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {
@@ -193,7 +201,7 @@ describe('Course Controller Tests', function() {
 		expect(courseFactory.create).to.have.been.calledWith(request.body)
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.returned(errors)
-		expect(learningCatalogue.createCourse).to.have.been.calledWith(course)
+		expect(learningCatalogue.createCourse).to.have.been.calledWith(course, accessToken)
 		expect(request.session!.sessionFlash).to.contain({courseAddedSuccessMessage: 'course_added_success_message'})
 
 		expect(response.redirect).to.have.been.calledWith(`/content-management/courses/${course.id}/overview`)
@@ -239,7 +247,7 @@ describe('Course Controller Tests', function() {
 	it('should edit course details', async function() {
 		const setCourseDetails: (request: Request, response: Response) => void = courseController.setCourseDetails()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.params.courseId = 'abc123'
@@ -257,6 +265,7 @@ describe('Course Controller Tests', function() {
 
 		await setCourseDetails(request, response)
 
+		expect(learningCatalogue.updateCourse).to.have.been.calledWith(course, accessToken)
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(response.redirect).to.have.been.calledWith(
 			`/content-management/courses/${request.params.courseId}/preview`
@@ -266,7 +275,7 @@ describe('Course Controller Tests', function() {
 	it('should re-sort modules with order list of module ids', async () => {
 		const sortModules: (request: Request, response: Response) => void = courseController.sortModules()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.params.courseId = 'abc123'
@@ -286,7 +295,7 @@ describe('Course Controller Tests', function() {
 
 		await sortModules(request, response)
 
-		expect(courseService.sortModules).to.have.been.calledWith(courseId, moduleIds)
+		expect(courseService.sortModules).to.have.been.calledWith(accessToken, courseId, moduleIds)
 		expect(response.redirect).to.have.been.calledWith(`/content-management/courses/${courseId}/add-module`)
 	})
 })

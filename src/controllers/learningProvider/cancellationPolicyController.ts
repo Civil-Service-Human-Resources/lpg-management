@@ -4,6 +4,7 @@ import {LearningCatalogue} from '../../learning-catalogue'
 import {CancellationPolicyFactory} from '../../learning-catalogue/model/factory/cancellationPolicyFactory'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {CancellationPolicy} from '../../learning-catalogue/model/cancellationPolicy'
+import {RequestUtil} from '../../lib/requestUtil'
 
 const logger = log4js.getLogger('controllers/learningProviderController')
 
@@ -34,7 +35,8 @@ export class CancellationPolicyController {
 
 			const cancellationPolicy = await this.learningCatalogue.getCancellationPolicy(
 				learningProviderId,
-				cancellationPolicyId
+				cancellationPolicyId,
+				RequestUtil.getAccessToken(req)
 			)
 
 			if (cancellationPolicy) {
@@ -46,7 +48,7 @@ export class CancellationPolicyController {
 		})
 
 		this.router.param('learningProviderId', async (req, res, next, learningProviderId) => {
-			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId, RequestUtil.getAccessToken(req))
 
 			if (learningProvider) {
 				res.locals.learningProvider = learningProvider
@@ -103,7 +105,7 @@ export class CancellationPolicyController {
 				return response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 			}
 
-			await this.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
+			await this.learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy, RequestUtil.getAccessToken(request))
 
 			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 		}
@@ -114,7 +116,7 @@ export class CancellationPolicyController {
 			const learningProviderId: string = request.params.learningProviderId
 			const cancellationPolicyId: string = request.params.cancellationPolicyId
 
-			await this.learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicyId)
+			await this.learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicyId, RequestUtil.getAccessToken(request))
 
 			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 		}
@@ -131,6 +133,6 @@ export class CancellationPolicyController {
 
 		const cancellationPolicy = this.cancellationPolicyFactory.create(data)
 
-		await this.learningCatalogue.updateCancellationPolicy(request.params.learningProviderId, cancellationPolicy)
+		await this.learningCatalogue.updateCancellationPolicy(request.params.learningProviderId, cancellationPolicy, RequestUtil.getAccessToken(request))
 	}
 }

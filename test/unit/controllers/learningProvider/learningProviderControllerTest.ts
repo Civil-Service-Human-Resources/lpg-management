@@ -16,6 +16,15 @@ import {LearningCatalogue} from '../../../../src/learning-catalogue'
 chai.use(sinonChai)
 
 describe('Learning Provider Controller Tests', function() {
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
+
 	let learningCatalogue: LearningCatalogue
 	let learningProviderFactory: LearningProviderFactory
 	let learningProviderController: LearningProviderController
@@ -53,11 +62,11 @@ describe('Learning Provider Controller Tests', function() {
 		const listLearningProviders = sinon.stub().returns(Promise.resolve(pageResults))
 		learningCatalogue.listLearningProviders = listLearningProviders
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		await index(request, response)
-		expect(learningCatalogue.listLearningProviders).to.have.been.calledWith(0, 10)
+		expect(learningCatalogue.listLearningProviders).to.have.been.calledWith(accessToken, 0, 10)
 
 		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/learning-providers', {pageResults})
 	})
@@ -79,7 +88,7 @@ describe('Learning Provider Controller Tests', function() {
 
 		const index: (request: Request, response: Response) => void = learningProviderController.index()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.query.p = 3
@@ -87,7 +96,7 @@ describe('Learning Provider Controller Tests', function() {
 
 		await index(request, response)
 
-		expect(learningCatalogue.listLearningProviders).to.have.been.calledWith(3, 5)
+		expect(learningCatalogue.listLearningProviders).to.have.been.calledWith(accessToken, 3, 5)
 
 		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/learning-providers', {
 			pageResults,
@@ -157,7 +166,7 @@ describe('Learning Provider Controller Tests', function() {
 			response: Response
 		) => void = learningProviderController.setLearningProvider()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {name: 'learning-provider-name'}
@@ -175,7 +184,7 @@ describe('Learning Provider Controller Tests', function() {
 		expect(learningProviderValidator.check).to.have.been.calledWith(request.body, ['name'])
 		expect(learningProviderValidator.check).to.have.returned(errors)
 		expect(request.session!.sessionFlash).to.not.exist
-		expect(learningCatalogue.createLearningProvider).to.have.been.calledWith(learningProvider)
+		expect(learningCatalogue.createLearningProvider).to.have.been.calledWith(learningProvider, accessToken)
 
 		expect(response.redirect).to.have.been.calledOnceWith(
 			`/content-management/learning-providers/${learningProvider.id}`

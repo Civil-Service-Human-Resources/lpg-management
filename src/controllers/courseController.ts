@@ -8,6 +8,7 @@ import {Validator} from '../learning-catalogue/validator/validator'
 import {Module} from '../learning-catalogue/model/module'
 import * as datetime from '../lib/datetime'
 import {CourseService} from '../lib/courseService'
+import {RequestUtil} from '../lib/requestUtil'
 
 const logger = log4js.getLogger('controllers/courseController')
 
@@ -37,7 +38,7 @@ export class CourseController {
 
 	private getCourseFromRouterParamAndSetOnLocals() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, RequestUtil.getAccessToken(req))
 
 			if (course) {
 				res.locals.course = course
@@ -145,7 +146,7 @@ export class CourseController {
 
 			request.session!.sessionFlash = {courseAddedSuccessMessage: 'course_added_success_message'}
 
-			const savedCourse = await this.learningCatalogue.createCourse(course)
+			const savedCourse = await this.learningCatalogue.createCourse(course, RequestUtil.getAccessToken(request))
 
 			return response.redirect(`/content-management/courses/${savedCourse.id}/overview`)
 		}
@@ -153,7 +154,7 @@ export class CourseController {
 
 	public sortModules() {
 		return async (request: Request, response: Response) => {
-			await this.courseService.sortModules(request.params.courseId, request.query.moduleIds)
+			await this.courseService.sortModules(RequestUtil.getAccessToken(request), request.params.courseId, request.query.moduleIds)
 			return response.redirect(`/content-management/courses/${request.params.courseId}/add-module`)
 		}
 	}
@@ -171,6 +172,6 @@ export class CourseController {
 
 		const course = this.courseFactory.create(data)
 
-		await this.learningCatalogue.updateCourse(course)
+		await this.learningCatalogue.updateCourse(course, RequestUtil.getAccessToken(request))
 	}
 }

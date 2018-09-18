@@ -1,4 +1,5 @@
 import * as chai from 'chai'
+import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {beforeEach} from 'mocha'
 import {EventController} from '../../../../../src/controllers/module/event/eventController'
@@ -8,14 +9,20 @@ import {Event} from '../../../../../src/learning-catalogue/model/event'
 import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import {Request, Response} from 'express'
-import {expect} from 'chai'
 import * as sinon from 'sinon'
-import {Module} from '../../../../../src/learning-catalogue/model/module'
 import {DateRange} from '../../../../../src/learning-catalogue/model/DateRange'
 
 chai.use(sinonChai)
 
 describe('EventController', function() {
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
 	let eventController: EventController
 	let learningCatalogue: LearningCatalogue
 	let eventValidator: Validator<Event>
@@ -71,6 +78,7 @@ describe('EventController', function() {
 		})
 
 		it('should check for errors and redirect to events page', async function() {
+
 			const req: Request = mockReq()
 			const res: Response = mockRes()
 
@@ -87,7 +95,7 @@ describe('EventController', function() {
 
 			eventFactory.create = sinon.stub().returns(new Event())
 			eventValidator.check = sinon.stub().returns({fields: ['validation.module.event.dateRanges.empty'], size: 1})
-			learningCatalogue.createEvent = sinon.stub().returns(new Module())
+			learningCatalogue.createEvent = sinon.stub()
 
 			req.session!.save = callback => {
 				callback(undefined)
@@ -96,6 +104,7 @@ describe('EventController', function() {
 
 			expect(eventValidator.check).to.have.been.calledOnce
 			expect(eventFactory.create).to.have.been.calledOnce
+			expect(learningCatalogue.createEvent).to.not.have.been.called
 			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/abc/modules/def/events`)
 		})
 
@@ -117,7 +126,7 @@ describe('EventController', function() {
 		})
 
 		it('should check for errors and redirect to events overview page if no errors', async function() {
-			const req: Request = mockReq()
+			const req: Request = mockReq(requestConfig)
 			const res: Response = mockRes()
 
 			const event: Event = new Event()
@@ -142,7 +151,8 @@ describe('EventController', function() {
 			expect(learningCatalogue.createEvent).to.have.been.calledOnceWith(
 				req.params.courseId,
 				req.params.moduleId,
-				event
+				event,
+				accessToken
 			)
 			expect(res.redirect).to.have.been.calledOnceWith(
 				'/content-management/courses/courseId123/modules/moduleId123/events-overview/eventId123'
@@ -164,7 +174,7 @@ describe('EventController', function() {
 
 			eventFactory.create = sinon.stub().returns(new Event())
 			eventValidator.check = sinon.stub().returns({fields: [], size: 0})
-			learningCatalogue.createEvent = sinon.stub().returns(event)
+			learningCatalogue.createEvent = sinon.stub()
 
 			req.session!.save = callback => {
 				callback(undefined)
@@ -195,7 +205,7 @@ describe('EventController', function() {
 			eventValidator.check = sinon
 				.stub()
 				.returns({fields: [{location: ['validation.module.event.venue.location.empty']}], size: 1})
-			learningCatalogue.createEvent = sinon.stub().returns(event)
+			learningCatalogue.createEvent = sinon.stub()
 
 			req.session!.save = callback => {
 				callback(undefined)

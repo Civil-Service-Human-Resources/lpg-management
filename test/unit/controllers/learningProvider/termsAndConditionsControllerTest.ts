@@ -14,6 +14,14 @@ import {TermsAndConditions} from '../../../../src/learning-catalogue/model/terms
 chai.use(sinonChai)
 
 describe('Terms and Conditions Controller Tests', function() {
+	const accessToken: string = 'lZcQoUlwuA6frjTRY5gfuH3fEOJHFRd58UblAzUgxp'
+	const requestConfig: object = {
+		session: {
+			passport: {
+				user: `{"uid":"8dc80f78-9a52-4c31-ac54-d280a70c18eb","roles":["COURSE_MANAGER"],"accessToken":"${accessToken}"}`,
+			},
+		},
+	}
 	let termsAndConditionsController: TermsAndConditionsController
 	let learningCatalogue: LearningCatalogue
 	let termsAndConditionsValidator: Validator<TermsAndConditions>
@@ -82,7 +90,7 @@ describe('Terms and Conditions Controller Tests', function() {
 			response: Response
 		) => void = termsAndConditionsController.setTermsAndConditions()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {name: ''}
@@ -103,7 +111,8 @@ describe('Terms and Conditions Controller Tests', function() {
 		expect(request.session!.sessionFlash).to.not.exist
 		expect(learningCatalogue.createTermsAndConditions).to.have.been.calledWith(
 			learningProviderId,
-			termsAndConditions
+			termsAndConditions,
+			accessToken
 		)
 
 		expect(response.redirect).to.have.been.calledOnceWith(
@@ -119,7 +128,7 @@ describe('Terms and Conditions Controller Tests', function() {
 			response: Response
 		) => void = termsAndConditionsController.setTermsAndConditions()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.body = {name: ''}
@@ -144,7 +153,8 @@ describe('Terms and Conditions Controller Tests', function() {
 		expect(request.session!.sessionFlash).to.not.exist
 		expect(learningCatalogue.updateTermsAndConditions).to.have.been.calledWith(
 			learningProviderId,
-			termsAndConditions
+			termsAndConditions,
+			accessToken
 		)
 
 		expect(response.redirect).to.have.been.calledOnceWith(
@@ -161,7 +171,7 @@ describe('Terms and Conditions Controller Tests', function() {
 			response: Response
 		) => void = termsAndConditionsController.deleteTermsAndConditions()
 
-		const request: Request = mockReq()
+		const request: Request = mockReq(requestConfig)
 		const response: Response = mockRes()
 
 		request.params.learningProviderId = learningProviderId
@@ -173,7 +183,8 @@ describe('Terms and Conditions Controller Tests', function() {
 
 		expect(learningCatalogue.deleteTermsAndConditions).to.have.been.calledOnceWith(
 			learningProviderId,
-			termsAndConditionsId
+			termsAndConditionsId,
+			accessToken
 		)
 		expect(response.redirect).to.have.been.calledOnceWith(
 			`/content-management/learning-providers/${learningProviderId}`

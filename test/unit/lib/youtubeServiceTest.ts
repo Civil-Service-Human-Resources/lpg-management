@@ -1,27 +1,27 @@
 import sinonChai = require('sinon-chai')
 import * as chai from 'chai'
+import {expect} from 'chai'
 import {YoutubeService} from '../../../src/lib/youtubeService'
 import {YoutubeConfig} from '../../../src/lib/youtubeConfig'
-import {RestService} from '../../../src/learning-catalogue/service/restService'
 import * as sinon from 'sinon'
 import * as config from '../../../src/config'
-import {expect} from 'chai'
+import {AxiosInstance} from 'axios'
 
 chai.use(sinonChai)
 
 describe('Youtube Service Test', function() {
 	let youtubeService: YoutubeService
 	let youtubeConfig: YoutubeConfig
-	let _restService: RestService
+	let _http: AxiosInstance
 
 	let youtubeResponse: any
 
 	beforeEach(() => {
 		youtubeConfig = <YoutubeConfig>{}
-		_restService = <RestService>{}
+		_http = <AxiosInstance>{}
 
 		youtubeService = new YoutubeService(youtubeConfig)
-		youtubeService._restService = _restService
+		youtubeService._http = _http
 
 		youtubeResponse = {
 			status: 200,
@@ -52,12 +52,12 @@ describe('Youtube Service Test', function() {
 			config.YOUTUBE_API_KEY
 		}`
 
-		_restService.get = sinon.stub().returns(youtubeResponse)
+		_http.get = sinon.stub().returns(youtubeResponse)
 
 		const response = await youtubeService.getYoutubeResponse(url)
 
 		expect(response).to.be.eql(response)
-		expect(_restService.get).to.have.been.calledOnceWith(requestUrl)
+		expect(_http.get).to.have.been.calledOnceWith(requestUrl)
 	})
 
 	it('Should get response from Youtube and throw error', async function() {
@@ -68,12 +68,12 @@ describe('Youtube Service Test', function() {
 
 		const error = new Error('Error In Test')
 
-		_restService.get = sinon.stub().throws(error)
+		_http.get = sinon.stub().throws(error)
 
 		const response = await youtubeService.getYoutubeResponse(url)
 
 		expect(response).to.be.undefined
-		expect(_restService.get).to.have.been.calledOnceWith(requestUrl)
+		expect(_http.get).to.have.been.calledOnceWith(requestUrl)
 	})
 
 	it('Should check response and return true', async function() {
@@ -122,7 +122,7 @@ describe('Youtube Service Test', function() {
 	})
 
 	it('should get duration from YouTube and return parsed duration', async function() {
-		_restService.get = sinon.stub().returns(youtubeResponse.data)
+		_http.get = sinon.stub().returns(youtubeResponse)
 
 		const response = await youtubeService.getDuration('example')
 
@@ -132,7 +132,7 @@ describe('Youtube Service Test', function() {
 	it('should get duration from YouTube and throw error', async function() {
 		const error = new Error('Error in test')
 
-		_restService.get = sinon.stub().throws(error)
+		_http.get = sinon.stub().throws(error)
 
 		const response = await youtubeService.getDuration('example')
 
@@ -142,7 +142,7 @@ describe('Youtube Service Test', function() {
 	it('should get duration from Youtube and return undefined', async function() {
 		youtubeResponse.data.items = null
 
-		_restService.get = sinon.stub().returns(youtubeResponse.data)
+		_http.get = sinon.stub().returns(youtubeResponse)
 
 		const response = await youtubeService.getDuration('example')
 

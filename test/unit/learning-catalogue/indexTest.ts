@@ -22,6 +22,7 @@ describe('Learning Catalogue tests', () => {
 	let learningProviderService: EntityService<LearningProvider>
 	let cancellationPolicyService: EntityService<CancellationPolicy>
 	let termsAndConditionsService: EntityService<TermsAndConditions>
+	const accessToken: string = 'access-token'
 
 	const config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
 
@@ -46,31 +47,31 @@ describe('Learning Catalogue tests', () => {
 		const course: Course = <Course>{}
 		courseService.create = sinon.stub()
 
-		await learningCatalogue.createCourse(course)
-		return expect(courseService.create).to.have.been.calledOnceWith('/courses/', course)
+		await learningCatalogue.createCourse(course, accessToken)
+		return expect(courseService.create).to.have.been.calledOnceWith('/courses/', course, accessToken)
 	})
 
 	it('should call courseService when updating a course', async () => {
 		const course: Course = <Course>{}
 		courseService.update = sinon.stub()
 
-		await learningCatalogue.updateCourse(course)
-		return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
+		await learningCatalogue.updateCourse(course, accessToken)
+		return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course, accessToken)
 	})
 
 	it('should call courseService when getting a course', async () => {
 		const courseId: string = 'course-id'
 		courseService.get = sinon.stub()
 
-		await learningCatalogue.getCourse(courseId)
-		return expect(courseService.get).to.have.been.calledOnceWith(`/courses/${courseId}`)
+		await learningCatalogue.getCourse(courseId, accessToken)
+		return expect(courseService.get).to.have.been.calledOnceWith(`/courses/${courseId}`, accessToken)
 	})
 
 	it('should call courseService when listing courses', async () => {
 		courseService.listAll = sinon.stub()
 
-		await learningCatalogue.listCourses()
-		return expect(courseService.listAll).to.have.been.calledOnce
+		await learningCatalogue.listCourses(accessToken)
+		return expect(courseService.listAll).to.have.been.calledOnceWith('/courses?page=0&size=10', accessToken)
 	})
 
 	it('should call moduleService when creating a module', async () => {
@@ -78,8 +79,12 @@ describe('Learning Catalogue tests', () => {
 		const module: Module = <Module>{}
 		moduleService.create = sinon.stub()
 
-		await learningCatalogue.createModule(courseId, module)
-		return expect(moduleService.create).to.have.been.calledOnceWith(`/courses/${courseId}/modules/`, module)
+		await learningCatalogue.createModule(courseId, module, accessToken)
+		return expect(moduleService.create).to.have.been.calledOnceWith(
+			`/courses/${courseId}/modules/`,
+			module,
+			accessToken
+		)
 	})
 
 	it('should call moduleService when getting a module', async () => {
@@ -87,18 +92,22 @@ describe('Learning Catalogue tests', () => {
 		const moduleId: string = 'module-id'
 		moduleService.get = sinon.stub()
 
-		await learningCatalogue.getModule(courseId, moduleId)
-		return expect(moduleService.get).to.have.been.calledOnceWith(`/courses/${courseId}/modules/${moduleId}`)
+		await learningCatalogue.getModule(courseId, moduleId, accessToken)
+		return expect(moduleService.get).to.have.been.calledOnceWith(
+			`/courses/${courseId}/modules/${moduleId}`,
+			accessToken
+		)
 	})
 
 	it('should call learningProviderService when creating a learning provider', async () => {
 		const learningProvider: LearningProvider = <LearningProvider>{}
 		learningProviderService.create = sinon.stub()
 
-		await learningCatalogue.createLearningProvider(learningProvider)
+		await learningCatalogue.createLearningProvider(learningProvider, accessToken)
 		return expect(learningProviderService.create).to.have.been.calledOnceWith(
 			'/learning-providers/',
-			learningProvider
+			learningProvider,
+			accessToken
 		)
 	})
 
@@ -106,17 +115,21 @@ describe('Learning Catalogue tests', () => {
 		const learningProviderId: string = 'learning-provider-id'
 		learningProviderService.get = sinon.stub()
 
-		await learningCatalogue.getLearningProvider(learningProviderId)
+		await learningCatalogue.getLearningProvider(learningProviderId, accessToken)
 		return expect(learningProviderService.get).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}`
+			`/learning-providers/${learningProviderId}`,
+			accessToken
 		)
 	})
 
 	it('should call learningProviderService when listing learning providers', async () => {
 		learningProviderService.listAll = sinon.stub()
 
-		await learningCatalogue.listLearningProviders()
-		return expect(learningProviderService.listAll).to.have.been.calledOnce
+		await learningCatalogue.listLearningProviders(accessToken)
+		return expect(learningProviderService.listAll).to.have.been.calledOnceWith(
+			'/learning-providers?page=0&size=10',
+			accessToken
+		)
 	})
 
 	it('should call cancellationPolicyService when creating a cancellation policy', async () => {
@@ -125,10 +138,11 @@ describe('Learning Catalogue tests', () => {
 
 		cancellationPolicyService.create = sinon.stub()
 
-		await learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
+		await learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy, accessToken)
 		return expect(cancellationPolicyService.create).to.have.been.calledOnceWith(
 			`/learning-providers/${learningProviderId}/cancellation-policies`,
-			cancellationPolicy
+			cancellationPolicy,
+			accessToken
 		)
 	})
 
@@ -140,10 +154,11 @@ describe('Learning Catalogue tests', () => {
 
 		cancellationPolicyService.update = sinon.stub()
 
-		await learningCatalogue.updateCancellationPolicy(learningProviderId, cancellationPolicy)
+		await learningCatalogue.updateCancellationPolicy(learningProviderId, cancellationPolicy, accessToken)
 		return expect(cancellationPolicyService.update).to.have.been.calledOnceWith(
 			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`,
-			cancellationPolicy
+			cancellationPolicy,
+			accessToken
 		)
 	})
 
@@ -153,9 +168,10 @@ describe('Learning Catalogue tests', () => {
 
 		cancellationPolicyService.get = sinon.stub()
 
-		await learningCatalogue.getCancellationPolicy(learningProviderId, cancellationPolicyId)
+		await learningCatalogue.getCancellationPolicy(learningProviderId, cancellationPolicyId, accessToken)
 		return expect(cancellationPolicyService.get).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`
+			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`,
+			accessToken
 		)
 	})
 
@@ -167,9 +183,10 @@ describe('Learning Catalogue tests', () => {
 
 		cancellationPolicyService.delete = sinon.stub()
 
-		await learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicy.id)
+		await learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicy.id, accessToken)
 		return expect(cancellationPolicyService.delete).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`
+			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`,
+			accessToken
 		)
 	})
 
@@ -179,11 +196,12 @@ describe('Learning Catalogue tests', () => {
 
 		termsAndConditionsService.create = sinon.stub()
 
-		await learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions)
+		await learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions, accessToken)
 
 		return expect(termsAndConditionsService.create).to.have.been.calledOnceWith(
 			`/learning-providers/${learningProviderId}/terms-and-conditions`,
-			termsAndConditions
+			termsAndConditions,
+			accessToken
 		)
 	})
 
@@ -193,10 +211,11 @@ describe('Learning Catalogue tests', () => {
 
 		termsAndConditionsService.get = sinon.stub()
 
-		await learningCatalogue.getTermsAndConditions(learningProviderId, termsAndConditionsId)
+		await learningCatalogue.getTermsAndConditions(learningProviderId, termsAndConditionsId, accessToken)
 
 		return expect(termsAndConditionsService.get).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
+			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`,
+			accessToken
 		)
 	})
 
@@ -209,10 +228,12 @@ describe('Learning Catalogue tests', () => {
 
 		termsAndConditionsService.update = sinon.stub()
 
-		await learningCatalogue.updateTermsAndConditions(learningProviderId, termsAndConditions)
+		await learningCatalogue.updateTermsAndConditions(learningProviderId, termsAndConditions, accessToken)
 
 		return expect(termsAndConditionsService.update).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
+			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`,
+			termsAndConditions,
+			accessToken
 		)
 	})
 
@@ -222,10 +243,11 @@ describe('Learning Catalogue tests', () => {
 
 		termsAndConditionsService.delete = sinon.stub()
 
-		await learningCatalogue.deleteTermsAndConditions(learningProviderId, termsAndConditionsId)
+		await learningCatalogue.deleteTermsAndConditions(learningProviderId, termsAndConditionsId, accessToken)
 
 		return expect(termsAndConditionsService.delete).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
+			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`,
+			accessToken
 		)
 	})
 })

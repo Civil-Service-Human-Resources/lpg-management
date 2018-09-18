@@ -6,6 +6,7 @@ import {LearningProviderFactory} from '../../learning-catalogue/model/factory/le
 import {DefaultPageResults} from '../../learning-catalogue/model/defaultPageResults'
 import {LearningProvider} from '../../learning-catalogue/model/learningProvider'
 import {Validator} from '../../learning-catalogue/validator/validator'
+import {RequestUtil} from '../../lib/requestUtil'
 
 const logger = log4js.getLogger('controllers/learningProviderController')
 
@@ -35,7 +36,7 @@ export class LearningProviderController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.param('learningProviderId', async (ireq, res, next, learningProviderId) => {
-			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId)
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId, RequestUtil.getAccessToken(ireq))
 
 			if (learningProvider) {
 				res.locals.learningProvider = learningProvider
@@ -60,7 +61,7 @@ export class LearningProviderController {
 			let {page, size} = this.pagination.getPageAndSizeFromRequest(request)
 
 			// prettier-ignore
-			const pageResults: DefaultPageResults<LearningProvider> = await this.learningCatalogue.listLearningProviders(page, size)
+			const pageResults: DefaultPageResults<LearningProvider> = await this.learningCatalogue.listLearningProviders(RequestUtil.getAccessToken(request), page, size)
 
 			response.render('page/learning-provider/learning-providers', {pageResults})
 		}
@@ -92,7 +93,7 @@ export class LearningProviderController {
 				return response.redirect('/content-management/learning-providers/learning-provider')
 			}
 
-			const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider)
+			const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider, RequestUtil.getAccessToken(request))
 
 			response.redirect('/content-management/learning-providers/' + newLearningProvider.id)
 		}

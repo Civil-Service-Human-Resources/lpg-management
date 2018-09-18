@@ -1,28 +1,28 @@
 import * as config from '../config'
 import * as datetime from './datetime'
 import {YoutubeConfig} from 'lib/youtubeConfig'
-import {RestService} from '../learning-catalogue/service/restService'
 import * as log4js from 'log4js'
+import axios, {AxiosInstance} from 'axios'
 
 const logger = log4js.getLogger('learning-catalogue/service/restService')
 
 export class YoutubeService {
 	youtubeConfig: YoutubeConfig
-	_restService: RestService
+	_http: AxiosInstance
 
 	constructor(youtubeConfig: YoutubeConfig) {
 		this.youtubeConfig = youtubeConfig
 
-		this._restService = new RestService(youtubeConfig)
+		this._http = axios.create()
 	}
 
 	async getYoutubeResponse(url: string) {
 		try {
-			return await this._restService.get(
+			return (await this._http.get(
 				`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json&key=${
 					config.YOUTUBE_API_KEY
 				}`
-			)
+			)).data
 		} catch (err) {
 			logger.error(`Error fetching metadata from YouTube: ${err}`)
 		}
@@ -61,10 +61,10 @@ export class YoutubeService {
 	}
 
 	async getDuration(videoID: string): Promise<number | undefined> {
-		let resp
+		let response
 
 		try {
-			resp = await this._restService.get(
+			response = await this._http.get(
 				`https://www.googleapis.com/youtube/v3/videos?part=contentDetails&id=${videoID}&key=${
 					config.YOUTUBE_API_KEY
 				}`
@@ -74,8 +74,8 @@ export class YoutubeService {
 			return
 		}
 
-		if (resp && resp.items && resp.items[0]) {
-			return datetime.parseDuration(resp.items[0].contentDetails.duration)
+		if (response && response.data.items && response.data.items[0]) {
+			return datetime.parseDuration(response.data.items[0].contentDetails.duration)
 		}
 	}
 }

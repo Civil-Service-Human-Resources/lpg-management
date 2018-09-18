@@ -3,6 +3,7 @@ import {Validator} from '../../learning-catalogue/validator/validator'
 import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactory'
 import {Request, Response, Router} from 'express'
 import {Module} from '../../learning-catalogue/model/module'
+import {RequestUtil} from '../../lib/requestUtil'
 
 export class FaceToFaceModuleController {
 	learningCatalogue: LearningCatalogue
@@ -25,7 +26,7 @@ export class FaceToFaceModuleController {
 
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
+			const course = await this.learningCatalogue.getCourse(courseId, RequestUtil.getAccessToken(req))
 
 			if (course) {
 				res.locals.course = course
@@ -62,7 +63,7 @@ export class FaceToFaceModuleController {
 				return response.redirect(`/content-management/courses/${course.id}/module-face-to-face`)
 			}
 
-			await this.learningCatalogue.createModule(course.id, module)
+			await this.learningCatalogue.createModule(course.id, module, RequestUtil.getAccessToken(request))
 
 			return response.redirect(`/content-management/courses/${course.id}/preview`)
 		}

@@ -9,7 +9,6 @@ export class RestService {
 	constructor(config: any) {
 		this._http = axios.create({
 			baseURL: config.url,
-			auth: config.auth,
 			headers: {
 				'Content-Type': 'application/json',
 			},
@@ -22,11 +21,11 @@ export class RestService {
 		this.get = this.get.bind(this)
 	}
 
-	async post(path: string, resource: any) {
+	async post(path: string, resource: any, accessToken: string) {
 		try {
-			const response: AxiosResponse = await this._http.post(path, resource)
+			const response: AxiosResponse = await this._http.post(path, resource, this.setRequestConfig(accessToken))
 
-			return this.get(url.parse(response.headers.location).path!)
+			return this.get(url.parse(response.headers.location).path!, accessToken)
 		} catch (e) {
 			throw new Error(
 				`Error with POST request: ${e} when posting ${JSON.stringify(resource)} to ${this.config.url}${path}`
@@ -34,17 +33,17 @@ export class RestService {
 		}
 	}
 
-	async get(path: string) {
+	async get(path: string, accessToken: string) {
 		try {
-			return (await this._http.get(path)).data
+			return (await this._http.get(path, this.setRequestConfig(accessToken))).data
 		} catch (e) {
 			throw new Error(`Error with GET request: ${e} when getting ${this.config.url}${path}`)
 		}
 	}
 
-	async put(path: string, resource: any) {
+	async put(path: string, resource: any, accessToken: string) {
 		try {
-			return (await this._http.put(path, resource)).data
+			return (await this._http.put(path, resource, this.setRequestConfig(accessToken))).data
 		} catch (e) {
 			throw new Error(
 				`Error with PUT request: ${e} when putting ${JSON.stringify(resource)} to ${this.config.url}${path}`
@@ -52,11 +51,19 @@ export class RestService {
 		}
 	}
 
-	async delete(path: string) {
+	async delete(path: string, accessToken: string) {
 		try {
-			return await this._http.delete(path)
+			return await this._http.delete(path, this.setRequestConfig(accessToken))
 		} catch (e) {
 			throw new Error(`Error with DELETE request: ${e} when deleting ${this.config.url}${path}`)
+		}
+	}
+
+	private setRequestConfig(accessToken: string) {
+		return {
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
 		}
 	}
 

@@ -11,8 +11,8 @@ export class EntityService<T> {
 		this._factory = factory
 	}
 
-	async listAll(path: string): Promise<DefaultPageResults<T>> {
-		const data = await this._restService.get(path)
+	async listAll(path: string, accessToken: string): Promise<DefaultPageResults<T>> {
+		const data = await this._restService.get(path, accessToken)
 
 		data.results = (data.results || []).map(this._factory.create)
 
@@ -26,25 +26,25 @@ export class EntityService<T> {
 		return pageResults
 	}
 
-	async create(path: string, entity: any): Promise<T> {
-		const data = await this._restService.post(path, entity)
+	async create(path: string, entity: any, accessToken: string): Promise<T> {
+		const data = await this._restService.post(path, entity, accessToken)
 		return this._factory.create(data)
 	}
 
-	async get(path: string): Promise<T> {
-		const data = await this._restService.get(path)
-
-		return this._factory.create(data)
-	}
-
-	async update(path: string, entity: any): Promise<T> {
-		const data = await this._restService.put(path, entity)
+	async get(path: string, accessToken: string): Promise<T> {
+		const data = await this._restService.get(path, accessToken)
 
 		return this._factory.create(data)
 	}
 
-	async delete(path: string): Promise<void> {
-		await this._restService.delete(path)
+	async update(path: string, entity: any, accessToken: string): Promise<T> {
+		const data = await this._restService.put(path, entity, accessToken)
+
+		return this._factory.create(data)
+	}
+
+	async delete(path: string, accessToken: string): Promise<void> {
+		await this._restService.delete(path, accessToken)
 	}
 
 	set factory(value: Factory<T>) {
