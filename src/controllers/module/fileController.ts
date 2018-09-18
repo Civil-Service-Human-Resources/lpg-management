@@ -4,6 +4,7 @@ import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactor
 import {ContentRequest} from '../../extended'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {Module} from '../../learning-catalogue/model/module'
+import {RequestUtil} from '../../lib/requestUtil'
 
 export class FileController {
 	learningCatalogue: LearningCatalogue
@@ -24,7 +25,7 @@ export class FileController {
 	}
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
+			const course = await this.learningCatalogue.getCourse(courseId, RequestUtil.getAccessToken(req))
 			if (course) {
 				res.locals.course = course
 				next()
@@ -68,9 +69,5 @@ export class FileController {
 			// await this.learningCatalogue.createModule(course.id, module)
 			response.redirect(`/content-management/courses/${course.id}/preview`)
 		}
-	}
-
-	private getAccessToken(request: Request) {
-		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }

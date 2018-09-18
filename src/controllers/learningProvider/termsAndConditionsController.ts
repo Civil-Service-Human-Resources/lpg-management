@@ -4,6 +4,7 @@ import {LearningCatalogue} from '../../learning-catalogue'
 import {TermsAndConditionsFactory} from '../../learning-catalogue/model/factory/termsAndConditionsFactory'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {TermsAndConditions} from '../../learning-catalogue/model/termsAndConditions'
+import {RequestUtil} from '../../lib/requestUtil'
 
 const logger = log4js.getLogger('controllers/learningProviderController')
 
@@ -35,7 +36,7 @@ export class TermsAndConditionsController {
 			const termsAndConditions = await this.learningCatalogue.getTermsAndConditions(
 				learningProviderId,
 				termsAndConditionsId,
-				this.getAccessToken(req)
+				RequestUtil.getAccessToken(req)
 			)
 
 			if (termsAndConditions) {
@@ -47,7 +48,7 @@ export class TermsAndConditionsController {
 		})
 
 		this.router.param('learningProviderId', async (req, res, next, learningProviderId) => {
-			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId, this.getAccessToken(req))
+			const learningProvider = await this.learningCatalogue.getLearningProvider(learningProviderId, RequestUtil.getAccessToken(req))
 
 			if (learningProvider) {
 				res.locals.learningProvider = learningProvider
@@ -104,7 +105,7 @@ export class TermsAndConditionsController {
 				return response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 			}
 
-			await this.learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions, this.getAccessToken(request))
+			await this.learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions, RequestUtil.getAccessToken(request))
 
 			response.redirect(`/content-management/learning-providers/${learningProviderId}`)
 		}
@@ -115,7 +116,7 @@ export class TermsAndConditionsController {
 			const learningProviderId: string = request.params.learningProviderId
 			const termsAndConditionsId: string = request.params.termsAndConditionsId
 
-			await this.learningCatalogue.deleteTermsAndConditions(learningProviderId, termsAndConditionsId, this.getAccessToken(request))
+			await this.learningCatalogue.deleteTermsAndConditions(learningProviderId, termsAndConditionsId, RequestUtil.getAccessToken(request))
 
 			response.redirect('/content-management/learning-providers/' + learningProviderId)
 		}
@@ -131,10 +132,6 @@ export class TermsAndConditionsController {
 
 		const termsAndConditions = this.termsAndConditionsFactory.create(data)
 
-		await this.learningCatalogue.updateTermsAndConditions(request.params.learningProviderId, termsAndConditions, this.getAccessToken(request))
-	}
-
-	private getAccessToken(request: Request) {
-		return JSON.parse(request.session!.passport.user).accessToken
+		await this.learningCatalogue.updateTermsAndConditions(request.params.learningProviderId, termsAndConditions, RequestUtil.getAccessToken(request))
 	}
 }

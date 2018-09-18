@@ -2,6 +2,7 @@ import {Request, Response, Router} from 'express'
 import * as log4js from 'log4js'
 import {LearningCatalogue} from '../../learning-catalogue'
 import {LinkFactory} from '../../learning-catalogue/model/factory/linkFactory'
+import {RequestUtil} from '../../lib/requestUtil'
 
 const logger = log4js.getLogger('controllers/linkModuleController')
 
@@ -21,7 +22,7 @@ export class LinkModuleController {
 
 	private setRouterPaths() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId, this.getAccessToken(req))
+			const course = await this.learningCatalogue.getCourse(courseId, RequestUtil.getAccessToken(req))
 			if (course) {
 				res.locals.course = course
 				next()
@@ -50,13 +51,9 @@ export class LinkModuleController {
 			}
 
 			const linkModule = this.linkFactory.create(data)
-			await this.learningCatalogue.createModule(course.id, linkModule, this.getAccessToken(request))
+			await this.learningCatalogue.createModule(course.id, linkModule, RequestUtil.getAccessToken(request))
 
 			return response.redirect(`/content-management/courses/${course.id}/add-module`)
 		}
-	}
-
-	private getAccessToken(request: Request) {
-		return JSON.parse(request.session!.passport.user).accessToken
 	}
 }
