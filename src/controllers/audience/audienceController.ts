@@ -27,6 +27,7 @@ export class AudienceController {
 		this.setRouterPaths()
 	}
 
+	/* istanbul ignore next */
 	private setPathParametersMapping() {
 		this.router.param('courseId', async (req, res, next, courseId) => {
 			const course = await this.learningCatalogue.getCourse(courseId)
@@ -39,6 +40,7 @@ export class AudienceController {
 		})
 	}
 
+	/* istanbul ignore next */
 	private setRouterPaths() {
 		this.router.get('/content-management/courses/:courseId/audience', this.getAudienceName())
 		this.router.post('/content-management/courses/:courseId/audience', this.setAudienceName())
@@ -55,6 +57,7 @@ export class AudienceController {
 		}
 	}
 
+	/* istanbul ignore next */
 	public setAudienceName() {
 		return async (req: Request, res: Response) => {
 			const data = {...req.body}
@@ -98,9 +101,7 @@ export class AudienceController {
 
 	public getOrganisation() {
 		return async (request: Request, response: Response) => {
-			const data = await this.csrsService.getNode('organisations')
-
-			const organisations = await this.csrsService.getNameFromNodeData(data)
+			const organisations = await this.csrsService.getOrganisations()
 
 			response.render('page/course/audience/add-organisation', {organisations})
 		}
@@ -111,11 +112,4 @@ export class AudienceController {
 			response.render('page/course/audience/configure-audience')
 		}
 	}
-
-	// Mick - these should give you the rest of the data you need from csrs
-	// You will still need to parse the data to grab the names using the getNameFromNodeData() function on line 103
-	// const areasOfWork = await this.csrsService.getNode('professions')
-	// const grades = await this.csrsService.getNode('grades')
-	// const jobRoles = await this.csrsService.getNode('jobRoles')
-	// const interests = await this.csrsService.getNode('interests')
 }

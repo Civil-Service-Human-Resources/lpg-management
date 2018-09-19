@@ -1,33 +1,13 @@
-// import {RestService} from '../../learning-catalogue/service/restService'
-import * as traverson from 'traverson'
-import * as hal from 'traverson-hal'
+import {RestService} from '../../learning-catalogue/service/restService'
 
 export class CsrsService {
-	constructor() {}
+	restService: RestService
 
-	async getNode(node: string) {
-		traverson.registerMediaType(hal.mediaType, hal)
-		const result = await new Promise((resolve, reject) =>
-			traverson
-				.from('http://localhost:9002')
-				.jsonHal()
-				.follow(node, 'self')
-				.getResource((error: any, document: any) => {
-					if (error) {
-						reject(false)
-					} else {
-						resolve(document)
-					}
-				})
-		)
-
-		return (result as any)._embedded[node]
+	constructor(restService: RestService) {
+		this.restService = restService
 	}
 
-	async getNameFromNodeData(data: any) {
-		const names = data.map((data: any) => {
-			return data.name
-		})
-		return names
+	async getOrganisations() {
+		return await this.restService.get('organisations')
 	}
 }
