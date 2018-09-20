@@ -1,0 +1,88 @@
+{% from "input/macro.njk" import govukInput %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.audience.page_title.add_organisation }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% block beforeContent %}
+    {% block phaseBanner %}
+        {{ phaseBanner("beta") }}
+    {% endblock%}
+    {% block backLink %}
+        {{ backLink("/content-management/courses/" + course.id + "/configure-audience") }}
+    {% endblock%}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
+            <form action="/content-management/courses/{{ course.id }}/add-organisation" method="post">
+                {% if errors.fields %}
+                    {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
+                    {% set message = "govuk-error-message" %}
+                {% else %}
+                    {% set classNames = "govuk-fieldset audience-fieldset" %}
+                    {% set message = "no-errors" %}
+                {% endif %}
+                
+                <div class="{{classNames}}">
+                    <p class="{{message}}">Select which organisations are included</p>
+
+                    {% set typeaheadHtml %}
+                        <div class="typeahead-container">
+                            <label class="govuk-body no-margin" for="autocomplete">Name of organisation</label>
+                            <p class="govuk-hint">Start typing the name of the organisation</p>
+                        <div id="autocomplete-container"></div>
+                    {% endset -%}
+                    {{ govukRadios({
+                        idPrefix: "audience-type",
+                        name: "audience-type",
+                        fieldset: {
+                            legend: {
+                                text: "Which organisations are included in this audience?",
+                                isPageHeading: true,
+                                classes: "govuk-fieldset__legend--s "
+                            }
+                        },
+                        items: [
+                            {
+                            value: "all",
+                            text: "All",
+                            id: "all"
+                            },
+                            {
+                            value: "selected",
+                            text: "Selected organisations only",
+                            id: "selected",
+                                conditional: {
+                                    html: typeaheadHtml
+                                }
+                            }
+                        ]
+                        }) }}
+                </div>
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Continue"
+                    }) }}
+                </div>
+            </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/configure-audience">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
+    <script type="text/javascript" src="/js/add-organisation.js"></script>
+{% endblock %}
+

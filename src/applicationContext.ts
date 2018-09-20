@@ -39,12 +39,11 @@ import {FaceToFaceModuleController} from './controllers/module/faceToFaceModuleC
 import {EventController} from './controllers/module/event/eventController'
 import {Event} from './learning-catalogue/model/event'
 import {AudienceController} from './controllers/audience/audienceController'
-import {CourseService} from './lib/courseService'
 import {Audience} from './learning-catalogue/model/audience'
+import {CourseService} from './lib/courseService'
+import {CsrsConfig} from './csrs/csrsConfig'
 import {CsrsService} from './csrs/service/csrsService'
 import {RestService} from './learning-catalogue/service/restService'
-import {CsrsConfig} from './csrs/csrsConfig'
-
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
@@ -200,7 +199,8 @@ export class ApplicationContext {
 			this.learningCatalogue,
 			this.audienceValidator,
 			this.audienceFactory,
-			this.courseService
+			this.courseService,
+			this.csrsService
 		)
 	}
 
