@@ -36,10 +36,10 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.get('/content-management/courses/:courseId/audience', this.getAudienceName())
-		this.router.post('/content-management/courses/:courseId/audience', this.setAudienceName())
-		this.router.get('/content-management/courses/:courseId/audience-type', this.getAudienceType())
-		this.router.post('/content-management/courses/:courseId/audience-type', this.setAudienceType())
+		this.router.get('/content-management/courses/:courseId/audiences', this.getAudienceName())
+		this.router.post('/content-management/courses/:courseId/audiences', this.setAudienceName())
+		this.router.get('/content-management/courses/:courseId/audiences/type', this.getAudienceType())
+		this.router.post('/content-management/courses/:courseId/audiences/type', this.setAudienceType())
 		this.router.get('/content-management/courses/:courseId/configure-audience', this.getConfigureAudience())
 		this.router.get('/content-management/courses/:courseId/add-organisation', this.getOrganisation())
 		this.router.post('/content-management/courses/:courseId/add-organisation', this.setOrganisation())
@@ -61,7 +61,33 @@ export class AudienceController {
 			if (errors.size > 0) {
 				req.session!.sessionFlash = {errors, audience}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audience`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences`)
+				})
+			} else {
+				req.session!.sessionFlash = {audienceName: audience.name}
+				req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/type`)
+				})
+			}
+		}
+	}
+
+	public getAudienceType() {
+		return async (req: Request, res: Response) => {
+			res.render('page/course/audience/audience-type')
+		}
+	}
+
+	public setAudienceType() {
+		return async (req: Request, res: Response) => {
+			const data = {...req.body}
+			const errors = await this.audienceValidator.check(data, ['audience.type'])
+			const audience = this.audienceFactory.create(data)
+
+			if (errors.size > 0) {
+				req.session!.sessionFlash = {errors, audienceName: audience.name}
+				req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/type`)
 				})
 			} else {
 				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
@@ -70,20 +96,6 @@ export class AudienceController {
 					res.redirect(`/content-management/courses/${req.params.courseId}/audience-type`)
 				})
 			}
-		}
-	}
-
-	public getAudienceType() {
-		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/audience-type')
-		}
-	}
-
-	public setAudienceType() {
-		return async (request: Request, response: Response) => {
-			const courseId = response.locals.course.id
-
-			return response.redirect(`/content-management/courses/${courseId}/configure-audience/`)
 		}
 	}
 

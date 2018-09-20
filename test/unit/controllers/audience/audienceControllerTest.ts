@@ -66,10 +66,10 @@ describe('AudienceController', function() {
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.name'])
 			expect(audienceValidator.check).to.have.returned(errors)
 			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
-			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${req.params.courseId}/audience`)
+			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${req.params.courseId}/audiences`)
 		})
 
-		it('should redirect to course overview page if audience created successfully', async function() {
+		it('should redirect to audience type page if audience name validated successfully', async function() {
 			req.params.courseId = 'course-id'
 			req.body = {name: 'audience name'}
 
@@ -82,6 +82,54 @@ describe('AudienceController', function() {
 			await audienceController.setAudienceName()(req, res)
 
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.name'])
+			expect(audienceValidator.check).to.have.returned(errors)
+			Object.is(req.session!.sessionFlash.errors, undefined)
+			expect(res.redirect).to.have.been.calledWith(
+				`/content-management/courses/${req.params.courseId}/audiences/type`
+			)
+		})
+	})
+
+	describe('#getAudienceType', function() {
+		it('should render audience-type page', async function() {
+			await audienceController.getAudienceType()(req, res)
+
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/audience-type')
+		})
+	})
+
+	describe('#setAudienceType', function() {
+		it('should redirect back to audience type page if validation error', async function() {
+			req.params.courseId = 'course-id'
+			req.body = {type: ''}
+
+			const errors = {size: 1}
+			audienceValidator.check = sinon.stub().returns(errors)
+			audienceFactory.create = sinon.stub().returns({})
+
+			await audienceController.setAudienceType()(req, res)
+
+			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.type'])
+			expect(audienceValidator.check).to.have.returned(errors)
+			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
+			expect(res.redirect).to.have.been.calledWith(
+				`/content-management/courses/${req.params.courseId}/audiences/type`
+			)
+		})
+
+		it('should redirect to course overview page if audience created successfully', async function() {
+			req.params.courseId = 'course-id'
+			req.body = {name: 'audience name', type: 'OPEN'}
+
+			const errors = {size: 0}
+			audienceValidator.check = sinon.stub().returns(errors)
+			const audience = <Audience>{}
+			audienceFactory.create = sinon.stub().returns(audience)
+			learningCatalogue.createAudience = sinon.stub()
+
+			await audienceController.setAudienceType()(req, res)
+
+			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.type'])
 			expect(audienceValidator.check).to.have.returned(errors)
 			Object.is(req.session!.sessionFlash.errors, undefined)
 			expect(learningCatalogue.createAudience).to.have.been.calledOnceWith(req.params.courseId, audience)

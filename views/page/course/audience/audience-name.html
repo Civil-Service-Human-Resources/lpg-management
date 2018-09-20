@@ -34,7 +34,7 @@
                 <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Audience name</h2>
-            <form action="/content-management/courses/{{ course.id }}/audience" method="post">
+            <form action="/content-management/courses/{{ course.id }}/audiences" method="post">
                 <p class="govuk-body no-margin">You need to give your audience a short, descriptive name</p>
                 <p class="govuk-body">This name is for your own use</p>
                 <fieldset class="govuk-fieldset">
@@ -45,7 +45,7 @@
                             },
                             id: "name",
                             name: "name",
-                            value: audience.name,
+                            value: audience.name if audience.name else sessionFlash.audience.name,
                             errorMessage: {
                                 text: i18n | jsonpath(errors.fields.name[0])
                             }

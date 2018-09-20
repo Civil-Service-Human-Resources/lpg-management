@@ -16,7 +16,7 @@ export class AudienceFactory {
 		if (data.requiredBy) {
 			audience.requiredBy = moment.utc(data.requiredBy).toDate()
 		}
-		audience.mandatory = data.mandatory
+		audience.type = Audience.Type[data.type as keyof typeof Audience.Type]
 		audience.frequency = data.frequency
 
 		return audience
