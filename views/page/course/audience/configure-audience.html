@@ -26,7 +26,7 @@
             <div class="audience-container">
                 <div class="flex-container u--border--bgrey">
                     <div class="audience-content">
-                        <p class="govuk-body">Audience Type</p>
+                        <p class="govuk-body">Audience type</p>
                         <p class="audience-type no-margin">{{ audience.type | default("Type unset", true) }}</p>
                     </div>
                     <a href="/content-management/courses/{{course.id}}/audience-type" class="govuk-link audience-link">Change</a>
@@ -41,7 +41,7 @@
                                 <p class="unset">No organisations have been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/add-organisation" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/organisation" class="govuk-link audience-link">Add</a>
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -52,7 +52,7 @@
                                 <p class="unset">No areas of work have been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/add-area-of-work" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/area-of-work" class="govuk-link audience-link">Add</a>
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -63,7 +63,7 @@
                                 <p class="unset">No interests have been added {{event.id}}</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/add-interests" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -74,7 +74,7 @@
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/add-grades" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
                     </div>
                 {% endif %} 
                 {% if audience.type === 'required' %}
@@ -87,7 +87,7 @@
                                 <p class="unset">No date has been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/add-deadline" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -98,7 +98,7 @@
                                 <p class="unset">No date has been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/add-dates" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
                     </div>
                 {% endif %} 
                 {% if audience.type === 'private' %}
@@ -111,7 +111,7 @@
                                 <p class="unset">No event has been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/event" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audience/event" class="govuk-link audience-link">Add</a>
                     </div>
                 {% endif %}
                 </div>

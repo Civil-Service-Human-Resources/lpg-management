@@ -21,10 +21,6 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
-
-           
-
-            {{"listy " + myList}}
             <form action="/content-management/courses/{{ course.id }}/add-organisation" method="post">
                 {% if errors.fields %}
                     {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
@@ -36,7 +32,7 @@
                 
                 <div class="{{classNames}}">
                     <p class="{{message}}">Select which organisations are included</p>
-                    
+
                     {% set typeaheadHtml %}
                         <div class="typeahead-container">
                             <label class="govuk-body no-margin" for="autocomplete">Name of organisation</label>
