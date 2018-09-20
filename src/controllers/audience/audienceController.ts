@@ -3,29 +3,49 @@ import {AudienceFactory} from '../../learning-catalogue/model/factory/audienceFa
 import {LearningCatalogue} from '../../learning-catalogue'
 import {Audience} from '../../learning-catalogue/model/audience'
 import {Validator} from '../../learning-catalogue/validator/validator'
+<<<<<<< HEAD
 import {CsrsService} from '../../csrs/service/csrsService'
 import {CourseService} from 'lib/courseService'
+=======
+import {CourseService} from 'lib/courseService'
+import {CsrsService} from '../../csrs/service/csrsService'
+>>>>>>> origin
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
 	audienceValidator: Validator<Audience>
 	audienceFactory: AudienceFactory
+<<<<<<< HEAD
+	csrsService: CsrsService
+	courseService: CourseService
+=======
 	courseService: CourseService
 	csrsService: CsrsService
+>>>>>>> origin
 	router: Router
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
 		audienceValidator: Validator<Audience>,
 		audienceFactory: AudienceFactory,
+<<<<<<< HEAD
+		csrsService: CsrsService,
+		courseService: CourseService
+=======
 		courseService: CourseService,
 		csrsService: CsrsService
+>>>>>>> origin
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
 		this.audienceFactory = audienceFactory
+<<<<<<< HEAD
+		this.csrsService = csrsService
+		this.courseService = courseService
+=======
 		this.courseService = courseService
 		this.csrsService = csrsService
+>>>>>>> origin
 		this.router = Router()
 		this.configurePathParametersProcessing()
 		this.setRouterPaths()
@@ -36,10 +56,10 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.get('/content-management/courses/:courseId/audiences', this.getAudienceName())
-		this.router.post('/content-management/courses/:courseId/audiences', this.setAudienceName())
-		this.router.get('/content-management/courses/:courseId/audiences/type', this.getAudienceType())
-		this.router.post('/content-management/courses/:courseId/audiences/type', this.setAudienceType())
+		this.router.get('/content-management/courses/:courseId/audience', this.getAudienceName())
+		this.router.post('/content-management/courses/:courseId/audience', this.setAudienceName())
+		this.router.get('/content-management/courses/:courseId/audience-type', this.getAudienceType())
+		this.router.post('/content-management/courses/:courseId/audience-type', this.setAudienceType())
 		this.router.get('/content-management/courses/:courseId/configure-audience', this.getConfigureAudience())
 		this.router.get('/content-management/courses/:courseId/add-organisation', this.getOrganisation())
 		this.router.post('/content-management/courses/:courseId/add-organisation', this.setOrganisation())
@@ -61,33 +81,7 @@ export class AudienceController {
 			if (errors.size > 0) {
 				req.session!.sessionFlash = {errors, audience}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences`)
-				})
-			} else {
-				req.session!.sessionFlash = {audienceName: audience.name}
-				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/type`)
-				})
-			}
-		}
-	}
-
-	public getAudienceType() {
-		return async (req: Request, res: Response) => {
-			res.render('page/course/audience/audience-type')
-		}
-	}
-
-	public setAudienceType() {
-		return async (req: Request, res: Response) => {
-			const data = {...req.body}
-			const errors = await this.audienceValidator.check(data, ['audience.type'])
-			const audience = this.audienceFactory.create(data)
-
-			if (errors.size > 0) {
-				req.session!.sessionFlash = {errors, audienceName: audience.name}
-				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/type`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audience`)
 				})
 			} else {
 				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
@@ -96,6 +90,20 @@ export class AudienceController {
 					res.redirect(`/content-management/courses/${req.params.courseId}/audience-type`)
 				})
 			}
+		}
+	}
+
+	public getAudienceType() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/audience-type')
+		}
+	}
+
+	public setAudienceType() {
+		return async (request: Request, response: Response) => {
+			const courseId = response.locals.course.id
+
+			return response.redirect(`/content-management/courses/${courseId}/configure-audience/`)
 		}
 	}
 
@@ -122,11 +130,9 @@ export class AudienceController {
 
 	public getAreasOfWork() {
 		return async (request: Request, response: Response) => {
-			const professions = await this.csrsService.getNode('professions')
+			const getAreasOfWork = await this.csrsService.getAreasOfWork()
 
-			const areasOfWork = await this.csrsService.getNameFromNodeData(professions)
-
-			response.render('page/course/audience/add-organisation', {areasOfWork})
+			response.render('page/course/audience/add-organisation', {getAreasOfWork})
 		}
 	}
 
@@ -136,4 +142,5 @@ export class AudienceController {
 	// const grades = await this.csrsService.getNode('grades')
 	// const jobRoles = await this.csrsService.getNode('jobRoles')
 	// const interests = await this.csrsService.getNode('interests')
+
 }

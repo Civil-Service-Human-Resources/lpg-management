@@ -1,7 +1,6 @@
 {
 	"audience": {
 		"page_title": {
-<<<<<<< HEAD
 			"add_name": "Add audience name",
 			"edit_name": "Edit audience name",
 			"add_type": "Add audience type",
@@ -13,22 +12,9 @@
 			"name": {
 				"empty": "Audience name is required",
 				"maxLength": "Audience name must be 40 characters or less"
-=======
-          "add_name": "Add audience name",
-          "edit_name": "Edit audience name",
-          "add_type": "Add audience type",
-          "edit_type": "Edit audience type",
-          "configure_audience": "Configure audience",
-          "add_organisation": "Add organisation"
-        },
-      "validation": {
-        "name": {
-          "empty": "Audience name is required",
-          "maxLength": "Audience name must be 40 characters or less"
-        },
+			},
 			"type": {
 				"empty": "Audience type is required"
->>>>>>> origin
 			}
 		}
 	},

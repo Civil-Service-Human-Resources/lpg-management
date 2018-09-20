@@ -40,10 +40,10 @@ import {EventController} from './controllers/module/event/eventController'
 import {Event} from './learning-catalogue/model/event'
 import {AudienceController} from './controllers/audience/audienceController'
 import {Audience} from './learning-catalogue/model/audience'
+import {CourseService} from './lib/courseService'
 import {CsrsConfig} from './csrs/csrsConfig'
 import {CsrsService} from './csrs/service/csrsService'
 import {RestService} from './learning-catalogue/service/restService'
-import {CourseService} from './lib/courseService'
 
 log4js.configure(config.LOGGING)
 
@@ -86,7 +86,8 @@ export class ApplicationContext {
 	csrsConfig: CsrsConfig
 	csrsService: CsrsService
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -195,15 +196,13 @@ export class ApplicationContext {
 		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
 		this.csrsService = new CsrsService(new RestService(this.csrsConfig))
 
-
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.audienceController = new AudienceController(
 			this.learningCatalogue,
 			this.audienceValidator,
 			this.audienceFactory,
+			this.courseService,
 			this.csrsService
-			this.courseService
-
 		)
 	}
 
