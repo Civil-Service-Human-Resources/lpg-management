@@ -22,10 +22,9 @@
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
 
-            {% for organisation in organisations %}
-            <li>{{ organisation}}</li>
-            {% endfor %}
+           
 
+            {{"listy " + myList}}
             <form action="/content-management/courses/{{ course.id }}/add-organisation" method="post">
                 {% if errors.fields %}
                     {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
@@ -84,9 +83,15 @@
 {% endblock %}
 
 {% block bodyEnd %}
+    {% set myList = [] %}
+    {% for organisation in organisations %}
+        {% set org = organisation %}
+        {% set orgs = myList.push(org) %}
+    {% endfor %}
     <script src="/govuk-frontend/all.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
     <script type="text/javascript" src="/js/add-organisation.js"></script>
+    <script myList='{{myList}}' src="/js/orgs.js"></script>
 {% endblock %}
 
