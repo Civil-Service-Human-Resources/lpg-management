@@ -1,6 +1,7 @@
 import {LearningCatalogue} from '../learning-catalogue'
 import {Course} from '../learning-catalogue/model/course'
 import {Module} from '../learning-catalogue/model/module'
+import {NextFunction, Request, Response} from 'express'
 
 export class CourseService {
 	learningCatalogue: LearningCatalogue
@@ -35,5 +36,18 @@ export class CourseService {
 		course.modules = modules
 
 		return await this.learningCatalogue.updateCourse(course)
+	}
+
+	/* istanbul ignore next */
+	findCourseByCourseIdAndAssignToResponseLocalsOrReturn404() {
+		return async (req: Request, res: Response, next: NextFunction, courseId: string) => {
+			const course = await this.learningCatalogue.getCourse(courseId)
+			if (course) {
+				res.locals.course = course
+				next()
+			} else {
+				res.sendStatus(404)
+			}
+		}
 	}
 }

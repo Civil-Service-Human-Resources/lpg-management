@@ -47,7 +47,7 @@
                             name: "name",
                             value: audience.name,
                             errorMessage: {
-                                text: i18n.audience.validation.name.empty
+                                text: i18n | jsonpath(errors.fields.name[0])
                             }
                         }) }}
                     {% else %}

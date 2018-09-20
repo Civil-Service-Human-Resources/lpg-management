@@ -14,6 +14,7 @@ Properties.initialize()
 
 const logger = log4js.getLogger('server')
 const nunjucks = require('nunjucks')
+const jsonpath = require('jsonpath')
 const appRoot = require('app-root-path')
 const FileStore = sessionFileStore(session)
 const {PORT = 3005} = process.env
@@ -29,17 +30,22 @@ app.use(
 	})
 )
 
-nunjucks.configure(
-	[
-		appRoot + '/views',
-		appRoot + '/node_modules/govuk-frontend/',
-		appRoot + '/node_modules/govuk-frontend/components',
-	],
-	{
-		autoescape: true,
-		express: app,
-	}
-)
+nunjucks
+	.configure(
+		[
+			appRoot + '/views',
+			appRoot + '/node_modules/govuk-frontend/',
+			appRoot + '/node_modules/govuk-frontend/components',
+		],
+		{
+			autoescape: true,
+			express: app,
+		}
+	)
+	.addFilter('jsonpath', function(object: any, path: string) {
+		return jsonpath.value(object, path)
+	})
+
 app.set('view engine', 'html')
 
 app.use('/assets', serveStatic(appRoot + '/node_modules/govuk-frontend/assets'))

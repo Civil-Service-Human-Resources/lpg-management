@@ -41,8 +41,15 @@ import {Event} from './learning-catalogue/model/event'
 import {AudienceController} from './controllers/audience/audienceController'
 import {CourseService} from './lib/courseService'
 import {Audience} from './learning-catalogue/model/audience'
+<<<<<<< HEAD
 import {CsrsConfig} from './csrs/csrsConfig'
 import {CsrsService} from './csrs/service/csrsService'
+=======
+import {CsrsService} from './csrs/service/csrsService'
+import {RestService} from './learning-catalogue/service/restService'
+import {CsrsConfig} from './csrs/csrsConfig'
+
+>>>>>>> origin
 
 log4js.configure(config.LOGGING)
 
@@ -84,6 +91,8 @@ export class ApplicationContext {
 	csrsConfig: CsrsConfig
 	faceToFaceController: FaceToFaceModuleController
 	courseService: CourseService
+	csrsConfig: CsrsConfig
+	csrsService: CsrsService
 
 	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
 
@@ -191,14 +200,23 @@ export class ApplicationContext {
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 		this.eventController = new EventController(this.learningCatalogue, this.eventValidator, this.eventFactory)
 
+<<<<<<< HEAD
 		this.csrsService = new CsrsService()
+=======
+		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
+		this.csrsService = new CsrsService(new RestService(this.csrsConfig))
+>>>>>>> origin
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.audienceController = new AudienceController(
 			this.learningCatalogue,
 			this.audienceValidator,
 			this.audienceFactory,
+<<<<<<< HEAD
 			this.csrsService
+=======
+			this.courseService
+>>>>>>> origin
 		)
 	}
 

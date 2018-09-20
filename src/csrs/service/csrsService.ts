@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import {RestService} from '../../learning-catalogue/service/restService'
 import * as traverson from 'traverson'
 import * as hal from 'traverson-hal'
@@ -29,5 +30,18 @@ export class CsrsService {
 			return data.name
 		})
 		return names
+=======
+import {RestService} from '../../learning-catalogue/service/restService'
+
+export class CsrsService {
+	restService: RestService
+
+	constructor(restService: RestService) {
+		this.restService = restService
+	}
+
+	async getOrganisations() {
+		return await this.restService.get('organisations')
+>>>>>>> origin
 	}
 }

@@ -6,9 +6,8 @@
             {% set errorSummary = [] %}
 
             {% for field, message in errors %}
-                {% set myMessage =  i18n[message[0]] %}
                 {% set error = errorSummary.push({
-                    "text": myMessage
+                    "text": i18n[message[0]] if i18n[message[0]] else i18n | jsonpath(message[0])
                 })
                 %}
             {% endfor %}

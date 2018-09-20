@@ -12,7 +12,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
+        {{ backLink("/content-management/courses/" + course.id + "/configure-audience") }}
     {% endblock%}
 {% endblock %}
 
@@ -48,7 +48,7 @@
                         name: "audience-type",
                         fieldset: {
                             legend: {
-                                text: "Which organisations are included in this audience",
+                                text: "Which organisations are included in this audience?",
                                 isPageHeading: true,
                                 classes: "govuk-fieldset__legend--s "
                             }
@@ -76,6 +76,7 @@
                     }) }}
                 </div>
             </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/configure-audience">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>
