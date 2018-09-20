@@ -83,15 +83,10 @@
 {% endblock %}
 
 {% block bodyEnd %}
-    {% set myList = [] %}
-    {% for organisation in organisations %}
-        {% set org = organisation %}
-        {% set orgs = myList.push(org) %}
-    {% endfor %}
     <script src="/govuk-frontend/all.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
     <script type="text/javascript" src="/js/add-organisation.js"></script>
-    <script myList='{{myList}}' src="/js/orgs.js"></script>
+    <script orgs='{{organisations}}' src="/js/orgs.js"></script>
 {% endblock %}
 
