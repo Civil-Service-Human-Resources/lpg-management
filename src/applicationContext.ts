@@ -40,23 +40,11 @@ import {EventController} from './controllers/module/event/eventController'
 import {Event} from './learning-catalogue/model/event'
 import {AudienceController} from './controllers/audience/audienceController'
 import {Audience} from './learning-catalogue/model/audience'
-<<<<<<< HEAD
-<<<<<<< HEAD
 import {CsrsConfig} from './csrs/csrsConfig'
-import {CsrsService} from './csrs/service/csrsService'
-=======
 import {CsrsService} from './csrs/service/csrsService'
 import {RestService} from './learning-catalogue/service/restService'
-import {CsrsConfig} from './csrs/csrsConfig'
-
->>>>>>> origin
-
-=======
 import {CourseService} from './lib/courseService'
-import {CsrsConfig} from './csrs/csrsConfig'
-import {CsrsService} from './csrs/service/csrsService'
-import {RestService} from './learning-catalogue/service/restService'
->>>>>>> origin
+
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
@@ -204,33 +192,18 @@ export class ApplicationContext {
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 		this.eventController = new EventController(this.learningCatalogue, this.eventValidator, this.eventFactory)
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		this.csrsService = new CsrsService()
-=======
 		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
 		this.csrsService = new CsrsService(new RestService(this.csrsConfig))
->>>>>>> origin
-=======
-		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
-		this.csrsService = new CsrsService(new RestService(this.csrsConfig))
->>>>>>> origin
+
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.audienceController = new AudienceController(
 			this.learningCatalogue,
 			this.audienceValidator,
 			this.audienceFactory,
-<<<<<<< HEAD
-<<<<<<< HEAD
 			this.csrsService
-=======
 			this.courseService
->>>>>>> origin
-=======
-			this.courseService,
-			this.csrsService
->>>>>>> origin
+
 		)
 	}
 
