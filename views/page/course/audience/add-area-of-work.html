@@ -25,7 +25,7 @@
                 {% for areaOfWork in areasOfWork._embedded.professions %}
                 {% set profession = professions.push({
                     "text": areaOfWork.name,
-                    "value": (areaOfWork.name | replace(" ", "-") | replace(",", "") | replace("'", "")| lower)
+                    "value": (areaOfWork.name | replace(" ", "-") | replace(",", "") | replace("'", "") | replace("&", "") | replace("--", "-") | lower)
                 }) %}        
                     {% endfor %} 
                     {{ govukRadios({
