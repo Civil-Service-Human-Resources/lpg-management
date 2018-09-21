@@ -45,7 +45,7 @@ describe('CsrsService tests', () => {
 	it('should get interest data', async () => {
 		const data = [
 			{
-				name: 'Cabinet Office',
+				name: 'Contract management',
 			},
 		]
 
