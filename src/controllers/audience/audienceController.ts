@@ -84,10 +84,23 @@ export class AudienceController {
 	}
 
 	public setAudienceType() {
-		return async (request: Request, response: Response) => {
-			const courseId = response.locals.course.id
+		return async (req: Request, res: Response) => {
+			const data = {...req.body}
+			const errors = await this.audienceValidator.check(data, ['audience.type'])
+			const audience = this.audienceFactory.create(data)
 
-			return response.redirect(`/content-management/courses/${courseId}/audience/configure-audience`)
+			if (errors.size > 0) {
+				req.session!.sessionFlash = {errors, audienceName: audience.name}
+				req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseId}/audience/audience-type`)
+				})
+			} else {
+				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
+				req.session!.sessionFlash = {audience: savedAudience}
+				req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseId}/audience/audience-type`)
+				})
+			}
 		}
 	}
 
