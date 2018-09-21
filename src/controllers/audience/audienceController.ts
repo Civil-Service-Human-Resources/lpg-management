@@ -3,49 +3,29 @@ import {AudienceFactory} from '../../learning-catalogue/model/factory/audienceFa
 import {LearningCatalogue} from '../../learning-catalogue'
 import {Audience} from '../../learning-catalogue/model/audience'
 import {Validator} from '../../learning-catalogue/validator/validator'
-<<<<<<< HEAD
-import {CsrsService} from '../../csrs/service/csrsService'
-import {CourseService} from 'lib/courseService'
-=======
 import {CourseService} from 'lib/courseService'
 import {CsrsService} from '../../csrs/service/csrsService'
->>>>>>> origin
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
 	audienceValidator: Validator<Audience>
 	audienceFactory: AudienceFactory
-<<<<<<< HEAD
-	csrsService: CsrsService
-	courseService: CourseService
-=======
 	courseService: CourseService
 	csrsService: CsrsService
->>>>>>> origin
 	router: Router
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
 		audienceValidator: Validator<Audience>,
 		audienceFactory: AudienceFactory,
-<<<<<<< HEAD
-		csrsService: CsrsService,
-		courseService: CourseService
-=======
 		courseService: CourseService,
 		csrsService: CsrsService
->>>>>>> origin
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
 		this.audienceFactory = audienceFactory
-<<<<<<< HEAD
-		this.csrsService = csrsService
-		this.courseService = courseService
-=======
 		this.courseService = courseService
 		this.csrsService = csrsService
->>>>>>> origin
 		this.router = Router()
 		this.configurePathParametersProcessing()
 		this.setRouterPaths()
@@ -56,14 +36,17 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.get('/content-management/courses/:courseId/audience', this.getAudienceName())
-		this.router.post('/content-management/courses/:courseId/audience', this.setAudienceName())
-		this.router.get('/content-management/courses/:courseId/audience-type', this.getAudienceType())
-		this.router.post('/content-management/courses/:courseId/audience-type', this.setAudienceType())
-		this.router.get('/content-management/courses/:courseId/configure-audience', this.getConfigureAudience())
-		this.router.get('/content-management/courses/:courseId/add-organisation', this.getOrganisation())
-		this.router.post('/content-management/courses/:courseId/add-organisation', this.setOrganisation())
-		this.router.get('/content-management/courses/:courseId/add-areas-of-work', this.getAreasOfWork())
+		this.router.get('/content-management/courses/:courseId/audience/audience', this.getAudienceName())
+		this.router.post('/content-management/courses/:courseId/audience/audience', this.setAudienceName())
+		this.router.get('/content-management/courses/:courseId/audience/audience-type', this.getAudienceType())
+		this.router.post('/content-management/courses/:courseId/audience/audience-type', this.setAudienceType())
+		this.router.get(
+			'/content-management/courses/:courseId/audience/configure-audience',
+			this.getConfigureAudience()
+		)
+		this.router.get('/content-management/courses/:courseId/audience/add-organisation', this.getOrganisation())
+		this.router.post('/content-management/courses/:courseId/audience/add-organisation', this.setOrganisation())
+		this.router.get('/content-management/courses/:courseId/audience/add-area-of-work', this.getAreasOfWork())
 	}
 
 	public getAudienceName() {
@@ -87,7 +70,7 @@ export class AudienceController {
 				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
 				req.session!.sessionFlash = {audience: savedAudience}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audience-type`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audience/audience-type`)
 				})
 			}
 		}
@@ -103,7 +86,7 @@ export class AudienceController {
 		return async (request: Request, response: Response) => {
 			const courseId = response.locals.course.id
 
-			return response.redirect(`/content-management/courses/${courseId}/configure-audience/`)
+			return response.redirect(`/content-management/courses/${courseId}/audience/configure-audience/`)
 		}
 	}
 
@@ -115,9 +98,7 @@ export class AudienceController {
 
 	public getOrganisation() {
 		return async (request: Request, response: Response) => {
-			const data = await this.csrsService.getOrganisations()
-			console.log(data)
-			const organisations = ['Matt', 'Mick', 'Peter']
+			const organisations = await this.csrsService.getOrganisations()
 			response.render('page/course/audience/add-organisation', {organisations})
 		}
 	}
@@ -130,17 +111,21 @@ export class AudienceController {
 
 	public getAreasOfWork() {
 		return async (request: Request, response: Response) => {
-			const getAreasOfWork = await this.csrsService.getAreasOfWork()
+			const areasOfWork = await this.csrsService.getAreasOfWork()
 
-			response.render('page/course/audience/add-organisation', {getAreasOfWork})
+			response.render('page/course/audience/add-area-of-work', {areasOfWork})
+		}
+	}
+
+	public setAreasOfWork() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/configure-audience')
 		}
 	}
 
 	// Mick - these should give you the rest of the data you need from csrs
 	// You will still need to parse the data to grab the names using the getNameFromNodeData() function on line 103
-	// const areasOfWork = await this.csrsService.getNode('professions')
 	// const grades = await this.csrsService.getNode('grades')
 	// const jobRoles = await this.csrsService.getNode('jobRoles')
 	// const interests = await this.csrsService.getNode('interests')
-
 }

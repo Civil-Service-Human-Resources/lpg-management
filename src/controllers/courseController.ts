@@ -7,7 +7,6 @@ import {Validator} from '../learning-catalogue/validator/validator'
 import {Module} from '../learning-catalogue/model/module'
 import * as datetime from '../lib/datetime'
 import {CourseService} from '../lib/courseService'
-import * as util from 'util'
 
 export class CourseController {
 	learningCatalogue: LearningCatalogue
