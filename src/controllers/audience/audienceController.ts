@@ -36,13 +36,18 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.get('/content-management/courses/:courseId/audiences', this.getAudienceName())
-		this.router.post('/content-management/courses/:courseId/audiences', this.setAudienceName())
-		this.router.get('/content-management/courses/:courseId/audiences/type', this.getAudienceType())
-		this.router.post('/content-management/courses/:courseId/audiences/type', this.setAudienceType())
-		this.router.get('/content-management/courses/:courseId/configure-audience', this.getConfigureAudience())
-		this.router.get('/content-management/courses/:courseId/add-organisation', this.getOrganisation())
-		this.router.post('/content-management/courses/:courseId/add-organisation', this.setOrganisation())
+		this.router.get('/content-management/courses/:courseId/audience/audience-name', this.getAudienceName())
+		this.router.post('/content-management/courses/:courseId/audience/audience-name', this.setAudienceName())
+		this.router.get('/content-management/courses/:courseId/audience/audience-type', this.getAudienceType())
+		this.router.post('/content-management/courses/:courseId/audience/audience-type', this.setAudienceType())
+		this.router.get(
+			'/content-management/courses/:courseId/audiences/configure-audience',
+			this.getConfigureAudience()
+		)
+		this.router.get('/content-management/courses/:courseId/audience/add-organisation', this.getOrganisation())
+		this.router.post('/content-management/courses/:courseId/audience/add-organisation', this.setOrganisation())
+		this.router.get('/content-management/courses/:courseId/audience/add-interests', this.getInterests())
+		this.router.post('/content-management/courses/:courseId/audience/add-interests', this.setInterests())
 	}
 
 	public getAudienceName() {
@@ -106,14 +111,25 @@ export class AudienceController {
 
 	public getOrganisation() {
 		return async (request: Request, response: Response) => {
-			const data = await this.csrsService.getOrganisations()
-			console.log(data)
-			const organisations = ['Matt', 'Mick', 'Peter']
+			const organisations = await this.csrsService.getOrganisations()
 			response.render('page/course/audience/add-organisation', {organisations})
 		}
 	}
 
 	public setOrganisation() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/configure-audience')
+		}
+	}
+
+	public getInterests() {
+		return async (request: Request, response: Response) => {
+			const interests = await this.csrsService.getInterests()
+			response.render('page/course/audience/add-interests', {interests})
+		}
+	}
+
+	public setInterests() {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/audience/configure-audience')
 		}

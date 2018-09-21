@@ -1,0 +1,59 @@
+{% from "input/macro.njk" import govukInput %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.audience.page_title.add_organisation }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% block beforeContent %}
+    {% block phaseBanner %}
+        {{ phaseBanner("beta") }}
+    {% endblock%}
+    {% block backLink %}
+        {{ backLink("/content-management/courses/" + course.id + "/configure-audience") }}
+    {% endblock%}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Interests</h2>
+            <form action="/content-management/courses/{{ course.id }}/audience/add-interests" method="post">
+                <div class="govuk-fieldset audience-fieldset">
+                    {% set interestList = [] %}
+                    {% for interest in interests._embedded.interests %}
+                        {% set item = interestList.push({
+                            text: interest.name,
+                            value: (interst.name | replace(" ", "-") | replace("&", "") | replace("--", "-") | lower)
+                        }) %}
+                    
+                    {% endfor %}
+                    {{ govukCheckboxes({
+                        idPrefix: "audience-interests",
+                        name: "audience-interests",
+                        fieldset: {
+                            legend: {
+                                text: "Which interests, if any, should be included in this audience?",
+                                isPageHeading: true,
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        },
+                        items: interestList
+                        }) }}
+                </div>
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Continue"
+                    }) }}
+                </div>
+            </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audience/configure-audience">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+

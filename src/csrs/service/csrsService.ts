@@ -10,4 +10,8 @@ export class CsrsService {
 	async getOrganisations() {
 		return await this.restService.get('organisations')
 	}
+
+	async getInterests() {
+		return await this.restService.get('interests')
+	}
 }
