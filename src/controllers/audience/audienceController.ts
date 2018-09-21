@@ -47,6 +47,7 @@ export class AudienceController {
 		this.router.get('/content-management/courses/:courseId/audience/add-organisation', this.getOrganisation())
 		this.router.post('/content-management/courses/:courseId/audience/add-organisation', this.setOrganisation())
 		this.router.get('/content-management/courses/:courseId/audience/add-area-of-work', this.getAreasOfWork())
+		this.router.post('/content-management/courses/:courseId/audience/add-area-of-work', this.setAreasOfWork())
 	}
 
 	public getAudienceName() {
