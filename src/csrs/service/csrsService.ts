@@ -14,4 +14,8 @@ export class CsrsService {
 	async getAreasOfWork() {
 		return await this.restService.get('professions')
 	}
+
+	async getGrades() {
+		return await this.restService.get('grades')
+	}
 }

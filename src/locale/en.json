@@ -7,7 +7,8 @@
 			"edit_type": "Edit audience type",
 			"configure_audience": "Configure audience",
 			"add_organisation": "Add organisation",
-			"add_area_of_work": "Add area of work"
+			"add_area_of_work": "Add area of work",
+			"add_grades": "Add grades"
 		},
 		"validation": {
 			"name": {

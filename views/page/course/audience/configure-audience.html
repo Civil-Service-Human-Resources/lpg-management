@@ -41,18 +41,26 @@
                                 <p class="unset">No organisations have been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/add-organisation" class="govuk-link audience-link">Add</a>
+                        {% if audience.organisation %}
+                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% else%}
+                            <a href="/content-management/courses/{{course.id}}/audience/add-organisation" class="govuk-link audience-link">Add</a>
+                        {% endif %}
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Area of work</p>
-                            {% if audience.area %}
-                                <p class="audience-type">{{ audience.area | default("Area of work unset", true) }}</p>
+                            {% if audience.areas %}
+                                <p class="audience-type">{{ audience.areas | default("Area of work unset", true) }}</p>
                             {% else %}
                                 <p class="unset">No areas of work have been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/add-area-of-work" class="govuk-link audience-link">Add</a>
+                        {% if audience.areas %}
+                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% else%}
+                            <a href="/content-management/courses/{{course.id}}/audience/add-area-of-work" class="govuk-link audience-link">Add</a>
+                        {% endif %}
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -63,18 +71,25 @@
                                 <p class="unset">No interests have been added {{event.id}}</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
+                        {% if audience.interests %}
+                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% else%}
+                        <a href="/content-management/courses/{{course.id}}/audience/add-interests" class="govuk-link audience-link">Add</a>
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Grade</p>
-                            {% if audience.interests %}
-                                <p class="audience-type">{{ audience.grade | default("Grade unset", true) }}</p>
+                            {% if audience.grades %}
+                                <p class="audience-type">{{ audience.grades | default("Grade unset", true) }}</p>
                             {% else %}
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
+                        {% if audience.grades %}
+                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% else %}
+                            <a href="/content-management/courses/{{course.id}}/audience/add-grades" class="govuk-link audience-link">Add</a>
+                        {% endif %}
                     </div>
                 {% endif %} 
                 {% if audience.type === 'required' %}
@@ -87,18 +102,26 @@
                                 <p class="unset">No date has been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
+                        {% if audience.deadline %}
+                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% else %}
+                            <a href="/content-management/courses/{{course.id}}/audience/add-deadline" class="govuk-link audience-link">Add</a>
+                        {% endif %}
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Frequency</p>
-                            {% if audience.deadline %}
-                                <p class="audience-type">{{ audience.deadline | default("Deadline unset", true) }}</p>
+                            {% if audience.frequency %}
+                                <p class="audience-type">{{ audience.frequency | default("Frequency unset", true) }}</p>
                             {% else %}
-                                <p class="unset">No date has been added</p>
+                                <p class="unset">No frequency has been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/interests" class="govuk-link audience-link">Add</a>
+                        {% if audience.frequency %}
+                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% else%}
+                            <a href="/content-management/courses/{{course.id}}/audience/add-frequency" class="govuk-link audience-link">Add</a>
+                        {% endif %}
                     </div>
                 {% endif %} 
                 {% if audience.type === 'private' %}

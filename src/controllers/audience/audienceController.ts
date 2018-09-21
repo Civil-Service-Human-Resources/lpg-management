@@ -48,6 +48,8 @@ export class AudienceController {
 		this.router.post('/content-management/courses/:courseId/audience/add-organisation', this.setOrganisation())
 		this.router.get('/content-management/courses/:courseId/audience/add-area-of-work', this.getAreasOfWork())
 		this.router.post('/content-management/courses/:courseId/audience/add-area-of-work', this.setAreasOfWork())
+		this.router.get('/content-management/courses/:courseId/audience/add-grades', this.getGrades())
+		this.router.post('/content-management/courses/:courseId/audience/add-grades', this.setGrades())
 	}
 
 	public getAudienceName() {
@@ -137,9 +139,22 @@ export class AudienceController {
 		}
 	}
 
+	public getGrades() {
+		return async (request: Request, response: Response) => {
+			const grades = await this.csrsService.getGrades()
+
+			response.render('page/course/audience/add-grades', {grades})
+		}
+	}
+
+	public setGrades() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/configure-audience')
+		}
+	}
+
 	// Mick - these should give you the rest of the data you need from csrs
 	// You will still need to parse the data to grab the names using the getNameFromNodeData() function on line 103
-	// const grades = await this.csrsService.getNode('grades')
 	// const jobRoles = await this.csrsService.getNode('jobRoles')
 	// const interests = await this.csrsService.getNode('interests')
 }
