@@ -35,7 +35,7 @@
                 <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Type of audience</h2>
-            <form action="/content-management/courses/{{ course.id }}/audiences/type" method="post">
+            <form action="/content-management/courses/{{ course.id }}/audience/audience-type" method="post">
                 <p class="govuk-body">You can limit who this course is shown to</p>
                 <input type="hidden" name="name" value="{{sessionFlash.audienceName}}" />
                 {% if errors.fields %}

@@ -36,8 +36,8 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.get('/content-management/courses/:courseId/audience/audience', this.getAudienceName())
-		this.router.post('/content-management/courses/:courseId/audience/audience', this.setAudienceName())
+		this.router.get('/content-management/courses/:courseId/audience/audience-name', this.getAudienceName())
+		this.router.post('/content-management/courses/:courseId/audience/audience-name', this.setAudienceName())
 		this.router.get('/content-management/courses/:courseId/audience/audience-type', this.getAudienceType())
 		this.router.post('/content-management/courses/:courseId/audience/audience-type', this.setAudienceType())
 		this.router.get(
@@ -65,7 +65,7 @@ export class AudienceController {
 			if (errors.size > 0) {
 				req.session!.sessionFlash = {errors, audience}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audience`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audience/audience-name`)
 				})
 			} else {
 				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
@@ -87,7 +87,7 @@ export class AudienceController {
 		return async (request: Request, response: Response) => {
 			const courseId = response.locals.course.id
 
-			return response.redirect(`/content-management/courses/${courseId}/audience/configure-audience/`)
+			return response.redirect(`/content-management/courses/${courseId}/audience/configure-audience`)
 		}
 	}
 
