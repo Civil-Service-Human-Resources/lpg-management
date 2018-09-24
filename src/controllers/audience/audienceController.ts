@@ -40,9 +40,14 @@ export class AudienceController {
 		this.router.post('/content-management/courses/:courseId/audiences', this.setAudienceName())
 		this.router.get('/content-management/courses/:courseId/audiences/type', this.getAudienceType())
 		this.router.post('/content-management/courses/:courseId/audiences/type', this.setAudienceType())
-		this.router.get('/content-management/courses/:courseId/configure-audience', this.getConfigureAudience())
+		this.router.get(
+			'/content-management/courses/:courseId/audience/configure-audience',
+			this.getConfigureAudience()
+		)
 		this.router.get('/content-management/courses/:courseId/add-organisation', this.getOrganisation())
 		this.router.post('/content-management/courses/:courseId/add-organisation', this.setOrganisation())
+		this.router.get('/content-management/courses/:courseId/audience/add-deadline', this.getDeadline())
+		this.router.post('/content-management/courses/:courseId/audience/add-deadline', this.setDeadline())
 	}
 
 	public getAudienceName() {
@@ -114,6 +119,18 @@ export class AudienceController {
 	}
 
 	public setOrganisation() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/configure-audience')
+		}
+	}
+
+	public getDeadline() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/add-deadline')
+		}
+	}
+
+	public setDeadline() {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/audience/configure-audience')
 		}
