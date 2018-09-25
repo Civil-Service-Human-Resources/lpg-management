@@ -21,17 +21,17 @@
         <div class="govuk-grid-column-full">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Configure your audience</h2>
-            <p class="govuk-body">Your audience is called: <strong>{{ audience.name }}</strong>
+            <p class="govuk-body">Your audience is called: <strong>{{ audience.name }}</strong></p>
 
             <div class="audience-container">
                 <div class="flex-container u--border--bgrey">
                     <div class="audience-content">
                         <p class="govuk-body">Audience type</p>
-                        <p class="audience-type no-margin">{{ audience.type | default("Type unset", true) }}</p>
+                        <p class="audience-type no-margin">{{ i18n.audience.type[audienceTypeAsString] | default("Type unset", true) }}</p>
                     </div>
-                    <a href="/content-management/courses/{{course.id}}/audience-type" class="govuk-link audience-link">Change</a>
+                    <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/type" class="govuk-link audience-link">Change</a>
                 </div>
-                {% if audience.type !== 'private' %}
+                {% if audienceTypeAsString !== 'PRIVATE_COURSE' %}
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Organisation</p>
@@ -41,11 +41,15 @@
                                 <p class="unset">No organisations have been added</p>
                             {% endif %}
                         </div>
+<<<<<<< HEAD
                         {% if audience.organisation %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
                             <a href="/content-management/courses/{{course.id}}/audience/add-organisation" class="govuk-link audience-link">Add</a>
                         {% endif %}
+=======
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-organisation" class="govuk-link audience-link">Add</a>
+>>>>>>> origin
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -56,11 +60,15 @@
                                 <p class="unset">No areas of work have been added</p>
                             {% endif %}
                         </div>
+<<<<<<< HEAD
                         {% if audience.areas %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
                             <a href="/content-management/courses/{{course.id}}/audience/add-area-of-work" class="govuk-link audience-link">Add</a>
                         {% endif %}
+=======
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-area-of-work" class="govuk-link audience-link">Add</a>
+>>>>>>> origin
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -71,10 +79,14 @@
                                 <p class="unset">No interests have been added {{event.id}}</p>
                             {% endif %}
                         </div>
+<<<<<<< HEAD
                         {% if audience.interests %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
                         <a href="/content-management/courses/{{course.id}}/audience/add-interests" class="govuk-link audience-link">Add</a>
+=======
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/interests" class="govuk-link audience-link">Add</a>
+>>>>>>> origin
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -85,14 +97,18 @@
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
                         </div>
+<<<<<<< HEAD
                         {% if audience.grades %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audience/add-grades" class="govuk-link audience-link">Add</a>
                         {% endif %}
+=======
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/interests" class="govuk-link audience-link">Add</a>
+>>>>>>> origin
                     </div>
                 {% endif %} 
-                {% if audience.type === 'required' %}
+                {% if audienceTypeAsString === 'REQUIRED_LEARNING' %}
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Deadline date</p>
@@ -102,11 +118,15 @@
                                 <p class="unset">No date has been added</p>
                             {% endif %}
                         </div>
+<<<<<<< HEAD
                         {% if audience.deadline %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audience/add-deadline" class="govuk-link audience-link">Add</a>
                         {% endif %}
+=======
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/interests" class="govuk-link audience-link">Add</a>
+>>>>>>> origin
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
@@ -117,14 +137,18 @@
                                 <p class="unset">No frequency has been added</p>
                             {% endif %}
                         </div>
+<<<<<<< HEAD
                         {% if audience.frequency %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
                             <a href="/content-management/courses/{{course.id}}/audience/add-frequency" class="govuk-link audience-link">Add</a>
                         {% endif %}
+=======
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/interests" class="govuk-link audience-link">Add</a>
+>>>>>>> origin
                     </div>
                 {% endif %} 
-                {% if audience.type === 'private' %}
+                {% if audienceTypeAsString === 'PRIVATE_COURSE' %}
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Associated event</p>
@@ -134,19 +158,19 @@
                                 <p class="unset">No event has been added</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audience/event" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/event" class="govuk-link audience-link">Add</a>
                     </div>
                 {% endif %}
-                </div>
             </div>
-        </div>
-        <div class="button-container">
+             <div class="button-container">
             <a class="govuk-body govuk-link return-link" href="/content-management/courses/{{ course.id }}/overview">Return to event overview page</a>
-                {{ govukButton({
-                    text: "Delete this audience",
-                    classes: "button-red"
-                }) }}
-            </div>
+            {{ govukButton({
+                href: "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/delete",
+                text: "Delete this audience",
+                classes: "button-red"
+            }) }}
         </div>
+        </div>
+       
     </div>
 {% endblock %}

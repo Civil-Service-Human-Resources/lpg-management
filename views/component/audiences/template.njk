@@ -1,7 +1,12 @@
 {% if course.audiences.length > 0 %}
     <ul class="list">
         {% for audience in course.audiences %}
-            <li class="module-item list-item u--border--bgrey">{{ audience.name | default("Audience", true) }}
+            <li class="module-item list-item u--border--bgrey">
+                <div class="title-container">
+                    <p class="govuk-body no-margin">{{ audience.name | default("Audience", true) }}</p>
+                    <a class="govuk-body govuk-link" href="/content-management/courses/{{  course.id }}/audiences/{{ audience.id }}/configure">Edit</a>
+                </div>
+            </li>
         {% endfor %}
     </ul>
 {% else %}

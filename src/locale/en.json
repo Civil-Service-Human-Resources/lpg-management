@@ -7,6 +7,7 @@
 			"edit_type": "Edit audience type",
 			"configure_audience": "Configure audience",
 			"add_organisation": "Add organisation",
+			"delete_audience": "Delete audience",
 			"add_area_of_work": "Add area of work",
 			"add_grades": "Add grades"
 		},
@@ -18,6 +19,12 @@
 			"type": {
 				"empty": "Audience type is required"
 			}
+		},
+		"type": {
+			"OPEN": "Open",
+			"CLOSED_COURSE": "Closed course",
+			"PRIVATE_COURSE": "Private course",
+			"REQUIRED_LEARNING": "Required learning"
 		}
 	},
 	"blended": "Blended",

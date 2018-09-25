@@ -1,0 +1,31 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.audience.page_title.delete_audience }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% block beforeContent %}
+    {% block phaseBanner %}
+        {{ phaseBanner("beta") }}
+    {% endblock%}
+    {% block backLink %}
+        {{ backLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
+    {% endblock%}
+{% endblock %}
+
+{% block content %}
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Confirm deleting this audience</h2>
+            <p>Are you sure you want to remove audience <strong>{{audience.name}}</strong>?</p>
+            <p class="govuk-body"><strong>Deleting an audience is irreversible.</strong></p>
+
+            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/delete" method="post">
+                {{ govukButton({
+                text: "Delete audience",
+                classes: "button-red"
+                }) }}
+            </form>
+
+{% endblock %}
