@@ -88,13 +88,13 @@ export class AudienceController {
 			if (errors.size > 0) {
 				req.session!.sessionFlash = {errors, audience}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/audience-name`)
 				})
 			} else {
 				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
 				req.session!.sessionFlash = {audience: savedAudience}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/type`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/audience-type`)
 				})
 			}
 		}
@@ -115,14 +115,16 @@ export class AudienceController {
 			if (errors.size > 0) {
 				req.session!.sessionFlash = {errors, audienceName: audience.name}
 				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/type`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/audience-type`)
 				})
 			} else {
 				const savedAudience = await this.learningCatalogue.createAudience(req.params.courseId, audience)
 				req.session!.sessionFlash = {audience: savedAudience}
 				req.session!.save(() => {
 					res.redirect(
-						`/content-management/courses/${req.params.courseId}/audiences/${savedAudience.id}/configure`
+						`/content-management/courses/${req.params.courseId}/audiences/${
+							savedAudience.id
+						}/audiences/configure-audience`
 					)
 				})
 			}

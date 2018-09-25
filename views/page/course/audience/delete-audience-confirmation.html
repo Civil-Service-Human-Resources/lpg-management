@@ -18,14 +18,16 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-m govuk-!-font-size-36">Confirm deleting this audience</h2>
-            <p>Are you sure you want to remove audience <strong>{{audience.name}}</strong>?</p>
+            <p class="govuk-body no-margin">Are you sure you want to remove audience <strong>{{audience.name}}</strong>?</p>
             <p class="govuk-body"><strong>Deleting an audience is irreversible.</strong></p>
 
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/delete" method="post">
-                {{ govukButton({
-                text: "Delete audience",
-                classes: "button-red"
-                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                    text: "Delete audience",
+                    classes: "button-red"
+                    }) }}
+                </div>
             </form>
 
 {% endblock %}

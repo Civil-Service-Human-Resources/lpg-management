@@ -21,4 +21,18 @@
 	.list-item {
 		padding: 0;
 	}
+
+	.govuk-details__text {
+		padding: 0 0 0 20px;
+	}
+
+	.audience-item {
+		display: flex;
+		justify-content: space-between;
+		padding: 15px 0;
+
+		.audience-header {
+			font-weight: 700;
+		}
+	}
 }
