@@ -2,15 +2,27 @@
 {% if course.audiences.length > 0 %}
     <ul class="audience-list">
         {% for audience in course.audiences %}
-
-        {% set audienceHTML = '<ul class="list audience">
+    
+            {% for grade in course.audiences.grades %}
+                {% set grades = [] %}
+                {% set gradeItem = grades.push(
+                    grade.name
+                ) %}
+            {% endfor %}
+             {% for interest in course.audiences.interests %}
+                {% set interests = [] %}
+                {% set interestItem = interests.push(
+                    interest.name
+                ) %}
+            {% endfor %}
+            {% set audienceHTML = '<ul class="list audience">
                 <li class="audience-item u--border--bgrey"><span class="audience-header">Course type</span><span>'+(audience.type | default("Unspecified", true))+'</span></li>
                 <li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span>'+(audience.organisations | default("Unspecified", true))+'</span></li>
-                <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span>'+(audience.grades | default("Unspecified", true))+'</span></li>
+                <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span>'+(grades | default("Unspecified", true))+'</span></li>
                 <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span>'+(audience.areasOFWork | default("Unspecified", true))+'</span></li>
-                <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>'+(audience.interests | default("Unspecified", true))+'</span></li>
+                <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>'+(interests | default("Unspecified", true))+'</span></li>
             </ul>'
-        -%}
+            %}
             <li class="list-item">
                 <div class="title-container">
                     <h3 class="govuk-heading-m">{{ audience.name | default("Audience", true) }}</h3>

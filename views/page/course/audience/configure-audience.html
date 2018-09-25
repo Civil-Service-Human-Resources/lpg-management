@@ -63,11 +63,11 @@
                                 <p class="unset">No interests have been added {{event.id}}</p>
                             {% endif %}
                         </div>
-                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/audiences/interests" class="govuk-link audience-link">Add</a>
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/audiences/add-interests" class="govuk-link audience-link">Add</a>
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
-                            <p class="govuk-body">Grade</p>
+                            <p class="govuk-body">Grades</p>
                             {% if audience.grades %}
                                 <p class="audience-type">{{ audience.grades | default("Grade unset", true) }}</p>
                             {% else %}

@@ -12,7 +12,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/audience/configure-audience") }}
+        {{ backLink("/content-management/courses/" + course.id + "/audiences/configure-audience") }}
     {% endblock%}
 {% endblock %}
 
@@ -21,7 +21,7 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
-            <form action="/content-management/courses/{{ course.id }}/audience/add-organisation" method="post">
+            <form action="/content-management/courses/{{ course.id }}/audiences/add-organisation" method="post" class="audience-form">
                 {% if errors.fields %}
                     {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
                     {% set message = "govuk-error-message" %}
@@ -37,7 +37,8 @@
                         <div class="typeahead-container">
                             <label class="govuk-body no-margin" for="autocomplete">Name of organisation</label>
                             <p class="govuk-hint">Start typing the name of the organisation</p>
-                        <div id="autocomplete-container"></div>
+                            <div id="autocomplete-container"></div>
+                        </div>
                     {% endset -%}
                     {{ govukRadios({
                         idPrefix: "audience-type",
@@ -72,7 +73,7 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audience/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audiences/configure-audience">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>
