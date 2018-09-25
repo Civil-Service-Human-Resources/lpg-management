@@ -43,14 +43,14 @@
             {% endblock %}
         </div>
         <div class="section">
-            <h3 class="govuk-heading-m no-margin">Course events</h3>
+            <h3 class="govuk-heading-m">Course events</h3>
             {% block courseEvents %}
                 {{ courseEvents(course, faceToFaceModules) }}
             {% endblock %}
         </div>
         <div class="section">
             <div class="title-container"> 
-                <h3 class="govuk-heading-m no-margin">Course audiences</h3>
+                <h3 class="govuk-heading-m">Course audiences</h3>
                 <a class="govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audiences/audience-name">Add an audience</a>
             </div>
             {% block audiences %}
@@ -58,7 +58,6 @@
             {% endblock %}
         </div> 
     </div>
-
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
             {% block menu %}

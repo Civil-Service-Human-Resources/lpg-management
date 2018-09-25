@@ -7,11 +7,11 @@
                 <li class="audience-item u--border--bgrey"><span class="audience-header">Course type</span><span>'+(audience.type | default("Unspecified", true))+'</span></li>
                 <li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span>'+(audience.organisations | default("Unspecified", true))+'</span></li>
                 <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span>'+(audience.grades | default("Unspecified", true))+'</span></li>
-                <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span>'+audience.areasOFWork | default("Unspecified", true))+'</span></li>
-                <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>'+audience.interests | default("Unspecified", true))+'</span></li>
+                <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span>'+(audience.areasOFWork | default("Unspecified", true))+'</span></li>
+                <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>'+(audience.interests | default("Unspecified", true))+'</span></li>
             </ul>'
         -%}
-            <li class="module-item list-item">
+            <li class="list-item">
                 <div class="title-container">
                     <h3 class="govuk-heading-m">{{ audience.name | default("Audience", true) }}</h3>
                     <a class="govuk-body govuk-link" href="#">Remove</a>
