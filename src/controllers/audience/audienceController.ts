@@ -124,7 +124,7 @@ export class AudienceController {
 					res.redirect(
 						`/content-management/courses/${req.params.courseId}/audiences/${
 							savedAudience.id
-						}/audiences/configure-audience`
+						}/configure-audience`
 					)
 				})
 			}

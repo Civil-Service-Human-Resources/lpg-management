@@ -68,7 +68,9 @@ describe('AudienceController', function() {
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.name'])
 			expect(audienceValidator.check).to.have.returned(errors)
 			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
-			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${req.params.courseId}/audiences`)
+			expect(res.redirect).to.have.been.calledWith(
+				`/content-management/courses/${req.params.courseId}/audiences/audience-name`
+			)
 		})
 
 		it('should redirect to audience type page if audience name validated successfully', async function() {
@@ -87,7 +89,7 @@ describe('AudienceController', function() {
 			expect(audienceValidator.check).to.have.returned(errors)
 			Object.is(req.session!.sessionFlash.errors, undefined)
 			expect(res.redirect).to.have.been.calledWith(
-				`/content-management/courses/${req.params.courseId}/audiences/type`
+				`/content-management/courses/${req.params.courseId}/audiences/audience-type`
 			)
 		})
 	})
@@ -115,7 +117,9 @@ describe('AudienceController', function() {
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.type'])
 			expect(audienceValidator.check).to.have.returned(errors)
 			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
-			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${courseId}/audiences/type`)
+			expect(res.redirect).to.have.been.calledWith(
+				`/content-management/courses/${courseId}/audiences/audience-type`
+			)
 		})
 
 		it('should redirect to audience configuration page if audience created successfully', async function() {
@@ -137,7 +141,7 @@ describe('AudienceController', function() {
 			Object.is(req.session!.sessionFlash.errors, undefined)
 			expect(learningCatalogue.createAudience).to.have.been.calledOnceWith(courseId, audience)
 			expect(res.redirect).to.have.been.calledWith(
-				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure`
+				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure-audience`
 			)
 		})
 	})
