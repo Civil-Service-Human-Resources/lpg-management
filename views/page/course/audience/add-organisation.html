@@ -12,7 +12,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/configure-audience") }}
+        {{ backLink("/content-management/courses/" + course.id + "/audience/configure-audience") }}
     {% endblock%}
 {% endblock %}
 
@@ -21,7 +21,7 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
-            <form action="/content-management/courses/{{ course.id }}/add-organisation" method="post">
+            <form action="/content-management/courses/{{ course.id }}/audience/add-organisation" method="post">
                 {% if errors.fields %}
                     {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
                     {% set message = "govuk-error-message" %}
@@ -72,7 +72,7 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audience/configure-audience">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>
@@ -84,5 +84,10 @@
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
     <script type="text/javascript" src="/js/add-organisation.js"></script>
+    {% set orgs = [] %}
+    {% for organisation in organisations._embedded.organisations %}
+        {% set orgName = orgs.push(organisation.name)%}  
+    {% endfor %}
+    <script orgs='{{orgs}}' src="/js/orgs.js"></script>
 {% endblock %}
 

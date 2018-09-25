@@ -7,7 +7,9 @@
 			"edit_type": "Edit audience type",
 			"configure_audience": "Configure audience",
 			"add_organisation": "Add organisation",
-			"add_deadline": "Add deadline date"
+			"add_deadline": "Add deadline date",
+			"delete_audience": "Delete audience",
+			"add_area_of_work": "Add area of work"
 		},
 		"validation": {
 			"name": {
@@ -17,6 +19,12 @@
 			"type": {
 				"empty": "Audience type is required"
 			}
+		},
+		"type": {
+			"OPEN": "Open",
+			"CLOSED_COURSE": "Closed course",
+			"PRIVATE_COURSE": "Private course",
+			"REQUIRED_LEARNING": "Required learning"
 		}
 	},
 	"blended": "Blended",
