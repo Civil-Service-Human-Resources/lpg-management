@@ -1,6 +1,8 @@
 import {IsNotEmpty, MaxLength} from 'class-validator'
 
 export class Audience {
+	id: string
+
 	@IsNotEmpty({
 		groups: ['all', 'audience.all', 'audience.name'],
 		message: 'audience.validation.name.empty',

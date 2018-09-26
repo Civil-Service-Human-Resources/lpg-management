@@ -12,7 +12,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/configure-audience") }}
+        {{ backLink("/content-management/courses/" + course.id + "/audience/configure-audience") }}
     {% endblock%}
 {% endblock %}
 
@@ -84,5 +84,10 @@
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
     <script type="text/javascript" src="/js/add-organisation.js"></script>
+    {% set orgs = [] %}
+    {% for organisation in organisations._embedded.organisations %}
+        {% set orgName = orgs.push(organisation.name)%}  
+    {% endfor %}
+    <script orgs='{{orgs}}' src="/js/orgs.js"></script>
 {% endblock %}
 

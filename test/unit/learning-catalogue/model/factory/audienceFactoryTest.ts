@@ -7,6 +7,7 @@ describe('AudienceFactory tests', () => {
 	const audienceFactory: AudienceFactory = new AudienceFactory()
 
 	it('Should create Audience from data', () => {
+		const id = 'audience-id'
 		const areasOfWork: string[] = ['digital', 'project-delivery']
 		const departments: string[] = ['dh', 'co']
 		const grades: string[] = ['AA', 'G7', 'SCS']
@@ -16,6 +17,7 @@ describe('AudienceFactory tests', () => {
 		const frequency = 'YEARLY'
 
 		const data: object = {
+			id: id,
 			areasOfWork: areasOfWork,
 			departments: departments,
 			grades: grades,
@@ -27,6 +29,7 @@ describe('AudienceFactory tests', () => {
 
 		const result: Audience = audienceFactory.create(data)
 
+		expect(result.id).to.eql(id)
 		expect(result.areasOfWork).to.eql(areasOfWork)
 		expect(result.departments).to.eql(departments)
 		expect(result.grades).to.eql(grades)
@@ -37,6 +40,7 @@ describe('AudienceFactory tests', () => {
 	})
 
 	it('Should ignore requiredBy if missing', () => {
+		const id = 'audience-id'
 		const areasOfWork: string[] = ['digital', 'project-delivery']
 		const departments: string[] = ['dh', 'co']
 		const grades: string[] = ['AA', 'G7', 'SCS']
@@ -45,6 +49,7 @@ describe('AudienceFactory tests', () => {
 		const frequency = 'YEARLY'
 
 		const data: object = {
+			id: id,
 			areasOfWork: areasOfWork,
 			departments: departments,
 			grades: grades,
@@ -55,6 +60,7 @@ describe('AudienceFactory tests', () => {
 
 		const result: Audience = audienceFactory.create(data)
 
+		expect(result.id).to.eql(id)
 		expect(result.areasOfWork).to.eql(areasOfWork)
 		expect(result.departments).to.eql(departments)
 		expect(result.grades).to.eql(grades)
