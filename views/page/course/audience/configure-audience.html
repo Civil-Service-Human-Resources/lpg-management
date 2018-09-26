@@ -42,7 +42,7 @@
                         {% if audience.organisation %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-organisation" class="govuk-link audience-link">Add</a>
+                            <a href="/content-management/courses/{{course.id}}/audience/add-organisation" class="govuk-link audience-link">Add</a>
                         {% endif %}
                     </div>
                     <div class="flex-container u--border--bgrey">
@@ -57,7 +57,7 @@
                         {% if audience.areas %}
                              <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-area-of-work" class="govuk-link audience-link">Add</a>
+                            <a href="/content-management/courses/{{course.id}}/audience/add-area-of-work" class="govuk-link audience-link">Add</a>
                         {% endif %}
                     </div>
                     <div class="flex-container u--border--bgrey">
@@ -144,6 +144,6 @@
                 classes: "button-red"
             }) }}
         </div>
-        </div>    
+        </div>
     </div>
 {% endblock %}

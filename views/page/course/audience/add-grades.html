@@ -1,0 +1,59 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.audience.page_title.add_grades }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% block beforeContent %}
+    {% block phaseBanner %}
+        {{ phaseBanner("beta") }}
+    {% endblock%}
+    {% block backLink %}
+        {{ backLink("/content-management/courses/" + course.id + "/audience/configure-audience") }}
+    {% endblock%}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Grades</h2>
+            <form action="/content-management/courses/{{ course.id }}/audience/add-grades" method="post">
+                {% set gradeList = [] %}
+                {% for grade in grades._embedded.grades %}
+                    {% set list = gradeList.push({
+                        "text": grade.name,
+                        "value": (grade.code | lower)
+                    }) %}        
+                {% endfor %} 
+                {{ govukCheckboxes({
+                idPrefix: "audience-type",
+                name: "audience-type",
+                hint:{ 
+                    text: "Check all the grades that are required for this audience"
+                },
+                fieldset: {
+                    legend: {
+                        text: "Which grade is this audience for?",
+                        isPageHeading: true,
+                        classes: "govuk-fieldset__legend--s" 
+                    }
+                },
+                items: gradeList
+                        
+                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Continue"
+                    }) }}
+                </div>
+            </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audience/configure-audience">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+

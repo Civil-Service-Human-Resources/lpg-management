@@ -9,7 +9,8 @@
 			"add_organisation": "Add organisation",
 			"add_deadline": "Add deadline date",
 			"delete_audience": "Delete audience",
-			"add_area_of_work": "Add area of work"
+			"add_area_of_work": "Add area of work",
+			"add_grades": "Add grades"
 		},
 		"validation": {
 			"name": {

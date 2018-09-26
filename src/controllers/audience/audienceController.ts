@@ -71,6 +71,8 @@ export class AudienceController {
 		this.router.post('/content-management/courses/:courseId/audiences/add-organisation', this.setOrganisation())
 		this.router.get('/content-management/courses/:courseId/audiences/add-area-of-work', this.getAreasOfWork())
 		this.router.post('/content-management/courses/:courseId/audiences/add-area-of-work', this.setAreasOfWork())
+		this.router.get('/content-management/courses/:courseId/audience/add-grades', this.getGrades())
+		this.router.post('/content-management/courses/:courseId/audience/add-grades', this.setGrades())
 	}
 
 	public getAudienceName() {
@@ -184,6 +186,32 @@ export class AudienceController {
 	}
 
 	public setDeadline() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/configure-audience')
+		}
+	}
+	public getGrades() {
+		return async (request: Request, response: Response) => {
+			const grades = await this.csrsService.getGrades()
+
+			response.render('page/course/audience/add-grades', {grades})
+		}
+	}
+
+	public setGrades() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/audience/configure-audience')
+		}
+	}
+
+	public getInterests() {
+		return async (request: Request, response: Response) => {
+			const interests = await this.csrsService.getInterests()
+			response.render('page/course/audience/add-interests', {interests})
+		}
+	}
+
+	public setInterests() {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/audience/configure-audience')
 		}
