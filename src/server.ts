@@ -42,8 +42,12 @@ nunjucks
 			express: app,
 		}
 	)
-	.addFilter('jsonpath', function(object: any, path: string) {
-		return jsonpath.value(object, path)
+	.addFilter('jsonpath', function(path: string | string[], map: any) {
+		return Object.is(path, undefined)
+			? undefined
+			: Array.isArray(path)
+				? path.map(pathElem => jsonpath.value(map, pathElem))
+				: jsonpath.value(map, path)
 	})
 
 app.set('view engine', 'html')

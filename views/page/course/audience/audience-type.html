@@ -18,7 +18,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/{{ course.id }}/audience/configuire-audience") }}
+        {{ backLink("/content-management/courses/" + course.id + "/audiences/") }}
     {% endblock%}
 {% endblock %}
 
@@ -35,7 +35,7 @@
                 <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             {% endif %}
             <h2 class="govuk-heading-m govuk-!-font-size-36">Type of audience</h2>
-            <form action="/content-management/courses/{{ course.id }}/audiences/audience-type" method="post" class="audience-form">
+            <form action="/content-management/courses/{{ course.id }}/audiences/type" method="post" class="audience-form">
                 <p class="govuk-body">You can limit who this course is shown to</p>
                 <input type="hidden" name="name" value="{{sessionFlash.audienceName}}" />
                 {% if errors.fields %}
@@ -98,7 +98,7 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audience/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/overview">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">  
         </div>

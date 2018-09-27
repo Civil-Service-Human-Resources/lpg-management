@@ -73,4 +73,21 @@ describe('CsrsService tests', () => {
 		expect(restService.get).to.have.been.calledOnceWith('interests')
 		expect(result).to.eql(data)
 	})
+
+	describe('#getDepartmentCodeToNameMapping', () => {
+		it('should return a map from department code to name', async () => {
+			const hmrcName = 'HM Revenue & Customs'
+			const dwpName = 'Department for Work & Pensions'
+
+			csrsService.getOrganisations = sinon.stub().returns({
+				_embedded: {
+					organisations: [{code: 'hmrc', name: hmrcName}, {code: 'dwp', name: dwpName}],
+				},
+			})
+			expect(await csrsService.getDepartmentCodeToNameMapping()).to.be.deep.equal({
+				hmrc: hmrcName,
+				dwp: dwpName,
+			})
+		})
+	})
 })

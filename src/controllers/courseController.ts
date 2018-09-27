@@ -7,6 +7,7 @@ import {Validator} from '../learning-catalogue/validator/validator'
 import {Module} from '../learning-catalogue/model/module'
 import * as datetime from '../lib/datetime'
 import {CourseService} from '../lib/courseService'
+import {CsrsService} from '../csrs/service/csrsService'
 
 export class CourseController {
 	learningCatalogue: LearningCatalogue
@@ -14,17 +15,20 @@ export class CourseController {
 	courseFactory: CourseFactory
 	router: Router
 	courseService: CourseService
+	csrsService: CsrsService
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
 		courseValidator: Validator<Course>,
 		courseFactory: CourseFactory,
-		courseService: CourseService
+		courseService: CourseService,
+		csrsService: CsrsService
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.courseValidator = courseValidator
 		this.courseFactory = courseFactory
 		this.courseService = courseService
+		this.csrsService = csrsService
 		this.router = Router()
 
 		this.getCourseFromRouterParamAndSetOnLocals()
@@ -58,16 +62,17 @@ export class CourseController {
 		this.router.get('/content-management/courses/:courseId/sort-modules?', this.sortModules())
 	}
 
-	public courseOverview() {
-		return async (request: Request, response: Response) => {
-			const faceToFaceModules = response.locals.course.modules.filter(
+	courseOverview() {
+		return async (req: Request, res: Response) => {
+			const faceToFaceModules = res.locals.course.modules.filter(
 				(module: Module) => module.type == Module.Type.FACE_TO_FACE
 			)
-			response.render('page/course/course-overview', {faceToFaceModules})
+			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
+			res.render('page/course/course-overview', {faceToFaceModules, departmentCodeToName})
 		}
 	}
 
-	public coursePreview() {
+	coursePreview() {
 		return async (request: Request, response: Response) => {
 			const modules: Module[] = response.locals.course.modules
 
@@ -79,13 +84,13 @@ export class CourseController {
 		}
 	}
 
-	public getCourseTitle() {
+	getCourseTitle() {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/course-title')
 		}
 	}
 
-	public setCourseTitle() {
+	setCourseTitle() {
 		return async (request: Request, response: Response) => {
 			const errors = await this.courseValidator.check(request.body, ['title'])
 			if (errors.size) {
@@ -109,13 +114,13 @@ export class CourseController {
 		}
 	}
 
-	public getCourseDetails() {
+	getCourseDetails() {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/course-details')
 		}
 	}
 
-	public setCourseDetails() {
+	setCourseDetails() {
 		return async (request: Request, response: Response) => {
 			const req = request as ContentRequest
 
@@ -146,7 +151,7 @@ export class CourseController {
 		}
 	}
 
-	public sortModules() {
+	sortModules() {
 		return async (request: Request, response: Response) => {
 			await this.courseService.sortModules(request.params.courseId, request.query.moduleIds)
 			return response.redirect(`/content-management/courses/${request.params.courseId}/add-module`)

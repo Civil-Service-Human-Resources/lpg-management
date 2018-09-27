@@ -13,6 +13,7 @@ import {ContentRequest} from '../../../src/extended'
 import {Validator} from '../../../src/learning-catalogue/validator/validator'
 import {Module} from '../../../src/learning-catalogue/model/module'
 import {CourseService} from '../../../src/lib/courseService'
+import {CsrsService} from '../../../src/csrs/service/csrsService'
 
 chai.use(sinonChai)
 
@@ -22,14 +23,22 @@ describe('Course Controller Tests', function() {
 	let courseValidator: Validator<Course>
 	let courseFactory: CourseFactory
 	let courseService: CourseService
+	let csrsService: CsrsService
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		courseValidator = <Validator<Course>>{}
 		courseFactory = <CourseFactory>{}
 		courseService = <CourseService>{}
+		csrsService = <CsrsService>{}
 
-		courseController = new CourseController(learningCatalogue, courseValidator, courseFactory, courseService)
+		courseController = new CourseController(
+			learningCatalogue,
+			courseValidator,
+			courseFactory,
+			courseService,
+			csrsService
+		)
 	})
 
 	it('should call course overview page', async function() {
@@ -37,6 +46,8 @@ describe('Course Controller Tests', function() {
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
+
+		csrsService.getDepartmentCodeToNameMapping = sinon.stub()
 
 		const course = new Course()
 		course.modules = []

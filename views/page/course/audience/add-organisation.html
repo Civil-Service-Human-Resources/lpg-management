@@ -12,7 +12,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/audiences/configure-audience") }}
+        {{ backLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
     {% endblock%}
 {% endblock %}
 
@@ -21,7 +21,7 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
-            <form action="/content-management/courses/{{ course.id }}/audiences/add-organisation" method="post" class="audience-form">
+            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" method="post">
                 {% if errors.fields %}
                     {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
                     {% set message = "govuk-error-message" %}
@@ -41,8 +41,8 @@
                         </div>
                     {% endset -%}
                     {{ govukRadios({
-                        idPrefix: "audience-type",
-                        name: "audience-type",
+                        idPrefix: "organisation",
+                        name: "organisation",
                         fieldset: {
                             legend: {
                                 text: "Which organisations are included in this audience?",
@@ -73,7 +73,7 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audiences/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure-audience">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>

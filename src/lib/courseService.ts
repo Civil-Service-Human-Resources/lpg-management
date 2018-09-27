@@ -10,7 +10,7 @@ export class CourseService {
 		this.learningCatalogue = learningCatalogue
 	}
 
-	public async sortModules(courseId: string, moduleIds: string[]): Promise<Course> {
+	async sortModules(courseId: string, moduleIds: string[]): Promise<Course> {
 		const course: Course = await this.learningCatalogue.getCourse(courseId)
 
 		if (course.modules.length !== moduleIds.length) {

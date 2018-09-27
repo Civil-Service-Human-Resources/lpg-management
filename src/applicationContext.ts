@@ -120,13 +120,17 @@ export class ApplicationContext {
 
 		this.pagination = new Pagination()
 
+		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
+		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth))
+
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
 		this.courseController = new CourseController(
 			this.learningCatalogue,
 			this.courseValidator,
 			this.courseFactory,
-			this.courseService
+			this.courseService,
+			this.csrsService
 		)
 
 		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
@@ -187,9 +191,6 @@ export class ApplicationContext {
 
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 		this.eventController = new EventController(this.learningCatalogue, this.eventValidator, this.eventFactory)
-
-		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
-		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth))
 
 		this.audienceService = new AudienceService(this.learningCatalogue)
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
