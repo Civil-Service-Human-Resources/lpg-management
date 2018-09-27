@@ -62,6 +62,10 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/organisation',
 			this.setOrganisation()
 		)
+		this.router.get(
+			'/content-management/courses/:courseId/audiences/:audienceId/organisation/delete',
+			this.deleteOrganisation()
+		)
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.getDeadline())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.setDeadline())
 		this.router.get(
@@ -171,6 +175,16 @@ export class AudienceController {
 				)
 				await this.learningCatalogue.updateCourse(res.locals.course)
 			}
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+			)
+		}
+	}
+
+	public deleteOrganisation() {
+		return async (req: Request, res: Response) => {
+			jsonpath.value(res.locals.course, `$..audiences[?(@.id=='${req.params.audienceId}')].departments`, [])
+			await this.learningCatalogue.updateCourse(res.locals.course)
 			res.redirect(
 				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)

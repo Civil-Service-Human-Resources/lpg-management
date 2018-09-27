@@ -39,9 +39,9 @@
                                 <p class="unset">No organisations have been added</p>
                             {% endif %}
                         </div>
-                        {% if audience.organisation %}
-                             <a href="#" class="govuk-link audience-link">Remove</a>
-                        {% else%}
+                        {% if audience.departments and audience.departments.length > 0 %}
+                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" class="govuk-link audience-link">Remove</a>
+                        {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" class="govuk-link audience-link">Add</a>
                         {% endif %}
                     </div>
@@ -55,7 +55,7 @@
                             {% endif %}
                         </div>
                         {% if audience.areas %}
-                             <a href="#" class="govuk-link audience-link">Remove</a>
+                            <a href="#" class="govuk-link audience-link">Remove</a>
                         {% else%}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add</a>
                         {% endif %}
