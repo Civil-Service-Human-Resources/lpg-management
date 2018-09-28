@@ -23,11 +23,13 @@
                     <a class="govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
                 </div>
                 {% set audienceHTML = '<ul class="list audience">
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Course type</span><span>'+(audience.type | default("Unspecified", true))+'</span></li>
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span>'+(audience.departments | jsonpath(departmentCodeToName) | join(', ') | default("Unspecified", true))+'</span></li>
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span>'+(grades | default("Unspecified", true))+'</span></li>
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span>'+(audience.areasOFWork | default("Unspecified", true))+'</span></li>
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>'+(interests | default("Unspecified", true))+'</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Course type</span><span>'
+                        + (AudienceType[audience.type] | jsonpath(i18n.audience.type) | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span>'
+                        + (audience.departments | jsonpath(departmentCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span>' + (grades | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span>' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>' + (interests | default("Unspecified", true)) + '</span></li>
                 </ul>'
                 %}
                 {{ govukDetails({

@@ -4,6 +4,7 @@ const jsonpath = require('jsonpath')
 
 export class CsrsService {
 	restService: OauthRestService
+	departmentCodeToNameMapping: any
 
 	constructor(restService: OauthRestService) {
 		this.restService = restService
@@ -26,13 +27,14 @@ export class CsrsService {
 	}
 
 	async getDepartmentCodeToNameMapping() {
-		const organisations = jsonpath.query(await this.getOrganisations(), '$._embedded.organisations.*')
-		const codeToName: any = {}
+		if (Object.is(this.departmentCodeToNameMapping, undefined)) {
+			const organisations = jsonpath.query(await this.getOrganisations(), '$._embedded.organisations.*')
+			this.departmentCodeToNameMapping = {}
 
-		for (let organisation of organisations) {
-			codeToName[organisation.code] = organisation.name
+			for (let organisation of organisations) {
+				this.departmentCodeToNameMapping[organisation.code] = organisation.name
+			}
 		}
-
-		return codeToName
+		return this.departmentCodeToNameMapping
 	}
 }

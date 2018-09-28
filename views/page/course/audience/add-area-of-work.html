@@ -20,18 +20,18 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Area of work</h2>
-            <form action="/content-management/courses/{{ course.id }}/audiences/add-area-of-work" method="post" class="audience-form">
+            <form action="/content-management/courses/{{ course.id }}/audiences/{{audience.id}}/area-of-work" method="post" class="audience-form">
                 {% set professions = [] %}
                 {% for areaOfWork in areasOfWork._embedded.professions %}
-                {% set profession = professions.push({
-                    "text": areaOfWork.name,
-                    "value": (areaOfWork.name | replace(" ", "-") | replace(",", "") | replace("'", "") | replace("&", "") | replace("--", "-") | lower)
-                }) %}        
-                    {% endfor %} 
-                    {{ govukRadios({
-                    idPrefix: "audience-type",
-                    name: "audience-type",
-                    hint:{ 
+                    {% set profession = professions.push({
+                        "text": areaOfWork.name,
+                        "value": areaOfWork.name
+                    }) %}
+                {% endfor %}
+                {{ govukRadios({
+                    idPrefix: "area-of-work",
+                    name: "area-of-work",
+                    hint:{
                         text: "Just click Continue if you want to skip"
                     },
                     fieldset: {
@@ -39,11 +39,9 @@
                             text: "Which area of work?",
                             isPageHeading: true,
                             classes: "govuk-fieldset__legend--s"
-                           
                         }
                     },
                     items: professions
-                        
                 }) }}
                 <div class="button-container">
                     {{ govukButton({
@@ -51,10 +49,9 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audiences/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Cancel</a>
         </div>
-        <div class="govuk-grid-column-one-third">
-        </div>
+        <div class="govuk-grid-column-one-third"/>
     </div>
 {% endblock %}
 

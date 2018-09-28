@@ -33,7 +33,7 @@
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Organisation</p>
-                            {% if audience.departments.length > 0 %}
+                            {% if audience.departments and audience.departments.length > 0 %}
                                 <p class="audience-type no-margin">{{ audience.departments | jsonpath(departmentCodeToName) | join(', ') }}</p>
                             {% else %}
                                 <p class="unset">No organisations have been added</p>
@@ -48,15 +48,15 @@
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Area of work</p>
-                            {% if audience.areas %}
-                                <p class="audience-type no-margin">{{ audience.areas | default("Area of work unset", true) }}</p>
+                            {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
+                                <p class="audience-type no-margin">{{ audience.areasOfWork | join(', ') | default("Area of work unset", true) }}</p>
                             {% else %}
                                 <p class="unset">No areas of work have been added</p>
                             {% endif %}
                         </div>
-                        {% if audience.areas %}
-                            <a href="#" class="govuk-link audience-link">Remove</a>
-                        {% else%}
+                        {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
+                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" class="govuk-link audience-link">Remove</a>
+                        {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add</a>
                         {% endif %}
                     </div>
@@ -101,7 +101,7 @@
                                 {% endif %}
                             </div>
                             {% if audience.deadline %}
-                                 <a href="#" class="govuk-link audience-link">Remove</a>
+                                <a href="#" class="govuk-link audience-link">Remove</a>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" class="govuk-link audience-link">Add</a>
                             {% endif %}
@@ -116,7 +116,7 @@
                                 {% endif %}
                             </div>
                             {% if audience.frequency %}
-                                 <a href="#" class="govuk-link audience-link">Remove</a>
+                                <a href="#" class="govuk-link audience-link">Remove</a>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/frequency" class="govuk-link audience-link">Add</a>
                             {% endif %}
