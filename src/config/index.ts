@@ -29,6 +29,10 @@ function set<T>(defaultValue: T, envValues: Record<string, T> = {}): T {
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
+export const CONTENT_URL = env.CONTENT_URL || 'http://local-cdn.cshr.digital/lpgdevcontent'
+
+export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
+
 export const LOGGING = set(
 	{
 		appenders: {

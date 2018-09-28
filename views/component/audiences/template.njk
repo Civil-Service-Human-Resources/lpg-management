@@ -19,7 +19,7 @@
 
             <li class="list-item">
                 <div class="title-container">
-                    <h3 class="govuk-heading-m">{{ audience.name | default("Audience", true) }}</h3>
+                    <h3 class="govuk-heading-s">{{ audience.name | default("Audience", true) }}</h3>
                     <a class="govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
                 </div>
                 {% set audienceHTML = '<ul class="list audience">

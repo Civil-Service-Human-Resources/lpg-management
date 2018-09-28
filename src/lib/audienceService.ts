@@ -1,6 +1,8 @@
 import {LearningCatalogue} from '../learning-catalogue'
 import {NextFunction, Request, Response} from 'express'
 import {Audience} from '../learning-catalogue/model/audience'
+import {JsonpathService} from '../lib/jsonpathService'
+import {Course} from '../learning-catalogue/model/course'
 
 export class AudienceService {
 	learningCatalogue: LearningCatalogue
@@ -21,5 +23,13 @@ export class AudienceService {
 				res.sendStatus(404)
 			}
 		}
+	}
+
+	setDepartmentsOnAudience(course: Course, audienceId: string, departments: any) {
+		JsonpathService.jsonpath().value(
+			course,
+			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].departments`,
+			departments
+		)
 	}
 }

@@ -76,19 +76,21 @@ export class ApplicationContext {
 	audienceController: AudienceController
 	audienceValidator: Validator<Audience>
 	audienceFactory: AudienceFactory
-	eventController: EventController
 	eventFactory: EventFactory
 	fileController: FileController
 	pagination: Pagination
 	youtubeService: YoutubeService
 	youtubeConfig: YoutubeConfig
 	faceToFaceController: FaceToFaceModuleController
+	eventController: EventController
+	mediaConfig: LearningCatalogueConfig
 	courseService: CourseService
 	audienceService: AudienceService
 	csrsConfig: CsrsConfig
 	csrsService: CsrsService
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -179,8 +181,15 @@ export class ApplicationContext {
 			this.termsAndConditionsValidator
 		)
 
+		this.mediaConfig = new LearningCatalogueConfig('http://localhost:9001/media')
+
 		this.moduleController = new ModuleController(this.learningCatalogue, this.moduleFactory)
-		this.fileController = new FileController(this.learningCatalogue, this.moduleValidator, this.moduleFactory)
+		this.fileController = new FileController(
+			this.learningCatalogue,
+			this.moduleValidator,
+			this.moduleFactory,
+			new OauthRestService(this.mediaConfig, this.auth)
+		)
 		this.linkModuleController = new LinkModuleController(this.learningCatalogue, this.moduleFactory)
 
 		this.faceToFaceController = new FaceToFaceModuleController(

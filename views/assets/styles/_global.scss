@@ -195,6 +195,10 @@ ul {
 	}
 }
 
+.hidden {
+    display: none;
+}
+
 @media screen and (min-width: $tablet-small) {
 	.govuk-input,
 	.govuk-textarea {

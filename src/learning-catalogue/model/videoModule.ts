@@ -8,5 +8,11 @@ export class VideoModule extends Module {
 	})
 	url: string
 
+	@IsNotEmpty({
+		groups: ['all', 'mediaID'],
+		message: 'validation_module_mediaId_empty',
+	})
+	mediaId: string
+
 	type: Module.Type.VIDEO
 }
