@@ -23,6 +23,13 @@
 	}
 }
 
+.govuk-grid-column-two-thirds,
+.govuk-grid-column-full {
+	.page-title {
+		padding-top: 0;
+	}
+}
+
 .govuk-header__container {
 	border-color: $theme;
 }

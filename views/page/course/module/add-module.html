@@ -22,13 +22,13 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full module-container">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Course modules</h2>
+            <h2 class="govuk-heading-m govuk-!-font-size-36 page-title">Course modules</h2>
             {% set modules = course.modules %}
 
                 {% if modules.length > 0 %}
                     <p class="govuk-body">Sort the modules into the order they should appear in on the course details page</p>
                 {% endif %}
-                <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Added modules</h3>
+                <h3 class="govuk-heading-m">Added modules</h3>
 
                 {% if modules.length > 0 %}
                  
@@ -62,7 +62,7 @@
             <div class="govuk-grid-column-two-thirds">
                 <div class="aded-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
                     <form action="/content-management/courses/{{ course.id }}/add-module" method="post">
-                        <h3 class="govuk-heading-s govuk-!-margin-bottom-1">Add a module</h3>
+                        <h3 class="govuk-heading-m">Add a module</h3>
                         <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
                 
                         <fieldset class="govuk-fieldset module-selector">
