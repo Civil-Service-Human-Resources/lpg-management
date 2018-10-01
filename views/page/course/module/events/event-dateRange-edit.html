@@ -12,7 +12,11 @@
     {{ phaseBanner("beta") }}
   {% endblock%}
   {% block backLink %}
-    {{ backLink("/content-management/courses/" + course.id + "/overview") }}
+    {% if event %}
+        {{ backLink("/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id) }}
+    {% else %}
+        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
+    {% endif %}
   {% endblock%}
 {% endblock %}
 
@@ -38,14 +42,14 @@
                         {% for dateRange in event.dateRanges %}
                             <li class="events u--border--bgrey">
                                 <p class="govuk-body event date">{{ dateRange.date }}</p><p class="govuk-body event time">{{ dateRange.startTime }}</p><p class="govuk-body event time">{{ dateRange.endTime }}</p><p class="govuk-body event edit">
+                                <a href="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}/dateRanges/{{loop.index0}}" class="govuk-link">Edit</a>
                             </li>
                         {% endfor %}
                     </ul>
                 </div>
             {% endif %}
 
-            <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}" method="post">
-                <input type="hidden" name="eventJson" value="{{eventJson}}" />
+            <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}/dateRanges/{{dateRangeIndex}}" method="post">
                 {% if errors.fields.minDate or errors.fields.dateRanges or errors.fields.invalidDate %}
                     {{ govukDateInput({
                         id: "start-date",
@@ -55,8 +59,8 @@
                             text: "Start date",
                             isPageHeading: false,
                             classes: "govuk-fieldset__legend--s"
-                            }
-
+                            },
+                        classes: "event-date"
                         },
                         hint: {
                             text: "For example, 31 3 " + exampleYear
@@ -67,28 +71,32 @@
                         items: [
                             {
                             name: "day",
+                            value: day,
                             classes: "govuk-input--width-3"
                             },
                             {
                             name: "month",
+                            value: month,
                             classes: "govuk-input--width-3"
                             },
                             {
                             name: "year",
+                            value: year,
                             classes: "govuk-input--width-5"
                             }
                         ]
                         }) }}
                     {% else %}
                      {{ govukDateInput({
-                        id: "start-date",
-                        name: "start-date",
+                        id: "date",
+                        name: "date",
                         fieldset: {
                             legend: {
-                            text: "Start date",
+                            text: "Date",
                             isPageHeading: true,
                             classes: "govuk-fieldset__legend--s"
-                            }
+                            },
+                        classes: "event-date"
                         },
                         hint: {
                             text: "For example, 31 3 " + exampleYear
@@ -96,14 +104,17 @@
                         items: [
                             {
                             name: "day",
+                            value: day,
                             classes: "govuk-input--width-3"
                             },
                             {
                             name: "month",
+                            value: month,
                             classes: "govuk-input--width-3"
                             },
                             {
                             name: "year",
+                            value: year,
                             classes: "govuk-input--width-5"
                             }
                         ]
@@ -112,27 +123,15 @@
 
                 {% set setHours = ["06","07","08","09","10","11","12","13","14","15","16","17","18","19","20"] %}
                 {% set setMinutes = ["00", "15", "30", "45"] %}
-                {{ timeInputs("Start time", setHours, setMinutes , "startTime", "Hours", "Minutes") }}
-                {{ timeInputs("End time", setHours, setMinutes , "endTime", "Hours", "Minutes") }}
+                {{ timeInputs("Start time", setHours, setMinutes , "startTime", "Hours", "Minutes", startHours, startMinutes) }}
+                {{ timeInputs("End time", setHours, setMinutes , "endTime", "Hours", "Minutes", endHours, endMinutes) }}
 
                 {{ govukButton({
-                    text: "Add this date",
+                    text: "Update this date" if dateRangeIndex|length else "Add this date",
                     classes: "button-blue left-aligned"
                 }) }}
             </form>
 
-            {% if event.dateRanges and event.dateRanges.length > 0 %}
-            <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/create" method="post">
-            <input type="hidden" name="eventJson" value="{{eventJson}}" />
-
-            <div class="button-container">
-                {{ govukButton({
-                text: "Continue",
-                classes: "govuk-button"
-                }) }}
-            </div>
-            </form>
-            {% endif %}
             <a href="/content-management/courses/{{course.id}}/overview">Cancel</a>
         </div>
     </div>

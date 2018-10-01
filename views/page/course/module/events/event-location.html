@@ -27,6 +27,8 @@
             <p class="govuk-body">This event is for the {{ module.title }} module on the {{ course.title }} course</p>
 
             <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/{{event.Id}}" method="post">
+                <input type="hidden" name="eventJson" value="{{eventJson}}" />
+
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.location %}
                         {{ govukInput({
