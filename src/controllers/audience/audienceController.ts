@@ -6,7 +6,6 @@ import {Validator} from '../../learning-catalogue/validator/validator'
 import {CourseService} from '../../lib/courseService'
 import {AudienceService} from '../../lib/audienceService'
 import {CsrsService} from '../../csrs/service/csrsService'
-import {JsonpathService} from '../../lib/jsonpathService'
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -61,7 +60,7 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/organisation',
 			this.setOrganisation()
 		)
-		this.router.get(
+		this.router.post(
 			'/content-management/courses/:courseId/audiences/:audienceId/organisation/delete',
 			this.deleteOrganisation()
 		)
@@ -84,7 +83,7 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/area-of-work',
 			this.setAreasOfWork()
 		)
-		this.router.get(
+		this.router.post(
 			'/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete',
 			this.deleteAreasOfWork()
 		)
@@ -248,11 +247,7 @@ export class AudienceController {
 
 	deleteAreasOfWork() {
 		return async (req: Request, res: Response) => {
-			JsonpathService.jsonpath().value(
-				res.locals.course,
-				`$..audiences[?(@.id=='${req.params.audienceId}')].areasOfWork`,
-				[]
-			)
+			this.audienceService.setAreasOfWorkOnAudience(res.locals.course, req.params.audienceId, [])
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
