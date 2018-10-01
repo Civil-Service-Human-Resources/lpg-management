@@ -186,11 +186,7 @@ export class AudienceController {
 
 	deleteOrganisation() {
 		return async (req: Request, res: Response) => {
-			JsonpathService.jsonpath().value(
-				res.locals.course,
-				`$..audiences[?(@.id=='${req.params.audienceId}')].departments`,
-				[]
-			)
+			this.audienceService.setDepartmentsOnAudience(res.locals.course, req.params.audienceId, [])
 			await this.learningCatalogue.updateCourse(res.locals.course)
 			res.redirect(
 				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`

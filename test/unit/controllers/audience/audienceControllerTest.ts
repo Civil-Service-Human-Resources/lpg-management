@@ -253,6 +253,28 @@ describe('AudienceController', () => {
 		})
 	})
 
+	describe('#deleteOrganisation', () => {
+		it('should update course audience with empty list of organisations and redirect to audience configuration page', async function() {
+			const courseId = 'course-id'
+			const audienceId = 'audience-id'
+			req.params.courseId = courseId
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, departments: ['hmrc']}
+			res.locals.course = {audiences: [audience]}
+
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.deleteOrganisation()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, departments: []}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
 	describe('#getAreasOfWork', () => {
 		it('should render add-are-of-work page', async function() {
 			csrsService.getAreasOfWork = sinon.stub().returns({})
