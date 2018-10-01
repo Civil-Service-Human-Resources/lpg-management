@@ -49,7 +49,7 @@
                         <div class="audience-content">
                             <p class="govuk-body">Area of work</p>
                             {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
-                                <p class="audience-type no-margin">{{ audience.areasOfWork | join(', ') | default("Area of work unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.areasOfWork | join(', ') }}</p>
                             {% else %}
                                 <p class="unset">No areas of work have been added</p>
                             {% endif %}
@@ -64,7 +64,7 @@
                         <div class="audience-content">
                             <p class="govuk-body">Interests</p>
                             {% if audience.interests and audience.interests.length > 0 %}
-                                <p class="audience-type no-margin">{{ audience.interests | default("Interests unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.interests }}</p>
                             {% else %}
                                 <p class="unset">No interests have been added {{event.id}}</p>
                             {% endif %}
@@ -79,7 +79,7 @@
                         <div class="audience-content">
                             <p class="govuk-body">Grade</p>
                             {% if audience.grades and audience.grades.length > 0 %}
-                                <p class="audience-type no-margin">{{ audience.grades | default("Grade unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.grades }}</p>
                             {% else %}
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
@@ -95,7 +95,7 @@
                             <div class="audience-content">
                                 <p class="govuk-body">Deadline date</p>
                                 {% if audience.deadline %}
-                                    <p class="audience-type no-margin">{{ audience.deadline | default("Deadline unset", true) }}</p>
+                                    <p class="audience-type no-margin">{{ audience.deadline }}</p>
                                 {% else %}
                                     <p class="unset">No date has been added</p>
                                 {% endif %}
@@ -110,7 +110,7 @@
                             <div class="audience-content">
                                 <p class="govuk-body">Frequency</p>
                                 {% if audience.frequency %}
-                                    <p class="audience-type no-margin">{{ audience.frequency | default("Frequency unset", true) }}</p>
+                                    <p class="audience-type no-margin">{{ audience.frequency }}</p>
                                 {% else %}
                                     <p class="unset">No frequency has been added</p>
                                 {% endif %}
@@ -127,7 +127,7 @@
                         <div class="audience-content">
                             <p class="govuk-body">Associated event</p>
                             {% if audience.event %}
-                                <p class="audience-type no-margin">{{ audience.event | default("Event unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.event }}</p>
                             {% else %}
                                 <p class="unset">No event has been added</p>
                             {% endif %}
