@@ -40,8 +40,8 @@
                             {% endif %}
                         </div>
                         {% if audience.departments and audience.departments.length > 0 %}
-                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" method="post">
-                                <button class="govuk-link audience-link button-like-link">Delete</button>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" method="post" class="audience-link">
+                                <button class="govuk-link audience-link linkish-button">Delete</button>
                             </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" class="govuk-link audience-link">Add</a>
@@ -57,8 +57,8 @@
                             {% endif %}
                         </div>
                         {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
-                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post">
-                                <button class="govuk-link audience-link button-like-link">Delete</button>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post" class="audience-link">
+                                <button class="govuk-link linkish-button">Delete</button>
                             </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add</a>

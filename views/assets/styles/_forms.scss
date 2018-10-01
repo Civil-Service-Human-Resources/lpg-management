@@ -261,6 +261,16 @@
 	z-index: 10;
 }
 
+.linkish-button {
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	font-size: $font-mobile;
+	text-decoration: underline;
+	color: $link;
+}
+
 @media screen and (min-width: $tablet-small) {
 	.autocomplete__hint,
 	.autocomplete__input,
