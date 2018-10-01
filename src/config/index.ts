@@ -78,3 +78,8 @@ export const COURSE_CATALOGUE = set({
 export const REGISTRY_SERVICE_URL = set({
 	url: env.REGISTRY_SERVICE_URL || 'http://localhost:9002',
 })
+
+export const CACHE = {
+	TTL_SECONDS: 3600,
+	CHECK_PERIOD_SECONDS: 600,
+}

@@ -45,6 +45,7 @@ import {CsrsService} from './csrs/service/csrsService'
 import {YoutubeService} from './youtube/youtubeService'
 import {YoutubeConfig} from './youtube/youtubeConfig'
 import {OauthRestService} from './lib/http/oauthRestService'
+import {CacheService} from './lib/cacheService'
 
 log4js.configure(config.LOGGING)
 
@@ -52,6 +53,7 @@ export class ApplicationContext {
 	identityService: IdentityService
 	auth: Auth
 	axiosInstance: AxiosInstance
+	cacheService: CacheService
 	homeController: HomeController
 	learningCatalogueConfig: LearningCatalogueConfig
 	learningCatalogue: LearningCatalogue
@@ -122,8 +124,13 @@ export class ApplicationContext {
 
 		this.pagination = new Pagination()
 
+		this.cacheService = new CacheService({
+			stdTTL: config.CACHE.TTL_SECONDS,
+			checkperiod: config.CACHE.CHECK_PERIOD_SECONDS,
+		})
+
 		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
-		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth))
+		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService)
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)

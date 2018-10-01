@@ -5,7 +5,8 @@ import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
-import {OauthRestService} from 'lib/http/oauthRestService'
+import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
+import {CacheService} from '../../../../src/lib/cacheService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -16,7 +17,7 @@ describe('CsrsService tests', () => {
 
 	beforeEach(() => {
 		restService = <OauthRestService>{}
-		csrsService = new CsrsService(restService)
+		csrsService = new CsrsService(restService, new CacheService())
 	})
 
 	it('should get organisation data', async () => {
