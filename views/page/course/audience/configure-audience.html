@@ -63,14 +63,14 @@
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Core learning</p>
-                            {% if audience.interests %}
+                            {% if audience.interests.length > 0 %}
                                 <p class="audience-type no-margin">{{ audience.interests | default("Core learning unset", true) }}</p>
                             {% else %}
-                                <p class="unset">No interests have been added {{event.id}}</p>
+                                <p class="unset">No core learning has been added {{event.id}}</p>
                             {% endif %}
                         </div>
                         {% if audience.interests.length > 0 %}
-                            <form class="audience-link"><button class="govuk-link linkish-button">Delete</button></form>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/core-learning/delete" method="post" class="audience-link"><button class="govuk-link linkish-button">Delete</button></form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-core-learning" class="govuk-link audience-link">Add</a>
                         {% endif %}

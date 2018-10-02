@@ -88,6 +88,14 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete',
 			this.deleteAreasOfWork()
 		)
+		this.router.get(
+			'/content-management/courses/:courseId/audiences/:audienceId/add-core-learning',
+			this.getCoreLearning()
+		)
+		this.router.post(
+			'/content-management/courses/:courseId/audiences/:audienceId/add-core-learning',
+			this.setCoreLearning()
+		)
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', this.getGrades())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', this.setGrades())
 	}
@@ -290,16 +298,26 @@ export class AudienceController {
 		}
 	}
 
-	getInterests() {
+	getCoreLearning() {
 		return async (request: Request, response: Response) => {
-			const interests = await this.csrsService.getInterests()
-			response.render('page/course/audience/add-interests', {interests})
+			const interests = await this.csrsService.getCoreLearning()
+			response.render('page/course/audience/add-core-learning', {interests})
 		}
 	}
 
-	setInterests() {
-		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure-audience')
+	setCoreLearning() {
+		return async (req: Request, res: Response) => {
+			const interests = req.body['interests']
+			if (interests) {
+				if (await this.csrsService.isCoreLearningValid(interests)) {
+					this.audienceService.setCoreLearningOnAudience(res.locals.course, req.params.audienceId, [
+						interests,
+					])
+					await this.learningCatalogue.updateCourse(res.locals.course)
+				}
+			}
+
+			res.render('page/course/audience/configure-audience')
 		}
 	}
 }

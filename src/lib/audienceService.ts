@@ -40,4 +40,12 @@ export class AudienceService {
 			areasOfWork
 		)
 	}
+
+	setCoreLearningOnAudience(course: Course, audienceId: string, interests: string[]) {
+		JsonpathService.jsonpath().value(
+			course,
+			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].interests`,
+			interests
+		)
+	}
 }

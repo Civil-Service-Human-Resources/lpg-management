@@ -42,7 +42,16 @@ export class CsrsService {
 		return await this.restService.get('grades')
 	}
 
-	async getInterests() {
+	async isCoreLearningValid(interests: string) {
+		const interestsLookupResult = JsonpathService.jsonpath().query(
+			await this.getCoreLearning(),
+			`$..interests[?(@.name==${JSON.stringify(interests)})]`,
+			1
+		)
+		return interestsLookupResult.length > 0
+	}
+
+	async getCoreLearning() {
 		return await this.restService.get('interests')
 	}
 

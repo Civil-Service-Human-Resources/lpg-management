@@ -69,7 +69,7 @@ describe('CsrsService tests', () => {
 			.withArgs('interests')
 			.returns(data)
 
-		const result = await csrsService.getInterests()
+		const result = await csrsService.getCoreLearning()
 
 		expect(restService.get).to.have.been.calledOnceWith('interests')
 		expect(result).to.eql(data)

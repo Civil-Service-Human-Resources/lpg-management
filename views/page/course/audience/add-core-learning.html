@@ -21,19 +21,18 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Core Learning</h2>
-            <form action="/content-management/courses/{{ course.id }}/audience/add-interests" method="post">
+            <form action="/content-management/courses/{{ course.id }}/audiences/{{ audience.id }}/add-core-learning" method="post" class="audience-form">
                 <div class="govuk-fieldset audience-fieldset">
                     {% set interestList = [] %}
                     {% for interest in interests._embedded.interests %}
                         {% set item = interestList.push({
                             text: interest.name,
-                            value: (interst.name | replace(" ", "-") | replace("&", "") | replace("--", "-") | lower)
+                            value: (interest.name | replace(" ", "-") | replace("&", "") | replace("--", "-") | lower)
                         }) %}
-                    
                     {% endfor %}
                     {{ govukCheckboxes({
-                        idPrefix: "audience-interests",
-                        name: "audience-interests",
+                        idPrefix: "interests",
+                        name: "interests",
                         fieldset: {
                             legend: {
                                 text: "Which core learning, if any, should be included in this audience?",
@@ -46,7 +45,8 @@
                 </div>
                 <div class="button-container">
                     {{ govukButton({
-                        text: "Continue"
+                        text: "Continue",
+                        type: "submit"
                     }) }}
                 </div>
             </form>
