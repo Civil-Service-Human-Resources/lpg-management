@@ -62,24 +62,24 @@
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
-                            <p class="govuk-body">Interests</p>
+                            <p class="govuk-body">Core learning</p>
                             {% if audience.interests %}
-                                <p class="audience-type no-margin">{{ audience.interests | default("Interests unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.interests | default("Core learning unset", true) }}</p>
                             {% else %}
                                 <p class="unset">No interests have been added {{event.id}}</p>
                             {% endif %}
                         </div>
-                        {% if audience.interests %}
-                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% if audience.interests.length > 0 %}
+                            <form class="audience-link"><button class="govuk-link linkish-button">Delete</button></form>
                         {% else %}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/interests" class="govuk-link audience-link">Add</a>
+                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-core-learning" class="govuk-link audience-link">Add</a>
                         {% endif %}
                     </div>
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
-                            <p class="govuk-body">Grade</p>
+                            <p class="govuk-body">Grades</p>
                             {% if audience.grades %}
-                                <p class="audience-type no-margin">{{ audience.grades | default("Grade unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.grades | default("Grades unset", true) }}</p>
                             {% else %}
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
