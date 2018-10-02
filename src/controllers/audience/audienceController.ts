@@ -6,7 +6,6 @@ import {Validator} from '../../learning-catalogue/validator/validator'
 import {CourseService} from '../../lib/courseService'
 import {AudienceService} from '../../lib/audienceService'
 import {CsrsService} from '../../csrs/service/csrsService'
-import {JsonpathService} from '../../lib/jsonpathService'
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -178,16 +177,6 @@ export class AudienceController {
 				)
 				await this.learningCatalogue.updateCourse(res.locals.course)
 			}
-			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
-			)
-		}
-	}
-
-	deleteOrganisation() {
-		return async (req: Request, res: Response) => {
-			this.audienceService.setDepartmentsOnAudience(res.locals.course, req.params.audienceId, [])
-			await this.learningCatalogue.updateCourse(res.locals.course)
 			res.redirect(
 				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)

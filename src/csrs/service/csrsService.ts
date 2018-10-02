@@ -50,10 +50,7 @@ export class CsrsService {
 		let departmentCodeToNameMapping = this.cacheService.cache.get(CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING)
 
 		if (departmentCodeToNameMapping == undefined) {
-			const organisations = JsonpathService.query(
-				await this.getOrganisations(),
-				'$._embedded.organisations.*'
-			)
+			const organisations = JsonpathService.query(await this.getOrganisations(), '$._embedded.organisations.*')
 
 			departmentCodeToNameMapping = organisations.reduce((map: any, organisation: any) => {
 				map[organisation.code] = organisation.name
