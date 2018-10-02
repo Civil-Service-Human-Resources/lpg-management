@@ -50,7 +50,7 @@ export class AudienceController {
 		this.router.get('/content-management/courses/:courseId/audiences/type', this.getAudienceType())
 		this.router.post('/content-management/courses/:courseId/audiences/type', this.setAudienceType())
 		this.router.get(
-			'/content-management/courses/:courseId/audiences/:audienceId/configure',
+			'/content-management/courses/:courseId/audiences/:audienceId/configure-audience',
 			this.getConfigureAudience()
 		)
 		this.router.get(
@@ -67,10 +67,6 @@ export class AudienceController {
 		)
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.getDeadline())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.setDeadline())
-		this.router.get(
-			'/content-management/courses/:courseId/audiences/:audienceId/configure',
-			this.getConfigureAudience()
-		)
 		this.router.get(
 			'/content-management/courses/:courseId/audiences/:audienceId/delete',
 			this.deleteAudienceConfirmation()
@@ -149,7 +145,7 @@ export class AudienceController {
 				req.session!.save(() => {
 					res.redirect(
 						// prettier-ignore
-						`/content-management/courses/${req.params.courseId}/audiences/${savedAudience.id}/configure`
+						`/content-management/courses/${req.params.courseId}/audiences/${savedAudience.id}/configure-audience`
 					)
 				})
 			}
@@ -187,7 +183,9 @@ export class AudienceController {
 				await this.learningCatalogue.updateCourse(res.locals.course)
 			}
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+				`/content-management/courses/${req.params.courseId}/audiences/${
+					req.params.audienceId
+				}/configure-audience`
 			)
 		}
 	}
@@ -201,7 +199,9 @@ export class AudienceController {
 			)
 			await this.learningCatalogue.updateCourse(res.locals.course)
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+				`/content-management/courses/${req.params.courseId}/audiences/${
+					req.params.audienceId
+				}/configure-audience`
 			)
 		}
 	}
@@ -253,7 +253,9 @@ export class AudienceController {
 			}
 
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+				`/content-management/courses/${req.params.courseId}/audiences/${
+					req.params.audienceId
+				}/configure-audience`
 			)
 		}
 	}
@@ -268,7 +270,9 @@ export class AudienceController {
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+				`/content-management/courses/${req.params.courseId}/audiences/${
+					req.params.audienceId
+				}/configure-audience`
 			)
 		}
 	}
@@ -309,15 +313,20 @@ export class AudienceController {
 		return async (req: Request, res: Response) => {
 			const interests = req.body['interests']
 			if (interests) {
+				console.log(interests)
 				if (await this.csrsService.isCoreLearningValid(interests)) {
 					this.audienceService.setCoreLearningOnAudience(res.locals.course, req.params.audienceId, [
 						interests,
 					])
 					await this.learningCatalogue.updateCourse(res.locals.course)
 				}
+			} else {
+				console.log('no interests')
 			}
 
-			res.render('page/course/audience/configure-audience')
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/1-jqY1EBT2WGYPIO4gyjYw/configure-audience`
+			)
 		}
 	}
 }
