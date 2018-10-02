@@ -24,6 +24,7 @@
             <p class="govuk-body">This event is for the {{ module.title }} module on the {{ course.title }}</p>
 
             <form class="govuk-form" action="/content-management/courses/{{ course.Id }}/module/{{ module.Id }}/events" method="post">
+
                 <fieldset class="govuk-fieldset">
                     {% if error.fields.location %}
                         {{ govukInput({
@@ -75,7 +76,7 @@
                         }) }}
                     {% endif %}
 
-                    {% if errors.fields.capicity %}   
+                    {% if errors.fields.capicity %}
                         {{ govukInput({
                             label: {
                                 text: "Minimum capacity"

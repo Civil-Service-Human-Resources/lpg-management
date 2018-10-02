@@ -30,7 +30,7 @@ export class CsrsService {
 	}
 
 	async isAreaOfWorkValid(areaOfWork: string) {
-		const areaOfWorkLookupResult = JsonpathService.jsonpath().query(
+		const areaOfWorkLookupResult = JsonpathService.queryWithLimit(
 			await this.getAreasOfWork(),
 			`$..professions[?(@.name==${JSON.stringify(areaOfWork)})]`,
 			1
@@ -50,7 +50,7 @@ export class CsrsService {
 		let departmentCodeToNameMapping = this.cacheService.cache.get(CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING)
 
 		if (departmentCodeToNameMapping == undefined) {
-			const organisations = JsonpathService.jsonpath().query(
+			const organisations = JsonpathService.query(
 				await this.getOrganisations(),
 				'$._embedded.organisations.*'
 			)

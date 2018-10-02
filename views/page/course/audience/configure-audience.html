@@ -40,7 +40,9 @@
                             {% endif %}
                         </div>
                         {% if audience.departments and audience.departments.length > 0 %}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" class="govuk-link audience-link">Remove</a>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" method="post" class="audience-link">
+                                <button class="govuk-link audience-link linkish-button">Delete</button>
+                            </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -55,7 +57,9 @@
                             {% endif %}
                         </div>
                         {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" class="govuk-link audience-link">Remove</a>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post" class="audience-link">
+                                <button class="govuk-link linkish-button">Delete</button>
+                            </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -70,7 +74,7 @@
                             {% endif %}
                         </div>
                         {% if audience.interests and audience.interests.length > 0 %}
-                             <a href="#" class="govuk-link audience-link">Remove</a>
+                             <a href="#" class="govuk-link audience-link">Delete</a>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/interests" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -85,7 +89,7 @@
                             {% endif %}
                         </div>
                         {% if audience.grades and audience.grades.length > 0 %}
-                             <a href="#" class="govuk-link audience-link">Remove</a>
+                             <a href="#" class="govuk-link audience-link">Delete</a>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -101,7 +105,7 @@
                                 {% endif %}
                             </div>
                             {% if audience.deadline %}
-                                <a href="#" class="govuk-link audience-link">Remove</a>
+                                <a href="#" class="govuk-link audience-link">Delete</a>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" class="govuk-link audience-link">Add</a>
                             {% endif %}
@@ -116,7 +120,7 @@
                                 {% endif %}
                             </div>
                             {% if audience.frequency %}
-                                <a href="#" class="govuk-link audience-link">Remove</a>
+                                <a href="#" class="govuk-link audience-link">Delete</a>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/frequency" class="govuk-link audience-link">Add</a>
                             {% endif %}
