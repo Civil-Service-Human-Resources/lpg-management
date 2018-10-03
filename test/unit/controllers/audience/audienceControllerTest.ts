@@ -137,7 +137,7 @@ describe('AudienceController', () => {
 			expect(req.session!.sessionFlash.errors).to.be.undefined
 			expect(learningCatalogue.createAudience).to.have.been.calledOnceWith(courseId, audience)
 			expect(res.redirect).to.have.been.calledWith(
-				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure`
+				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure-audience`
 			)
 		})
 	})
@@ -217,7 +217,7 @@ describe('AudienceController', () => {
 				audiences: [{id: audienceId, departments: [hmrcCode]}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure-audience`
 			)
 		})
 
@@ -248,7 +248,7 @@ describe('AudienceController', () => {
 				audiences: [{id: audienceId, departments: [hmrcCode, dwpCode]}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure-audience`
 			)
 		})
 	})
@@ -287,7 +287,7 @@ describe('AudienceController', () => {
 				audiences: [{id: audienceId, areasOfWork: [aowHumanResources]}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure-audience`
 			)
 		})
 	})

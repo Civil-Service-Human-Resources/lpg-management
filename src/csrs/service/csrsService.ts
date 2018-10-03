@@ -1,7 +1,6 @@
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {JsonpathService} from '../../lib/jsonpathService'
 import {CacheService} from '../../lib/cacheService'
-import * as util from 'util'
 
 export class CsrsService {
 	restService: OauthRestService
