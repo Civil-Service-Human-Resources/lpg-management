@@ -92,6 +92,10 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/add-core-learning',
 			this.setCoreLearning()
 		)
+		this.router.post(
+			'/content-management/courses/:courseId/audiences/:audienceId/core-learning/delete',
+			this.deleteCoreLearning()
+		)
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', this.getGrades())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', this.setGrades())
 	}
@@ -311,21 +315,37 @@ export class AudienceController {
 
 	setCoreLearning() {
 		return async (req: Request, res: Response) => {
-			const interests = req.body['interests']
+			const interests = Array.isArray(req.body.interests) ? req.body.interests : [req.body.interests]
 			if (interests) {
-				console.log(interests)
-				if (await this.csrsService.isCoreLearningValid(interests)) {
-					this.audienceService.setCoreLearningOnAudience(res.locals.course, req.params.audienceId, [
-						interests,
-					])
+				const allInterestsValid = await interests.reduce(
+					async (allValid: boolean, interest: string) =>
+						allValid ? await this.csrsService.isCoreLearningValid(interest) : false,
+					true
+				)
+				if (allInterestsValid) {
+					this.audienceService.setCoreLearningOnAudience(res.locals.course, req.params.audienceId, interests)
 					await this.learningCatalogue.updateCourse(res.locals.course)
 				}
-			} else {
-				console.log('no interests')
 			}
-
 			res.redirect(
 				`/content-management/courses/${req.params.courseId}/audiences/1-jqY1EBT2WGYPIO4gyjYw/configure-audience`
+			)
+		}
+	}
+
+	deleteCoreLearning() {
+		return async (req: Request, res: Response) => {
+			JsonpathService.jsonpath().value(
+				res.locals.course,
+				`$..audiences[?(@.id=='${req.params.audienceId}')].interests`,
+				[]
+			)
+			await this.learningCatalogue.updateCourse(res.locals.course)
+
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/${
+					req.params.audienceId
+				}/configure-audience`
 			)
 		}
 	}

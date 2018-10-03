@@ -29,7 +29,7 @@
                         + (audience.departments | jsonpath(departmentCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span>' + (grades | default("Unspecified", true)) + '</span></li>
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span>' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>' + (interests | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span>' + (audience.interests | join(', ') | default("Unspecified", true)) + '</span></li>
                 </ul>'
                 %}
                 {{ govukDetails({

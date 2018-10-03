@@ -1,6 +1,7 @@
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {JsonpathService} from '../../lib/jsonpathService'
 import {CacheService} from '../../lib/cacheService'
+import * as util from 'util'
 
 export class CsrsService {
 	restService: OauthRestService
@@ -8,6 +9,7 @@ export class CsrsService {
 
 	static readonly DEPARTMENT_CODE_TO_NAME_MAPPING = 'CsrsService.departmentCodeToNameMapping'
 	static readonly AREAS_OF_WORK = 'CsrsService.areasOfWork'
+	static readonly INTERESTS = 'CsrsService.interests'
 
 	constructor(restService: OauthRestService, cacheService: CacheService) {
 		this.restService = restService
@@ -42,17 +44,24 @@ export class CsrsService {
 		return await this.restService.get('grades')
 	}
 
-	async isCoreLearningValid(interests: string) {
+	async isCoreLearningValid(interest: string) {
 		const interestsLookupResult = JsonpathService.jsonpath().query(
 			await this.getCoreLearning(),
-			`$..interests[?(@.name==${JSON.stringify(interests)})]`,
+			`$..interests[?(@.name==${JSON.stringify(interest)})]`,
 			1
 		)
 		return interestsLookupResult.length > 0
 	}
 
 	async getCoreLearning() {
-		return await this.restService.get('interests')
+		let interests = this.cacheService.cache.get(CsrsService.INTERESTS)
+
+		if (!interests) {
+			interests = await this.restService.get('interests')
+			this.cacheService.cache.set(CsrsService.INTERESTS, interests)
+		}
+
+		return interests
 	}
 
 	async getDepartmentCodeToNameMapping() {

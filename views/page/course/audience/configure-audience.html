@@ -64,7 +64,7 @@
                         <div class="audience-content">
                             <p class="govuk-body">Core learning</p>
                             {% if audience.interests.length > 0 %}
-                                <p class="audience-type no-margin">{{ audience.interests | default("Core learning unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.interests | join(", ") | default("Core learning unset", true) }}</p>
                             {% else %}
                                 <p class="unset">No core learning has been added {{event.id}}</p>
                             {% endif %}
