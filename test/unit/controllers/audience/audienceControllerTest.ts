@@ -137,7 +137,7 @@ describe('AudienceController', () => {
 			expect(req.session!.sessionFlash.errors).to.be.undefined
 			expect(learningCatalogue.createAudience).to.have.been.calledOnceWith(courseId, audience)
 			expect(res.redirect).to.have.been.calledWith(
-				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure-audience`
+				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure`
 			)
 		})
 	})
@@ -155,7 +155,7 @@ describe('AudienceController', () => {
 
 			await audienceController.getConfigureAudience()(req, res)
 
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/configure-audience')
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/configure')
 		})
 	})
 
@@ -217,7 +217,7 @@ describe('AudienceController', () => {
 				audiences: [{id: audienceId, departments: [hmrcCode]}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure-audience`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
 			)
 		})
 
@@ -248,7 +248,7 @@ describe('AudienceController', () => {
 				audiences: [{id: audienceId, departments: [hmrcCode, dwpCode]}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure-audience`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
 			)
 		})
 	})
@@ -287,7 +287,7 @@ describe('AudienceController', () => {
 				audiences: [{id: audienceId, areasOfWork: [aowHumanResources]}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure-audience`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
 			)
 		})
 	})

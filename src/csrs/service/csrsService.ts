@@ -31,7 +31,7 @@ export class CsrsService {
 	}
 
 	async isAreaOfWorkValid(areaOfWork: string) {
-		const areaOfWorkLookupResult = JsonpathService.jsonpath().query(
+		const areaOfWorkLookupResult = JsonpathService.queryWithLimit(
 			await this.getAreasOfWork(),
 			`$..professions[?(@.name==${JSON.stringify(areaOfWork)})]`,
 			1
@@ -44,7 +44,7 @@ export class CsrsService {
 	}
 
 	async isCoreLearningValid(interest: string) {
-		const interestsLookupResult = JsonpathService.jsonpath().query(
+		const interestsLookupResult = JsonpathService.queryWithLimit(
 			await this.getCoreLearning(),
 			`$..interests[?(@.name==${JSON.stringify(interest)})]`,
 			1
@@ -67,10 +67,7 @@ export class CsrsService {
 		let departmentCodeToNameMapping = this.cacheService.cache.get(CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING)
 
 		if (departmentCodeToNameMapping == undefined) {
-			const organisations = JsonpathService.jsonpath().query(
-				await this.getOrganisations(),
-				'$._embedded.organisations.*'
-			)
+			const organisations = JsonpathService.query(await this.getOrganisations(), '$._embedded.organisations.*')
 
 			departmentCodeToNameMapping = organisations.reduce((map: any, organisation: any) => {
 				map[organisation.code] = organisation.name

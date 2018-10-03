@@ -50,7 +50,7 @@ export class AudienceController {
 		this.router.get('/content-management/courses/:courseId/audiences/type', this.getAudienceType())
 		this.router.post('/content-management/courses/:courseId/audiences/type', this.setAudienceType())
 		this.router.get(
-			'/content-management/courses/:courseId/audiences/:audienceId/configure-audience',
+			'/content-management/courses/:courseId/audiences/:audienceId/configure',
 			this.getConfigureAudience()
 		)
 		this.router.get(
@@ -149,7 +149,7 @@ export class AudienceController {
 				req.session!.save(() => {
 					res.redirect(
 						// prettier-ignore
-						`/content-management/courses/${req.params.courseId}/audiences/${savedAudience.id}/configure-audience`
+						`/content-management/courses/${req.params.courseId}/audiences/${savedAudience.id}/configure`
 					)
 				})
 			}
@@ -159,7 +159,7 @@ export class AudienceController {
 	getConfigureAudience() {
 		return async (req: Request, res: Response) => {
 			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
-			res.render('page/course/audience/configure-audience', {departmentCodeToName})
+			res.render('page/course/audience/configure', {departmentCodeToName})
 		}
 	}
 
@@ -187,32 +187,18 @@ export class AudienceController {
 				await this.learningCatalogue.updateCourse(res.locals.course)
 			}
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${
-					req.params.audienceId
-				}/configure-audience`
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)
 		}
 	}
 
 	deleteOrganisation() {
 		return async (req: Request, res: Response) => {
-			JsonpathService.jsonpath().value(
+			JsonpathService.setValue(
 				res.locals.course,
 				`$..audiences[?(@.id=='${req.params.audienceId}')].departments`,
 				[]
 			)
-			await this.learningCatalogue.updateCourse(res.locals.course)
-			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${
-					req.params.audienceId
-				}/configure-audience`
-			)
-		}
-	}
-
-	deleteOrganisation() {
-		return async (req: Request, res: Response) => {
-			this.audienceService.setDepartmentsOnAudience(res.locals.course, req.params.audienceId, [])
 			await this.learningCatalogue.updateCourse(res.locals.course)
 			res.redirect(
 				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
@@ -267,16 +253,14 @@ export class AudienceController {
 			}
 
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${
-					req.params.audienceId
-				}/configure-audience`
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)
 		}
 	}
 
 	deleteAreasOfWork() {
 		return async (req: Request, res: Response) => {
-			JsonpathService.jsonpath().value(
+			JsonpathService.setValue(
 				res.locals.course,
 				`$..audiences[?(@.id=='${req.params.audienceId}')].areasOfWork`,
 				[]
@@ -284,9 +268,7 @@ export class AudienceController {
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${
-					req.params.audienceId
-				}/configure-audience`
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)
 		}
 	}
@@ -299,7 +281,7 @@ export class AudienceController {
 
 	setDeadline() {
 		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure-audience')
+			response.render('page/course/audience/configure')
 		}
 	}
 	getGrades() {
@@ -312,10 +294,9 @@ export class AudienceController {
 
 	setGrades() {
 		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure-audience')
+			response.render('page/course/audience/configure')
 		}
 	}
-
 
 	getCoreLearning() {
 		return async (request: Request, response: Response) => {
@@ -339,14 +320,14 @@ export class AudienceController {
 				}
 			}
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/1-jqY1EBT2WGYPIO4gyjYw/configure-audience`
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)
 		}
 	}
 
 	deleteCoreLearning() {
 		return async (req: Request, res: Response) => {
-			JsonpathService.jsonpath().value(
+			JsonpathService.setValue(
 				res.locals.course,
 				`$..audiences[?(@.id=='${req.params.audienceId}')].interests`,
 				[]
@@ -354,9 +335,7 @@ export class AudienceController {
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
-				`/content-management/courses/${req.params.courseId}/audiences/${
-					req.params.audienceId
-				}/configure-audience`
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
 			)
 		}
 	}

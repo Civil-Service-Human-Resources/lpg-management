@@ -34,8 +34,7 @@ export class AudienceService {
 	}
 
 	setAreasOfWorkOnAudience(course: Course, audienceId: string, areasOfWork: string[]) {
-		JsonpathService.jsonpath().value(
-
+		JsonpathService.setValue(
 			course,
 			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].areasOfWork`,
 			areasOfWork
@@ -43,10 +42,6 @@ export class AudienceService {
 	}
 
 	setCoreLearningOnAudience(course: Course, audienceId: string, interests: string[]) {
-		JsonpathService.jsonpath().value(
-			course,
-			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].interests`,
-			interests
-		)
+		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].interests`, interests)
 	}
 }
