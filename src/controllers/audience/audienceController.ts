@@ -61,7 +61,7 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/organisation',
 			this.setOrganisation()
 		)
-		this.router.get(
+		this.router.post(
 			'/content-management/courses/:courseId/audiences/:audienceId/organisation/delete',
 			this.deleteOrganisation()
 		)
@@ -80,7 +80,7 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/area-of-work',
 			this.setAreasOfWork()
 		)
-		this.router.get(
+		this.router.post(
 			'/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete',
 			this.deleteAreasOfWork()
 		)
