@@ -306,4 +306,102 @@ describe('AudienceController', () => {
 			)
 		})
 	})
+
+	describe('#getGrades', () => {
+		it('should render add-grades page', async () => {
+			csrsService.getGrades = sinon.stub()
+			await audienceController.getGrades()(req, res)
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-grades')
+		})
+	})
+
+	describe('#setGrades', () => {
+		it('should update course with grades if the grade codes are valid and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const gradeCode = 'AA'
+			req.body = {grades: gradeCode}
+			const audience = {id: audienceId, grades: []}
+			res.locals.course = {audiences: [audience]}
+
+			csrsService.isGradeCodeValid = sinon.stub().returns(true)
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.setGrades()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, grades: [gradeCode]}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
+	describe('#deleteGrades', () => {
+		it('should update course with empty grades array and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, grades: ['some grade']}
+			res.locals.course = {audiences: [audience]}
+
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.deleteGrades()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, grades: []}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
+	describe('#getCoreLearning', () => {
+		it('should render add-core-learning page', async () => {
+			csrsService.getCoreLearning = sinon.stub()
+			await audienceController.getCoreLearning()(req, res)
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-core-learning')
+		})
+	})
+
+	describe('#setCoreLearning', () => {
+		it('should update course with interests if the interest codes are valid and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const interestCode = 'AA'
+			req.body = {interests: interestCode}
+			const audience = {id: audienceId, interests: []}
+			res.locals.course = {audiences: [audience]}
+
+			csrsService.isCoreLearningValid = sinon.stub().returns(true)
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.setCoreLearning()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, interests: [interestCode]}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
+	describe('#deleteCoreLearning', () => {
+		it('should update course with empty interests array and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, interests: ['some interest']}
+			res.locals.course = {audiences: [audience]}
+
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.deleteCoreLearning()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, interests: []}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
 })
