@@ -120,7 +120,7 @@ describe('EventController', function() {
 	})
 
 	describe('location paths', function() {
-		it('should render location page', async function() {
+		it('should render location pagefor add', async function() {
 			const res: Response = mockRes()
 
 			await eventController.getLocation()(mockReq(), res)
@@ -130,7 +130,14 @@ describe('EventController', function() {
 			})
 		})
 
-		it('should check for errors and redirect to events overview page if no errors', async function() {
+		it('should render location pagefor edit', async function() {
+			const res: Response = mockRes()
+
+			await eventController.getLocation()(mockReq(), res)
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/event-location')
+		})
+
+		it('should create event and redirect to events overview page if no errors', async function() {
 			const req: Request = mockReq()
 			const res: Response = mockRes()
 
@@ -175,13 +182,75 @@ describe('EventController', function() {
 			)
 		})
 
+		it('should update event and redirect to events overview page if no errors', async function() {
+			const req: Request = mockReq()
+			const res: Response = mockRes()
 
-		it('should check for errors and redirect back to location page if errors', async function() {
+			req.params.courseId = 'course-id'
+			req.params.moduleId = 'module-id'
+			req.params.eventId = 'event-id'
+
+			const venue = <Venue>{
+				location: 'London',
+				address: 'Victoria Street',
+				capacity: 10,
+				minCapacity: 5,
+			}
+
+			const event = <Event>{
+				id: 'event-id',
+				venue: {
+					location: 'London',
+					address: 'Victoria Street',
+					capacity: 10,
+					minCapacity: 5,
+				},
+				dateRanges: [
+					{
+						date: '2019-02-28',
+						startTime: '09:00',
+						endTime: '17:00'
+					}
+				]
+			}
+
+			req.body = {
+				location: venue.location,
+				address: venue.address,
+				capacity: venue.capacity,
+				minCapacity: venue.minCapacity,
+			}
+
+			event.venue = venue
+
+			eventValidator.check = sinon.stub().returns({fields: [], size: 0})
+			learningCatalogue.getEvent = sinon.stub().returns(event)
+			learningCatalogue.updateEvent = sinon.stub()
+
+			await eventController.updateLocation()(req, res)
+
+			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(
+				req.params.courseId,
+				req.params.moduleId,
+				req.params.eventId
+			)
+			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(
+				req.params.courseId,
+				req.params.moduleId,
+				req.params.eventId,
+				event
+			)
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/course-id/modules/module-id/events-overview/event-id`
+			)
+		})
+
+
+		it('should redirect back to location page if errors on create', async function() {
 			const req: Request = mockReq()
 			const res: Response = mockRes()
 
 			const event: Event = new Event()
-			event.id = 'eventId123'
 
 			req.params.courseId = 'courseId123'
 			req.params.moduleId = 'moduleId123'
@@ -208,6 +277,44 @@ describe('EventController', function() {
 				}
 			)
 		})
+
+		it('should redirect back to location page if errors on update', async function() {
+			const req: Request = mockReq()
+			const res: Response = mockRes()
+
+			const event: Event = new Event()
+			event.id = 'event-id'
+
+			req.params.courseId = 'courseId123'
+			req.params.moduleId = 'moduleId123'
+			req.body = {
+				location: '',
+				address: 'Victoria Street',
+				capacity: 10,
+				minCapacity: 5,			}
+
+			const errors = {fields: [{location: ['validation.module.event.venue.location.empty']}], size: 1}
+
+			eventValidator.check = sinon
+				.stub()
+				.returns(errors)
+
+			learningCatalogue.createEvent = sinon.stub().returns(event)
+
+			await eventController.updateLocation()(req, res)
+
+			expect(learningCatalogue.createEvent).to.not.have.been.called
+			expect(res.render).to.have.been.calledOnceWith(
+				'page/course/module/events/event-location', {
+					errors: errors,
+					location: '',
+					address: 'Victoria Street',
+					capacity: 10,
+					minCapacity: 5,
+				}
+			)
+		})
+
 	})
 
 	it('should render event overview page', async function() {

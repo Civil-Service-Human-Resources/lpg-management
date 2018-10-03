@@ -26,7 +26,7 @@
             <h2 class="govuk-heading-m govuk-!-font-size-36">Event location and availability</h2>
             <p class="govuk-body">This event is for the {{ module.title }} module on the {{ course.title }} course</p>
 
-            <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/{{event.Id}}" method="post">
+            <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/{{event.id}}" method="post">
                 <input type="hidden" name="eventJson" value="{{eventJson}}" />
 
                 <fieldset class="govuk-fieldset">

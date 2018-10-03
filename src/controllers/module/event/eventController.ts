@@ -77,9 +77,20 @@ export class EventController {
 			'/content-management/courses/:courseId/modules/:moduleId/events/location/create',
 			this.getLocation()
 		)
+
+		this.router.get(
+			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location',
+			this.editLocation()
+		)
+
 		this.router.post(
-			'/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId?',
+			'/content-management/courses/:courseId/modules/:moduleId/events/location/',
 			this.setLocation()
+		)
+
+		this.router.post(
+			'/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId',
+			this.updateLocation()
 		)
 
 		this.router.get(
@@ -350,6 +361,56 @@ export class EventController {
 			}
 		}
 	}
+
+	public editLocation() {
+		return async (req: Request, res: Response) => {
+			res.render('page/course/module/events/event-location')
+		}
+	}
+
+	public updateLocation() {
+		return async (req: Request, res: Response) => {
+			const data = {
+				venue: {
+					location: req.body.location,
+					address: req.body.address,
+					capacity: parseInt(req.body.capacity, 10),
+					minCapacity: parseInt(req.body.minCapacity, 10),
+				},
+			}
+
+			const errors = await this.eventValidator.check(data, ['event.location'])
+
+			if (errors.size) {
+				res.render('page/course/module/events/event-location', {
+					location: req.body.location,
+					address: req.body.address,
+					capacity: req.body.capacity,
+					minCapacity: req.body.minCapacity,
+					errors: errors
+				})
+			} else {
+				let event = await this.learningCatalogue.getEvent(
+					req.params.courseId,
+					req.params.moduleId,
+					req.params.eventId
+				)
+
+				event.venue = data.venue
+
+				await this.learningCatalogue.updateEvent(
+					req.params.courseId,
+					req.params.moduleId,
+					req.params.eventId,
+					event
+				)
+				res.redirect(
+					`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${req.params.eventId}`
+				)
+			}
+		}
+	}
+
 
 	public getEventOverview() {
 		return async (req: Request, res: Response) => {
