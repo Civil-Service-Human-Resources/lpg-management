@@ -40,7 +40,9 @@
                             {% endif %}
                         </div>
                         {% if audience.departments and audience.departments.length > 0 %}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" class="govuk-link audience-link">Remove</a>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete" method="post" class="audience-link">
+                                <button class="govuk-link audience-link linkish-button">Delete</button>
+                            </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -55,7 +57,9 @@
                             {% endif %}
                         </div>
                         {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
-                            <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" class="govuk-link audience-link">Remove</a>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post" class="audience-link">
+                                <button class="govuk-link linkish-button">Delete</button>
+                            </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -78,14 +82,14 @@
                     <div class="flex-container u--border--bgrey">
                         <div class="audience-content">
                             <p class="govuk-body">Grades</p>
-                            {% if audience.grades %}
-                                <p class="audience-type no-margin">{{ audience.grades | default("Grades unset", true) }}</p>
+                            {% if audience.grades and audience.grades.length > 0 %}
+                                <p class="audience-type no-margin">{{ audience.grades }}</p>
                             {% else %}
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
                         </div>
-                        {% if audience.grades %}
-                             <a href="#" class="govuk-link audience-link">Remove</a>
+                        {% if audience.grades and audience.grades.length > 0 %}
+                             <a href="#" class="govuk-link audience-link">Delete</a>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" class="govuk-link audience-link">Add</a>
                         {% endif %}
@@ -95,13 +99,13 @@
                             <div class="audience-content">
                                 <p class="govuk-body">Deadline date</p>
                                 {% if audience.deadline %}
-                                    <p class="audience-type no-margin">{{ audience.deadline | default("Deadline unset", true) }}</p>
+                                    <p class="audience-type no-margin">{{ audience.deadline }}</p>
                                 {% else %}
                                     <p class="unset">No date has been added</p>
                                 {% endif %}
                             </div>
                             {% if audience.deadline %}
-                                <a href="#" class="govuk-link audience-link">Remove</a>
+                                <a href="#" class="govuk-link audience-link">Delete</a>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" class="govuk-link audience-link">Add</a>
                             {% endif %}
@@ -110,13 +114,13 @@
                             <div class="audience-content">
                                 <p class="govuk-body">Frequency</p>
                                 {% if audience.frequency %}
-                                    <p class="audience-type no-margin">{{ audience.frequency | default("Frequency unset", true) }}</p>
+                                    <p class="audience-type no-margin">{{ audience.frequency }}</p>
                                 {% else %}
                                     <p class="unset">No frequency has been added</p>
                                 {% endif %}
                             </div>
                             {% if audience.frequency %}
-                                <a href="#" class="govuk-link audience-link">Remove</a>
+                                <a href="#" class="govuk-link audience-link">Delete</a>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/frequency" class="govuk-link audience-link">Add</a>
                             {% endif %}
@@ -127,7 +131,7 @@
                         <div class="audience-content">
                             <p class="govuk-body">Associated event</p>
                             {% if audience.event %}
-                                <p class="audience-type no-margin">{{ audience.event | default("Event unset", true) }}</p>
+                                <p class="audience-type no-margin">{{ audience.event }}</p>
                             {% else %}
                                 <p class="unset">No event has been added</p>
                             {% endif %}

@@ -291,4 +291,65 @@ describe('AudienceController', () => {
 			)
 		})
 	})
+
+	describe('#deleteOrganisation', () => {
+		it('should update course audience with empty list of organisations and redirect to audience configuration page', async function() {
+			const courseId = 'course-id'
+			const audienceId = 'audience-id'
+			req.params.courseId = courseId
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, departments: ['hmrc']}
+			res.locals.course = {audiences: [audience]}
+
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.deleteOrganisation()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, departments: []}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
+	describe('#getAreasOfWork', () => {
+		it('should render add-are-of-work page', async function() {
+			csrsService.getAreasOfWork = sinon.stub().returns({})
+			await audienceController.getAreasOfWork()(req, res)
+
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-area-of-work', {areasOfWork: {}})
+		})
+	})
+
+	describe('#setAreasOfWork', () => {
+		it('should update course with area of work if the area of work is valid and redirect to audience configuration page', async function() {
+			const courseId = 'course-id'
+			const audienceId = 'audience-id'
+			req.params.courseId = courseId
+			req.params.audienceId = audienceId
+			const aowHumanResources = 'Human resources'
+			req.body = {'area-of-work': aowHumanResources}
+			const audience = {id: audienceId, areasOfWork: []}
+			res.locals.course = {audiences: [audience]}
+
+			csrsService.getOrganisations = sinon.stub().returns({
+				_embedded: {
+					professions: [{name: aowHumanResources}],
+				},
+			})
+			csrsService.isAreaOfWorkValid = sinon.stub().returns(true)
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.setAreasOfWork()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, areasOfWork: [aowHumanResources]}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
 })

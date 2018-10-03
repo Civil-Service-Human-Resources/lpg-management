@@ -109,12 +109,12 @@
                 {% block menu %}
                 {% set actions = [
                         {
-                            link: '#',
+                            link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/dateRanges/',
                             text: 'Edit time and date'
                         },
                         {
-                            link: '#',
-                            text: 'Edit location and capcity'
+                            link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/location/',
+                            text: 'Edit location and capacity'
                         },
                         {
                             link: '#',
@@ -133,6 +133,6 @@
                 {% endblock %}
             </div>
         </div>
-     </div> 
+     </div>
   </div>
 {% endblock %}

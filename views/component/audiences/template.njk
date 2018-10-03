@@ -2,21 +2,6 @@
 {% if course.audiences.length > 0 %}
     <ul class="audience-list">
         {% for audience in course.audiences %}
-    
-            {% set grades = [] %}
-            {% for grade in course.audiences.grades %}
-                {% set gradeItem = grades.push(
-                    grade.name
-                ) %}
-            {% endfor %}
-
-            {% set interests = [] %}
-            {% for interest in course.audiences.interests %}
-                {% set interestItem = interests.push(
-                    interest.name
-                ) %}
-            {% endfor %}
-
             <li class="list-item">
                 <div class="title-container">
                     <h3 class="govuk-heading-s">{{ audience.name | default("Audience", true) }}</h3>

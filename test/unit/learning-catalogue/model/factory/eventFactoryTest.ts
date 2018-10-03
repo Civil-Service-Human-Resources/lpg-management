@@ -2,9 +2,23 @@ import {describe, it} from 'mocha'
 import {expect} from 'chai'
 import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
 import {Event} from '../../../../../src/learning-catalogue/model/event'
+import {VenueFactory} from '../../../../../src/learning-catalogue/model/factory/venueFactory'
+import {DateRangeFactory} from '../../../../../src/learning-catalogue/model/factory/dateRangeFactory'
+import {Venue} from '../../../../../src/learning-catalogue/model/venue'
+import * as sinon from 'sinon'
 
 describe('EventFactory tests', () => {
-	const eventFactory: EventFactory = new EventFactory()
+	let eventFactory: EventFactory
+	let venueFactory: VenueFactory
+	let dateRangeFactory: DateRangeFactory
+
+
+	before(() => {
+		venueFactory = <VenueFactory>{}
+		dateRangeFactory = <DateRangeFactory>{}
+
+		eventFactory = new EventFactory(venueFactory, dateRangeFactory)
+	})
 
 	it('should create Event from data', () => {
 		const id: string = 'LmYAPQseRqm7dk1Q2WjA2w'
@@ -24,14 +38,16 @@ describe('EventFactory tests', () => {
 				minCapacity: minCapacity,
 			},
 		}
+
+		const venue = new Venue()
+		venueFactory.create = sinon.stub().returns(venue)
+		dateRangeFactory.create = sinon.stub().returns(dateRanges[0])
+
 		const result: Event = eventFactory.create(data)
 
 		expect(result.id).to.equal(id)
-		expect(result.dateRanges).to.equal(dateRanges)
-		expect(result.venue.location).to.equal(location)
-		expect(result.venue.address).to.equal(address)
-		expect(result.venue.capacity).to.equal(capacity)
-		expect(result.venue.minCapacity).to.equal(minCapacity)
+		expect(result.dateRanges).to.eql(dateRanges)
+		expect(result.venue).to.equal(venue)
 	})
 
 	it('should ignore missing date', () => {
@@ -52,13 +68,15 @@ describe('EventFactory tests', () => {
 			},
 		}
 
+
+		const venue = new Venue()
+		venueFactory.create = sinon.stub().returns(venue)
+		dateRangeFactory.create = sinon.stub().returns([])
+
 		const result: Event = eventFactory.create(data)
 
 		expect(result.id).to.equal(id)
-		expect(result.dateRanges).to.be.undefined
-		expect(result.venue.location).to.equal(location)
-		expect(result.venue.address).to.equal(address)
-		expect(result.venue.capacity).to.equal(capacity)
-		expect(result.venue.minCapacity).to.equal(minCapacity)
+		expect(result.dateRanges).to.be.eql([])
+		expect(result.venue).to.equal(venue)
 	})
 })

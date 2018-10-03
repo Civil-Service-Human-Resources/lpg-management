@@ -210,6 +210,16 @@ export class AudienceController {
 		}
 	}
 
+	deleteOrganisation() {
+		return async (req: Request, res: Response) => {
+			this.audienceService.setDepartmentsOnAudience(res.locals.course, req.params.audienceId, [])
+			await this.learningCatalogue.updateCourse(res.locals.course)
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+			)
+		}
+	}
+
 	private mapSelectedOrganisationToCodes(
 		organisation: string,
 		organisationName: string,
@@ -305,6 +315,7 @@ export class AudienceController {
 			response.render('page/course/audience/configure-audience')
 		}
 	}
+
 
 	getCoreLearning() {
 		return async (request: Request, response: Response) => {
