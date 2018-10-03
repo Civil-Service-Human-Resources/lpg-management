@@ -159,7 +159,7 @@ export class AudienceController {
 	getConfigureAudience() {
 		return async (req: Request, res: Response) => {
 			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
-			res.render('page/course/audience/configure', {departmentCodeToName})
+			res.render('page/course/audience/configure-audience', {departmentCodeToName})
 		}
 	}
 
@@ -281,7 +281,7 @@ export class AudienceController {
 
 	setDeadline() {
 		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure')
+			response.render('page/course/audience/configure-audience')
 		}
 	}
 	getGrades() {
@@ -294,7 +294,7 @@ export class AudienceController {
 
 	setGrades() {
 		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure')
+			response.render('page/course/audience/configure-audience')
 		}
 	}
 

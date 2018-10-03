@@ -155,7 +155,7 @@ describe('AudienceController', () => {
 
 			await audienceController.getConfigureAudience()(req, res)
 
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/configure')
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/configure-audience')
 		})
 	})
 
