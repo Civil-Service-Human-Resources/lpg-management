@@ -10,7 +10,7 @@
         {{ phaseBanner("beta") }}
     {% endblock%}
     {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/audiences/configure-audience") }}
+        {{ backLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
     {% endblock%}
 {% endblock %}
 
@@ -40,7 +40,7 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audiences/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>
