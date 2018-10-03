@@ -25,6 +25,9 @@ describe('AudienceController', () => {
 	let req: Request
 	let res: Response
 
+	const courseId = 'course-id'
+	const audienceId = 'audience-id'
+
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		audienceValidator = <Validator<Audience>>{}
@@ -43,6 +46,8 @@ describe('AudienceController', () => {
 		req.session!.save = callback => {
 			callback(undefined)
 		}
+		req.params.courseId = courseId
+
 		res = mockRes()
 	})
 
@@ -56,7 +61,6 @@ describe('AudienceController', () => {
 
 	describe('#setAudienceName', () => {
 		it('should redirect back to audience name page if validation error', async function() {
-			req.params.courseId = 'course-id'
 			req.body = {name: ''}
 
 			const errors = {size: 1}
@@ -68,14 +72,10 @@ describe('AudienceController', () => {
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.name'])
 			expect(audienceValidator.check).to.have.returned(errors)
 			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
-			expect(res.redirect).to.have.been.calledWith(
-				`/content-management/courses/${req.params.courseId}/audiences/`
-			)
+			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${courseId}/audiences/`)
 		})
 
 		it('should redirect to audience type page if audience name validated successfully', async function() {
-			const courseId = 'course-id'
-			req.params.courseId = courseId
 			req.body = {name: 'audience name'}
 
 			const errors = {size: 0}
@@ -102,8 +102,6 @@ describe('AudienceController', () => {
 
 	describe('#setAudienceType', () => {
 		it('should redirect back to audience type page if validation error', async function() {
-			const courseId = 'course-id'
-			req.params.courseId = courseId
 			req.body = {type: ''}
 
 			const errors = {size: 1}
@@ -119,8 +117,6 @@ describe('AudienceController', () => {
 		})
 
 		it('should redirect to audience configuration page if audience created successfully', async function() {
-			const courseId = 'course-id'
-			req.params.courseId = courseId
 			req.body = {name: 'audience name', type: 'OPEN'}
 
 			const errors = {size: 0}
@@ -144,9 +140,6 @@ describe('AudienceController', () => {
 
 	describe('#getConfigureAudience', () => {
 		it('should render audience configuration page', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
 			req.params.audienceId = audienceId
 			res.locals.audience = {departments: []}
 
@@ -170,9 +163,6 @@ describe('AudienceController', () => {
 
 	describe('#deleteAudience', () => {
 		it('should redirect to course overview page after deleting the audience', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
 			req.params.audienceId = audienceId
 
 			learningCatalogue.deleteAudience = sinon.stub()
@@ -195,9 +185,6 @@ describe('AudienceController', () => {
 
 	describe('#setOrganisation', () => {
 		it('should update course audience with selected organisation code', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
 			req.params.audienceId = audienceId
 
 			const hmrcName = 'HM Revenue & Customs'
@@ -223,9 +210,6 @@ describe('AudienceController', () => {
 		})
 
 		it('should update course audience with all organisation codes if "all" is selected', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
 			req.params.audienceId = audienceId
 			req.body = {organisation: 'all', 'input-autocomplete': ''}
 			const audience = {id: audienceId, departments: []}
@@ -254,50 +238,8 @@ describe('AudienceController', () => {
 		})
 	})
 
-	describe('#getAreasOfWork', () => {
-		it('should render add-are-of-work page', async function() {
-			csrsService.getAreasOfWork = sinon.stub().returns({})
-			await audienceController.getAreasOfWork()(req, res)
-
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-area-of-work', {areasOfWork: {}})
-		})
-	})
-
-	describe('#setAreasOfWork', () => {
-		it('should update course with area of work if the area of work is valid and redirect to audience configuration page', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
-			req.params.audienceId = audienceId
-			const aowHumanResources = 'Human resources'
-			req.body = {'area-of-work': aowHumanResources}
-			const audience = {id: audienceId, areasOfWork: []}
-			res.locals.course = {audiences: [audience]}
-
-			csrsService.getOrganisations = sinon.stub().returns({
-				_embedded: {
-					professions: [{name: aowHumanResources}],
-				},
-			})
-			csrsService.isAreaOfWorkValid = sinon.stub().returns(true)
-			learningCatalogue.updateCourse = sinon.stub()
-
-			await audienceController.setAreasOfWork()(req, res)
-
-			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
-				audiences: [{id: audienceId, areasOfWork: [aowHumanResources]}],
-			})
-			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
-			)
-		})
-	})
-
 	describe('#deleteOrganisation', () => {
 		it('should update course audience with empty list of organisations and redirect to audience configuration page', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, departments: ['hmrc']}
 			res.locals.course = {audiences: [audience]}
@@ -325,21 +267,13 @@ describe('AudienceController', () => {
 	})
 
 	describe('#setAreasOfWork', () => {
-		it('should update course with area of work if the area of work is valid and redirect to audience configuration page', async function() {
-			const courseId = 'course-id'
-			const audienceId = 'audience-id'
-			req.params.courseId = courseId
+		it('should update course with area of work if the area of work is valid and redirect to audience configuration page', async () => {
 			req.params.audienceId = audienceId
 			const aowHumanResources = 'Human resources'
 			req.body = {'area-of-work': aowHumanResources}
 			const audience = {id: audienceId, areasOfWork: []}
 			res.locals.course = {audiences: [audience]}
 
-			csrsService.getOrganisations = sinon.stub().returns({
-				_embedded: {
-					professions: [{name: aowHumanResources}],
-				},
-			})
 			csrsService.isAreaOfWorkValid = sinon.stub().returns(true)
 			learningCatalogue.updateCourse = sinon.stub()
 
@@ -347,6 +281,25 @@ describe('AudienceController', () => {
 
 			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
 				audiences: [{id: audienceId, areasOfWork: [aowHumanResources]}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
+	describe('#deleteAreasOfWork', () => {
+		it('should update course with empty areas of work array and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, areasOfWork: ['some area of work']}
+			res.locals.course = {audiences: [audience]}
+
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.deleteAreasOfWork()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, areasOfWork: []}],
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
 				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
