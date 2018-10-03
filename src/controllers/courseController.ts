@@ -69,10 +69,12 @@ export class CourseController {
 				(module: Module) => module.type == Module.Type.FACE_TO_FACE
 			)
 			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
+			const gradeCodeToName = await this.csrsService.getGradeCodeToNameMapping()
 			res.render('page/course/course-overview', {
 				faceToFaceModules,
-				departmentCodeToName,
 				AudienceType: Audience.Type,
+				departmentCodeToName,
+				gradeCodeToName,
 			})
 		}
 	}

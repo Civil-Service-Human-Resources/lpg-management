@@ -40,4 +40,8 @@ export class AudienceService {
 			areasOfWork
 		)
 	}
+
+	setGradesOnAudience(course: Course, audienceId: string, grades: string[]) {
+		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].grades`, grades)
+	}
 }

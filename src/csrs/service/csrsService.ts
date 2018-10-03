@@ -8,6 +8,8 @@ export class CsrsService {
 
 	static readonly DEPARTMENT_CODE_TO_NAME_MAPPING = 'CsrsService.departmentCodeToNameMapping'
 	static readonly AREAS_OF_WORK = 'CsrsService.areasOfWork'
+	static readonly GRADES = 'CsrsService.grades'
+	static readonly GRADE_CODE_TO_NAME_MAPPING = 'CsrsService.gradeCodeToNameMapping'
 
 	constructor(restService: OauthRestService, cacheService: CacheService) {
 		this.restService = restService
@@ -21,7 +23,7 @@ export class CsrsService {
 	async getAreasOfWork() {
 		let areasOfWork = this.cacheService.cache.get(CsrsService.AREAS_OF_WORK)
 
-		if (areasOfWork == undefined) {
+		if (!areasOfWork) {
 			areasOfWork = await this.restService.get('professions')
 			this.cacheService.cache.set(CsrsService.AREAS_OF_WORK, areasOfWork)
 		}
@@ -39,7 +41,24 @@ export class CsrsService {
 	}
 
 	async getGrades() {
-		return await this.restService.get('grades')
+		let grades = this.cacheService.cache.get(CsrsService.GRADES)
+
+		if (!grades) {
+			grades = await this.restService.get('grades')
+			this.cacheService.cache.set(CsrsService.GRADES, grades)
+		}
+
+		return grades
+	}
+
+	async isGradeCodeValid(gradeCode: string) {
+		const gradesLookupResult = JsonpathService.queryWithLimit(
+			await this.getGrades(),
+			`$..grades[?(@.code==${JSON.stringify(gradeCode)})]`,
+			1
+		)
+
+		return gradesLookupResult.length > 0
 	}
 
 	async getInterests() {
@@ -47,19 +66,38 @@ export class CsrsService {
 	}
 
 	async getDepartmentCodeToNameMapping() {
-		let departmentCodeToNameMapping = this.cacheService.cache.get(CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING)
+		return this.getCodeToNameMapping(
+			this.getOrganisations,
+			'$._embedded.organisations.*',
+			CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING
+		)
+	}
 
-		if (departmentCodeToNameMapping == undefined) {
-			const organisations = JsonpathService.query(await this.getOrganisations(), '$._embedded.organisations.*')
+	async getGradeCodeToNameMapping() {
+		return this.getCodeToNameMapping(this.getGrades, '$._embedded.grades.*', CsrsService.GRADE_CODE_TO_NAME_MAPPING)
+	}
 
-			departmentCodeToNameMapping = organisations.reduce((map: any, organisation: any) => {
-				map[organisation.code] = organisation.name
+	private async getCodeToNameMapping(
+		functionToRetrieveMappingFromBackend: () => Promise<any>,
+		pathForMapObjects: string,
+		cacheKey: string
+	) {
+		let mapping = this.cacheService.cache.get(cacheKey)
+
+		if (!mapping) {
+			const codeNameObjectArray = JsonpathService.query(
+				await functionToRetrieveMappingFromBackend.call(this),
+				pathForMapObjects
+			)
+
+			mapping = codeNameObjectArray.reduce((map: any, object: any) => {
+				map[object.code] = object.name
 				return map
 			}, {})
 
-			this.cacheService.cache.set(CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING, departmentCodeToNameMapping)
+			this.cacheService.cache.set(cacheKey, mapping)
 		}
 
-		return departmentCodeToNameMapping
+		return mapping
 	}
 }
