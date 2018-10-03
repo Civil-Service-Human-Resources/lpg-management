@@ -97,6 +97,10 @@ export class AudienceController {
 		)
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', this.getGrades())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', this.setGrades())
+		this.router.post(
+			'/content-management/courses/:courseId/audiences/:audienceId/grades/delete',
+			this.deleteGrades()
+		)
 	}
 
 	getAudienceName() {
@@ -158,7 +162,8 @@ export class AudienceController {
 	getConfigureAudience() {
 		return async (req: Request, res: Response) => {
 			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
-			res.render('page/course/audience/configure-audience', {departmentCodeToName})
+			const gradeCodeToName = await this.csrsService.getGradeCodeToNameMapping()
+			res.render('page/course/audience/configure-audience', {departmentCodeToName, gradeCodeToName})
 		}
 	}
 
@@ -275,17 +280,43 @@ export class AudienceController {
 			response.render('page/course/audience/configure-audience')
 		}
 	}
-	getGrades() {
-		return async (request: Request, response: Response) => {
-			const grades = await this.csrsService.getGrades()
 
-			response.render('page/course/audience/add-grades', {grades})
+	getGrades() {
+		return async (req: Request, res: Response) => {
+			const grades = await this.csrsService.getGrades()
+			res.render('page/course/audience/add-grades', {grades})
 		}
 	}
 
 	setGrades() {
-		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure-audience')
+		return async (req: Request, res: Response) => {
+			const gradeCodes = Array.isArray(req.body.grades) ? req.body.grades : [req.body.grades]
+			if (gradeCodes && gradeCodes.length > 0) {
+				const allGradesValid = await gradeCodes.reduce(
+					async (allValid: boolean, gradeCode: string) =>
+						allValid ? await this.csrsService.isGradeCodeValid(gradeCode) : false,
+					true
+				)
+				if (allGradesValid) {
+					this.audienceService.setGradesOnAudience(res.locals.course, req.params.audienceId, gradeCodes)
+					await this.learningCatalogue.updateCourse(res.locals.course)
+				}
+			}
+
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+			)
+		}
+	}
+
+	deleteGrades() {
+		return async (req: Request, res: Response) => {
+			this.audienceService.setGradesOnAudience(res.locals.course, req.params.audienceId, [])
+			await this.learningCatalogue.updateCourse(res.locals.course)
+
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+			)
 		}
 	}
 

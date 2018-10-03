@@ -48,6 +48,7 @@ describe('Course Controller Tests', function() {
 		const response: Response = mockRes()
 
 		csrsService.getDepartmentCodeToNameMapping = sinon.stub()
+		csrsService.getGradeCodeToNameMapping = sinon.stub()
 
 		const course = new Course()
 		course.modules = []

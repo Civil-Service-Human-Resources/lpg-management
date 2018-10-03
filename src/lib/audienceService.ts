@@ -41,6 +41,10 @@ export class AudienceService {
 		)
 	}
 
+	setGradesOnAudience(course: Course, audienceId: string, grades: string[]) {
+		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].grades`, grades)
+	}
+
 	setCoreLearningOnAudience(course: Course, audienceId: string, interests: string[]) {
 		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].interests`, interests)
 	}

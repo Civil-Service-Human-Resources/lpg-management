@@ -20,59 +20,112 @@ describe('CsrsService tests', () => {
 		csrsService = new CsrsService(restService, new CacheService())
 	})
 
-	it('should get organisation data', async () => {
-		const data = [
-			{
-				code: 'co',
-				name: 'Cabinet Office',
-			},
-			{
-				code: 'dh',
-				name: 'Department of Health & Social Care',
-			},
-		]
+	describe('#getOrganisations', () => {
+		it('should get organisation data', async () => {
+			const data = [
+				{
+					code: 'co',
+					name: 'Cabinet Office',
+				},
+				{
+					code: 'dh',
+					name: 'Department of Health & Social Care',
+				},
+			]
 
-		restService.get = sinon
-			.stub()
-			.withArgs('organisations')
-			.returns(data)
+			restService.get = sinon
+				.stub()
+				.withArgs('organisations')
+				.returns(data)
 
-		const result = await csrsService.getOrganisations()
+			const result = await csrsService.getOrganisations()
 
-		expect(restService.get).to.have.been.calledOnceWith('organisations')
-		expect(result).to.eql(data)
+			expect(restService.get).to.have.been.calledOnceWith('organisations')
+			expect(result).to.eql(data)
+		})
 	})
 
-	it('should get areas of work data', async () => {
-		const data = [{id: '123'}]
+	describe('areas of work', () => {
+		const areasOfWork = {
+			_embedded: {professions: [{name: 'Analysis'}, {name: 'Commercial'}, {name: 'Corporate finance'}]},
+		}
 
-		restService.get = sinon
-			.stub()
-			.withArgs('professions')
-			.returns(data)
+		beforeEach(() => {
+			restService.get = sinon
+				.stub()
+				.withArgs('professions')
+				.returns(areasOfWork)
+		})
 
-		const result = await csrsService.getAreasOfWork()
+		describe('#getAreasOfWork', () => {
+			it('should get areas of work data', async () => {
+				const result = await csrsService.getAreasOfWork()
 
-		expect(restService.get).to.have.been.calledOnceWith('professions')
-		expect(result).to.eql(data)
+				expect(restService.get).to.have.been.calledOnceWith('professions')
+				expect(result).to.eql(areasOfWork)
+			})
+		})
+
+		describe('#isAreaOfWorkValid', () => {
+			it('should return true if area of work is found in areas of work list', async () => {
+				expect(await csrsService.isAreaOfWorkValid('Analysis')).to.be.true
+			})
+
+			it('should return false if area of work is not found in areas of work list', async () => {
+				expect(await csrsService.isAreaOfWorkValid('not a valid area of work')).to.be.false
+			})
+		})
 	})
 
-	it('should get interest data', async () => {
-		const data = [
-			{
-				name: 'Contract management',
+	describe('#getInterests', () => {
+		it('should get interest data', async () => {
+			const data = [
+				{
+					name: 'Contract management',
+				},
+			]
+
+			restService.get = sinon
+				.stub()
+				.withArgs('interests')
+				.returns(data)
+
+			const result = await csrsService.getCoreLearning()
+
+			expect(restService.get).to.have.been.calledOnceWith('interests')
+			expect(result).to.eql(data)
+		})
+	})
+
+	describe('grades', () => {
+		const grades = {
+			_embedded: {
+				grades: [{code: 'AA', name: 'Administrative Assistant'}, {code: 'EO', name: 'Executive Officer'}],
 			},
-		]
+		}
 
-		restService.get = sinon
-			.stub()
-			.withArgs('interests')
-			.returns(data)
+		beforeEach(() => {
+			restService.get = sinon
+				.stub()
+				.withArgs('grades')
+				.returns(grades)
+		})
 
-		const result = await csrsService.getCoreLearning()
+		describe('#getGrades', () => {
+			it('should return grades names and codes', async () => {
+				expect(await csrsService.getGrades()).to.be.equal(grades)
+			})
+		})
 
-		expect(restService.get).to.have.been.calledOnceWith('interests')
-		expect(result).to.eql(data)
+		describe('#isGradeCodeValid', () => {
+			it('should return true if grade code is found in grades list', async () => {
+				expect(await csrsService.isGradeCodeValid('AA')).to.be.true
+			})
+
+			it('should return false if grade code is not found in grades list', async () => {
+				expect(await csrsService.isGradeCodeValid('not a valid grade code')).to.be.false
+			})
+		})
 	})
 
 	describe('#getDepartmentCodeToNameMapping', () => {
@@ -88,6 +141,23 @@ describe('CsrsService tests', () => {
 			expect(await csrsService.getDepartmentCodeToNameMapping()).to.be.deep.equal({
 				hmrc: hmrcName,
 				dwp: dwpName,
+			})
+		})
+	})
+
+	describe('#getGradeCodeToNameMapping', () => {
+		it('should return a map from grade code to name', async () => {
+			const admAsstName = 'Administrative Assistant'
+			const eoName = 'Executive Officer'
+
+			csrsService.getGrades = sinon.stub().returns({
+				_embedded: {
+					grades: [{code: 'AA', name: admAsstName}, {code: 'EO', name: eoName}],
+				},
+			})
+			expect(await csrsService.getGradeCodeToNameMapping()).to.be.deep.equal({
+				AA: admAsstName,
+				EO: eoName,
 			})
 		})
 	})

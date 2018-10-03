@@ -83,13 +83,15 @@
                         <div class="audience-content">
                             <p class="govuk-body">Grades</p>
                             {% if audience.grades and audience.grades.length > 0 %}
-                                <p class="audience-type no-margin">{{ audience.grades }}</p>
+                                <p class="audience-type no-margin">{{ audience.grades | jsonpath(gradeCodeToName) | join(', ') }}</p>
                             {% else %}
                                 <p class="unset">No grades have been added</p>
                             {% endif %}
                         </div>
                         {% if audience.grades and audience.grades.length > 0 %}
-                             <a href="#" class="govuk-link audience-link">Delete</a>
+                            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades/delete" method="post" class="audience-link">
+                                <button class="govuk-link linkish-button">Delete</button>
+                            </form>
                         {% else %}
                             <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" class="govuk-link audience-link">Add</a>
                         {% endif %}

@@ -152,6 +152,7 @@ describe('AudienceController', () => {
 
 			csrsService.getOrganisations = sinon.stub()
 			csrsService.getDepartmentCodeToNameMapping = sinon.stub()
+			csrsService.getGradeCodeToNameMapping = sinon.stub()
 
 			await audienceController.getConfigureAudience()(req, res)
 
