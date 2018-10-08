@@ -1,13 +1,13 @@
 {
 	"audience": {
-		"page_title": {
+		"pageTitle": {
 			"add_name": "Add audience name",
 			"edit_name": "Edit audience name",
 			"add_type": "Add audience type",
 			"edit_type": "Edit audience type",
 			"configure_audience": "Configure audience",
 			"add_organisation": "Add organisation",
-			"add_deadline": "Add deadline date",
+			"addDeadline": "Add deadline date",
 			"delete_audience": "Delete audience",
 			"add_area_of_work": "Add area of work",
 			"add_grades": "Add grades",
@@ -20,6 +20,9 @@
 			},
 			"type": {
 				"empty": "Audience type is required"
+			},
+			"requiredBy": {
+				"invalidDate": "Enter a valid deadline date"
 			}
 		},
 		"type": {
@@ -29,15 +32,40 @@
 			"REQUIRED_LEARNING": "Required learning"
 		}
 	},
+
+	"course": {
+		"pageTitle": {
+			"addCourseTitle": "Add course title",
+			"editCourseTitle": "Edit course title",
+			"addCourseDetails": "Add course details",
+			"editCourseDetails": "Edit course details"
+		},
+		"text": {
+			"title": "Course title",
+			"addNew": "Add a new course",
+			"editTitle": "Edit course title"
+		},
+		"validation": {
+			"title": {
+				"empty": "Title is required"
+			},
+			"shortDescription": {
+				"empty": "Short description is required",
+				"maxLength": "Short description is too long"
+			},
+			"description": {
+				"empty": "Description is required",
+				"maxLength": "Description is too long"
+			}
+		}
+	},
+
 	"blended": "Blended",
 	"content_management_title": "Content management",
 	"cancellation_policy_add_title": "Add cancellation policy",
 	"cancellation_policy_edit_title": "Edit cancellation policy",
 	"course": "Course",
 	"course_added_success_message": " has been created and saved as a draft.",
-	"course_details_add_title": "Add course details",
-	"course_title_add_title": "Add course title",
-	"course_title_edit_title": "Edit course title",
 	"course_overview_title": "Course overview",
 	"course_preview_title": "Course preview",
 	"event_add_title": "Add event date & time",
@@ -61,11 +89,6 @@
 	"proposition_name": "Civil Service Learning",
 	"terms_and_conditions_add_title": "Add terms and conditions",
 	"terms_and_conditions_edit_title": "Edit terms and conditions",
-	"validation.course.title.empty": "Title is required",
-	"validation.course.shortDescription.empty": "Short description is required",
-	"validation.course.shortDescription.maxLength": "Short description is too long",
-	"validation.course.description.empty": "Description is required",
-	"validation.course.description.maxLength": "Description is too long",
 	"validation.learningProvider.name.empty": "Name is required",
 	"validation.cancellationPolicy.name.empty": "Name is required",
 	"validation.cancellationPolicy.shortVersion.empty": "Short version is required",

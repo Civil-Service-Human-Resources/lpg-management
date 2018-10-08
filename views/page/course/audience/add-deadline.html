@@ -3,7 +3,7 @@
 
 {% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.audience.page_title.add_deadline }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ i18n.audience.pageTitle.addDeadline }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% block beforeContent %}
     {% block phaseBanner %}
@@ -15,25 +15,51 @@
 {% endblock %}
 
 {% block content %}
+    {% set errors = sessionFlash.errors %}
+
+    {{ errorSummary(errors.fields) }}
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Add a deadline date</h2>
-            <form class="audience-form" action="/content-management/courses/{{ course.id }}/audiences/add-dealine" method="post">
-                {{ govukDateInput({
-                    id: "dealine",
-                    namePrefix: "deadline",
-                    fieldset: {
-                        legend: {
-                        text: "When does this course need to be completed by?",
-                        isPageHeading: false,
-                        classes: "govuk-fieldset__legend--s"
+            <form class="audience-form" action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" method="post">
+                {% if errors.fields.requiredBy %}
+                    {{ govukDateInput({
+                        id: "deadline",
+                        namePrefix: "deadline",
+                        fieldset: {
+                            legend: {
+                                text: "When does this course need to be completed by?",
+                                isPageHeading: false,
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        },
+                        hint: {
+                            text: "For example, 30 11 " + exampleYear
+                        },
+                        items: [
+                            {name: "year", value: deadlineDate.year},
+                            {name: "month", value: deadlineDate.month},
+                            {name: "day", value: deadlineDate.day}
+                        ]
+                    }) }}
+                {% else %}
+                    {{ govukDateInput({
+                        id: "deadline",
+                        namePrefix: "deadline",
+                        fieldset: {
+                            legend: {
+                                text: "When does this course need to be completed by?",
+                                isPageHeading: false,
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        },
+                        hint: {
+                            text: "For example, 30 11 " + exampleYear
                         }
-                    },
-                    hint: {
-                        text: "For example, 9 12 2018"
-                    }
-                }) }}
+                    }) }}
+                {% endif %}
                 <div class="button-container">
                     {{ govukButton({
                         text: "Continue"

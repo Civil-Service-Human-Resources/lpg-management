@@ -3,7 +3,6 @@ import {IsNotEmpty} from 'class-validator'
 import {IsAfterTimeString} from '../validator/custom/isAfterTimeString'
 
 export class DateRange {
-
 	@IsFutureDateString({
 		groups: ['all', 'event.all', 'event.dateRanges.date'],
 		message: 'validation_module_event_dateRanges_past',

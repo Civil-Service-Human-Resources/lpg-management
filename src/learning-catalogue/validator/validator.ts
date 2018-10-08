@@ -3,7 +3,6 @@ import {ValidationErrorMapper} from './validationErrorMapper'
 import {Factory} from '../model/factory/factory'
 
 export class Validator<T> {
-	validationErrorMapper: ValidationErrorMapper = new ValidationErrorMapper()
 	factory: Factory<T>
 
 	constructor(factory: Factory<T>) {
@@ -15,6 +14,6 @@ export class Validator<T> {
 			groups: groups,
 		})
 
-		return this.validationErrorMapper.map(validationErrors)
+		return ValidationErrorMapper.map(validationErrors)
 	}
 }

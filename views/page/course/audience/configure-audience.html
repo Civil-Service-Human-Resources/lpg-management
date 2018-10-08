@@ -100,14 +100,16 @@
                         <div class="flex-container u--border--bgrey">
                             <div class="audience-content">
                                 <p class="govuk-body">Deadline date</p>
-                                {% if audience.deadline %}
-                                    <p class="audience-type no-margin">{{ audience.deadline }}</p>
+                                {% if audience.requiredBy %}
+                                    <p class="audience-type no-margin">{{audience.requiredBy | formatDate}}</p>
                                 {% else %}
                                     <p class="unset">No date has been added</p>
                                 {% endif %}
                             </div>
-                            {% if audience.deadline %}
-                                <a href="#" class="govuk-link audience-link">Delete</a>
+                            {% if audience.requiredBy %}
+                                <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline/delete" method="post" class="audience-link">
+                                    <button class="govuk-link linkish-button">Delete</button>
+                                </form>
                             {% else %}
                                 <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" class="govuk-link audience-link">Add</a>
                             {% endif %}

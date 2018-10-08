@@ -3,7 +3,7 @@ import * as log4js from 'log4js'
 import {Auth} from '../identity/auth'
 import {YoutubeRestService} from './youtubeRestService'
 import {YoutubeConfig} from './youtubeConfig'
-import * as datetime from '../lib/datetime'
+import {DateTime} from '../lib/dateTime'
 
 const logger = log4js.getLogger('learning-catalogue/service/restService')
 
@@ -78,7 +78,7 @@ export class YoutubeService {
 		}
 
 		if (resp && resp.items && resp.items[0]) {
-			return datetime.parseDuration(resp.items[0].contentDetails.duration)
+			return DateTime.parseDuration(resp.items[0].contentDetails.duration)
 		}
 	}
 }

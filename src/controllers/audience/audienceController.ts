@@ -6,6 +6,7 @@ import {Validator} from '../../learning-catalogue/validator/validator'
 import {CourseService} from '../../lib/courseService'
 import {AudienceService} from '../../lib/audienceService'
 import {CsrsService} from '../../csrs/service/csrsService'
+import {DateTime} from '../../lib/dateTime'
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -66,6 +67,10 @@ export class AudienceController {
 		)
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.getDeadline())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.setDeadline())
+		this.router.post(
+			'/content-management/courses/:courseId/audiences/:audienceId/deadline/delete',
+			this.deleteDeadline()
+		)
 		this.router.get(
 			'/content-management/courses/:courseId/audiences/:audienceId/delete',
 			this.deleteAudienceConfirmation()
@@ -270,14 +275,45 @@ export class AudienceController {
 	}
 
 	getDeadline() {
-		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/add-deadline')
+		return async (req: Request, res: Response) => {
+			res.render('page/course/audience/add-deadline', {exampleYear: new Date(Date.now()).getFullYear() + 1})
 		}
 	}
 
 	setDeadline() {
-		return async (request: Request, response: Response) => {
-			response.render('page/course/audience/configure-audience')
+		return async (req: Request, res: Response) => {
+			const year = req.body['deadline-year'] || ''
+			const month = req.body['deadline-month'] || ''
+			const day = req.body['deadline-day'] || ''
+
+			const date = DateTime.yearMonthDayToDate(year, month, day)
+			const errors = await this.audienceValidator.check({requiredBy: date.toDate()}, ['audience.requiredBy'])
+
+			if (!errors.size) {
+				this.audienceService.setDeadlineOnAudience(res.locals.course, req.params.audienceId, date.toDate())
+				await this.learningCatalogue.updateCourse(res.locals.course)
+				res.redirect(
+					`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+				)
+			} else {
+				req.session!.sessionFlash = {errors, deadlineDate: {year, month, day}}
+				req.session!.save(() => {
+					res.redirect(
+						`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/deadline`
+					)
+				})
+			}
+		}
+	}
+
+	deleteDeadline() {
+		return async (req: Request, res: Response) => {
+			this.audienceService.setDeadlineOnAudience(res.locals.course, req.params.audienceId, null)
+			await this.learningCatalogue.updateCourse(res.locals.course)
+
+			res.redirect(
+				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
+			)
 		}
 	}
 

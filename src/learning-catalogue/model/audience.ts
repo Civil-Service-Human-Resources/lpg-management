@@ -1,4 +1,4 @@
-import {IsNotEmpty, MaxLength} from 'class-validator'
+import {IsDate, IsNotEmpty, MaxLength} from 'class-validator'
 
 export class Audience {
 	id: string
@@ -27,6 +27,10 @@ export class Audience {
 	})
 	type: Audience.Type
 
+	@IsDate({
+		groups: ['all', 'audience.all', 'audience.requiredBy'],
+		message: 'audience.validation.requiredBy.invalidDate',
+	})
 	requiredBy?: Date | null
 
 	frequency?: string | null

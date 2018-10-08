@@ -7,27 +7,27 @@ export class Course {
 
 	@IsNotEmpty({
 		groups: ['all', 'title'],
-		message: 'validation.course.title.empty',
+		message: 'course.validation.title.empty',
 	})
 	title: string
 
 	@IsNotEmpty({
 		groups: ['all', 'shortDescription'],
-		message: 'validation.course.shortDescription.empty',
+		message: 'course.validation.shortDescription.empty',
 	})
 	@MaxLength(160, {
 		groups: ['all', 'shortDescription'],
-		message: 'validation.course.shortDescription.maxLength',
+		message: 'course.validation.shortDescription.maxLength',
 	})
 	shortDescription: string
 
 	@IsNotEmpty({
 		groups: ['all', 'description'],
-		message: 'validation.course.description.empty',
+		message: 'course.validation.description.empty',
 	})
 	@MaxLength(1500, {
 		groups: ['all', 'description'],
-		message: 'validation.course.description.maxLength',
+		message: 'course.validation.description.maxLength',
 	})
 	description: string
 	duration: number

@@ -5,7 +5,7 @@ import {JsonpathService} from '../lib/jsonpathService'
 import {Course} from '../learning-catalogue/model/course'
 
 export class AudienceService {
-	learningCatalogue: LearningCatalogue
+	private readonly learningCatalogue: LearningCatalogue
 
 	constructor(learningCatalogue: LearningCatalogue) {
 		this.learningCatalogue = learningCatalogue
@@ -25,7 +25,7 @@ export class AudienceService {
 		}
 	}
 
-	setDepartmentsOnAudience(course: Course, audienceId: string, departments: any) {
+	setDepartmentsOnAudience(course: Course, audienceId: string, departments: string[]) {
 		JsonpathService.setValue(
 			course,
 			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].departments`,
@@ -47,5 +47,9 @@ export class AudienceService {
 
 	setCoreLearningOnAudience(course: Course, audienceId: string, interests: string[]) {
 		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].interests`, interests)
+	}
+
+	setDeadlineOnAudience(course: Course, audienceId: string, deadline: Date | null) {
+		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].requiredBy`, deadline)
 	}
 }

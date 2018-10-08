@@ -12,7 +12,7 @@ describe('AudienceFactory tests', () => {
 		const departments: string[] = ['dh', 'co']
 		const grades: string[] = ['AA', 'G7', 'SCS']
 		const interests: string[] = ['basket weaving', 'fly fishing']
-		const requiredBy = '2001-03-31T00:00:00'
+		const requiredBy = new Date()
 		const type = 'OPEN'
 		const frequency = 'YEARLY'
 
@@ -34,7 +34,7 @@ describe('AudienceFactory tests', () => {
 		expect(result.departments).to.eql(departments)
 		expect(result.grades).to.eql(grades)
 		expect(result.interests).to.eql(interests)
-		expect(result.requiredBy!.toISOString().substr(0, 19)).to.equal(requiredBy)
+		expect(result.requiredBy).to.equal(requiredBy)
 		expect(result.type).to.equal(Audience.Type.OPEN)
 		expect(result.frequency).to.equal(frequency)
 	})

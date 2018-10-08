@@ -13,6 +13,7 @@ import {Request, Response} from 'express'
 import {CourseService} from '../../../../src/lib/courseService'
 import {AudienceService} from '../../../../src/lib/audienceService'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
+import moment = require('moment')
 
 chai.use(sinonChai)
 
@@ -402,6 +403,50 @@ describe('AudienceController', () => {
 			expect(res.redirect).to.have.been.calledOnceWith(
 				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
 			)
+		})
+	})
+
+	describe('#getDeadline', () => {
+		it('should render add deadline page', async () => {
+			await audienceController.getDeadline()(req, res)
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-deadline')
+		})
+	})
+
+	describe('#setDeadline', () => {
+		it('should update course with deadline date if the date is valid and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, requiredBy: null}
+			res.locals.course = {audiences: [audience]}
+			req.body = {'deadline-year': '2018', 'deadline-month': '12', 'deadline-day': '16'}
+
+			audienceValidator.check = sinon.stub().returns({size: 0})
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.setDeadline()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, requiredBy: moment('2018-12-16').toDate()}],
+			})
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+	})
+
+	describe('#deleteDeadline', () => {
+		it('should update course with null deadline and redirect to audience configuration page', async () => {
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, requiredBy: new Date()}
+			res.locals.course = {audiences: [audience]}
+
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await audienceController.deleteDeadline()(req, res)
+
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
+				audiences: [{id: audienceId, requiredBy: null}],
+			})
 		})
 	})
 })
