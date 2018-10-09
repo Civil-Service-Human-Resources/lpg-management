@@ -26,7 +26,7 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">{{ i18n.course.text.editTitle if course else i18n.course.text.addNew }}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.title}}</h2>
-            <form action="/content-management/courses/title/{{ course.id }}" method="post">
+            <form action="/content-management/courses/title/{{ course.id }}" method="post" class="course-form">
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.title %}
                         {{ govukInput({
@@ -51,10 +51,11 @@
                         }) }}
                     {% endif %}
                 </fieldset>
-                {{ govukButton({
-                    text: "Continue"
-                }) }}
-
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Continue"
+                    }) }}
+                </div>
                 <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
             </form>
         </div>

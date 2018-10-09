@@ -48,7 +48,7 @@
             <p class="govuk-heading-m govuk-!-font-size-36">Add new cancellation policy</p>
             {% endif %}
 
-            <form action="/content-management/learning-providers/{{learningProvider.id}}/cancellation-policies/{{ cancellationPolicy.id }}" method="post">
+            <form action="/content-management/learning-providers/{{learningProvider.id}}/cancellation-policies/{{ cancellationPolicy.id }}" method="post" class="module-form">
 
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.name %}
@@ -116,9 +116,11 @@
                     }) }}
                 {% endif %}
                 </fieldset>
-                {{ govukButton({
-                    text: "Save"
-                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Save"
+                    }) }}
+                </div>
                 <a class="cancel-button govuk-body govuk-link" href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
             </form>
         </div>

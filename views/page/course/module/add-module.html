@@ -43,14 +43,14 @@
                     </ul>
                     <ul class="list modules" id="modules">
                         {% for module in modules %}
-                        {% set counter = ( counter | default(0) ) + 1 %}
-                        <li class="list-details u--border--bgrey draggable" id="{{ module.id }}" data-id={{counter}}>
-                            <p class="govuk-body title">{{ module.title | default("Module", true) }}</p>
-                            <p class="govuk-body type">{{ i18n[module.type] | default("Unknown Type", true) }}</p>
-                            <p class="govuk-body added-on">{{ module.addedOn | default("23rd August 2018", true) }}</p>
-                            <p class="govuk-body buttons"><a class="govuk-link" href="#">Delete</a></p> 
-                            <span class="handle"></span>
-                        </li>
+                            {% set counter = ( counter | default(0) ) + 1 %}
+                            <li class="list-details u--border--bgrey draggable" id="{{ module.id }}" data-id={{counter}}>
+                                <p class="govuk-body title">{{ module.title | default("Module", true) }}</p>
+                                <p class="govuk-body type">{{ i18n[module.type] | default("Unknown Type", true) }}</p>
+                                <p class="govuk-body added-on">{{ module.addedOn | default("23rd August 2018", true) }}</p>
+                                <p class="govuk-body buttons"><a class="govuk-link" href="#">Delete</a></p> 
+                                <span class="handle"></span>
+                            </li>
                         {% endfor %}
                     </ul>
                 {% else %}
@@ -60,13 +60,11 @@
         </div>
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <div class="aded-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
-                    <form action="/content-management/courses/{{ course.id }}/add-module" method="post">
+                <div class="added-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
+                    <form action="/content-management/courses/{{ course.id }}/add-module" method="post" class="module-form">
                         <h3 class="govuk-heading-m">Add a module</h3>
                         <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
-                
                         <fieldset class="govuk-fieldset module-selector">
-        
                             {{ govukSelect({
                                 id: "modules",
                                 name: "module",

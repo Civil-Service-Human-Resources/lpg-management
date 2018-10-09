@@ -9,19 +9,12 @@
 	}
 }
 
-.module-container {
-	margin-bottom: 30px;
-}
-
 .module-container-small {
 	margin-bottom: 15px;
 }
 
+.sortable-ghost,
 .sortable-chosen {
-	background-color: govuk-colour('grey-4');
-}
-
-.sortable-ghost {
 	background-color: govuk-colour('grey-4');
 }
 
@@ -58,7 +51,6 @@
 				justify-self: flex-end;
 				display: block;
 				width: 20px;
-				height: 35px;
 			}
 
 			.handle {

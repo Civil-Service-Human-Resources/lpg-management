@@ -26,9 +26,9 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
-            <p class="govuk-body">You are adding a <strong>face-to-face</strong> module</p>
+            <p class="govuk-body no-margin">You are adding a <strong>face-to-face</strong> module</p>
 
-            <form action="/content-management/courses/{{ course.id }}/module-face-to-face" method="post">
+            <form action="/content-management/courses/{{ course.id }}/module-face-to-face" method="post" class="module-form">
                 <input name="type" type="hidden" value="face-to-face">
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.title %}
@@ -94,10 +94,11 @@
                     }
                 ]
                 }) }}
-
-                {{ govukButton({
-                text: "Continue"
-                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                    text: "Continue"
+                    }) }}
+                </div>
             </form>
 
             <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/overview">Cancel</a>        

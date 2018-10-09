@@ -52,7 +52,7 @@
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <form action="/content-management/learning-providers/{{learningProvider.id}}/terms-and-conditions/{{termsAndConditions.id}}" method="post">
+            <form action="/content-management/learning-providers/{{learningProvider.id}}/terms-and-conditions/{{termsAndConditions.id}}" method="post" class="module-form">
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields %}
                         {{ govukInput({
@@ -84,9 +84,11 @@
                         {% endif %}
                     {% endblock %}               
                 </fieldset> 
-                {{ govukButton({
-                    text: "Save"
-                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Save"
+                    }) }}
+                </div>
                 <a class="cancel-button govuk-body govuk-link" href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
             </form>                    
         </div>
@@ -95,15 +97,15 @@
                 {% block menu %}
                     {% set actions = [
                         {
-                            link: '/content-management/headings',
+                            link: '#',
                             text: 'Headings'
                         },
                         {
-                            link: '/content-management/lists',
+                            link: '#',
                             text: 'Lists'
                         },
                         {
-                            link: '/content-management/links',
+                            link: '#',
                             text: 'Links'
                         }
                     ] %}

@@ -29,7 +29,7 @@
                     {% set classNames = "govuk-fieldset audience-fieldset" %}
                     {% set message = "no-errors" %}
                 {% endif %}
-                
+
                 <div class="{{classNames}}">
                     <p class="{{message}}">Select which organisations are included</p>
 
@@ -86,8 +86,8 @@
     <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
     <script type="text/javascript" src="/js/add-organisation.js"></script>
     {% set orgs = [] %}
-    {% for organisation in organisations._embedded.organisations %}
-        {% set orgName = orgs.push(organisation.name)%}  
+    {% for organisation in organisations._embedded.organisationalUnits %}
+        {% set orgName = orgs.push(organisation.name)%}
     {% endfor %}
     <script orgs='{{orgs}}' src="/js/orgs.js"></script>
 {% endblock %}

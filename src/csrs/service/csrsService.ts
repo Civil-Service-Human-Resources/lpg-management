@@ -18,7 +18,7 @@ export class CsrsService {
 	}
 
 	async getOrganisations() {
-		return await this.restService.get('organisations')
+		return await this.restService.get('organisationalUnits')
 	}
 
 	async getAreasOfWork() {
@@ -85,7 +85,7 @@ export class CsrsService {
 	async getDepartmentCodeToNameMapping() {
 		return this.getCodeToNameMapping(
 			this.getOrganisations,
-			'$._embedded.organisations.*',
+			'$._embedded.organisationalUnits.*',
 			CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING
 		)
 	}

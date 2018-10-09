@@ -216,7 +216,7 @@ export class AudienceController {
 		organisationName: string,
 		organisations: any
 	): string[] {
-		return organisations._embedded.organisations
+		return organisations._embedded.organisationalUnits
 			.filter((org: any) => {
 				return organisation === 'all' || org.name === organisationName
 			})

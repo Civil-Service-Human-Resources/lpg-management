@@ -47,7 +47,9 @@
 	margin-top: 0;
 }
 
-.audience-form {
+.audience-form,
+.module-form,
+.course-form {
 	padding-top: 50px;
 }
 
@@ -134,10 +136,6 @@
 	margin-bottom: 0;
 	width: 100%;
 }
-
-// .typeahead-container {
-// 	display: none;
-// }
 
 .autocomplete__input {
 	background-color: transparent;

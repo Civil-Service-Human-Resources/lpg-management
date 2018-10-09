@@ -197,7 +197,7 @@ describe('AudienceController', () => {
 			const hmrcCode = 'hmrc'
 			csrsService.getOrganisations = sinon
 				.stub()
-				.returns({_embedded: {organisations: [{code: hmrcCode, name: hmrcName}]}})
+				.returns({_embedded: {organisationalUnits: [{code: hmrcCode, name: hmrcName}]}})
 			learningCatalogue.updateCourse = sinon.stub()
 
 			await audienceController.setOrganisation()(req, res)
@@ -220,7 +220,7 @@ describe('AudienceController', () => {
 			const dwpCode = 'dwp'
 			csrsService.getOrganisations = sinon.stub().returns({
 				_embedded: {
-					organisations: [
+					organisationalUnits: [
 						{code: hmrcCode, name: 'HM Revenue & Customs'},
 						{code: dwpCode, name: 'Department for Work and Pensions'},
 					],
