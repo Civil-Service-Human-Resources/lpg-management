@@ -13,6 +13,10 @@
 			"add_grades": "Add grades",
 			"add_core_learning": "Add core learning"
 		},
+		"pageLabels": {
+			"edit": "Edit audience",
+			"addNew": "Add a new audience"
+		},
 		"validation": {
 			"name": {
 				"empty": "Audience name is required",

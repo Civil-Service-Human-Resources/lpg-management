@@ -1,49 +1,40 @@
-import {describe} from 'mocha'
+import * as chai from 'chai'
 import {expect} from 'chai'
+import * as sinonChai from 'sinon-chai'
+import {beforeEach, describe} from 'mocha'
+import {Audience} from '../../../src/learning-catalogue/model/audience'
 import {AudienceService} from '../../../src/lib/audienceService'
-import {CourseFactory} from '../../../src/learning-catalogue/model/factory/courseFactory'
+import {LearningCatalogue} from '../../../src/learning-catalogue'
+
+chai.use(sinonChai)
 
 describe('AudienceService', () => {
-	const learningCatalogue: any = {}
 	let audienceService: AudienceService
+	let learningCatalogue: LearningCatalogue
 
-	before(() => {
+	beforeEach(() => {
+		learningCatalogue = <LearningCatalogue>{}
 		audienceService = new AudienceService(learningCatalogue)
 	})
 
-	describe('#setDepartmentsOnAudience', () => {
-		it('should set departments on given course and audienceId', () => {
-			const audienceId = 'audienceId'
-			const course = new CourseFactory().create({
-				audiences: [
-					{
-						id: audienceId,
-						departments: [],
-					},
-				],
-			})
-			const departments = ['dep1', 'dep2']
+	describe('#updateAudienceType', () => {
+		it('should reset all audience fields if type changed to PRIVATE_COURSE', () => {
+			const audience = new Audience()
+			audience.areasOfWork = ['area-of-work']
+			audience.departments = ['department']
+			audience.grades = ['grade']
+			audience.interests = ['interest']
+			audience.requiredBy = new Date()
+			audience.frequency = 'frequency'
 
-			audienceService.setDepartmentsOnAudience(course, audienceId, departments)
-			expect(course.audiences[0].departments).to.be.equal(departments)
-		})
-	})
+			audienceService.updateAudienceType(audience, Audience.Type.PRIVATE_COURSE)
 
-	describe('#setAreasOfWorkOnAudience', () => {
-		it('should set areas of work on given course and audienceId', () => {
-			const audienceId = 'audienceId'
-			const course = new CourseFactory().create({
-				audiences: [
-					{
-						id: audienceId,
-						areasOfWork: [],
-					},
-				],
-			})
-			const areasOfWork = ['aow1', 'aow2']
-
-			audienceService.setAreasOfWorkOnAudience(course, audienceId, areasOfWork)
-			expect(course.audiences[0].areasOfWork).to.be.equal(areasOfWork)
+			expect(audience.areasOfWork).to.be.deep.equal([])
+			expect(audience.departments).to.be.deep.equal([])
+			expect(audience.grades).to.be.deep.equal([])
+			expect(audience.interests).to.be.deep.equal([])
+			expect(audience.requiredBy).to.be.undefined
+			expect(audience.frequency).to.be.undefined
 		})
 	})
 })

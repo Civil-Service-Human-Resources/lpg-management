@@ -136,7 +136,7 @@ describe('AudienceController', () => {
 
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.type'])
 			expect(audienceValidator.check).to.have.returned(errors)
-			expect(req.session!.sessionFlash.errors).to.be.undefined
+			expect(req.session!.sessionFlash).to.be.undefined
 			expect(learningCatalogue.createAudience).to.have.been.calledOnceWith(courseId, audience)
 			expect(res.redirect).to.have.been.calledWith(
 				`/content-management/courses/${courseId}/audiences/${newAudienceId}/configure`
@@ -451,7 +451,7 @@ describe('AudienceController', () => {
 			await audienceController.deleteDeadline()(req, res)
 
 			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
-				audiences: [{id: audienceId, requiredBy: null}],
+				audiences: [{id: audienceId, requiredBy: undefined}],
 			})
 		})
 	})

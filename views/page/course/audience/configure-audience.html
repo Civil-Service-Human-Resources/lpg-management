@@ -1,4 +1,5 @@
 {% from "input/macro.njk" import govukInput %}
+{% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
@@ -148,7 +149,7 @@
                 {% endif %}
             </div>
             <div class="button-container">
-                <a class="govuk-body govuk-link return-link" href="/content-management/courses/{{ course.id }}/overview">Return to course overview page</a>
+                <a class="govuk-body govuk-link return-link" href="/content-management/courses/{{course.id}}/overview">Return to course overview page</a>
                 {{ govukButton({
                     href: "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/delete",
                     text: "Delete this audience",

@@ -3,7 +3,7 @@
 
 {% extends "../../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['event_overview'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}{{ i18n['event_overview'] }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
 {% set backButton = "/content-management/courses/" + course.id + "/overview" %}
@@ -11,7 +11,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l no-margin">{{ eventDateWithMonthAsText }}, {{ event.venue.location }}</h1>
+      <h1 class="govuk-heading-l no-margin">{{event.venue.location}}, {{event.dateRanges[0].date | formatDate}}</h1>
     </div>
   </div>
      <div class="govuk-grid-row">
