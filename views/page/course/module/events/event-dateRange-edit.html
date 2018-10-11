@@ -7,18 +7,13 @@
 
 {% block pageTitle %}{{ i18n['event_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {% if event %}
-        {{ backLink("/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id) }}
-    {% else %}
-        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
-    {% endif %}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% if event %}
+    {% set backButton = "/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id %}
+{% else %}
+    {% set backButton = "/content-management/courses/" + course.id + "/overview") %}
+{% endif %}
+
 
 {% block content %}
 

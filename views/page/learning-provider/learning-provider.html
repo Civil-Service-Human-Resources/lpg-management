@@ -5,14 +5,8 @@
 
 {% block pageTitle %}{{ i18n['learning_provider_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management/learning-providers") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/learning-providers" %}
 
 {% block content %}
     <div class="govuk-grid-row">

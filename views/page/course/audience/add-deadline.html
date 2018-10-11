@@ -5,14 +5,8 @@
 
 {% block pageTitle %}{{ i18n.audience.pageTitle.addDeadline }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure" %}
 
 {% block content %}
     {% set errors = sessionFlash.errors %}

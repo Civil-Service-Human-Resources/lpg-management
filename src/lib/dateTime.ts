@@ -44,7 +44,7 @@ export class DateTime {
 	static formatDuration(seconds: number): string {
 		if (seconds) {
 			const duration = this.convert(seconds)
-			return duration.hours + 'h ' + duration.minutes + 'm'
+			return duration.hours + 'h' + duration.minutes + 'm'
 		} else {
 			return '0m'
 		}

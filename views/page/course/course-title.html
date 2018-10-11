@@ -8,14 +8,8 @@
     {{ i18n.course.pageTitle.editCourseTitle if course else i18n.course.pageTitle.addCourseTitle }} - {{ i18n.proposition_name }}
 {% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management" %}
 
 {% block content %}
     {% set errors = sessionFlash.errors %}

@@ -4,12 +4,12 @@
 {% from "./phaseBanner/macro.njk" import phaseBanner %}
 {% from "./backLink/macro.njk" import backLink %}
 {% from "./errorSummary/macro.njk" import errorSummary with context %}
+{% from "./nav/macro.njk" import nav %}
 
 {% extends "template.njk" %}
 
 {% set htmlClasses = "app-html-class" %}
 {% set htmlLang = "en" %}
-{% set themeColor = "red" %}
 {% set bodyClasses = "app-body-class" %}
 
 {% block pageTitle %}GOV.UK{% endblock %}
@@ -54,46 +54,26 @@
         homepageUrl: "#",
         containerClasses: "govuk-width-container",
         serviceName: "Civil Service Learning",
-        serviceUrl: "#",
-        navigation: [
-            {
-                href: lpgUiUrl + "/home",
-                text: "Home",
-                active: true
-            },
-            {
-                href: lpgUiUrl + "/suggestions-for-you",
-                text: "Suggestions for you"
-            },
-            {
-                href: lpgUiUrl + "/learning-record",
-                text: "Learning record"
-            },
-            {
-                href: lpgUiUrl + "/profile",
-                text: "Profile"
-            },
-            {
-                href: "/content-management",
-                text: "Admin"
-            },
-            {
-                href: lpgUiUrl + "/sign-out",
-                text: "Sign out"
-            }
-            ]
+        serviceUrl: "#"
     }) }}
 {% endblock %}
 
 {% set mainClasses = "app-main-class" %}
 
 {% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("#") }}
-  {% endblock%}
+  {% if banner === true %}
+    {% block phaseBanner %}
+      {{ phaseBanner("beta") }}
+    {% endblock%}
+  {% endif %}
+  {% block nav %}
+    {{ nav() }}
+  {% endblock %}
+  {% if backButton %}  
+    {% block backLink %}
+      {{ backLink(backButton) }}
+    {% endblock%}
+  {% endif %}
 {% endblock %}
 
 {% block content %}

@@ -7,14 +7,8 @@
 
 {% block pageTitle %}{{ i18n['module_face_to_face_add'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management/courses/"+course.id+"/overview") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
 

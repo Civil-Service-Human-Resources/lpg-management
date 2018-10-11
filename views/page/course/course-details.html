@@ -9,14 +9,9 @@
     {{ i18n.course.pageTitle.editCourseDetails if course else i18n.course.pageTitle.addCourseDetails }} - {{ i18n.proposition_name }}
 {% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management/courses/title/") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/title/" %}
+
 
 {% block content %}
     {% set errors = sessionFlash.errors %}

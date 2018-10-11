@@ -8,14 +8,8 @@
 
 {% block pageTitle %}{{ i18n['learning_providers_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/" %}
 
 {% block content %}
      <div class="govuk-grid-row">

@@ -14,14 +14,8 @@
 {% endif %}
 {% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management/learning-providers/" + learningProvider.id) }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/learning-providers/{{learningProvider.id}}" %}
 
 {% block content %}
     <div class="govuk-grid-row">

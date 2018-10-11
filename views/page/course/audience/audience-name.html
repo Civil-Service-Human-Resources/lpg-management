@@ -12,14 +12,8 @@
     {% endif %}
 {% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
     {% set errors = sessionFlash.errors %}
