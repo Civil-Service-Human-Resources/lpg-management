@@ -184,7 +184,6 @@ export class EventController {
 		return async (request: Request, response: Response) => {
 			const dateRangeIndex = request.params.dateRangeIndex
 
-			// const event = await this.learningCatalogue.getPrivateCourseEvent(courseId, moduleId, eventId)
 			const event = response.locals.event
 
 			const dateRange = event!.dateRanges![dateRangeIndex]
