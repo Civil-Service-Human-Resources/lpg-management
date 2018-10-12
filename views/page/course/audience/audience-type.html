@@ -6,7 +6,7 @@
 {% extends "../../../component/Page.njk" %}
 
 {% block pageTitle %}
-    {{i18n.audience.page_title.edit_type if audience else i18n.audience.page_title.add_type}} - {{i18n.proposition_name}}
+    {{i18n.audience.pageTitle.editType if audience else i18n.audience.pageTitle.addType}} - {{i18n.proposition_name}}
 {% endblock %}
 
 {% set banner = true %}
@@ -19,7 +19,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageLables.edit if audience else i18n.audience.pageLables.addNew}}</p>
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.edit if audience else i18n.audience.pageText.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Type of audience</h2>
             <form action="/content-management/courses/{{ course.id }}/audiences/{{(audience.id + '/') if audience}}type" method="post" class="audience-form">
                 <p class="govuk-body">You can limit who this course is shown to</p>

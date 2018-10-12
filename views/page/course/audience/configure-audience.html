@@ -5,7 +5,7 @@
 
 {% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.audience.page_title.configure_audience }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ i18n.audience.pageTitle.configureAudience }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
 {% set backButton = "/content-management/courses/" + course.id + "/overview" %}
@@ -15,7 +15,7 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Configure your audience</h2>
             <p class="govuk-body">Your audience is called: <strong>{{ audience.name }}</strong></p>
             <div class="audience-container">
