@@ -1,6 +1,10 @@
 .app-html-class {
 	font-family: 'nta', Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+	hyphens: auto;
 }
 
 .pre {
@@ -203,7 +207,7 @@ ul {
 }
 
 .hidden {
-    display: none;
+	display: none;
 }
 
 @media screen and (min-width: $tablet-small) {
