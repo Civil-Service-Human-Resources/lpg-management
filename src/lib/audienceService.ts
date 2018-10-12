@@ -1,57 +1,39 @@
-import {LearningCatalogue} from '../learning-catalogue'
 import {NextFunction, Request, Response} from 'express'
-import {Course} from '../learning-catalogue/model/course'
-import {JsonpathService} from '../lib/jsonpathService'
+import {Audience} from '../learning-catalogue/model/audience'
 
 export class AudienceService {
-	private readonly learningCatalogue: LearningCatalogue
-
-	constructor(learningCatalogue: LearningCatalogue) {
-		this.learningCatalogue = learningCatalogue
-	}
-
 	/* istanbul ignore next */
-	findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404() {
+	static findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404() {
 		return async (req: Request, res: Response, next: NextFunction, audienceId: string) => {
-			const audience = await this.learningCatalogue.getAudience(res.locals.course.id, audienceId)
-			if (audience) {
-				res.locals.audience = audience
-				next()
-			} else {
+			if (res.locals.course && res.locals.course.audiences) {
+				const audience = res.locals.course.audiences.find((audience: Audience) => audience.id == audienceId)
+				if (audience) {
+					res.locals.audience = audience
+					next()
+				}
+			}
+			if (!res.locals.audience) {
 				res.sendStatus(404)
 			}
 		}
 	}
 
-	setDepartmentsOnAudience(course: Course, audienceId: string, departments: string[]) {
-		JsonpathService.setValue(
-			course,
-			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].departments`,
-			departments
-		)
-	}
-
-	setAreasOfWorkOnAudience(course: Course, audienceId: string, areasOfWork: string[]) {
-		JsonpathService.setValue(
-			course,
-			`$..audiences[?(@.id==${JSON.stringify(audienceId)})].areasOfWork`,
-			areasOfWork
-		)
-	}
-
-	setGradesOnAudience(course: Course, audienceId: string, grades: string[]) {
-		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].grades`, grades)
-	}
-
-	setCoreLearningOnAudience(course: Course, audienceId: string, interests: string[]) {
-		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].interests`, interests)
-	}
-
-	setDeadlineOnAudience(course: Course, audienceId: string, deadline: Date | null) {
-		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].requiredBy`, deadline)
-	}
-
-	setEventIdOnAudience(course: Course, audienceId: string, eventId?: string) {
-		JsonpathService.setValue(course, `$..audiences[?(@.id==${JSON.stringify(audienceId)})].eventId`, eventId)
+	static updateAudienceType(audience: Audience, updatedType: Audience.Type) {
+		if (audience.type != updatedType) {
+			if (updatedType == Audience.Type.PRIVATE_COURSE) {
+				audience.areasOfWork = []
+				audience.departments = []
+				audience.grades = []
+				audience.interests = []
+				audience.requiredBy = undefined
+				audience.frequency = undefined
+			} else {
+				audience.eventId = undefined
+				if (audience.type == Audience.Type.REQUIRED_LEARNING) {
+					audience.requiredBy = undefined
+				}
+			}
+			audience.type = updatedType
+		}
 	}
 }

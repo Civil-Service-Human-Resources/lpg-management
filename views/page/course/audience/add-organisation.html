@@ -5,7 +5,7 @@
 
 {% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.audience.page_title.add_organisation }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ i18n.audience.pageTitle.addOrganisation }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
 {% set backButton = "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure" %}
@@ -13,7 +13,7 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" method="post">
                 {% if errors.fields %}
