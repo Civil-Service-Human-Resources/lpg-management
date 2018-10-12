@@ -11,7 +11,6 @@ import {Audience} from '../../../../src/learning-catalogue/model/audience'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import {Request, Response} from 'express'
 import {CourseService} from '../../../../src/lib/courseService'
-import {AudienceService} from '../../../../src/lib/audienceService'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {Module} from '../../../../src/learning-catalogue/model/module'
 import moment = require('moment')
@@ -25,7 +24,6 @@ describe('AudienceController', () => {
 	let audienceFactory: AudienceFactory
 	let csrsService: CsrsService
 	let courseService: CourseService
-	let audienceService: AudienceService
 	let req: Request
 	let res: Response
 
@@ -38,13 +36,11 @@ describe('AudienceController', () => {
 		audienceFactory = <AudienceFactory>{}
 		csrsService = <CsrsService>{}
 		courseService = new CourseService(learningCatalogue)
-		audienceService = new AudienceService(learningCatalogue)
 		audienceController = new AudienceController(
 			learningCatalogue,
 			audienceValidator,
 			audienceFactory,
 			courseService,
-			audienceService,
 			csrsService
 		)
 
@@ -199,6 +195,7 @@ describe('AudienceController', () => {
 
 			const audience = {id: audienceId, departments: []}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			const hmrcCode = 'hmrc'
 			csrsService.getOrganisations = sinon
@@ -221,6 +218,7 @@ describe('AudienceController', () => {
 			req.body = {organisation: 'all', 'input-autocomplete': ''}
 			const audience = {id: audienceId, departments: []}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			const hmrcCode = 'hmrc'
 			const dwpCode = 'dwp'
@@ -250,6 +248,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, departments: ['hmrc']}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			learningCatalogue.updateCourse = sinon.stub()
 
@@ -280,6 +279,7 @@ describe('AudienceController', () => {
 			req.body = {'area-of-work': aowHumanResources}
 			const audience = {id: audienceId, areasOfWork: []}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			csrsService.isAreaOfWorkValid = sinon.stub().returns(true)
 			learningCatalogue.updateCourse = sinon.stub()
@@ -300,6 +300,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, areasOfWork: ['some area of work']}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			learningCatalogue.updateCourse = sinon.stub()
 
@@ -329,6 +330,7 @@ describe('AudienceController', () => {
 			req.body = {grades: gradeCode}
 			const audience = {id: audienceId, grades: []}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			csrsService.isGradeCodeValid = sinon.stub().returns(true)
 			learningCatalogue.updateCourse = sinon.stub()
@@ -349,6 +351,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, grades: ['some grade']}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			learningCatalogue.updateCourse = sinon.stub()
 
@@ -378,6 +381,7 @@ describe('AudienceController', () => {
 			req.body = {interests: interestCode}
 			const audience = {id: audienceId, interests: []}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			csrsService.isCoreLearningValid = sinon.stub().returns(true)
 			learningCatalogue.updateCourse = sinon.stub()
@@ -398,6 +402,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, interests: ['some interest']}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			learningCatalogue.updateCourse = sinon.stub()
 
@@ -424,6 +429,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, requiredBy: null}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 			req.body = {'deadline-year': '2018', 'deadline-month': '12', 'deadline-day': '16'}
 
 			audienceValidator.check = sinon.stub().returns({size: 0})
@@ -445,6 +451,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, requiredBy: new Date()}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			learningCatalogue.updateCourse = sinon.stub()
 
@@ -482,6 +489,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, eventId: null}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			courseService.getAllEventsOnCourse = sinon.stub().returns([{id: eventId}])
 			learningCatalogue.updateCourse = sinon.stub()
@@ -503,6 +511,7 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, eventId: 'event-id'}
 			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
 
 			learningCatalogue.updateCourse = sinon.stub()
 

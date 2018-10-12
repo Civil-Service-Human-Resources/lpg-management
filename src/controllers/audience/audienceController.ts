@@ -14,7 +14,6 @@ export class AudienceController {
 	audienceValidator: Validator<Audience>
 	audienceFactory: AudienceFactory
 	courseService: CourseService
-	audienceService: AudienceService
 	csrsService: CsrsService
 	router: Router
 
@@ -23,14 +22,12 @@ export class AudienceController {
 		audienceValidator: Validator<Audience>,
 		audienceFactory: AudienceFactory,
 		courseService: CourseService,
-		audienceService: AudienceService,
 		csrsService: CsrsService
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
 		this.audienceFactory = audienceFactory
 		this.courseService = courseService
-		this.audienceService = audienceService
 		this.csrsService = csrsService
 		this.router = Router()
 		this.configurePathParametersProcessing()
@@ -39,10 +36,7 @@ export class AudienceController {
 
 	private configurePathParametersProcessing() {
 		this.router.param('courseId', this.courseService.findCourseByCourseIdAndAssignToResponseLocalsOrReturn404())
-		this.router.param(
-			'audienceId',
-			this.audienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404()
-		)
+		this.router.param('audienceId', AudienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404())
 	}
 
 	private setRouterPaths() {
@@ -169,13 +163,7 @@ export class AudienceController {
 			} else {
 				let savedAudienceId: string
 				if (res.locals.audience) {
-					this.audienceService.updateAudience(
-						res.locals.course,
-						req.params.audienceId,
-						(audienceToUpdate: Audience) => {
-							this.audienceService.updateAudienceType(audienceToUpdate, audienceFromData.type)
-						}
-					)
+					AudienceService.updateAudienceType(res.locals.audience, audienceFromData.type)
 					await this.learningCatalogue.updateCourse(res.locals.course)
 					savedAudienceId = req.params.audienceId
 				} else {
@@ -221,9 +209,7 @@ export class AudienceController {
 				organisations
 			)
 			if (selectedOrganisations.length > 0) {
-				this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-					audience.departments = selectedOrganisations
-				})
+				res.locals.audience.departments = selectedOrganisations
 				await this.learningCatalogue.updateCourse(res.locals.course)
 			}
 			res.redirect(
@@ -234,9 +220,7 @@ export class AudienceController {
 
 	deleteOrganisation() {
 		return async (req: Request, res: Response) => {
-			this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-				audience.departments = []
-			})
+			res.locals.audience.departments = []
 			await this.learningCatalogue.updateCourse(res.locals.course)
 			res.redirect(
 				`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
@@ -283,13 +267,7 @@ export class AudienceController {
 			const areaOfWork = req.body['area-of-work']
 			if (areaOfWork) {
 				if (await this.csrsService.isAreaOfWorkValid(areaOfWork)) {
-					this.audienceService.updateAudience(
-						res.locals.course,
-						req.params.audienceId,
-						(audience: Audience) => {
-							audience.areasOfWork = [areaOfWork]
-						}
-					)
+					res.locals.audience.areasOfWork = [areaOfWork]
 					await this.learningCatalogue.updateCourse(res.locals.course)
 				}
 			}
@@ -302,9 +280,7 @@ export class AudienceController {
 
 	deleteAreasOfWork() {
 		return async (req: Request, res: Response) => {
-			this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-				audience.areasOfWork = []
-			})
+			res.locals.audience.areasOfWork = []
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
@@ -329,9 +305,7 @@ export class AudienceController {
 			const errors = await this.audienceValidator.check({requiredBy: date.toDate()}, ['audience.requiredBy'])
 
 			if (!errors.size) {
-				this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-					audience.requiredBy = date.toDate()
-				})
+				res.locals.audience.requiredBy = date.toDate()
 				await this.learningCatalogue.updateCourse(res.locals.course)
 				res.redirect(
 					`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
@@ -349,9 +323,7 @@ export class AudienceController {
 
 	deleteDeadline() {
 		return async (req: Request, res: Response) => {
-			this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-				audience.requiredBy = undefined
-			})
+			res.locals.audience.requiredBy = undefined
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
@@ -377,13 +349,7 @@ export class AudienceController {
 					true
 				)
 				if (allGradesValid) {
-					this.audienceService.updateAudience(
-						res.locals.course,
-						req.params.audienceId,
-						(audience: Audience) => {
-							audience.grades = gradeCodes
-						}
-					)
+					res.locals.audience.grades = gradeCodes
 					await this.learningCatalogue.updateCourse(res.locals.course)
 				}
 			}
@@ -396,9 +362,7 @@ export class AudienceController {
 
 	deleteGrades() {
 		return async (req: Request, res: Response) => {
-			this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-				audience.grades = []
-			})
+			res.locals.audience.grades = []
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
@@ -424,13 +388,7 @@ export class AudienceController {
 					true
 				)
 				if (allInterestsValid) {
-					this.audienceService.updateAudience(
-						res.locals.course,
-						req.params.audienceId,
-						(audience: Audience) => {
-							audience.interests = interests
-						}
-					)
+					res.locals.audience.interests = interests
 					await this.learningCatalogue.updateCourse(res.locals.course)
 				}
 			}
@@ -442,9 +400,7 @@ export class AudienceController {
 
 	deleteCoreLearning() {
 		return async (req: Request, res: Response) => {
-			this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-				audience.interests = []
-			})
+			res.locals.audience.interests = []
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
@@ -471,13 +427,7 @@ export class AudienceController {
 					.getAllEventsOnCourse(res.locals.course)
 					.find((event: Event) => event.id == eventId)
 				if (event) {
-					this.audienceService.updateAudience(
-						res.locals.course,
-						req.params.audienceId,
-						(audience: Audience) => {
-							audience.eventId = eventId
-						}
-					)
+					res.locals.audience.eventId = eventId
 					await this.learningCatalogue.updateCourse(res.locals.course)
 				}
 			}
@@ -489,9 +439,7 @@ export class AudienceController {
 
 	deletePrivateCourseEvent() {
 		return async (req: Request, res: Response) => {
-			this.audienceService.updateAudience(res.locals.course, req.params.audienceId, (audience: Audience) => {
-				audience.eventId = undefined
-			})
+			res.locals.audience.eventId = undefined
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(
