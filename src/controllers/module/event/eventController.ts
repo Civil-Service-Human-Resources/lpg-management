@@ -10,6 +10,7 @@ import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFac
 import {DateTime} from '../../../lib/dateTime'
 import {LearnerRecord} from '../../../leaner-record'
 
+
 export class EventController {
 	learningCatalogue: LearningCatalogue
 	learnerRecord: LearnerRecord
@@ -436,9 +437,7 @@ export class EventController {
 
 	public getEventOverview() {
 		return async (req: Request, res: Response) => {
-			const event = res.locals.event
-			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
-			res.render('page/course/module/events/events-overview', {eventDateWithMonthAsText})
+			res.render('page/course/module/events/events-overview')
 		}
 	}
 

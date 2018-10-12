@@ -39,7 +39,6 @@ import {Event} from './learning-catalogue/model/event'
 import {AudienceController} from './controllers/audience/audienceController'
 import {Audience} from './learning-catalogue/model/audience'
 import {CourseService} from './lib/courseService'
-import {AudienceService} from './lib/audienceService'
 import {CsrsConfig} from './csrs/csrsConfig'
 import {CsrsService} from './csrs/service/csrsService'
 import {YoutubeService} from './youtube/youtubeService'
@@ -94,7 +93,6 @@ export class ApplicationContext {
 	eventController: EventController
 	mediaConfig: LearningCatalogueConfig
 	courseService: CourseService
-	audienceService: AudienceService
 	csrsConfig: CsrsConfig
 	csrsService: CsrsService
 	dateRangeCommandFactory: DateRangeCommandFactory
@@ -240,14 +238,12 @@ export class ApplicationContext {
 			this.dateRangeCommandFactory
 		)
 
-		this.audienceService = new AudienceService(this.learningCatalogue)
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.audienceController = new AudienceController(
 			this.learningCatalogue,
 			this.audienceValidator,
 			this.audienceFactory,
 			this.courseService,
-			this.audienceService,
 			this.csrsService
 		)
 	}

@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/learning-providers/{{learningProvider.id}}" %}
+{% set backButton = "/content-management/learning-providers/" + learningProvider.id %}
 
 {% block content %}
     <div class="govuk-grid-row">
@@ -26,9 +26,7 @@
             <p class="govuk-heading-m govuk-!-font-size-36">Add new terms and conditions</p>
             {% endif %}
 
-            {% set errors = sessionFlash.errors %}
-
-            {% if errors.fields %}
+            {% if errors.size %}
                 <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
                     <h2 class="govuk-error-summary__title" id="error-summary-title">
                         There is a problem
@@ -47,17 +45,23 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <form action="/content-management/learning-providers/{{learningProvider.id}}/terms-and-conditions/{{termsAndConditions.id}}" method="post" class="module-form">
+
+                {% if termsAndConditions.id %}
+                    <input type="hidden" value="{{termsAndConditions.id}}" name="id"/>
+                {% endif %}
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields %}
                         {{ govukInput({
                         label: {
-                            text: "Title"
+                            text: "Name"
                             },
-                            id: "title",
-                            name: "title",
+                            id: "name",
+                            name: "name",
                             errorMessage: {
                                 text: "Name is required"
-                            }
+                            },
+                            value: termsAndConditions.name
+
                         }) }}
                     {% else %}
                         {{ govukInput({
@@ -69,22 +73,22 @@
                             value: termsAndConditions.name
                         }) }}
                     {% endif %}
-                     
+
                     {% block textarea %}
-                        {% if errors.fields%}
+                        {% if errors.fields.content %}
                             {{ textareaError("content", "content", "", null, "Terms and conditions", "Terms and conditions is required") }}
                         {% else %}
-                            {{ textarea("content", "termsAndConditions", "",  null, termsAndConditions.content, "Content") }}
+                            {{ textarea("content", "content", "",  null, termsAndConditions.content, "Content") }}
                         {% endif %}
-                    {% endblock %}               
-                </fieldset> 
+                    {% endblock %}
+                </fieldset>
                 <div class="button-container">
                     {{ govukButton({
                         text: "Save"
                     }) }}
                 </div>
                 <a class="cancel-button govuk-body govuk-link" href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
-            </form>                    
+            </form>
         </div>
         <div class="govuk-grid-column-one-third">
             <div class="right-menu">

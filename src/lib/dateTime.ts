@@ -1,7 +1,6 @@
 import moment = require('moment')
 
 export class DateTime {
-	private static readonly numberToMonthName = require('number-to-date-month-name')
 	private static readonly convert = require('convert-seconds')
 	private static readonly isoRegex = new RegExp(
 		'^(-)?P(?:(\\d+)Y)?(?:(\\d+)M)?(?:(\\d+)D)?' + '(T(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?$'
@@ -26,19 +25,6 @@ export class DateTime {
 			return -duration
 		}
 		return duration
-	}
-
-	static convertDate(date: string): string {
-		let formattedDate: string = date.substr(date.length - 2, 2)
-
-		if (formattedDate.charAt(0) == '0') {
-			formattedDate = formattedDate.substr(1)
-		}
-
-		formattedDate += ' ' + this.numberToMonthName.toMonth(date.substr(5, 2))
-		formattedDate += ' ' + date.substr(0, 4)
-
-		return formattedDate
 	}
 
 	static formatDuration(seconds: number): string {
