@@ -93,7 +93,7 @@ export class TermsAndConditionsController {
 			if (errors.size) {
 				return response.render('page/learning-provider/terms-and-conditions', {
 					errors: errors,
-					termsAndConditions:termsAndConditions
+					termsAndConditions: termsAndConditions,
 				})
 			}
 

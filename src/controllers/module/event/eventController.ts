@@ -10,7 +10,6 @@ import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFac
 import {DateTime} from '../../../lib/dateTime'
 import {LearnerRecord} from '../../../leaner-record'
 
-
 export class EventController {
 	learningCatalogue: LearningCatalogue
 	learnerRecord: LearnerRecord

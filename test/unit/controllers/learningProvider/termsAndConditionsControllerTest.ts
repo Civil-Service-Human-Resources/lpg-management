@@ -71,10 +71,9 @@ describe('Terms and Conditions Controller Tests', function() {
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 
 		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/terms-and-conditions', {
-				errors: errors,
-				termsAndConditions:termsAndConditions
-			}
-		)
+			errors: errors,
+			termsAndConditions: termsAndConditions,
+		})
 	})
 
 	it('should call set terms and conditions, create and redirect successfully if no errors', async function() {
@@ -100,7 +99,7 @@ describe('Terms and Conditions Controller Tests', function() {
 		await setTermsAndConditions(request, response)
 
 		expect(termsAndConditionsFactory.create).to.have.been.calledWith(request.body)
-		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name','content'])
+		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 		expect(learningCatalogue.createTermsAndConditions).to.have.been.calledWith(
 			learningProviderId,
@@ -140,7 +139,7 @@ describe('Terms and Conditions Controller Tests', function() {
 		await setTermsAndConditions(request, response)
 
 		expect(termsAndConditionsFactory.create).to.have.been.calledWith(request.body)
-		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name','content'])
+		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 		expect(learningCatalogue.updateTermsAndConditions).to.have.been.calledWith(
 			learningProviderId,

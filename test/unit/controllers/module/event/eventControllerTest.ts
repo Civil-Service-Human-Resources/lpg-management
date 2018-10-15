@@ -15,6 +15,7 @@ import {DateRangeCommand} from '../../../../../src/controllers/command/dateRange
 import {DateRangeCommandFactory} from '../../../../../src/controllers/command/factory/dateRangeCommandFactory'
 import {Venue} from '../../../../../src/learning-catalogue/model/venue'
 import {LearnerRecord} from '../../../../../src/leaner-record'
+import {DateTime} from '../../../../../src//lib/datetime'
 
 chai.use(sinonChai)
 
@@ -800,6 +801,26 @@ describe('EventController', function() {
 				startMinutes: request.body.startMinutes,
 				endHours: request.body.endHours,
 				endMinutes: request.body.endMinutes,
+			})
+		})
+
+		it('Should render attendee page', async () => {
+			const request = mockReq()
+			const response = mockRes()
+
+			let event: Event = new Event()
+			event.dateRanges = new Array<DateRange>()
+			event.dateRanges.push(new DateRange())
+			event.dateRanges[0].date = '01-02-2018'
+
+			response.locals = {event: event}
+
+			await eventController.getAttendeeDetails()(request, response)
+
+			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date.toString())
+
+			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/attendee', {
+				eventDateWithMonthAsText,
 			})
 		})
 	})
