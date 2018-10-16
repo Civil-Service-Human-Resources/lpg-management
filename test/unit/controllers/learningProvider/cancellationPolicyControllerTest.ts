@@ -69,12 +69,10 @@ describe('Cancellation Policy Controller Tests', function() {
 		expect(cancellationPolicyValidator.check).to.have.been.calledWith(request.body, ['name'])
 		expect(cancellationPolicyValidator.check).to.have.returned(errors)
 
-		expect(response.render).to.have.been.calledOnceWith(
-			'page/learning-provider/cancellation-policy', {
-				errors: errors,
-				cancellationPolicy: cancellationPolicy
-			}
-		)
+		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/cancellation-policy', {
+			errors: errors,
+			cancellationPolicy: cancellationPolicy,
+		})
 	})
 
 	it('should call set cancellation policy, create and redirect successfully if no errors', async function() {

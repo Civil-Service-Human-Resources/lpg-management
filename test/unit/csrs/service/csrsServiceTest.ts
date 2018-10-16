@@ -33,12 +33,11 @@ describe('CsrsService tests', () => {
 				},
 			]
 
-			restService.get = sinon.stub()
-				.returns(data)
+			restService.get = sinon.stub().returns(data)
 
 			const result = await csrsService.getOrganisations()
 
-			expect(restService.get).to.have.been.calledOnceWith('organisationalUnits')
+			expect(restService.get).to.have.been.calledOnceWith('organisations')
 			expect(result).to.eql(data)
 		})
 	})
