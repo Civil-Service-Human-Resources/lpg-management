@@ -20,7 +20,7 @@ describe('CourseService tests', () => {
 		courseService = new CourseService(learningCatalogue)
 	})
 
-	it('should get course sort modules and save course', async () => {
+	it('should get course sortDateRanges modules and save course', async () => {
 		const courseId = 'course-id'
 
 		const module1: Module = new Module()

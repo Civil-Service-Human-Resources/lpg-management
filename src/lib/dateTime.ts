@@ -1,4 +1,5 @@
 import moment = require('moment')
+import {DateRange} from '../learning-catalogue/model/dateRange'
 
 export class DateTime {
 	private static readonly numberToMonthName = require('number-to-date-month-name')
@@ -52,5 +53,13 @@ export class DateTime {
 
 	static yearMonthDayToDate(year: string, month: string, day: string) {
 		return moment(`${year.padStart(4, '0')}${month.padStart(2, '0')}${day.padStart(2, '0')}`)
+	}
+
+	static sortDateRanges(dateRange1: DateRange, dateRange2: DateRange) {
+		if (dateRange1.date > dateRange2.date) {
+			return 1
+		} else {
+			return -1
+		}
 	}
 }
