@@ -220,7 +220,6 @@ describe('EventController', function() {
 						endTime: '17:00',
 					},
 				],
-				formattedDate: '',
 			}
 
 			req.body = {
@@ -319,7 +318,7 @@ describe('EventController', function() {
 
 	it('should render event overview page', async function() {
 		let event: Event = new Event()
-		event.dateRanges = [{date: '2019-02-01', startTime: '9:00:00', endTime: '17:00:00'}]
+		event.dateRanges = [{date: '2019-02-01', startTime: '9:00:00', endTime: '17:00:00', formattedDate: ''}]
 
 		const getEventOverview: (request: Request, response: Response) => void = eventController.getEventOverview()
 
@@ -363,7 +362,6 @@ describe('EventController', function() {
 						endTime: '17:30',
 					},
 				],
-				formattedDate: '',
 			}
 
 			const responseConfig = {
@@ -654,7 +652,6 @@ describe('EventController', function() {
 						endTime: '16:30',
 					},
 				],
-				formattedDate: '',
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
 			learningCatalogue.updateEvent = sinon.stub()
