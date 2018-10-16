@@ -97,8 +97,7 @@ export class ApplicationContext {
 	dateRangeFactory: DateRangeFactory
 	dateRangeValidator: Validator<DateRange>
 
-	@EnvValue('LPG_UI_URL')
-	public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -194,7 +193,7 @@ export class ApplicationContext {
 			this.termsAndConditionsValidator
 		)
 
-		this.mediaConfig = new LearningCatalogueConfig('http://localhost:9001/media')
+		this.mediaConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url + '/media')
 
 		this.moduleController = new ModuleController(this.learningCatalogue, this.moduleFactory)
 		this.fileController = new FileController(
@@ -203,7 +202,7 @@ export class ApplicationContext {
 			this.moduleFactory,
 			new OauthRestService(this.mediaConfig, this.auth)
 		)
-		this.linkModuleController = new LinkModuleController(this.learningCatalogue, this.moduleFactory)
+		this.linkModuleController = new LinkModuleController(this.learningCatalogue, this.moduleFactory, this.moduleValidator)
 
 		this.faceToFaceController = new FaceToFaceModuleController(
 			this.learningCatalogue,

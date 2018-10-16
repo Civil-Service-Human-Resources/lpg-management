@@ -175,7 +175,6 @@ describe('EventController', function() {
 				id: 'event-id',
 				venue: venue,
 				dateRanges: [],
-				formattedDate: '',
 			})
 
 			await eventController.setLocation()(req, res)
@@ -438,7 +437,6 @@ describe('EventController', function() {
 					capacity: 5,
 				},
 				dateRanges: [],
-				formattedDate: '',
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
 			learningCatalogue.updateEvent = sinon.stub()

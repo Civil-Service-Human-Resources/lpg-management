@@ -51,16 +51,17 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
-            <p class="govuk-body no-margin">You are adding 
-            
+            <p class="govuk-body no-margin">You are adding
+
             {% if type === "file" %}
                 a
             {% else %}
-                an  
+                an
             {% endif %}
-            
+
             <strong>{{type}}</strong> module</p>
             <input id="accessToken" type="hidden" value="{{identity.accessToken}}">
+            <input id="courseCatalogueUrl" type="hidden" value="{{courseCatalogueUrl}}">
 
             <form id="detailsForm" action="/content-management/courses/{{course.id}}/module-file" method="post" class="module-form">
                 <input id="courseId" name="courseId" type="hidden" value="{{course.id}}">
@@ -206,7 +207,7 @@
                 },
                 items: [
                 {
-                value: "isOptional",
+                value: "true",
                 text: "Yes, this is optional"
                 }
                 ]

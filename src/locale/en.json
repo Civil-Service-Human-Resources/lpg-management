@@ -47,9 +47,10 @@
 			"editCourseDetails": "Edit course details"
 		},
 		"text": {
+			"details": "Course details",
 			"title": "Course title",
 			"addNew": "Add a new course",
-			"editTitle": "Edit course title"
+			"editDetails": "Edit course details"
 		},
 		"validation": {
 			"title": {
@@ -102,6 +103,7 @@
 	"validation.termsAndConditions.content.empty": "Content is required",
 	"validation_learningProvider_name_empty": "Name is required",
 	"validation_module_url_empty": "URL is required",
+	"validation_module_url_invalid": "A URL should include a protocol and be a top level domain",
 	"validation_module_title_empty": "Title is required",
 	"validation.module.duration.empty": "Duration is required",
 	"validation.module.duration.positive": "Duration must be positive",
