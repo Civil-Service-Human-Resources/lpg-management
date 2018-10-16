@@ -1,7 +1,7 @@
 import {Event} from '../event'
 import {VenueFactory} from './venueFactory'
 import {DateRangeFactory} from './dateRangeFactory'
-import {DateTime} from '../../../lib/DateTime'
+import {DateTime} from '../../../lib/dateTime'
 
 export class EventFactory {
 	venueFactory: VenueFactory

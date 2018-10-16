@@ -7,7 +7,7 @@ import * as sinonChai from 'sinon-chai'
 import * as chai from 'chai'
 import {LinkModuleController} from '../../../../src/controllers/module/linkModuleController'
 import {expect} from 'chai'
-import sinon = require('sinon');
+import sinon = require('sinon')
 
 chai.use(sinonChai)
 
@@ -37,7 +37,7 @@ describe('LinkModuleController tests', () => {
 	it('should validate title, description, url and duration and render errors', async () => {
 		const request = mockReq({
 			body: {
-				isOptional: true
+				isOptional: true,
 			},
 		})
 		const response = mockRes()
@@ -52,25 +52,28 @@ describe('LinkModuleController tests', () => {
 
 		expect(linkFactory.create).to.not.have.been.called
 		expect(learningCatalogue.createModule).to.not.have.been.called
-		expect(moduleValidator.check).to.have.been.calledOnceWith({
-			duration: 0,
-			isOptional: true,
-			type: "link"
-		}, ['title', 'description', 'url', 'duration'])
+		expect(moduleValidator.check).to.have.been.calledOnceWith(
+			{
+				duration: 0,
+				isOptional: true,
+				type: 'link',
+			},
+			['title', 'description', 'url', 'duration']
+		)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/module-link', {
 			module: {
 				duration: 0,
 				isOptional: true,
-				type: 'link'
+				type: 'link',
 			},
-			errors: errors
+			errors: errors,
 		})
 	})
 
 	it('should redirect to add module page on success', async () => {
 		const course = {
-			id: 'course-id'
+			id: 'course-id',
 		}
 
 		const data = {
@@ -79,7 +82,7 @@ describe('LinkModuleController tests', () => {
 			description: 'Module description',
 			url: 'http://example.org',
 			hours: 1,
-			minutes: 30
+			minutes: 30,
 		}
 
 		const request = mockReq({
@@ -87,8 +90,8 @@ describe('LinkModuleController tests', () => {
 		})
 		const response = mockRes({
 			locals: {
-				course: course
-			}
+				course: course,
+			},
 		})
 
 		const errors = {size: 0, fields: []}
@@ -99,7 +102,7 @@ describe('LinkModuleController tests', () => {
 			description: 'Module description',
 			url: 'http://example.org',
 			type: 'link',
-			duration: 5400
+			duration: 5400,
 		}
 
 		moduleValidator.check = sinon.stub().returns(errors)
@@ -110,16 +113,19 @@ describe('LinkModuleController tests', () => {
 
 		await controller.setLinkModule()(request, response)
 
-		expect(moduleValidator.check).to.have.been.calledOnceWith({
-			isOptional: true,
-			title: 'Module title',
-			description: 'Module description',
-			url: 'http://example.org',
-			hours: 1,
-			minutes: 30,
-			type: 'link',
-			duration: 5400
-		}, ['title', 'description', 'url', 'duration'])
+		expect(moduleValidator.check).to.have.been.calledOnceWith(
+			{
+				isOptional: true,
+				title: 'Module title',
+				description: 'Module description',
+				url: 'http://example.org',
+				hours: 1,
+				minutes: 30,
+				type: 'link',
+				duration: 5400,
+			},
+			['title', 'description', 'url', 'duration']
+		)
 
 		expect(linkFactory.create).to.have.been.calledOnceWith({
 			isOptional: true,
@@ -129,7 +135,7 @@ describe('LinkModuleController tests', () => {
 			hours: 1,
 			minutes: 30,
 			type: 'link',
-			duration: 5400
+			duration: 5400,
 		})
 
 		expect(learningCatalogue.createModule).to.have.been.calledOnceWith(course.id, linkModule)

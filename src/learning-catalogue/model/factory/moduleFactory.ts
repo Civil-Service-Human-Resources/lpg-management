@@ -6,7 +6,7 @@ import {FileModule} from '../fileModule'
 import {ELearningModule} from '../eLearningModule'
 import {Module} from '../module'
 import {Event} from '../event'
-import {DateTime} from '../../../lib/DateTime'
+import {DateTime} from '../../../lib/dateTime'
 
 export class ModuleFactory {
 	private eventFactory: EventFactory

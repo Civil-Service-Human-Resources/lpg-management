@@ -71,7 +71,9 @@ describe('ModuleFactory tests', () => {
 					capacity: 99,
 					minCapacity: 10,
 				},
-				dateRanges: [{date: '2019-01-01', startTime: '09:00:00', endTime: '17:00:00'}],
+				dateRanges: [
+					{date: '2019-01-01', startTime: '09:00:00', endTime: '17:00:00', formattedDate: '1 January 2019'},
+				],
 			},
 		]
 

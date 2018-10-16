@@ -52,10 +52,12 @@ export class LinkModuleController {
 			const course = response.locals.course
 			const data = {
 				...request.body,
-				duration: moment.duration({
-					hours: request.body.hours,
-					minutes: request.body.minutes
-				}).asSeconds(),
+				duration: moment
+					.duration({
+						hours: request.body.hours,
+						minutes: request.body.minutes,
+					})
+					.asSeconds(),
 				type: 'link',
 			}
 
@@ -64,7 +66,7 @@ export class LinkModuleController {
 			if (errors.size) {
 				return response.render('page/course/module/module-link', {
 					module: data,
-					errors: errors
+					errors: errors,
 				})
 			}
 
