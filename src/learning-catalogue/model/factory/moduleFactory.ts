@@ -74,7 +74,7 @@ export class ModuleFactory {
 				} else if (!event2.dateRanges[0]) {
 					return -1
 				} else {
-					return DateTime.sort(event1.dateRanges[0], event2.dateRanges[0])
+					return DateTime.sortDateRanges(event1.dateRanges[0], event2.dateRanges[0])
 				}
 			})
 

@@ -60,7 +60,7 @@ export class CourseController {
 		this.router.get('/content-management/courses/details/:courseId?', this.getCourseDetails())
 		this.router.post('/content-management/courses/details/:courseId?', this.setCourseDetails())
 
-		this.router.get('/content-management/courses/:courseId/sort-modules?', this.sortModules())
+		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules?', this.sortModules())
 	}
 
 	courseOverview() {

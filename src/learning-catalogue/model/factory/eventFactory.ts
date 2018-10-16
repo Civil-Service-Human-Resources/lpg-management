@@ -19,7 +19,7 @@ export class EventFactory {
 		event.id = data.id
 
 		event.dateRanges = (data.dateRanges || []).map(this.dateRangeFactory.create)
-		event.dateRanges.sort((dateRange1, dateRange2) => DateTime.sort(dateRange1, dateRange2))
+		event.dateRanges.sort((dateRange1, dateRange2) => DateTime.sortDateRanges(dateRange1, dateRange2))
 
 		event.venue = this.venueFactory.create(data.venue)
 
