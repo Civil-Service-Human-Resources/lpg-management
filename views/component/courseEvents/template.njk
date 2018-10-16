@@ -15,7 +15,7 @@
         {% if module.events.length > 0 %}
             <h3 class="govuk-heading-s no-margin">Event details</h3>
             <ul class="list">
-                {% for event in module.events | sort(attribute='dateRanges.date') | reverse %}
+                {% for event in module.events %}
                     <li class="module-item list-item u--border--bgrey">
                         <div class="title-container">
                             <p class="govuk-body no-margin">{{ event.venue.location | default("location not set", true) }}, {{ event.dateRanges[0].formattedDate |  default("date not set", true)}}</p>
