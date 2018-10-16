@@ -164,7 +164,7 @@ ul {
 
 			&:focus {
 				& + label {
-					outline: 3px solid #ffbf47;
+					outline: 3px solid $outline;
 				}
 			}
 		}
@@ -184,6 +184,10 @@ ul {
 
 .no-margin {
 	margin-bottom: 0;
+}
+
+.hint {
+	color: $hint;
 }
 
 .button-red {
