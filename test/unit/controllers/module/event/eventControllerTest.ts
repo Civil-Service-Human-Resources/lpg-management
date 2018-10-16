@@ -34,7 +34,14 @@ describe('EventController', function() {
 		dateRangeValidator = <Validator<DateRange>>{}
 		dateRangeCommandFactory = <DateRangeCommandFactory>{}
 
-		eventController = new EventController(learningCatalogue, eventValidator, eventFactory, dateRangeCommandValidator, dateRangeValidator, dateRangeCommandFactory)
+		eventController = new EventController(
+			learningCatalogue,
+			eventValidator,
+			eventFactory,
+			dateRangeCommandValidator,
+			dateRangeValidator,
+			dateRangeCommandFactory
+		)
 	})
 
 	describe('date time paths', function() {
@@ -69,7 +76,7 @@ describe('EventController', function() {
 			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
 			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
 			dateRangeCommandValidator.check = sinon.stub().returns({fields: [], size: 0})
-			dateRangeValidator.check = sinon.stub().returns({fields:[], size: 0})
+			dateRangeValidator.check = sinon.stub().returns({fields: [], size: 0})
 
 			const event = new Event()
 			eventFactory.create = sinon.stub().returns(event)
@@ -77,9 +84,9 @@ describe('EventController', function() {
 			await eventController.setDateTime()(req, res)
 
 			expect(dateRangeCommandValidator.check).to.have.been.calledOnceWith(req.body)
-			expect(res.render).to.have.been.calledWith('page/course/module/events/events',{
+			expect(res.render).to.have.been.calledWith('page/course/module/events/events', {
 				event: event,
-				eventJson: JSON.stringify(event)
+				eventJson: JSON.stringify(event),
 			})
 		})
 
@@ -88,14 +95,14 @@ describe('EventController', function() {
 			const res: Response = mockRes()
 
 			req.body = {
-				'day': '',
-				'month': '1',
-				'year': '2019',
-				'startTime': ['07', '00'],
-				'endTime': ['06', '00'],
+				day: '',
+				month: '1',
+				year: '2019',
+				startTime: ['07', '00'],
+				endTime: ['06', '00'],
 			}
 
-			const errors = {fields: {day:['error']}, size: 1}
+			const errors = {fields: {day: ['error']}, size: 1}
 			dateRangeCommandValidator.check = sinon.stub().returns(errors)
 
 			const event = new Event()
@@ -106,7 +113,7 @@ describe('EventController', function() {
 			expect(res.render).to.have.been.calledWith('page/course/module/events/events', {
 				errors: errors,
 				event: event,
-				eventJson: JSON.stringify(event)
+				eventJson: JSON.stringify(event),
 			})
 		})
 
@@ -126,7 +133,7 @@ describe('EventController', function() {
 			await eventController.getLocation()(mockReq(), res)
 			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/event-location', {
 				event: {},
-				eventJson: undefined
+				eventJson: undefined,
 			})
 		})
 
@@ -158,7 +165,7 @@ describe('EventController', function() {
 				address: venue.address,
 				capacity: venue.capacity,
 				minCapacity: venue.minCapacity,
-				eventJson: JSON.stringify(event)
+				eventJson: JSON.stringify(event),
 			}
 
 			event.venue = venue
@@ -167,7 +174,8 @@ describe('EventController', function() {
 			learningCatalogue.createEvent = sinon.stub().returns(<Event>{
 				id: 'event-id',
 				venue: venue,
-				dateRanges: []
+				dateRanges: [],
+				formattedDate: '',
 			})
 
 			await eventController.setLocation()(req, res)
@@ -209,9 +217,10 @@ describe('EventController', function() {
 					{
 						date: '2019-02-28',
 						startTime: '09:00',
-						endTime: '17:00'
-					}
-				]
+						endTime: '17:00',
+					},
+				],
+				formattedDate: '',
 			}
 
 			req.body = {
@@ -245,7 +254,6 @@ describe('EventController', function() {
 			)
 		})
 
-
 		it('should redirect back to location page if errors on create', async function() {
 			const req: Request = mockReq()
 			const res: Response = mockRes()
@@ -261,21 +269,17 @@ describe('EventController', function() {
 
 			const errors = {fields: [{location: ['validation.module.event.venue.location.empty']}], size: 1}
 
-			eventValidator.check = sinon
-				.stub()
-				.returns(errors)
+			eventValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.createEvent = sinon.stub().returns(event)
 
 			await eventController.setLocation()(req, res)
 
 			expect(learningCatalogue.createEvent).to.not.have.been.called
-			expect(res.render).to.have.been.calledOnceWith(
-				'page/course/module/events/event-location', {
-					eventJson:req.body.eventJson,
-					errors: errors,
-				}
-			)
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/event-location', {
+				eventJson: req.body.eventJson,
+				errors: errors,
+			})
 		})
 
 		it('should redirect back to location page if errors on update', async function() {
@@ -291,30 +295,26 @@ describe('EventController', function() {
 				location: '',
 				address: 'Victoria Street',
 				capacity: 10,
-				minCapacity: 5,			}
+				minCapacity: 5,
+			}
 
 			const errors = {fields: [{location: ['validation.module.event.venue.location.empty']}], size: 1}
 
-			eventValidator.check = sinon
-				.stub()
-				.returns(errors)
+			eventValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.createEvent = sinon.stub().returns(event)
 
 			await eventController.updateLocation()(req, res)
 
 			expect(learningCatalogue.createEvent).to.not.have.been.called
-			expect(res.render).to.have.been.calledOnceWith(
-				'page/course/module/events/event-location', {
-					errors: errors,
-					location: '',
-					address: 'Victoria Street',
-					capacity: 10,
-					minCapacity: 5,
-				}
-			)
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/event-location', {
+				errors: errors,
+				location: '',
+				address: 'Victoria Street',
+				capacity: 10,
+				minCapacity: 5,
+			})
 		})
-
 	})
 
 	it('should render event overview page', async function() {
@@ -336,7 +336,7 @@ describe('EventController', function() {
 	describe('Edit and update DateRange', () => {
 		it('should retrieve DateRange for edit', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 
 			const requestConfig = {
@@ -344,8 +344,8 @@ describe('EventController', function() {
 					courseId: courseId,
 					moduleId: moduleId,
 					eventId: eventId,
-					dateRangeIndex: 0
-				}
+					dateRangeIndex: 0,
+				},
 			}
 
 			let event = <Event>{
@@ -355,21 +355,21 @@ describe('EventController', function() {
 					address: 'London',
 					minCapacity: 5,
 					capacity: 10,
-
 				},
 				dateRanges: [
 					{
 						date: '2019-03-31',
 						startTime: '09:15',
 						endTime: '17:30',
-					}
-				]
+					},
+				],
+				formattedDate: '',
 			}
 
 			const responseConfig = {
 				locals: {
-					event: event
-				}
+					event: event,
+				},
 			}
 
 			// learningCatalogue.getEvent = sinon.stub().returns(event)
@@ -382,19 +382,19 @@ describe('EventController', function() {
 			// expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit', {
 				day: 31,
-				month : 3,
+				month: 3,
 				year: 2019,
 				startHours: '09',
 				startMinutes: '15',
 				endHours: '17',
 				endMinutes: '30',
-				dateRangeIndex: 0
+				dateRangeIndex: 0,
 			})
 		})
 
 		it('should update date range successfully', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 
 			const requestConfig = {
@@ -402,15 +402,15 @@ describe('EventController', function() {
 					courseId: courseId,
 					moduleId: moduleId,
 					eventId: eventId,
-					dateRangeIndex: 0
+					dateRangeIndex: 0,
 				},
 				body: {
 					day: '01',
 					month: '12',
 					year: '2019',
-					startTime: [ '11', '30'],
+					startTime: ['11', '30'],
 					endTime: ['12', '30'],
-				}
+				},
 			}
 
 			const request = mockReq(requestConfig)
@@ -421,7 +421,7 @@ describe('EventController', function() {
 			const dateRange = <DateRange>{
 				date: '2019-12-01',
 				startTime: '11:30',
-				endTime: '12:30'
+				endTime: '12:30',
 			}
 
 			let dateRangeCommand = <DateRangeCommand>{}
@@ -435,11 +435,12 @@ describe('EventController', function() {
 				id: 'event-id',
 				venue: {
 					address: 'London',
-					location:'London',
+					location: 'London',
 					minCapacity: 5,
-					capacity: 5
+					capacity: 5,
 				},
-				dateRanges: []
+				dateRanges: [],
+				formattedDate: '',
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
 			learningCatalogue.updateEvent = sinon.stub()
@@ -451,25 +452,26 @@ describe('EventController', function() {
 				id: 'event-id',
 				venue: {
 					address: 'London',
-					location:'London',
+					location: 'London',
 					minCapacity: 5,
-					capacity: 5
+					capacity: 5,
 				},
 				dateRanges: [
 					{
 						date: '2019-12-01',
 						startTime: '11:30',
-						endTime: '12:30'
-					}
-				]
+						endTime: '12:30',
+					},
+				],
 			})
-			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+			expect(response.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
+			)
 		})
-
 
 		it('should display errors if form validation fails on update', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 			const dateRangeIndex = 0
 
@@ -478,15 +480,15 @@ describe('EventController', function() {
 					courseId: courseId,
 					moduleId: moduleId,
 					eventId: eventId,
-					dateRangeIndex: dateRangeIndex
+					dateRangeIndex: dateRangeIndex,
 				},
 				body: {
 					day: '01',
 					month: '12',
 					year: '2019',
-					startTime: [ '11', '30'],
+					startTime: ['11', '30'],
 					endTime: ['12', '30'],
-				}
+				},
 			}
 
 			const request = mockReq(requestConfig)
@@ -495,12 +497,10 @@ describe('EventController', function() {
 			const errors: any = {
 				fields: [
 					{
-						day:[
-							'error'
-						]
-					}
+						day: ['error'],
+					},
 				],
-				size: 1
+				size: 1,
 			}
 
 			dateRangeCommandValidator.check = sinon.stub().returns(errors)
@@ -521,13 +521,13 @@ describe('EventController', function() {
 				startMinutes: request.body.startMinutes,
 				endHours: request.body.endHours,
 				endMinutes: request.body.endMinutes,
-				dateRangeIndex: dateRangeIndex
+				dateRangeIndex: dateRangeIndex,
 			})
 		})
 
 		it('should display errors if DateRange validation fails on update', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 			const dateRangeIndex = 0
 
@@ -536,15 +536,15 @@ describe('EventController', function() {
 					courseId: courseId,
 					moduleId: moduleId,
 					eventId: eventId,
-					dateRangeIndex: dateRangeIndex
+					dateRangeIndex: dateRangeIndex,
 				},
 				body: {
 					day: '01',
 					month: '12',
 					year: '2019',
-					startTime: [ '11', '30'],
+					startTime: ['11', '30'],
 					endTime: ['12', '30'],
-				}
+				},
 			}
 
 			const request = mockReq(requestConfig)
@@ -553,16 +553,13 @@ describe('EventController', function() {
 			const errors: any = {
 				fields: [
 					{
-						day:[
-							'error'
-						]
-					}
+						day: ['error'],
+					},
 				],
-				size: 1
+				size: 1,
 			}
 
 			dateRangeCommandValidator.check = sinon.stub().returns({})
-
 
 			const dateRangeCommand = <DateRangeCommand>{}
 			const dateRange = <DateRange>{}
@@ -590,12 +587,11 @@ describe('EventController', function() {
 				startMinutes: request.body.startMinutes,
 				endHours: request.body.endHours,
 				endMinutes: request.body.endMinutes,
-				dateRangeIndex: dateRangeIndex
+				dateRangeIndex: dateRangeIndex,
 			})
 		})
 
 		it('should render dateRange overview', async () => {
-
 			const request = mockReq()
 			const response = mockRes()
 
@@ -606,7 +602,7 @@ describe('EventController', function() {
 
 		it('should add date range successfully', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 
 			const requestConfig = {
@@ -614,15 +610,15 @@ describe('EventController', function() {
 					courseId: courseId,
 					moduleId: moduleId,
 					eventId: eventId,
-					dateRangeIndex: 0
+					dateRangeIndex: 0,
 				},
 				body: {
 					day: '01',
 					month: '12',
 					year: '2019',
-					startTime: [ '11', '30'],
+					startTime: ['11', '30'],
 					endTime: ['12', '30'],
-				}
+				},
 			}
 
 			const request = mockReq(requestConfig)
@@ -633,7 +629,7 @@ describe('EventController', function() {
 			const dateRange = <DateRange>{
 				date: '2019-12-01',
 				startTime: '11:30',
-				endTime: '12:30'
+				endTime: '12:30',
 			}
 
 			let dateRangeCommand = <DateRangeCommand>{}
@@ -647,17 +643,18 @@ describe('EventController', function() {
 				id: 'event-id',
 				venue: {
 					address: 'London',
-					location:'London',
+					location: 'London',
 					minCapacity: 5,
-					capacity: 5
+					capacity: 5,
 				},
 				dateRanges: [
 					{
 						date: '2019-03-31',
 						startTime: '09:30',
-						endTime: '16:30'
-					}
-				]
+						endTime: '16:30',
+					},
+				],
+				formattedDate: '',
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
 			learningCatalogue.updateEvent = sinon.stub()
@@ -669,44 +666,46 @@ describe('EventController', function() {
 				id: 'event-id',
 				venue: {
 					address: 'London',
-					location:'London',
+					location: 'London',
 					minCapacity: 5,
-					capacity: 5
+					capacity: 5,
 				},
 				dateRanges: [
 					{
 						date: '2019-03-31',
 						startTime: '09:30',
-						endTime: '16:30'
+						endTime: '16:30',
 					},
 					{
 						date: '2019-12-01',
 						startTime: '11:30',
-						endTime: '12:30'
-					}
-				]
+						endTime: '12:30',
+					},
+				],
 			})
-			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+			expect(response.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
+			)
 		})
 
 		it('should display errors if form validation fails on add', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 
 			const requestConfig = {
 				params: {
 					courseId: courseId,
 					moduleId: moduleId,
-					eventId: eventId
+					eventId: eventId,
 				},
 				body: {
 					day: '01',
 					month: '12',
 					year: '2019',
-					startTime: [ '11', '30'],
+					startTime: ['11', '30'],
 					endTime: ['12', '30'],
-				}
+				},
 			}
 
 			const request = mockReq(requestConfig)
@@ -715,12 +714,10 @@ describe('EventController', function() {
 			const errors: any = {
 				fields: [
 					{
-						day:[
-							'error'
-						]
-					}
+						day: ['error'],
+					},
 				],
-				size: 1
+				size: 1,
 			}
 
 			dateRangeCommandValidator.check = sinon.stub().returns(errors)
@@ -740,28 +737,28 @@ describe('EventController', function() {
 				startHours: request.body.startHours,
 				startMinutes: request.body.startMinutes,
 				endHours: request.body.endHours,
-				endMinutes: request.body.endMinutes
+				endMinutes: request.body.endMinutes,
 			})
 		})
 
 		it('should display errors if DateRange validation fails on add', async () => {
 			const courseId = 'course-id'
-			const moduleId= 'module-id'
+			const moduleId = 'module-id'
 			const eventId = 'event-id'
 
 			const requestConfig = {
 				params: {
 					courseId: courseId,
 					moduleId: moduleId,
-					eventId: eventId
+					eventId: eventId,
 				},
 				body: {
 					day: '01',
 					month: '12',
 					year: '2019',
-					startTime: [ '11', '30'],
+					startTime: ['11', '30'],
 					endTime: ['12', '30'],
-				}
+				},
 			}
 
 			const request = mockReq(requestConfig)
@@ -770,16 +767,13 @@ describe('EventController', function() {
 			const errors: any = {
 				fields: [
 					{
-						day:[
-							'error'
-						]
-					}
+						day: ['error'],
+					},
 				],
-				size: 1
+				size: 1,
 			}
 
 			dateRangeCommandValidator.check = sinon.stub().returns({})
-
 
 			const dateRangeCommand = <DateRangeCommand>{}
 			const dateRange = <DateRange>{}
@@ -806,9 +800,8 @@ describe('EventController', function() {
 				startHours: request.body.startHours,
 				startMinutes: request.body.startMinutes,
 				endHours: request.body.endHours,
-				endMinutes: request.body.endMinutes
+				endMinutes: request.body.endMinutes,
 			})
 		})
-
 	})
 })

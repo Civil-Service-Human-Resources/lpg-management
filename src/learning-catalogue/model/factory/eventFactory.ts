@@ -1,6 +1,7 @@
 import {Event} from '../event'
 import {VenueFactory} from './venueFactory'
 import {DateRangeFactory} from './dateRangeFactory'
+import {DateTime} from '../../../lib/dateTime'
 
 export class EventFactory {
 	venueFactory: VenueFactory
@@ -20,6 +21,10 @@ export class EventFactory {
 		event.dateRanges = (data.dateRanges || []).map(this.dateRangeFactory.create)
 
 		event.venue = this.venueFactory.create(data.venue)
+
+		if (data.dateRanges[0] && data.dateRanges[0].date) {
+			event.formattedDate = DateTime.convertDate(event.dateRanges[0].date)
+		}
 
 		return event
 	}

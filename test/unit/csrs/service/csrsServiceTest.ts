@@ -33,8 +33,7 @@ describe('CsrsService tests', () => {
 				},
 			]
 
-			restService.get = sinon.stub()
-				.returns(data)
+			restService.get = sinon.stub().returns(data)
 
 			const result = await csrsService.getOrganisations()
 

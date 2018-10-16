@@ -1,6 +1,6 @@
-import { OauthRestService } from '../../lib/http/oauthRestService'
-import { JsonpathService } from '../../lib/jsonpathService'
-import { CacheService } from '../../lib/cacheService'
+import {OauthRestService} from '../../lib/http/oauthRestService'
+import {JsonpathService} from '../../lib/jsonpathService'
+import {CacheService} from '../../lib/cacheService'
 
 export class CsrsService {
 	restService: OauthRestService

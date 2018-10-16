@@ -11,6 +11,8 @@ export class Event {
 	})
 	dateRanges: Array<DateRange> = []
 
+	formattedDate: string
+
 	@ValidateNested({
 		groups: ['all', 'event.all', 'event.location'],
 	})
