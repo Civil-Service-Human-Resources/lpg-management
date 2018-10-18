@@ -18,7 +18,7 @@
                 {% for event in module.events %}
                     <li class="module-item list-item u--border--bgrey">
                         <div class="title-container">
-                            <p class="govuk-body no-margin">{{ event.venue.location | default("location unset", true) }}, {{ event.dateRanges[0].formattedDate |  default("date unset", true)}}</p>
+                            <p class="govuk-body no-margin">{{ event.venue.location | default("location unset", true) }}, {{ (event.dateRanges[0].date | dateWithMonthAsText)}}</p>
                             <a href="/content-management/courses/{{ course.id }}/modules/{{ module.id }}/events-overview/{{ event.id }}" class="govuk-body govuk-link">View</a>
                         </div>
                         {% if event.dateRanges.length > 1 %}

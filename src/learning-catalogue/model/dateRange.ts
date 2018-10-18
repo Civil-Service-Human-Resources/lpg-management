@@ -28,6 +28,4 @@ export class DateRange {
 		message: 'validation_module_event_dateRanges_endBeforeStart',
 	})
 	endTime: string
-
-	formattedDate: string
 }

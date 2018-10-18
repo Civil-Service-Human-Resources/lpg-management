@@ -69,13 +69,11 @@ export class ModuleFactory {
 			module.productCode = data.productCode
 
 			module.events.sort((event1: Event, event2: Event) => {
-				if (!event1.dateRanges[0]) {
-					return 1
-				} else if (!event2.dateRanges[0]) {
-					return -1
-				} else {
-					return DateTime.sortDateRanges(event1.dateRanges[0], event2.dateRanges[0])
-				}
+				return !event1.dateRanges[0]
+					? 1
+					: !event2.dateRanges[0]
+						? -1
+						: DateTime.sortDateRanges(event1.dateRanges[0], event2.dateRanges[0])
 			})
 
 			return module

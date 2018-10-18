@@ -317,7 +317,11 @@ describe('EventController', function() {
 
 	it('should render event overview page', async function() {
 		let event: Event = new Event()
-		event.dateRanges = [{date: '2019-02-01', startTime: '9:00:00', endTime: '17:00:00', formattedDate: ''}]
+		let dateRange: DateRange = new DateRange()
+		dateRange.date = '2019-02-01'
+		dateRange.startTime = '9:00:00'
+		dateRange.endTime = '17:00:00'
+		event.dateRanges = [dateRange]
 
 		const getEventOverview: (request: Request, response: Response) => void = eventController.getEventOverview()
 

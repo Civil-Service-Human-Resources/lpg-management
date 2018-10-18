@@ -56,10 +56,6 @@ export class DateTime {
 	}
 
 	static sortDateRanges(dateRange1: DateRange, dateRange2: DateRange) {
-		if (dateRange1.date > dateRange2.date) {
-			return 1
-		} else {
-			return -1
-		}
+		return +(dateRange1.date > dateRange2.date) || -1
 	}
 }
