@@ -42,10 +42,10 @@
     ],
     [
       {
-        text: "Level"
+        text: "Grades"
       },
       {
-        text: "AO to SEO",
+        text: grades|join(", ") if grades.length > 0 else "Unspecified",
         format: "numeric"
       }
     ],

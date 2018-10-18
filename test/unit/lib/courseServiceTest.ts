@@ -174,5 +174,46 @@ describe('CourseService tests', () => {
 				expect(courseService.getEventIdToModuleIdMapping(course)).to.be.deep.equal(expectedMap)
 			})
 		})
+
+		describe('#getUniqueGrades', () => {
+			it('should return a unique list of grades from all audiences', () => {
+				let course = new Course()
+
+				course.audiences = [
+					{
+						id: 'a',
+						name: 'name',
+						type: Audience.Type.OPEN,
+						grades: ['a', 'b', 'c'],
+					},
+					{
+						id: 'b',
+						name: 'name',
+						type: Audience.Type.OPEN,
+						grades: ['c', 'd', 'e'],
+					},
+					{
+						id: 'c',
+						name: 'name',
+						type: Audience.Type.OPEN,
+						grades: ['e', 'f', 'g'],
+					}
+				]
+
+
+				const uniqueGrades = courseService.getUniqueGrades(course)
+
+				expect(uniqueGrades).to.eql(['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+			})
+
+			it('should not crash if audiences are undefined', () => {
+				let course = new Course()
+
+				const uniqueGrades = courseService.getUniqueGrades(course)
+
+				expect(uniqueGrades).to.eql([])
+			})
+
+		})
 	})
 })

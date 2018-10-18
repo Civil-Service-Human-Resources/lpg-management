@@ -5,6 +5,7 @@ import {Module} from '../learning-catalogue/model/module'
 import {NextFunction, Request, Response} from 'express'
 import {FaceToFaceModule} from '../learning-catalogue/model/faceToFaceModule'
 import {Audience} from '../learning-catalogue/model/audience'
+import * as _ from 'lodash'
 
 export class CourseService {
 	learningCatalogue: LearningCatalogue
@@ -82,5 +83,10 @@ export class CourseService {
 				}, map)
 				return map
 			}, {})
+	}
+
+	getUniqueGrades(course: Course) {
+		// @ts-ignore
+		return _.uniq(_.flatten((course.audiences || []).map((audience: Audience) => audience.grades))).sort()
 	}
 }

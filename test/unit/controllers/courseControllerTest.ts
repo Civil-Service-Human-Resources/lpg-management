@@ -1,8 +1,8 @@
 import {beforeEach, describe, it} from 'mocha'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import * as chai from 'chai'
-import * as sinonChai from 'sinon-chai'
 import {expect} from 'chai'
+import * as sinonChai from 'sinon-chai'
 import {Request, Response} from 'express'
 import {LearningCatalogue} from '../../../src/learning-catalogue'
 import {Course} from '../../../src/learning-catalogue/model/course'
@@ -51,6 +51,7 @@ describe('Course Controller Tests', function() {
 		csrsService.getGradeCodeToNameMapping = sinon.stub()
 		courseService.getAudienceIdToEventMapping = sinon.stub()
 		courseService.getEventIdToModuleIdMapping = sinon.stub()
+		courseService.getUniqueGrades = sinon.stub().returns(['G1','G2', 'G3'])
 
 		const course = new Course()
 		course.modules = []
@@ -59,6 +60,7 @@ describe('Course Controller Tests', function() {
 		await courseOverview(request, response)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/course-overview')
+		expect(courseService.getUniqueGrades).to.have.been.calledOnceWith(course)
 	})
 
 	it('should render course preview page', async function() {
@@ -325,5 +327,19 @@ describe('Course Controller Tests', function() {
 
 		expect(courseService.sortModules).to.have.been.calledWith(courseId, moduleIds)
 		expect(response.redirect).to.have.been.calledWith(`/content-management/courses/${courseId}/add-module`)
+	})
+
+
+	it('should flatten grades for all audiences', async () => {
+		const audiences: any[] = [{
+			grades: ['a', 'b', 'c'],
+		},
+		{
+			grades: ['d', 'e', 'f'],
+		}]
+
+		const allGrades = [].concat.apply([], audiences.map(audience => audience.grades))
+
+		expect(allGrades).to.eql(['a', 'b', 'c', 'd', 'e', 'f'])
 	})
 })
