@@ -10,9 +10,11 @@
 {% block pageTitle %}
 {% if type === 'file' %}
     {{ i18n['module_add_file'] }}
+{% elif type === 'mp4' %}
+    {{ i18n['module_add_video_mp4'] }}
 {% else %}
- {{ i18n['module_add_scorm'] }}
- {% endif %}
+    {{ i18n['module_add_scorm'] }}
+{% endif %}
      - {{ i18n['proposition_name'] }}
 {% endblock %}
 
@@ -157,9 +159,11 @@
                     <fieldset class="govuk-fieldset">
                         <div class="add-file-form govuk-form-group">
                             {% if type === 'file' %}
-                                {% set fileTypes = 'PDF, Powerpoint, Excel, Word, video (MP4)' %}
+                                {% set fileTypes = 'PDF, Powerpoint, Excel, Word' %}
+                            {% elif  type === 'mp4'%}
+                                {% set fileTypes = 'MP4' %}
                             {% else %}
-                                {% set fileTypes = 'SCORM' %}
+                                {% set fileTypes = 'E-learning (.zip)' %}
                             {% endif %}
                             <label class="govuk-label">File</label>
                             <span id="file-upload-hint" class="govuk-hint">You can upload the following file types: {{fileTypes}}</span>

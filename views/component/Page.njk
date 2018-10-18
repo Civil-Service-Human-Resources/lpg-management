@@ -51,10 +51,10 @@
 
 {% block header %}
   {{ govukHeader({
-        homepageUrl: "#",
+        homepageUrl: lpgUiUrl + "/",
         containerClasses: "govuk-width-container",
         serviceName: "Civil Service Learning",
-        serviceUrl: "#"
+        serviceUrl: lpgUiUrl + "/"
     }) }}
 {% endblock %}
 
@@ -67,7 +67,7 @@
     {% endblock%}
   {% endif %}
   {% block nav %}
-    {{ nav() }}
+    {{ nav(lpgUiUrl) }}
   {% endblock %}
   {% if backButton %}  
     {% block backLink %}
@@ -89,11 +89,11 @@
           text: "Help"
         },
         {
-          href: "#2",
+          href: lpgUiUrl + "/cookies",
           text: "Cookies"
         },
         {
-          href: "#3",
+          href: "mailto:feedback@cslearning.gov.uk",
           text: "Contact"
         },
         {
