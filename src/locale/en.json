@@ -47,9 +47,10 @@
 			"editCourseDetails": "Edit course details"
 		},
 		"text": {
+			"details": "Course details",
 			"title": "Course title",
 			"addNew": "Add a new course",
-			"editTitle": "Edit course title"
+			"editDetails": "Edit course details"
 		},
 		"validation": {
 			"title": {
@@ -62,11 +63,34 @@
 			"description": {
 				"empty": "Description is required",
 				"maxLength": "Description is too long"
+			},
+			"status": {
+				"invalid": "Status needs to one of 'Draft', 'Published' or 'Archived'"
 			}
 		}
 	},
 
-	"blended": "Blended",
+    "module": {
+		"validation": {
+			"cost": {
+				"positive": "Module cost must be a positive number"
+			}
+		},
+
+		"text": {
+			"cost": "Cost £ (ex VAT)"
+		}
+	},
+
+	"courseType": {
+		"face-to-face": "Face to Face",
+		"link": "Link",
+		"elearning": "E-learning",
+		"video": "Video",
+		"file": "File",
+		"blended": "Blended"
+	},
+
 	"content_management_title": "Content management",
 	"cancellation_policy_add_title": "Add cancellation policy",
 	"cancellation_policy_edit_title": "Edit cancellation policy",
@@ -76,16 +100,12 @@
 	"event_add_title": "Add event date & time",
 	"event_overview": "Event overview",
 	"event_add_location": "Event location and availability",
-	"face-to-face": "Face to Face",
-	"link": "Link",
-	"elearning": "e-learning",
-	"video": "Video",
-	"file": "File",
 	"learning_provider_add_title": "Add learning provider",
 	"learning_provider_add_to_course_title": "Add learning provider to course",
 	"learning_provider_overview_title": "Learning provider overview",
 	"learning_providers_title": "Learning providers",
 	"module_add_file": "Add a file",
+	"module_add_video_mp4": "Add a Video (MP4)",
 	"module_add_scorm": "Add e-learning",
 	"module_add_title": "Add a module",
 	"module_link_add_title": "Add a link",
@@ -102,6 +122,7 @@
 	"validation.termsAndConditions.content.empty": "Content is required",
 	"validation_learningProvider_name_empty": "Name is required",
 	"validation_module_url_empty": "URL is required",
+	"validation_module_url_invalid": "A URL should include a protocol and be a top level domain",
 	"validation_module_title_empty": "Title is required",
 	"validation.module.duration.empty": "Duration is required",
 	"validation.module.duration.positive": "Duration must be positive",

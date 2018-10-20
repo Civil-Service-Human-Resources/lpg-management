@@ -20,12 +20,8 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            {% if course %}
-                <p class="govuk-body form-header govuk-!-font-size-24">Edit course details</p>
-            {% else %}
-                <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
-            {% endif %}
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
+            <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course else i18n.course.text.addNew}}</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.details}}</h2>
             <form action="/content-management/courses/details/{{ course.id }}" method="post" class="course-form">
                 {% set course = sessionFlash.course %}
                 <input id="title" name="title" type="hidden" value="{{ course.title }}">

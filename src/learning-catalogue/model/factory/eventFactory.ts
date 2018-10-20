@@ -1,6 +1,7 @@
 import {Event} from '../event'
 import {VenueFactory} from './venueFactory'
 import {DateRangeFactory} from './dateRangeFactory'
+import {DateTime} from '../../../lib/dateTime'
 
 export class EventFactory {
 	venueFactory: VenueFactory
@@ -18,6 +19,7 @@ export class EventFactory {
 		event.id = data.id
 
 		event.dateRanges = (data.dateRanges || []).map(this.dateRangeFactory.create)
+		event.dateRanges.sort((dateRange1, dateRange2) => DateTime.sortDateRanges(dateRange1, dateRange2))
 
 		event.venue = this.venueFactory.create(data.venue)
 

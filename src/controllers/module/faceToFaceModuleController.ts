@@ -47,24 +47,24 @@ export class FaceToFaceModuleController {
 
 	public setModule() {
 		return async (request: Request, response: Response) => {
-			const data = {
-				...request.body,
+			const data = {...request.body}
+			if (!data.cost) {
+				delete data.cost
 			}
 
 			const course = response.locals.course
-
-			const errors = await this.moduleValidator.check(data, ['title', 'description'])
-
+			const errors = await this.moduleValidator.check(data, ['title', 'description', 'cost'])
 			const module = await this.moduleFactory.create(data)
 
 			if (errors.size) {
 				request.session!.sessionFlash = {errors: errors, module: module}
-				return response.redirect(`/content-management/courses/${course.id}/module-face-to-face`)
+				request.session!.save(() => {
+					response.redirect(`/content-management/courses/${course.id}/module-face-to-face`)
+				})
+			} else {
+				await this.learningCatalogue.createModule(course.id, module)
+				response.redirect(`/content-management/courses/${course.id}/preview`)
 			}
-
-			await this.learningCatalogue.createModule(course.id, module)
-
-			return response.redirect(`/content-management/courses/${course.id}/preview`)
 		}
 	}
 }

@@ -10,9 +10,11 @@
 {% block pageTitle %}
 {% if type === 'file' %}
     {{ i18n['module_add_file'] }}
+{% elif type === 'mp4' %}
+    {{ i18n['module_add_video_mp4'] }}
 {% else %}
- {{ i18n['module_add_scorm'] }}
- {% endif %}
+    {{ i18n['module_add_scorm'] }}
+{% endif %}
      - {{ i18n['proposition_name'] }}
 {% endblock %}
 
@@ -51,16 +53,17 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
-            <p class="govuk-body no-margin">You are adding 
-            
+            <p class="govuk-body no-margin">You are adding
+
             {% if type === "file" %}
                 a
             {% else %}
-                an  
+                an
             {% endif %}
-            
+
             <strong>{{type}}</strong> module</p>
             <input id="accessToken" type="hidden" value="{{identity.accessToken}}">
+            <input id="courseCatalogueUrl" type="hidden" value="{{courseCatalogueUrl}}">
 
             <form id="detailsForm" action="/content-management/courses/{{course.id}}/module-file" method="post" class="module-form">
                 <input id="courseId" name="courseId" type="hidden" value="{{course.id}}">
@@ -156,9 +159,11 @@
                     <fieldset class="govuk-fieldset">
                         <div class="add-file-form govuk-form-group">
                             {% if type === 'file' %}
-                                {% set fileTypes = 'PDF, Powerpoint, Excel, Word, video (MP4)' %}
+                                {% set fileTypes = 'PDF, Powerpoint, Excel, Word' %}
+                            {% elif  type === 'mp4'%}
+                                {% set fileTypes = 'MP4' %}
                             {% else %}
-                                {% set fileTypes = 'SCORM' %}
+                                {% set fileTypes = 'E-learning (.zip)' %}
                             {% endif %}
                             <label class="govuk-label">File</label>
                             <span id="file-upload-hint" class="govuk-hint">You can upload the following file types: {{fileTypes}}</span>
@@ -206,7 +211,7 @@
                 },
                 items: [
                 {
-                value: "isOptional",
+                value: "true",
                 text: "Yes, this is optional"
                 }
                 ]

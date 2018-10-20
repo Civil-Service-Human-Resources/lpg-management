@@ -11,7 +11,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l no-margin">{{event.venue.location}}, {{event.dateRanges[0].date | formatDate}}</h1>
+      <h1 class="govuk-heading-l no-margin">{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}}</h1>
     </div>
   </div>
      <div class="govuk-grid-row">
@@ -19,9 +19,14 @@
           <p class="govuk-body">This event is for the <strong>{{module.title | default("Module title", true)}}</strong> module on the <a href="/content-management/courses/{{course.id}}/overview" class="govuk-link">{{course.title}}</a> course</p>
           <div class="event-overview">
             <h3 class="govuk-heading-m">Event overview</h3>
+            {% set dateList = [] %}
+              {% for dateRange in event.dateRanges %}
+                {% set eventDate = dateList.push('<p class="govuk-body no-margin">'+(dateRange.date | dateWithMonthAsText)+'</p>') %}
+              {% endfor %}
+              {% set list = dateList|join %}
               {{ govukTable({
                 firstCellIsHeader: true,
-                classes: "course-table",
+                classes: "course-table event-table",
                 rows: [
                   [
                     {
@@ -56,6 +61,16 @@
                       },
                       {
                         text: event.venue.minCapacity,
+                        format: "numeric"
+                      }
+                  ],
+                  [
+                      {
+                        text: "Event dates",
+                        classes: "vertical"
+                      },
+                      {
+                        html: list,
                         format: "numeric"
                       }
                   ],
@@ -123,18 +138,6 @@
                         {
                             link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/location/',
                             text: 'Edit location and capacity'
-                        },
-                        {
-                            link: '#',
-                            text: 'Edit reminder time'
-                        },
-                        {
-                            link: '#',
-                            text: 'Prevent further signups'
-                        },
-                        {
-                            link: '#',
-                            text: 'Cancel this event'
                         }
                     ] %}
                     {{ menu("Actions", actions) }}

@@ -68,10 +68,6 @@ export const AUTHENTICATION_PATH = '/authenticate'
 export const YOUTUBE_API_KEY = env.YOUTUBE_API_KEY
 
 export const COURSE_CATALOGUE = set({
-	auth: {
-		password: env.COURSE_CATALOGUE_PASS || 'password',
-		username: env.COURSE_CATALOGUE_USER || 'user',
-	},
 	url: env.COURSE_CATALOGUE_URL || 'http://localhost:9001',
 })
 

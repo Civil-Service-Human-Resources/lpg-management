@@ -11,13 +11,13 @@ export class DateRange {
 		groups: ['all', 'event.all', 'event.dateRanges.date'],
 		message: 'validation_module_event_dateRanges_empty',
 	})
-	date: String
+	date: string
 
 	@IsNotEmpty({
 		groups: ['all', 'event.all', 'event.dateRanges.startTime'],
 		message: 'validation_module_event_start_empty',
 	})
-	startTime: String
+	startTime: string
 
 	@IsNotEmpty({
 		groups: ['all', 'event.all', 'event.dateRanges.endTime'],
@@ -27,5 +27,5 @@ export class DateRange {
 		groups: ['all', 'event.all', 'event.dateRanges.endTime'],
 		message: 'validation_module_event_dateRanges_endBeforeStart',
 	})
-	endTime: String
+	endTime: string
 }

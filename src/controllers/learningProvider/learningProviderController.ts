@@ -79,22 +79,20 @@ export class LearningProviderController {
 	}
 
 	public setLearningProvider() {
-		return async (request: Request, response: Response) => {
-			const data = {
-				...request.body,
-			}
-
+		return async (req: Request, res: Response) => {
+			const data = {...req.body}
 			const learningProvider = this.learningProviderFactory.create(data)
+			const errors = await this.learningProviderValidator.check(req.body, ['name'])
 
-			const errors = await this.learningProviderValidator.check(request.body, ['name'])
 			if (errors.size) {
-				request.session!.sessionFlash = {errors: errors}
-				return response.redirect('/content-management/learning-providers/learning-provider')
+				req.session!.sessionFlash = {errors: errors}
+				req.session!.save(() => {
+					res.redirect('/content-management/learning-providers/learning-provider')
+				})
+			} else {
+				const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider)
+				res.redirect('/content-management/learning-providers/' + newLearningProvider.id)
 			}
-
-			const newLearningProvider = await this.learningCatalogue.createLearningProvider(learningProvider)
-
-			response.redirect('/content-management/learning-providers/' + newLearningProvider.id)
 		}
 	}
 }

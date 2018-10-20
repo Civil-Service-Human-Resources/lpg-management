@@ -4,15 +4,15 @@
 
 {% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.audience.pageTitle.addEvent !!! TODO !!! }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{i18n.audience.pageTitle.addEvent}} - {{i18n.proposition_name}}{% endblock %}
 
 {% block beforeContent %}
     {% block phaseBanner %}
         {{ phaseBanner("beta") }}
-    {% endblock%}
+    {% endblock %}
     {% block backLink %}
         {{ backLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
-    {% endblock%}
+    {% endblock %}
 {% endblock %}
 
 {% block content %}

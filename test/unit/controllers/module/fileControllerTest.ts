@@ -31,7 +31,7 @@ describe('File Controller Test', function() {
 	})
 
 	it('Should render file module page', async function() {
-		const getFile: (request: Request, response: Response) => void = fileController.getFile()
+		const getFile: (request: Request, response: Response) => void = fileController.getFile('file')
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
@@ -42,7 +42,7 @@ describe('File Controller Test', function() {
 	})
 
 	it('Should get media and render file module page', async function() {
-		const getFile: (request: Request, response: Response) => void = fileController.getFile()
+		const getFile: (request: Request, response: Response) => void = fileController.getFile('file')
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()

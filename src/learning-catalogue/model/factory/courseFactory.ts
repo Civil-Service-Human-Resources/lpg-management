@@ -6,9 +6,9 @@ export class CourseFactory {
 	private _moduleFactory: ModuleFactory
 	private audienceFactory: AudienceFactory
 
-	constructor() {
-		this.audienceFactory = new AudienceFactory()
-		this._moduleFactory = new ModuleFactory()
+	constructor(audienceFactory = new AudienceFactory(), moduleFactory = new ModuleFactory()) {
+		this.audienceFactory = audienceFactory
+		this._moduleFactory = moduleFactory
 		this.create = this.create.bind(this)
 	}
 
@@ -22,6 +22,7 @@ export class CourseFactory {
 		course.title = data.title
 		course.modules = (data.modules || []).map(this._moduleFactory.create)
 		course.audiences = (data.audiences || []).map(this.audienceFactory.create)
+		course.status = data.status
 		return course
 	}
 

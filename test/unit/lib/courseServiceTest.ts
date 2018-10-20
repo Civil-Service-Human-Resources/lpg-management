@@ -20,7 +20,7 @@ describe('CourseService tests', () => {
 		courseService = new CourseService(learningCatalogue)
 	})
 
-	it('should get course sort modules and save course', async () => {
+	it('should get course sortDateRanges modules and save course', async () => {
 		const courseId = 'course-id'
 
 		const module1: Module = new Module()
@@ -173,6 +173,47 @@ describe('CourseService tests', () => {
 				expectedMap[event3Id] = module2Id
 				expect(courseService.getEventIdToModuleIdMapping(course)).to.be.deep.equal(expectedMap)
 			})
+		})
+
+		describe('#getUniqueGrades', () => {
+			it('should return a unique list of grades from all audiences', () => {
+				let course = new Course()
+
+				course.audiences = [
+					{
+						id: 'a',
+						name: 'name',
+						type: Audience.Type.OPEN,
+						grades: ['a', 'b', 'c'],
+					},
+					{
+						id: 'b',
+						name: 'name',
+						type: Audience.Type.OPEN,
+						grades: ['c', 'd', 'e'],
+					},
+					{
+						id: 'c',
+						name: 'name',
+						type: Audience.Type.OPEN,
+						grades: ['e', 'f', 'g'],
+					}
+				]
+
+
+				const uniqueGrades = courseService.getUniqueGrades(course)
+
+				expect(uniqueGrades).to.eql(['a', 'b', 'c', 'd', 'e', 'f', 'g'])
+			})
+
+			it('should not crash if audiences are undefined', () => {
+				let course = new Course()
+
+				const uniqueGrades = courseService.getUniqueGrades(course)
+
+				expect(uniqueGrades).to.eql([])
+			})
+
 		})
 	})
 })

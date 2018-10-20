@@ -1,5 +1,4 @@
-import {Audience} from './audience'
-import {IsIn, IsNotEmpty, IsPositive, ValidateNested} from 'class-validator'
+import {IsIn, IsNotEmpty, IsOptional, IsPositive} from 'class-validator'
 
 export class Module {
 	id: string
@@ -38,16 +37,17 @@ export class Module {
 
 	formattedDuration: string
 
-	price?: number
+	@IsOptional({
+		groups: ['all', 'cost'],
+		message: 'module.validation.cost.positive',
+	})
+	@IsPositive({
+		groups: ['all', 'cost'],
+		message: 'module.validation.cost.positive',
+	})
+	cost?: number
 
 	optional: boolean
-
-	url: string
-
-	@ValidateNested({
-		groups: ['all', 'audiences'],
-	})
-	audiences: Audience[]
 }
 
 export namespace Module {

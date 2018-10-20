@@ -43,11 +43,6 @@ describe('Course tests', () => {
 		expect(course.learningOutcomes).to.equal('test-learningOutcomes')
 	})
 
-	it('should be able to set price', () => {
-		course.price = 1000
-		expect(course.price).to.equal(1000)
-	})
-
 	it('should be able to set modules', () => {
 		const modules = [new Module()]
 
@@ -56,59 +51,69 @@ describe('Course tests', () => {
 		expect(course.modules).to.equal(modules)
 	})
 
-	it('should be able to get costs by sum of module costs', () => {
-		const module1 = new VideoModule()
-		module1.price = 100
+	describe('#getCost', () => {
+		let module1: VideoModule
+		let module2: LinkModule
+		let module3: FaceToFaceModule
 
-		const module2 = new LinkModule()
-		module2.price = 50
+		beforeEach(() => {
+			module1 = new VideoModule()
+			module2 = new LinkModule()
+			module3 = new FaceToFaceModule()
+			course.modules = [module1, module2, module3]
+		})
 
-		const module3 = new FaceToFaceModule()
-		module3.price = 25.25
+		it('should be able to get cost by sum of module costs', () => {
+			module1.cost = 100
+			module2.cost = 50
+			module3.cost = 25.25
 
-		course.modules = [module1, module2, module3]
+			expect(course.getCost()).to.equal(175.25)
+		})
 
-		expect(course.getCost()).to.equal(175.25)
+		it('should get 0 if there are no modules', () => {
+			course.modules = []
+
+			expect(course.getCost()).to.equal(0)
+		})
+
+		it('should get 0 if all module costs are missing', () => {
+			delete module1.cost
+			delete module2.cost
+			delete module3.cost
+
+			expect(course.getCost()).to.equal(0)
+		})
+
+		it('should get a sum even if any of the module costs is missing', () => {
+			delete module1.cost
+			module2.cost = 50
+			module3.cost = 20
+
+			expect(course.getCost()).to.equal(70)
+		})
 	})
 
-	it('should get null if no module costs', () => {
-		course.modules = []
+	describe('#getType', () => {
+		it('should get type to be undefined if no modules', () => {
+			course.modules = []
 
-		expect(course.getCost()).to.equal(null)
-	})
+			expect(course.getType()).to.be.undefined
+		})
 
-	it('should get 0 if no module costs are 0', () => {
-		const module1 = new VideoModule()
-		module1.price = 0
+		it('should get type to be blended if more than one module', () => {
+			course.modules = [new Module(), new Module(), new Module()]
 
-		const module2 = new LinkModule()
-		module2.price = 0
+			expect(course.getType()).to.equal('blended')
+		})
 
-		const module3 = new FaceToFaceModule()
-		module3.price = 0
+		it('should get type to be type of module if only one module', () => {
+			const module1 = new Module()
+			module1.type = Module.Type.VIDEO
 
-		course.modules = [module1, module2, module3]
-		expect(course.getCost()).to.equal(0)
-	})
+			course.modules = [module1]
 
-	it('should get type to be null if no modules', () => {
-		course.modules = []
-
-		expect(course.getType()).to.equal('course')
-	})
-
-	it('should get type to be blended if more than one module', () => {
-		course.modules = [new Module(), new Module(), new Module()]
-
-		expect(course.getType()).to.equal('blended')
-	})
-
-	it('should get type to be type of module if only one module', () => {
-		const module1 = new Module()
-		module1.type = Module.Type.VIDEO
-
-		course.modules = [module1]
-
-		expect(course.getType()).to.equal('video')
+			expect(course.getType()).to.equal('video')
+		})
 	})
 })

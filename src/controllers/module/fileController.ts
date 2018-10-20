@@ -41,22 +41,30 @@ export class FileController {
 				res.sendStatus(404)
 			}
 		})
-		this.router.get('/content-management/courses/:courseId/module-file', this.getFile())
+		this.router.get('/content-management/courses/:courseId/module-file', this.getFile('file'))
 		this.router.post('/content-management/courses/:courseId/module-file', this.setFile())
-		this.router.get('/content-management/courses/:courseId/module-e-learning', this.getScorm())
+		this.router.get('/content-management/courses/:courseId/module-e-learning', this.getFile('e-learning'))
+		this.router.get('/content-management/courses/:courseId/module-mp4', this.getFile('mp4'))
 	}
 
-	public getFile() {
+	public getFile(type: string) {
 		return async (request: Request, response: Response) => {
 			if (request.session!.sessionFlash && request.session!.sessionFlash.mediaId) {
 				const mediaId = request.session!.sessionFlash.mediaId
 
 				const media = await this.restService.get(`/${mediaId}`)
 
-				return response.render('page/course/module/module-file', {type: 'file', media})
+				return response.render('page/course/module/module-file', {
+					type: type,
+					media,
+					courseCatalogueUrl: config.COURSE_CATALOGUE.url + '/media',
+				})
 			}
 
-			return response.render('page/course/module/module-file', {type: 'file'})
+			return response.render('page/course/module/module-file', {
+				type: type,
+				courseCatalogueUrl: config.COURSE_CATALOGUE.url + '/media',
+			})
 		}
 	}
 
@@ -106,20 +114,6 @@ export class FileController {
 
 			await this.learningCatalogue.createModule(course.id, module)
 			response.redirect(`/content-management/courses/${course.id}/preview`)
-		}
-	}
-
-	public getScorm() {
-		return async (request: Request, response: Response) => {
-			if (request.session!.sessionFlash && request.session!.sessionFlash.mediaId) {
-				const mediaId = request.session!.sessionFlash.mediaId
-
-				const media = await this.restService.get(`/${mediaId}`)
-
-				return response.render('page/course/module/module-file', {type: 'e-learning', media})
-			}
-
-			return response.render('page/course/module/module-file', {type: 'e-learning'})
 		}
 	}
 }

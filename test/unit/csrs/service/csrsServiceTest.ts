@@ -36,8 +36,7 @@ describe('CsrsService tests', () => {
 			restService.get = sinon.stub().returns(data)
 
 			const result = await csrsService.getOrganisations()
-
-			expect(restService.get).to.have.been.calledOnceWith('organisations')
+			expect(restService.get).to.have.been.calledOnceWith('/organisationalUnits')
 			expect(result).to.eql(data)
 		})
 	})
@@ -58,7 +57,7 @@ describe('CsrsService tests', () => {
 			it('should get areas of work data', async () => {
 				const result = await csrsService.getAreasOfWork()
 
-				expect(restService.get).to.have.been.calledOnceWith('professions')
+				expect(restService.get).to.have.been.calledOnceWith('/professions')
 				expect(result).to.eql(areasOfWork)
 			})
 		})
@@ -89,7 +88,7 @@ describe('CsrsService tests', () => {
 
 			const result = await csrsService.getCoreLearning()
 
-			expect(restService.get).to.have.been.calledOnceWith('interests')
+			expect(restService.get).to.have.been.calledOnceWith('/interests')
 			expect(result).to.eql(data)
 		})
 	})

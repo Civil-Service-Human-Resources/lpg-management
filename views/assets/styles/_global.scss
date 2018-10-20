@@ -168,7 +168,7 @@ ul {
 
 			&:focus {
 				& + label {
-					outline: 3px solid #ffbf47;
+					outline: 3px solid $outline;
 				}
 			}
 		}
@@ -183,11 +183,16 @@ ul {
 	.govuk-table__header {
 		width: 50%;
 		padding: 15px 20px 15px 0;
+		vertical-align: top;
 	}
 }
 
 .no-margin {
 	margin-bottom: 0;
+}
+
+.hint {
+	color: $hint;
 }
 
 .button-red {

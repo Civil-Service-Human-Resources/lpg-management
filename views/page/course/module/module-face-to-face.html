@@ -11,11 +11,11 @@
 {% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
-
     {% set errors = sessionFlash.errors %}
     {% set module = sessionFlash.module %}
 
     {{ errorSummary(errors.fields) }}
+
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
@@ -27,14 +27,14 @@
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.title %}
                         {{ govukInput({
-                        label: {
-                            text: "Module title"
-                        },
-                        id: "title",
-                        name: "title",
-                        errorMessage: {
-                            text: "Module title is required"
-                        }
+                            label: {
+                                text: "Module title"
+                            },
+                            id: "title",
+                            name: "title",
+                            errorMessage: {
+                                text: "Module title is required"
+                            }
                         }) }}
                     {% else %}
                         {{ govukInput({
@@ -48,28 +48,53 @@
                     {% endif %}
 
                     {% if errors.fields.description %}
-                    {{ govukTextarea({
-                        name: "description",
-                        id: "description",
-                        label: {
-                            text: "Description"
-                        },
-                        errorMessage: {
-                            text: "Description is required"
-                        }
+                        {{ govukTextarea({
+                            name: "description",
+                            id: "description",
+                            label: {
+                                text: "Description"
+                            },
+                            errorMessage: {
+                                text: "Description is required"
+                            }
                         }) }}
                     {% else %}
                         {{ govukTextarea({
-                        name: "description",
-                        id: "description",
-                        value: module.description,
-                        label: {
-                            text: "Description"
-                        }
+                            name: "description",
+                            id: "description",
+                            value: module.description,
+                            label: {
+                                text: "Description"
+                            }
                         }) }}
                     {% endif %}
                 </fieldset>
-                
+
+                {% if errors.fields.cost %}
+                    {{ govukInput({
+                        classes: "govuk-input--width-10",
+                        label: {
+                            text: i18n.module.text.cost
+                        },
+                        id: "cost",
+                        name: "cost",
+                        value: module.cost,
+                        errorMessage: {
+                            text: i18n.module.validation.cost.positive
+                        }
+                    }) }}
+                {% else %}
+                    {{ govukInput({
+                        classes: "govuk-input--width-10",
+                        label: {
+                            text: i18n.module.text.cost
+                        },
+                        id: "cost",
+                        name: "cost",
+                        value: module.cost
+                    }) }}
+                {% endif %}
+
                 {{ govukCheckboxes({
                     idPrefix: "optional",
                     name: "optional",
@@ -82,20 +107,20 @@
                         }
                     },
                     items: [
-                    {
-                        value: "optional",
-                        text: "Yes, this is optional"
-                    }
-                ]
+                        {
+                            value: "true",
+                            text: "Yes, this is optional"
+                        }
+                    ]
                 }) }}
                 <div class="button-container">
                     {{ govukButton({
-                    text: "Continue"
+                        text: "Continue"
                     }) }}
                 </div>
             </form>
 
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/overview">Cancel</a>        
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/overview">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>

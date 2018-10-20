@@ -1,5 +1,5 @@
 import {Module} from './module'
-import {IsNotEmpty} from 'class-validator'
+import {IsNotEmpty, IsUrl} from 'class-validator'
 
 export class LinkModule extends Module {
 	@IsNotEmpty({
@@ -18,18 +18,26 @@ export class LinkModule extends Module {
 		groups: ['all', 'url'],
 		message: 'validation_module_blog_url_empty',
 	})
+	@IsUrl(
+		{
+			require_protocol: true,
+			require_tld: true,
+			allow_underscores: true,
+			allow_trailing_dot: false,
+		},
+		{
+			groups: ['all', 'url'],
+			message: 'validation_module_url_invalid',
+		}
+	)
 	url: string
 
 	@IsNotEmpty({
 		groups: ['all', 'duration'],
-		message: 'validation_module_duration_empty',
+		message: 'validation.module.duration.empty',
 	})
 	duration: number
 
-	@IsNotEmpty({
-		groups: ['all', 'duration'],
-		message: 'validation_module_isOptional_empty',
-	})
 	isOptional: boolean
 
 	type: Module.Type.LINK

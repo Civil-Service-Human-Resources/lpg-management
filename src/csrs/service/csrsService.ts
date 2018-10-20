@@ -18,14 +18,14 @@ export class CsrsService {
 	}
 
 	async getOrganisations() {
-		return await this.restService.get('organisations')
+		return await this.restService.get('/organisationalUnits')
 	}
 
 	async getAreasOfWork() {
 		let areasOfWork = this.cacheService.cache.get(CsrsService.AREAS_OF_WORK)
 
 		if (!areasOfWork) {
-			areasOfWork = await this.restService.get('professions')
+			areasOfWork = await this.restService.get('/professions')
 			this.cacheService.cache.set(CsrsService.AREAS_OF_WORK, areasOfWork)
 		}
 
@@ -45,7 +45,7 @@ export class CsrsService {
 		let grades = this.cacheService.cache.get(CsrsService.GRADES)
 
 		if (!grades) {
-			grades = await this.restService.get('grades')
+			grades = await this.restService.get('/grades')
 			this.cacheService.cache.set(CsrsService.GRADES, grades)
 		}
 
@@ -75,7 +75,7 @@ export class CsrsService {
 		let interests = this.cacheService.cache.get(CsrsService.INTERESTS)
 
 		if (!interests) {
-			interests = await this.restService.get('interests')
+			interests = await this.restService.get('/interests')
 			this.cacheService.cache.set(CsrsService.INTERESTS, interests)
 		}
 

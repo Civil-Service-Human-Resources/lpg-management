@@ -9,6 +9,7 @@ import {Course} from '../../../../../src/learning-catalogue/model/course'
 import * as sinon from 'sinon'
 import {Audience} from '../../../../../src/learning-catalogue/model/audience'
 import {AudienceFactory} from '../../../../../src/learning-catalogue/model/factory/audienceFactory'
+import {Status} from '../../../../../src/learning-catalogue/model/status'
 
 chai.use(sinonChai)
 
@@ -79,6 +80,7 @@ describe('CourseFactory tests', () => {
 			description: description,
 			learningOutcomes: learningOutcomes,
 			modules: null,
+			status: "Published"
 		}
 
 		moduleFactory.create = sinon.stub()
@@ -92,5 +94,6 @@ describe('CourseFactory tests', () => {
 		expect(result.learningOutcomes).to.equal(learningOutcomes)
 		expect(result.modules).to.eql([])
 		expect(moduleFactory.create).to.not.have.been.called
+		expect(result.status).to.equal(Status.PUBLISHED)
 	})
 })
