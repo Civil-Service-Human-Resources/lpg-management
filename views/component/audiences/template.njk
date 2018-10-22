@@ -17,6 +17,9 @@
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span class="audience-info">' + (audience.grades | jsonpath(gradeCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span class="audience-info">' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span class="audience-info">' + (audience.interests | join(', ') | default("Unspecified", true)) + '</span></li>' %}
+                    {% if audienceTypeAsString == 'REQUIRED_LEARNING' %}
+                        {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Required by</span><span class="audience-info">' + (audience.requiredBy | formatDate | default("Unspecified", true)) + '</span></li>' %}
+                    {% endif %}
                 {% else %}
                     {% set audienceEvent = audienceIdToEvent[audience.id] %}
                     {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span>' %}
