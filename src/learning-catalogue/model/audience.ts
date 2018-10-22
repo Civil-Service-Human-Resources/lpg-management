@@ -1,3 +1,4 @@
+import {IsFutureDate} from '../validator/custom/isFutureDate'
 import {IsDate, IsNotEmpty, MaxLength} from 'class-validator'
 
 export class Audience {
@@ -30,6 +31,10 @@ export class Audience {
 	@IsDate({
 		groups: ['all', 'audience.all', 'audience.requiredBy'],
 		message: 'audience.validation.requiredBy.invalidDate',
+	})
+	@IsFutureDate({
+		groups: ['all', 'audience.all', 'audience.requiredBy'],
+		message: 'audience.validation.requiredBy.dateIsNotInFuture',
 	})
 	requiredBy?: Date
 

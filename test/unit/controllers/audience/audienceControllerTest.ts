@@ -19,10 +19,10 @@ chai.use(sinonChai)
 
 describe('AudienceController', () => {
 	let audienceController: AudienceController
-	let learningCatalogue: LearningCatalogue
-	let audienceValidator: Validator<Audience>
 	let audienceFactory: AudienceFactory
+	let audienceValidator: Validator<Audience>
 	let csrsService: CsrsService
+	let learningCatalogue: LearningCatalogue
 	let courseService: CourseService
 	let req: Request
 	let res: Response
@@ -32,10 +32,10 @@ describe('AudienceController', () => {
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
-		audienceValidator = <Validator<Audience>>{}
-		audienceFactory = <AudienceFactory>{}
 		csrsService = <CsrsService>{}
 		courseService = new CourseService(learningCatalogue)
+		audienceFactory = new AudienceFactory()
+		audienceValidator = new Validator(audienceFactory)
 		audienceController = new AudienceController(
 			learningCatalogue,
 			audienceValidator,
@@ -114,6 +114,7 @@ describe('AudienceController', () => {
 
 			expect(audienceValidator.check).to.have.been.calledWith(req.body, ['audience.type'])
 			expect(audienceValidator.check).to.have.returned(errors)
+			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
 			expect(req.session!.sessionFlash.errors).to.be.equal(errors)
 			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${courseId}/audiences/type`)
 		})
@@ -432,7 +433,6 @@ describe('AudienceController', () => {
 			res.locals.audience = audience
 			req.body = {'deadline-year': '2018', 'deadline-month': '12', 'deadline-day': '16'}
 
-			audienceValidator.check = sinon.stub().returns({size: 0})
 			learningCatalogue.updateCourse = sinon.stub()
 
 			await audienceController.setDeadline()(req, res)
@@ -442,6 +442,21 @@ describe('AudienceController', () => {
 			})
 			expect(res.redirect).to.have.been.calledOnceWith(
 				`/content-management/courses/${courseId}/audiences/${audienceId}/configure`
+			)
+		})
+
+		it('should error when deadline date is in the past', async () => {
+			req.params.audienceId = audienceId
+			const audience = {id: audienceId, requiredBy: null}
+			res.locals.course = {audiences: [audience]}
+			res.locals.audience = audience
+			req.body = {'deadline-year': '1999', 'deadline-month': '1', 'deadline-day': '1'}
+
+			await audienceController.setDeadline()(req, res)
+
+			expect(req.session!.sessionFlash.errors).is.not.undefined
+			expect(res.redirect).to.have.been.calledOnceWith(
+				`/content-management/courses/${courseId}/audiences/${audienceId}/deadline`
 			)
 		})
 	})
