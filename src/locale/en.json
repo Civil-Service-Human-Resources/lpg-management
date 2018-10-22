@@ -28,7 +28,8 @@
 				"empty": "Audience type is required"
 			},
 			"requiredBy": {
-				"invalidDate": "Enter a valid deadline date"
+				"invalidDate": "Enter a valid deadline date",
+				"dateIsNotInFuture": "Deadline date needs to be in the future"
 			}
 		},
 		"type": {
