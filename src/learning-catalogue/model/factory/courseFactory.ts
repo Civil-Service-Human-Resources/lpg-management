@@ -22,7 +22,9 @@ export class CourseFactory {
 		course.title = data.title
 		course.modules = (data.modules || []).map(this._moduleFactory.create)
 		course.audiences = (data.audiences || []).map(this.audienceFactory.create)
-		course.status = data.status
+		if (data.status) {
+			course.status = data.status
+		}
 		return course
 	}
 

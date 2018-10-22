@@ -150,10 +150,7 @@ export class CourseController {
 				res.redirect(`/content-management/courses/${req.params.courseId}/preview`)
 			} else {
 				const savedCourse = await this.learningCatalogue.createCourse(course)
-				req.session!.sessionFlash = {courseAddedSuccessMessage: 'course_added_success_message'}
-				req.session!.save(() => {
-					res.redirect(`/content-management/courses/${savedCourse.id}/overview`)
-				})
+				res.redirect(`/content-management/courses/${savedCourse.id}/overview`)
 			}
 		}
 	}

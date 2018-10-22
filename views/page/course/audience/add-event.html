@@ -51,7 +51,9 @@
                     </div>
                 </form>
             {% else %}
-                <p class="govuk-body">There are no events - please add events to the course.</p>
+                <p class="govuk-body">
+                    <div class="custom-panel">No event has been added, <a href="/content-management/courses/{{course.id}}/add-module">add a module</a> of face to face type and add an event to it.</div>
+                </p>
             {% endif %}
             <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Cancel</a>
         </div>
