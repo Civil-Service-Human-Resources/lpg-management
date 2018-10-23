@@ -155,7 +155,7 @@ describe('CourseValidator tests', () => {
 				title: undefined,
 				description: 'Course description',
 				shortDescription: 'Course short description',
-				status: "Draft",
+				status: 'Draft',
 			})
 
 			expect(errors.size).to.equal(1)
@@ -167,7 +167,7 @@ describe('CourseValidator tests', () => {
 				title: '',
 				description: 'Course description',
 				shortDescription: 'Course short description',
-				status: "Draft",
+				status: 'Draft',
 			})
 
 			expect(errors.size).to.equal(1)
@@ -179,7 +179,7 @@ describe('CourseValidator tests', () => {
 
 			const errors = await validator.check(params)
 
-			expect(errors.size).to.equal(6)
+			expect(errors.size).to.equal(5)
 			expect(errors.fields.shortDescription).to.eql([
 				'course.validation.shortDescription.maxLength',
 				'course.validation.shortDescription.empty',
@@ -188,12 +188,7 @@ describe('CourseValidator tests', () => {
 				'course.validation.description.maxLength',
 				'course.validation.description.empty',
 			])
-			expect(errors.fields.title).to.eql([
-				'course.validation.title.empty',
-			])
-			expect(errors.fields.status).to.eql([
-				'course.validation.status.invalid',
-			])
+			expect(errors.fields.title).to.eql(['course.validation.title.empty'])
 		})
 
 		it('should fail validation if shortDescription is greater than 160 characters', async () => {
@@ -201,7 +196,7 @@ describe('CourseValidator tests', () => {
 				title: 'Course Title',
 				description: 'Course description',
 				shortDescription: 'x'.repeat(161),
-				status: "Draft",
+				status: 'Draft',
 			}
 
 			const errors = await validator.check(params)
@@ -215,7 +210,7 @@ describe('CourseValidator tests', () => {
 				title: 'Course Title',
 				description: 'Course description',
 				shortDescription: 'x'.repeat(160),
-				status: "Draft",
+				status: 'Draft',
 			}
 
 			const errors = await validator.check(params)
@@ -228,7 +223,7 @@ describe('CourseValidator tests', () => {
 				title: 'Course Title',
 				description: 'x'.repeat(1501),
 				shortDescription: 'Course short description',
-				status: "Draft",
+				status: 'Draft',
 			}
 
 			const errors = await validator.check(params)
@@ -242,7 +237,7 @@ describe('CourseValidator tests', () => {
 				title: 'Course Title',
 				description: 'x'.repeat(1500),
 				shortDescription: 'Course short description',
-				status: "Draft",
+				status: 'Draft',
 			}
 
 			const errors = await validator.check(params)
@@ -255,7 +250,7 @@ describe('CourseValidator tests', () => {
 				title: 'Course Title',
 				shortDescription: 'Course short description',
 				description: '',
-				status: "Draft",
+				status: 'Draft',
 			}
 
 			const errors = await validator.check(params)
@@ -269,7 +264,7 @@ describe('CourseValidator tests', () => {
 				title: 'Course Title',
 				description: 'Course description',
 				shortDescription: 'Course short description',
-				status: "Draft",
+				status: 'Draft',
 			}
 
 			const errors = await validator.check(params)
@@ -402,7 +397,7 @@ describe('CourseValidator tests', () => {
 		describe('validate status', () => {
 			it('should pass validation with "Draft" status', async () => {
 				const params = {
-					status: 'Draft'
+					status: 'Draft',
 				}
 
 				const errors = await validator.check(params, ['status'])
@@ -411,7 +406,7 @@ describe('CourseValidator tests', () => {
 
 			it('should pass validation with "Published" status', async () => {
 				const params = {
-					status: 'Published'
+					status: 'Published',
 				}
 
 				const errors = await validator.check(params, ['status'])
@@ -420,38 +415,11 @@ describe('CourseValidator tests', () => {
 
 			it('should pass validation with "Archived" status', async () => {
 				const params = {
-					status: 'Archived'
+					status: 'Archived',
 				}
 
 				const errors = await validator.check(params, ['status'])
 				expect(errors.size).to.equal(0)
-			})
-
-			it('should fail validation with missing status', async () => {
-				const params = {
-				}
-
-				const errors = await validator.check(params, ['status'])
-				expect(errors.size).to.equal(1)
-				expect(errors.fields).to.eql({
-					"status": [
-						"course.validation.status.invalid"
-					]
-				})
-			})
-
-			it('should fail validation with invalid status', async () => {
-				const params = {
-					status: 'Not a status'
-				}
-
-				const errors = await validator.check(params, ['status'])
-				expect(errors.size).to.equal(1)
-				expect(errors.fields).to.eql({
-					"status": [
-						"course.validation.status.invalid"
-					]
-				})
 			})
 		})
 	})

@@ -1,9 +1,7 @@
 {% from "table/macro.njk" import govukTable %}
 
-{{ govukTable({
-    firstCellIsHeader: true,
-    classes: "course-table",
-    rows: [
+{% set rows =
+    [
         [
             {
                 text: "Added on"
@@ -36,8 +34,8 @@
                 text: "Cost"
             },
             {
-                text: '£' + course.getCost(),
-                format: "numeric"
+               text: '£' + course.getCost(),
+               format: "numeric"
             }
         ],
         [
@@ -48,16 +46,32 @@
                 text: grades | join(", ") if grades.length > 0 else "Unspecified",
                 format: "numeric"
             }
-        ],
-        [
-            {
-                text: "Learning Provider"
-            },
-            {
-                text: "KPMG",
-                format: "numeric"
-            }
         ]
     ]
-}) }}
+%}
 
+{% set faceToFace = false %}
+{% for module in course.modules %}
+    {% if module.type == 'face-to-face' %}
+        {% set faceToFace = true %}
+    {% endif %}
+{% endfor %}
+
+{% if faceToFace %}
+    {{ rows.push([
+                {
+                    text: "Learning Provider"
+                },
+                {
+                    text: course.learningProvider.name | default("Unspecified", true),
+                    format: "numeric"
+                }
+                ])
+            }}
+{% endif %}
+
+{{ govukTable({
+          firstCellIsHeader: true,
+          classes: "course-table",
+          rows: rows
+}) }}
