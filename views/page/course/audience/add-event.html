@@ -1,0 +1,61 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{i18n.audience.pageTitle.addEvent}} - {{i18n.proposition_name}}{% endblock %}
+
+{% block beforeContent %}
+    {% block phaseBanner %}
+        {{ phaseBanner("beta") }}
+    {% endblock %}
+    {% block backLink %}
+        {{ backLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Assign event to a private audience</h2>
+            
+            {% if courseEvents and courseEvents.length > 0 %}
+                <p class="govuk-body">Select an event from list for your new audience</p>
+            
+                <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/event" method="post">
+                    {% set eventList = [] %}
+                    {% for event in courseEvents %}
+                        {% set eventListLength = eventList.push({
+                            value: event.id,
+                            text: event.venue.location + ", " + event.dateRanges[0].date
+                        }) %}
+                    {% endfor %} 
+                    {{ govukRadios({
+                        idPrefix: "events",
+                        name: "events",
+                        fieldset: {
+                            legend: {
+                                text: "Which event is this audience for?",
+                                isPageHeading: true,
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        },
+                        items: eventList
+                    }) }}
+                    <div class="button-container">
+                        {{ govukButton({
+                            text: "Continue"
+                        }) }}
+                    </div>
+                </form>
+            {% else %}
+                <p class="govuk-body">There are no events to display</p>
+            {% endif %}
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}

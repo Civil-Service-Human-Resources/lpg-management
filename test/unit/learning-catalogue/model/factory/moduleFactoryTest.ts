@@ -21,9 +21,8 @@ describe('ModuleFactory tests', () => {
 			id: 'MBlZJv-ZRDCYZsCByjzRuQ',
 			title: 'module title',
 			description: 'module description',
-			url: 'module url',
 			duration: 3600,
-			price: 100,
+			cost: 100,
 		}
 	})
 
@@ -38,19 +37,15 @@ describe('ModuleFactory tests', () => {
 	}
 
 	it('should create LinkModule', async () => {
-		data.url = 'http://example.org'
 		data.type = 'link'
-		data.moduleTitle = 'module title'
-		data.description = 'this a description'
-
+		data.url = 'http://example.org'
 		const module = await moduleFactory.create(data)
-
 		testProperties(module, data)
 	})
 
 	it('should create ELearningModule', async () => {
-		data.startPage = 'start-page'
 		data.type = 'elearning'
+		data.startPage = 'start-page'
 
 		const module = await moduleFactory.create(data)
 
@@ -121,5 +116,22 @@ describe('ModuleFactory tests', () => {
 		expect(function() {
 			moduleFactory.create(data)
 		}).to.throw(`Unknown module type: unknown ${JSON.stringify(data)}`)
+	})
+
+	describe('cost field', () => {
+		it('should convert string cost to a number', async () => {
+			data.type = 'face-to-face'
+			data.cost = '50'
+			const module = await moduleFactory.create(data)
+			expect(typeof module.cost).to.be.equal('number')
+		})
+
+		it("should keep whatever there was in data if it couldn't be converted to a number - for replaying back to the user via UI", async () => {
+			const costString = 'tree-fiddy'
+			data.type = 'face-to-face'
+			data.cost = costString
+			const module = await moduleFactory.create(data)
+			expect(module.cost).to.be.equal(costString)
+		})
 	})
 })

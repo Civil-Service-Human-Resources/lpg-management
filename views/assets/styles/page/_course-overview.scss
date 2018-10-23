@@ -1,5 +1,5 @@
 .course-container {
-	margin-bottom: 60px;
+	margin-bottom: 50px;
 
 	.course-table {
 		.govuk-table__header {
@@ -14,5 +14,25 @@
 }
 
 .section {
-	margin-bottom: 30px;
+	margin-bottom: 50px;
+}
+
+.audience-list {
+	.list-item {
+		padding: 0;
+	}
+
+	.govuk-details__text {
+		padding: 0 0 0 20px;
+	}
+
+	.audience-item {
+		display: flex;
+		justify-content: space-between;
+		padding: 15px 0;
+
+		.audience-header {
+			font-weight: 700;
+		}
+	}
 }

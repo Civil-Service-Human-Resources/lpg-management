@@ -1,26 +1,28 @@
 import sinonChai = require('sinon-chai')
 import * as chai from 'chai'
-import {YoutubeService} from '../../../src/lib/youtubeService'
-import {YoutubeConfig} from '../../../src/lib/youtubeConfig'
-import {RestService} from '../../../src/learning-catalogue/service/restService'
 import * as sinon from 'sinon'
-import * as config from '../../../src/config'
+import * as config from '../../../src/config/index'
 import {expect} from 'chai'
+import {Auth} from '../../../src/identity/auth'
+import {YoutubeService} from '../../../src/youtube/youtubeService'
+import {YoutubeConfig} from '../../../src/youtube/youtubeConfig'
+import {YoutubeRestService} from '../../../src/youtube/youtubeRestService'
 
 chai.use(sinonChai)
 
 describe('Youtube Service Test', function() {
 	let youtubeService: YoutubeService
 	let youtubeConfig: YoutubeConfig
-	let _restService: RestService
-
+	let _restService: YoutubeRestService
+	let auth: Auth
 	let youtubeResponse: any
 
 	beforeEach(() => {
 		youtubeConfig = <YoutubeConfig>{}
-		_restService = <RestService>{}
+		_restService = <YoutubeRestService>{}
+		auth = <Auth>{}
 
-		youtubeService = new YoutubeService(youtubeConfig)
+		youtubeService = new YoutubeService(youtubeConfig, auth)
 		youtubeService._restService = _restService
 
 		youtubeResponse = {

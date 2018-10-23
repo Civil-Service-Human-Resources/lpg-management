@@ -91,10 +91,10 @@ export class CancellationPolicyController {
 
 			const errors = await this.cancellationPolicyValidator.check(request.body, ['name'])
 			if (errors.size) {
-				request.session!.sessionFlash = {errors: errors}
-				return response.redirect(
-					`/content-management/learning-providers/${learningProviderId}/cancellation-policies`
-				)
+				return response.render('page/learning-provider/cancellation-policy', {
+					errors: errors,
+					cancellationPolicy: cancellationPolicy,
+				})
 			}
 
 			if (request.params.cancellationPolicyId) {

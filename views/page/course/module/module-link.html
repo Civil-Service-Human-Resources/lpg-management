@@ -7,14 +7,8 @@
 
 {% block pageTitle %}{{ i18n['module_link_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/" %}
 
 {% block content %}
 
@@ -26,37 +20,46 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
-            <p class="govuk-body">You are adding a <strong>link</strong> module</p>
+            <p class="govuk-body no-margin">You are adding a <strong>link</strong> module</p>
 
-            <form action="/content-management/courses/{{ course.id }}/module-link" method="post">
+            <form action="/content-management/courses/{{ course.id }}/module-link" method="post" class="module-form">
                 <fieldset class="govuk-fieldset">
-                    {{ govukInput({
-                    label: {
-                        text: "Module title"
-                    },
-                    id: "title",
-                    name: "title"
-                    }) }}
+                    {{
+                        govukInput({
+                            label: {
+                                text: "Module title"
+                            },
+                            id: "title",
+                            name: "title",
+                            value: module.title
+                        })
+                    }}
 
-                    {{ govukTextarea({
-                    name: "description",
-                    id: "description",
-                    label: {
-                        text: "Description"
-                    }
-                    }) }}
+                    {{
+                        govukTextarea({
+                            name: "description",
+                            id: "description",
+                            label: {
+                                text: "Description"
+                            },
+                            value: module.description
+                        })
+                    }}
 
-                    {{ govukInput({
-                    label: {
-                        text: "URL"
-                    },
-                    id: "url",
-                    name: "url"
-                    }) }}
+                    {{
+                        govukInput({
+                            label: {
+                                text: "URL"
+                            },
+                            id: "url",
+                            name: "url",
+                            value: module.url
+                        })
+                    }}
 
                     <p class="govuk-body govuk-!-margin-bottom-1 font-bold">Reading duration</p>
                     <div class="time-inputs">
-   
+
                         {{ govukInput({
                             type: "number",
                             label: {
@@ -67,6 +70,7 @@
                             },
                             id: "hours",
                             name: "hours",
+                            value: module.hours,
                             classes: "govuk-date-input__input govuk-input--width-3 font-light"
                         }) }}
                         {{ govukInput({
@@ -78,7 +82,8 @@
                                 maxlength: "2"
                             },
                             id: "minutes",
-                            name: "miniutes",
+                            value: module.minutes,
+                            name: "minutes",
                             classes: "govuk-date-input__input govuk-input--width-3"
                         }) }}
                     </div>
@@ -96,8 +101,9 @@
                         },
                         items: [
                         {
-                            value: "isOptional",
-                            text: "Yes, this is optional"
+                            value: "true",
+                            text: "Yes, this is optional",
+                            checked: true if module.optional
                         }
                     ]
                     }) }}
@@ -108,11 +114,11 @@
                 }) }}
             </form>
 
-            <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>        
+            <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
         </div>
 
         <div class="govuk-grid-column-one-third">
-       
+
         </div>
     </div>
 {% endblock %}

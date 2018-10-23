@@ -5,23 +5,17 @@
 
 {% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.audience.page_title.add_organisation }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ i18n.audience.pageTitle.addOrganisation }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/configure-audience") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure" %}
 
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
-            <form action="/content-management/courses/{{ course.id }}/add-organisation" method="post">
+            <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" method="post">
                 {% if errors.fields %}
                     {% set classNames = "govuk-fieldset audience-fieldset govuk-form-group--error" %}
                     {% set message = "govuk-error-message" %}
@@ -29,7 +23,7 @@
                     {% set classNames = "govuk-fieldset audience-fieldset" %}
                     {% set message = "no-errors" %}
                 {% endif %}
-                
+
                 <div class="{{classNames}}">
                     <p class="{{message}}">Select which organisations are included</p>
 
@@ -37,11 +31,12 @@
                         <div class="typeahead-container">
                             <label class="govuk-body no-margin" for="autocomplete">Name of organisation</label>
                             <p class="govuk-hint">Start typing the name of the organisation</p>
-                        <div id="autocomplete-container"></div>
+                            <div id="autocomplete-container"></div>
+                        </div>
                     {% endset -%}
                     {{ govukRadios({
-                        idPrefix: "audience-type",
-                        name: "audience-type",
+                        idPrefix: "organisation",
+                        name: "organisation",
                         fieldset: {
                             legend: {
                                 text: "Which organisations are included in this audience?",
@@ -72,7 +67,7 @@
                     }) }}
                 </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/configure-audience">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>
@@ -84,5 +79,10 @@
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
     <script type="text/javascript" src="/js/add-organisation.js"></script>
+    {% set orgs = [] %}
+    {% for organisation in organisations._embedded.organisationalUnits %}
+        {% set orgName = orgs.push(organisation.name)%}
+    {% endfor %}
+    <script orgs='{{orgs}}' src="/js/orgs.js"></script>
 {% endblock %}
 

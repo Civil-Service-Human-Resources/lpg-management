@@ -6,60 +6,45 @@
 {% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}
-{% if course %}
-{{ i18n['course_details_edit_title'] }} - {{ i18n['proposition_name'] }}
-{% else %}
-{{ i18n['course_details_add_title'] }} - {{ i18n['proposition_name'] }}
-{% endif %}
+    {{ i18n.course.pageTitle.editCourseDetails if course else i18n.course.pageTitle.addCourseDetails }} - {{ i18n.proposition_name }}
 {% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management/courses/title/" + course.id) }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/title/" %}
+
 
 {% block content %}
-   {% set errors = sessionFlash.errors %}
+    {% set errors = sessionFlash.errors %}
     
     {{ errorSummary(errors.fields) }}
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            {% if course %}
-            <p class="govuk-body form-header govuk-!-font-size-24">Edit course details</p>
-            {% else %}
-            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
-            {% endif %}
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
-            <form action="/content-management/courses/details/{{ course.id }}" method="post">
+            <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course else i18n.course.text.addNew}}</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.details}}</h2>
+            <form action="/content-management/courses/details/{{ course.id }}" method="post" class="course-form">
                 {% set course = sessionFlash.course %}
                 <input id="title" name="title" type="hidden" value="{{ course.title }}">
                 <fieldset class="govuk-fieldset">
                     {% block textarea %}
                         {{ textarea("shortDescription", "shortDescription", "Maximum of 160 characters", 160, course.shortDescription, "Short description") }}
-                            
                         {{ textarea("description", "description", "Maximum of 1500 characters", 1500, course.description, "Description") }}
-                
                         {{ textarea("learningOutcomes", "learningOutcomes", "Maximum of 1500 characters", 1500, course.learningOutcomes, "Learning outcomes (optional)") }}
-                    
                         {{ textarea("preparation", "preparation", "Maximum of 1500 characters", 1500, "", "Preparation (optional)") }}
                     {% endblock %}
                 </fieldset>
-           
-                {{ govukButton({
-                    text: "Save"
-                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Save"
+                    }) }}
+                </div>
             </form>
-            <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/title">Cancel</a>
         </div>
-        <div class="govuk-grid-column-one-third">
-        </div>
+        <div class="govuk-grid-column-one-third"/>
     </div>
 {% endblock %}
+
 {% block bodyEnd %}
     <script src="/govuk-frontend/all.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>

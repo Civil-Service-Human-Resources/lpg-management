@@ -3,21 +3,15 @@
 
 {% extends "../../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['event_overview'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}{{ i18n['event_overview'] }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l no-margin">{{ eventDateWithMonthAsText }}, {{ event.venue.location }}</h1>
+      <h1 class="govuk-heading-l no-margin">{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}}</h1>
     </div>
   </div>
      <div class="govuk-grid-row">
@@ -26,9 +20,15 @@
           <div class="event-overview">
             <h3 class="govuk-heading-m">Event overview</h3>
 
+            {% set dateList = [] %}
+              {% for dateRange in event.dateRanges %}
+                {% set eventDate = dateList.push('<p class="govuk-body no-margin">'+(dateRange.date | dateWithMonthAsText)+'</p>') %}
+              {% endfor %}
+              {% set list = dateList|join %}
+
               {{ govukTable({
                 firstCellIsHeader: true,
-                classes: "course-table",
+                classes: "course-table event-table",
                 rows: [
                   [
                     {
@@ -63,6 +63,16 @@
                       },
                       {
                         text: event.venue.minCapacity,
+                        format: "numeric"
+                      }
+                  ],
+                  [
+                      {
+                        text: "Event dates",
+                        classes: "vertical"
+                      },
+                      {
+                        html: list,
                         format: "numeric"
                       }
                   ],
@@ -109,30 +119,18 @@
                 {% block menu %}
                 {% set actions = [
                         {
-                            link: '#',
+                            link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/dateRanges/',
                             text: 'Edit time and date'
                         },
                         {
-                            link: '#',
-                            text: 'Edit location and capcity'
-                        },
-                        {
-                            link: '#',
-                            text: 'Edit reminder time'
-                        },
-                        {
-                            link: '#',
-                            text: 'Prevent further signups'
-                        },
-                        {
-                            link: '#',
-                            text: 'Cancel this event'
+                            link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/location/',
+                            text: 'Edit location and capacity'
                         }
                     ] %}
                     {{ menu("Actions", actions) }}
                 {% endblock %}
             </div>
         </div>
-     </div> 
+     </div>
   </div>
 {% endblock %}

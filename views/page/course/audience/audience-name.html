@@ -5,21 +5,11 @@
 {% extends "../../../component/Page.njk" %}
 
 {% block pageTitle %}
-    {% if audience %}
-        {{ i18n.audience.page_title.edit_name }} - {{ i18n.proposition_name }}
-    {% else %}
-        {{ i18n.audience.page_title.add_name }} - {{ i18n.proposition_name }}
-    {% endif %}
+    {{i18n.audience.pageTitle.editName if audience else i18n.audience.pageTitle.addName}} - {{i18n.proposition_name}}
 {% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
     {% set errors = sessionFlash.errors %}
@@ -28,13 +18,9 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            {% if audience %}
-                <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Edit audience</p>
-            {% else %}
-                <p class="govuk-body form-header govuk-!-font-size-24 no-margin">Add a new audience</p>
-            {% endif %}
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Audience name</h2>
-            <form action="/content-management/courses/{{ course.id }}/audiences" method="post">
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.audience.pageText.audienceName}}</h2>
+            <form action="/content-management/courses/{{ course.id }}/audiences/" method="post" class="audience-form">
                 <p class="govuk-body no-margin">You need to give your audience a short, descriptive name</p>
                 <p class="govuk-body">This name is for your own use</p>
                 <fieldset class="govuk-fieldset">
@@ -47,7 +33,7 @@
                             name: "name",
                             value: audience.name if audience.name else sessionFlash.audience.name,
                             errorMessage: {
-                                text: i18n | jsonpath(errors.fields.name[0])
+                                text: errors.fields.name[0] | jsonpath(i18n)
                             }
                         }) }}
                     {% else %}

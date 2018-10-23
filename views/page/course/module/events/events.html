@@ -7,18 +7,8 @@
 
 {% block pageTitle %}{{ i18n['event_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {% if event %}
-        {{ backLink("/content-management/courses/" + course.id + "/modules/" + module.id + "/events-preview/" + event.id) }}
-    {% else %}
-        {{ backLink("/content-management/courses/" + course.id + "/overview") }}
-    {% endif %}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
 
@@ -35,13 +25,13 @@
                 <div class="event-container">
                     <ul class="event-list headers">
                         <li class="events">
-                            <p class="govuk-body event-header date">Date</p><p class="govuk-body event-header time">Start time</p><p class="govuk-body event-header time">End time</p><span class="spacer"></span> 
-                        </li> 
+                            <p class="govuk-body event-header date">Date</p><p class="govuk-body event-header time">Start time</p><p class="govuk-body event-header time">End time</p><span class="spacer"></span>
+                        </li>
                     </ul>
                     <ul class="event-list">
                         {% for dateRange in event.dateRanges %}
                             <li class="events u--border--bgrey">
-                                <p class="govuk-body event date">{{ dateRange.date }}</p><p class="govuk-body event time">{{ dateRange.startTime }}</p><p class="govuk-body event time">{{ dateRange.endTime }}</p><p class="govuk-body event edit"><a href="#" class="govuk-link">Edit</a>
+                                <p class="govuk-body event date">{{ dateRange.date }}</p><p class="govuk-body event time">{{ dateRange.startTime }}</p><p class="govuk-body event time">{{ dateRange.endTime }}</p><p class="govuk-body event edit">
                             </li>
                         {% endfor %}
                     </ul>
@@ -49,6 +39,7 @@
             {% endif %}
 
             <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}" method="post">
+                <input type="hidden" name="eventJson" value="{{eventJson}}" />
                 {% if errors.fields.minDate or errors.fields.dateRanges or errors.fields.invalidDate %}
                     {{ govukDateInput({
                         id: "start-date",
@@ -58,8 +49,8 @@
                             text: "Start date",
                             isPageHeading: false,
                             classes: "govuk-fieldset__legend--s"
-                            },
-                        classes: "event-date"
+                            }
+
                         },
                         hint: {
                             text: "For example, 31 3 " + exampleYear
@@ -69,13 +60,16 @@
                         },
                         items: [
                             {
-                            name: "day"
+                            name: "day",
+                            classes: "govuk-input--width-3"
                             },
                             {
-                            name: "month"
+                            name: "month",
+                            classes: "govuk-input--width-3"
                             },
                             {
-                            name: "year"
+                            name: "year",
+                            classes: "govuk-input--width-5"
                             }
                         ]
                         }) }}
@@ -88,21 +82,25 @@
                             text: "Start date",
                             isPageHeading: true,
                             classes: "govuk-fieldset__legend--s"
-                            },
-                        classes: "event-date"
+                            }
                         },
                         hint: {
                             text: "For example, 31 3 " + exampleYear
                         },
                         items: [
-                            {
-                            name: "day"
+                            {attributes: {
+                                "maxLength": "2"
+                            },
+                            name: "day",
+                            classes: "govuk-input--width-3"
                             },
                             {
-                            name: "month"
+                            name: "month",
+                            classes: "govuk-input--width-3"
                             },
                             {
-                            name: "year"
+                            name: "year",
+                            classes: "govuk-input--width-5"
                             }
                         ]
                         }) }}
@@ -110,9 +108,9 @@
 
                 {% set setHours = ["06","07","08","09","10","11","12","13","14","15","16","17","18","19","20"] %}
                 {% set setMinutes = ["00", "15", "30", "45"] %}
-                {{ timeInputs("Start time", setHours, setMinutes , "start-time", "Hours", "Minutes") }}
-                {{ timeInputs("End time", setHours, setMinutes , "end-time", "Hours", "Minutes") }}
-                    
+                {{ timeInputs("Start time", setHours, setMinutes , "startTime", "Hours", "Minutes") }}
+                {{ timeInputs("End time", setHours, setMinutes , "endTime", "Hours", "Minutes") }}
+
                 {{ govukButton({
                     text: "Add this date",
                     classes: "button-blue left-aligned"
@@ -120,9 +118,16 @@
             </form>
 
             {% if event.dateRanges and event.dateRanges.length > 0 %}
-                <div class="button-container">
-                    <a class="govuk-button" href="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location">Continue</a>
-                </div>
+            <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/create" method="post">
+            <input type="hidden" name="eventJson" value="{{eventJson}}" />
+
+            <div class="button-container">
+                {{ govukButton({
+                text: "Continue",
+                classes: "govuk-button"
+                }) }}
+            </div>
+            </form>
             {% endif %}
             <a href="/content-management/courses/{{course.id}}/overview">Cancel</a>
         </div>

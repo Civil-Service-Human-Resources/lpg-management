@@ -1,9 +1,7 @@
 export class YoutubeConfig {
-	private _url: string
 	private _timeout: number
 
-	constructor(url: string, timeout: number = 15000) {
-		this._url = url
+	constructor(timeout: number = 15000) {
 		this._timeout = timeout
 	}
 
@@ -13,13 +11,5 @@ export class YoutubeConfig {
 
 	set timeout(value: number) {
 		this._timeout = value
-	}
-
-	get url(): string {
-		return this._url
-	}
-
-	set url(value: string) {
-		this._url = value
 	}
 }

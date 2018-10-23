@@ -1,7 +1,41 @@
+{% from "details/macro.njk" import govukDetails %}
 {% if course.audiences.length > 0 %}
-    <ul class="list">
+    <ul class="audience-list">
         {% for audience in course.audiences %}
-            <li class="module-item list-item u--border--bgrey">{{ audience.name | default("Audience", true) }}
+            {% set audienceTypeAsString = AudienceType[audience.type] %}
+            <li class="list-item">
+                <div class="title-container">
+                    <h3 class="govuk-heading-s">{{ audience.name | default("Audience", true) }}</h3>
+                    <a class="govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
+                </div>
+                {% set audienceHTML = '<ul class="list audience">
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Course type</span><span class="audience-info">'
+                        + (i18n.audience.type[audienceTypeAsString] | default("Unspecified", true)) + '</span></li>' %}
+                {% if audienceTypeAsString !== 'PRIVATE_COURSE' %}
+                    {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span class="audience-info">'
+                        + (audience.departments | jsonpath(departmentCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span class="audience-info">' + (audience.grades | jsonpath(gradeCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span class="audience-info">' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span class="audience-info">' + (audience.interests | join(', ') | default("Unspecified", true)) + '</span></li>' %}
+                {% else %}
+                    {% set audienceEvent = audienceIdToEvent[audience.id] %}
+                    {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span>' %}
+                    {% if audienceEvent %}
+                        {% set audienceHTML = audienceHTML + 'This is a private course assigned to this event: <a href="/content-management/courses/' + course.id
+                            + '/modules/' + eventIdToModuleId[audienceEvent.id] + '/events-overview/' + audienceEvent.id + '">' + audienceEvent.venue.location
+                            + ', ' + (audienceEvent.dateRanges[0].date | formatDate) + '</a>. You can invite anyone from your organisation using their email address.' %}
+                    {% else %}
+                        {% set audienceHTML = audienceHTML + 'No event assigned yet.' %}
+                    {% endif %}
+                    {% set audienceHTML = audienceHTML + '</span></li>' %}
+                {% endif %}
+                {% set audienceHTML = audienceHTML + '</ul>' %}
+
+                {{ govukDetails({
+                    summaryText: 'View audience details',
+                    html: audienceHTML
+                }) }}
+            </li>
         {% endfor %}
     </ul>
 {% else %}

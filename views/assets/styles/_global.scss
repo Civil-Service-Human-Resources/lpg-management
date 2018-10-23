@@ -23,6 +23,13 @@
 	}
 }
 
+.govuk-grid-column-two-thirds,
+.govuk-grid-column-full {
+	.page-title {
+		padding-top: 0;
+	}
+}
+
 .govuk-header__container {
 	border-color: $theme;
 }
@@ -75,7 +82,7 @@ ul {
 
 .cancel-button {
 	display: block;
-	width: 57px;
+	width: 58px;
 }
 
 .panel {
@@ -157,22 +164,31 @@ ul {
 
 			&:focus {
 				& + label {
-					outline: 3px solid #ffbf47;
+					outline: 3px solid $outline;
 				}
 			}
 		}
 	}
 }
 
+.provider-list {
+	margin-bottom: 30px;
+}
+
 .course-table {
 	.govuk-table__header {
 		width: 50%;
 		padding: 15px 20px 15px 0;
+		vertical-align: top;
 	}
 }
 
 .no-margin {
 	margin-bottom: 0;
+}
+
+.hint {
+	color: $hint;
 }
 
 .button-red {
@@ -189,6 +205,10 @@ ul {
 	&:hover {
 		background-color: $theme;
 	}
+}
+
+.hidden {
+    display: none;
 }
 
 @media screen and (min-width: $tablet-small) {

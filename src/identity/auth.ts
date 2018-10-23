@@ -14,12 +14,9 @@ export class Auth {
 	config: AuthConfig
 	passportStatic: PassportStatic
 	identityService: IdentityService
+	currentUser: Identity
 
-	constructor(
-		config: AuthConfig,
-		passportStatic: PassportStatic,
-		identityService: IdentityService
-	) {
+	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService) {
 		this.config = config
 		this.passportStatic = passportStatic
 		this.identityService = identityService
@@ -31,13 +28,9 @@ export class Auth {
 
 		this.configureStrategy()
 
-		app.all(
-			this.config.authenticationPath,
-			this.authenticate(),
-			this.redirect()
-		)
+		app.all(this.config.authenticationPath, this.authenticate(), this.redirect())
 
-		app.use(this.checkAuthenticated())
+		app.use(this.checkAuthenticatedAndAssignCurrentUser())
 		app.use(this.addToResponseLocals())
 	}
 
@@ -53,9 +46,7 @@ export class Auth {
 		let strategy: oauth2.Strategy
 		strategy = new oauth2.Strategy(
 			{
-				authorizationURL: `${
-					this.config.authenticationServiceUrl
-				}/oauth/authorize`,
+				authorizationURL: `${this.config.authenticationServiceUrl}/oauth/authorize`,
 				callbackURL: `${this.config.callbackUrl}/authenticate`,
 				clientID: this.config.clientId,
 				clientSecret: this.config.clientSecret,
@@ -65,26 +56,17 @@ export class Auth {
 		)
 		this.passportStatic.use(strategy)
 
-		this.passportStatic.serializeUser((user, done) => {
+		this.passportStatic.serializeUser((user: any, done: any) => {
 			done(null, JSON.stringify(user))
 		})
 
-		this.passportStatic.deserializeUser<Identity, string>(
-			this.deserializeUser()
-		)
+		this.passportStatic.deserializeUser<Identity, string>(this.deserializeUser())
 	}
 
 	verify() {
-		return async (
-			accessToken: string,
-			refreshToken: string,
-			profile: any,
-			cb: oauth2.VerifyCallback
-		) => {
+		return async (accessToken: string, refreshToken: string, profile: any, cb: oauth2.VerifyCallback) => {
 			try {
-				const identityDetails = await this.identityService.getDetails(
-					accessToken
-				)
+				const identityDetails = await this.identityService.getDetails(accessToken)
 
 				cb(null, identityDetails)
 			} catch (e) {
@@ -94,9 +76,10 @@ export class Auth {
 		}
 	}
 
-	checkAuthenticated() {
+	checkAuthenticatedAndAssignCurrentUser() {
 		return (req: Request, res: Response, next: NextFunction) => {
 			if (req.isAuthenticated()) {
+				this.currentUser = req.user as Identity
 				return next()
 			}
 
@@ -116,9 +99,7 @@ export class Auth {
 		return (req: Request, res: Response) => {
 			const redirect = req.cookies[this.REDIRECT_COOKIE_NAME]
 			if (!redirect) {
-				logger.info(
-					'Passport session not present on express request - redirecting to root'
-				)
+				logger.info('Passport session not present on express request - redirecting to root')
 				res.redirect('/')
 				return
 			}
@@ -130,14 +111,7 @@ export class Auth {
 	deserializeUser() {
 		return async (data: string, done: any) => {
 			let jsonResponse = JSON.parse(data)
-			done(
-				null,
-				new Identity(
-					jsonResponse.uid,
-					jsonResponse.roles,
-					jsonResponse.accessToken
-				)
-			)
+			done(null, new Identity(jsonResponse.uid, jsonResponse.roles, jsonResponse.accessToken))
 		}
 	}
 

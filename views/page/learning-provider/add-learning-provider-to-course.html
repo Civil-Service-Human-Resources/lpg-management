@@ -5,14 +5,8 @@
 
 {% block pageTitle %}{{ i18n['learning_provider_add_to_course_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/learning-providers/" + learningProvider.id %}
 
 {% block content %}   
     <div class="govuk-grid-row">
@@ -52,8 +46,7 @@
             </form>
 
             <a href="#" class="govuk-button">Continue without adding a learning provider</a>
-
-             <a href="#" class="cancel-button">Cancel</a>
+            <a href="#" class="cancel-button">Cancel</a>
         </div>
         <div class="govuk-grid-column-one-third">
         </div>

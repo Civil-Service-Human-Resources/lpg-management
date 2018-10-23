@@ -6,19 +6,13 @@
 
 {% block pageTitle %}{{ i18n['learning_provider_overview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management/learning-providers") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/learning-providers" %}
 
 {%  block content%}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-l">{{ learningProvider.name }}</h1>
+            <h1 class="govuk-heading-l">{{ learningProvider.name | default("Name unspecified", true) }}</h1>
         </div>
     </div>
     <div class="govuk-grid-row">
@@ -27,7 +21,7 @@
                 Learning provider overview
             </h3>
             <div class="list-container">
-                <h3 class="govuk-heading-s govuk-!-font-weight-bold govuk-!-margin-bottom-1">Cancellation policies</h3>
+                <h3 class="govuk-heading-m">Cancellation policies</h3>
                 {% set cancellationPolicies = learningProvider.cancellationPolicies %}
                 {% if cancellationPolicies.length > 0 %}
                     {{ policyList(cancellationPolicies) }}
@@ -38,7 +32,7 @@
             </div>
 
             <div class="list-container">
-                <h3 class="govuk-heading-s govuk-!-font-weight-bold govuk-!-margin-bottom-1">Terms and conditions</h3>
+                <h3 class="govuk-heading-m">Terms and conditions</h3>
                 {% set termsAndConditions = learningProvider.termsAndConditions %}
 
                 {% if termsAndConditions.length > 0 %}

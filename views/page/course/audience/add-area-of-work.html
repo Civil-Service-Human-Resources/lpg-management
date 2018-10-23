@@ -1,0 +1,52 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.audience.pageTitle.addAreaOfWork }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">Area of work</h2>
+            <form action="/content-management/courses/{{ course.id }}/audiences/{{audience.id}}/area-of-work" method="post" class="audience-form">
+                {% set professions = [] %}
+                {% for areaOfWork in areasOfWork._embedded.professions %}
+                    {% set profession = professions.push({
+                        "text": areaOfWork.name,
+                        "value": areaOfWork.name
+                    }) %}
+                {% endfor %}
+                {{ govukRadios({
+                    idPrefix: "area-of-work",
+                    name: "area-of-work",
+                    hint:{
+                        text: "Just click Continue if you want to skip"
+                    },
+                    fieldset: {
+                        legend: {
+                            text: "Which area of work?",
+                            isPageHeading: true,
+                            classes: "govuk-fieldset__legend--s"
+                        }
+                    },
+                    items: professions
+                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Continue"
+                    }) }}
+                </div>
+            </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+

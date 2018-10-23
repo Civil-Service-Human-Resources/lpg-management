@@ -9,6 +9,8 @@ import {Properties} from 'ts-json-properties'
 import {ApplicationContext} from './applicationContext'
 import * as bodyParser from 'body-parser'
 import {AppConfig} from './config/appConfig'
+import moment = require('moment')
+import {DateTime} from './lib/dateTime'
 
 Properties.initialize()
 
@@ -42,8 +44,21 @@ nunjucks
 			express: app,
 		}
 	)
-	.addFilter('jsonpath', function(object: any, path: string) {
-		return jsonpath.value(object, path)
+	.addFilter('jsonpath', function(path: string | string[], map: any) {
+		return Object.is(path, undefined)
+			? undefined
+			: Array.isArray(path)
+				? path.map(pathElem => jsonpath.value(map, pathElem))
+				: jsonpath.value(map, path)
+	})
+	.addFilter('formatDate', function(date: Date) {
+		return date ? moment(date).format('D MMMM YYYY') : null
+	})
+	.addFilter('formatDateShort', function(date: Date) {
+		return date ? moment(date).format('D MMM YYYY') : null
+	})
+	.addFilter('dateWithMonthAsText', function(date: string) {
+		return date ? DateTime.convertDate(date) : 'date unset'
 	})
 
 app.set('view engine', 'html')

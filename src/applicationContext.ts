@@ -29,8 +29,6 @@ import {Course} from './learning-catalogue/model/course'
 import {ModuleFactory} from './learning-catalogue/model/factory/moduleFactory'
 import {AudienceFactory} from './learning-catalogue/model/factory/audienceFactory'
 import {EventFactory} from './learning-catalogue/model/factory/eventFactory'
-import {YoutubeService} from './lib/youtubeService'
-import {YoutubeConfig} from './lib/youtubeConfig'
 import {ModuleController} from './controllers/module/moduleController'
 import {Module} from './learning-catalogue/model/module'
 import {FileController} from './controllers/module/fileController'
@@ -43,13 +41,22 @@ import {Audience} from './learning-catalogue/model/audience'
 import {CourseService} from './lib/courseService'
 import {CsrsConfig} from './csrs/csrsConfig'
 import {CsrsService} from './csrs/service/csrsService'
-import {RestService} from './learning-catalogue/service/restService'
+import {YoutubeService} from './youtube/youtubeService'
+import {YoutubeConfig} from './youtube/youtubeConfig'
+import {OauthRestService} from './lib/http/oauthRestService'
+import {CacheService} from './lib/cacheService'
+import {DateRangeCommand} from './controllers/command/dateRangeCommand'
+import {DateRangeCommandFactory} from './controllers/command/factory/dateRangeCommandFactory'
+import {DateRange} from './learning-catalogue/model/dateRange'
+import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFactory'
+
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
 	identityService: IdentityService
 	auth: Auth
 	axiosInstance: AxiosInstance
+	cacheService: CacheService
 	homeController: HomeController
 	learningCatalogueConfig: LearningCatalogueConfig
 	learningCatalogue: LearningCatalogue
@@ -74,18 +81,24 @@ export class ApplicationContext {
 	audienceController: AudienceController
 	audienceValidator: Validator<Audience>
 	audienceFactory: AudienceFactory
-	eventController: EventController
 	eventFactory: EventFactory
 	fileController: FileController
 	pagination: Pagination
 	youtubeService: YoutubeService
 	youtubeConfig: YoutubeConfig
 	faceToFaceController: FaceToFaceModuleController
+	eventController: EventController
+	mediaConfig: LearningCatalogueConfig
 	courseService: CourseService
 	csrsConfig: CsrsConfig
 	csrsService: CsrsService
+	dateRangeCommandFactory: DateRangeCommandFactory
+	dateRangeCommandValidator: Validator<DateRangeCommand>
+	dateRangeFactory: DateRangeFactory
+	dateRangeValidator: Validator<DateRange>
 
-	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL')
+	public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -109,19 +122,21 @@ export class ApplicationContext {
 			this.identityService
 		)
 
-		this.learningCatalogueConfig = new LearningCatalogueConfig(
-			{
-				username: config.COURSE_CATALOGUE.auth.username,
-				password: config.COURSE_CATALOGUE.auth.password,
-			},
-			config.COURSE_CATALOGUE.url
-		)
+		this.learningCatalogueConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url)
 
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth)
 
 		this.courseFactory = new CourseFactory()
 
 		this.pagination = new Pagination()
+
+		this.cacheService = new CacheService({
+			stdTTL: config.CACHE.TTL_SECONDS,
+			checkperiod: config.CACHE.CHECK_PERIOD_SECONDS,
+		})
+
+		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
+		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService)
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
@@ -129,15 +144,16 @@ export class ApplicationContext {
 			this.learningCatalogue,
 			this.courseValidator,
 			this.courseFactory,
-			this.courseService
+			this.courseService,
+			this.csrsService
 		)
 
 		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
 		this.learningProviderFactory = new LearningProviderFactory()
 		this.cancellationPolicyFactory = new CancellationPolicyFactory()
 
-		this.youtubeConfig = new YoutubeConfig('', 15000)
-		this.youtubeService = new YoutubeService(this.youtubeConfig)
+		this.youtubeConfig = new YoutubeConfig(15000)
+		this.youtubeService = new YoutubeService(this.youtubeConfig, this.auth)
 		this.audienceFactory = new AudienceFactory()
 		this.eventFactory = new EventFactory()
 		this.moduleFactory = new ModuleFactory()
@@ -178,9 +194,20 @@ export class ApplicationContext {
 			this.termsAndConditionsValidator
 		)
 
+		this.mediaConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url + '/media')
+
 		this.moduleController = new ModuleController(this.learningCatalogue, this.moduleFactory)
-		this.fileController = new FileController(this.learningCatalogue, this.moduleValidator, this.moduleFactory)
-		this.linkModuleController = new LinkModuleController(this.learningCatalogue, this.moduleFactory)
+		this.fileController = new FileController(
+			this.learningCatalogue,
+			this.moduleValidator,
+			this.moduleFactory,
+			new OauthRestService(this.mediaConfig, this.auth)
+		)
+		this.linkModuleController = new LinkModuleController(
+			this.learningCatalogue,
+			this.moduleFactory,
+			this.moduleValidator
+		)
 
 		this.faceToFaceController = new FaceToFaceModuleController(
 			this.learningCatalogue,
@@ -189,10 +216,20 @@ export class ApplicationContext {
 		)
 
 		this.eventValidator = new Validator<Event>(this.eventFactory)
-		this.eventController = new EventController(this.learningCatalogue, this.eventValidator, this.eventFactory)
 
-		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE_URL.url)
-		this.csrsService = new CsrsService(new RestService(this.csrsConfig))
+		this.dateRangeCommandFactory = new DateRangeCommandFactory()
+		this.dateRangeCommandValidator = new Validator<DateRangeCommand>(this.dateRangeCommandFactory)
+		this.dateRangeFactory = new DateRangeFactory()
+		this.dateRangeValidator = new Validator<DateRange>(this.dateRangeFactory)
+
+		this.eventController = new EventController(
+			this.learningCatalogue,
+			this.eventValidator,
+			this.eventFactory,
+			this.dateRangeCommandValidator,
+			this.dateRangeValidator,
+			this.dateRangeCommandFactory
+		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.audienceController = new AudienceController(

@@ -36,7 +36,7 @@ describe('Auth tests', function() {
 			request: Request,
 			response: Response,
 			next: NextFunction
-		) => void = auth.checkAuthenticated()
+		) => void = auth.checkAuthenticatedAndAssignCurrentUser()
 
 		const reponse: Response = mockRes()
 		const request: Request = <Request>{}
@@ -56,7 +56,7 @@ describe('Auth tests', function() {
 			request: Request,
 			response: Response,
 			next: NextFunction
-		) => void = auth.checkAuthenticated()
+		) => void = auth.checkAuthenticatedAndAssignCurrentUser()
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}

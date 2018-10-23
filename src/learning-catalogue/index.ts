@@ -1,7 +1,6 @@
 import {Course} from './model/course'
 import {DefaultPageResults} from './model/defaultPageResults'
 import {Module} from './model/module'
-import {RestService} from './service/restService'
 import {LearningCatalogueConfig} from './learningCatalogueConfig'
 import {LearningProvider} from './model/learningProvider'
 import {CancellationPolicy} from './model/cancellationPolicy'
@@ -16,6 +15,8 @@ import {AudienceFactory} from './model/factory/audienceFactory'
 import {EventFactory} from './model/factory/eventFactory'
 import {Event} from './model/event'
 import {Audience} from './model/audience'
+import {Auth} from '../identity/auth'
+import {OauthRestService} from '../lib/http/oauthRestService'
 
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
@@ -25,10 +26,10 @@ export class LearningCatalogue {
 	private _learningProviderService: EntityService<LearningProvider>
 	private _cancellationPolicyService: EntityService<CancellationPolicy>
 	private _termsAndConditionsService: EntityService<TermsAndConditions>
-	private _restService: RestService
+	private _restService: OauthRestService
 
-	constructor(config: LearningCatalogueConfig) {
-		this._restService = new RestService(config)
+	constructor(config: LearningCatalogueConfig, auth: Auth) {
+		this._restService = new OauthRestService(config, auth)
 
 		this._eventService = new EntityService<Event>(this._restService, new EventFactory())
 
@@ -91,7 +92,15 @@ export class LearningCatalogue {
 	}
 
 	async createAudience(courseId: string, audience: Audience) {
-		return this._audienceService.create(`courses/${courseId}/audiences`, audience)
+		return this._audienceService.create(`/courses/${courseId}/audiences`, audience)
+	}
+
+	async getAudience(courseId: string, audienceId: string): Promise<Audience> {
+		return this._audienceService.get(`/courses/${courseId}/audiences/${audienceId}`)
+	}
+
+	async deleteAudience(courseId: string, audienceId: string) {
+		return this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
 	}
 
 	async listLearningProviders(page: number = 0, size: number = 10): Promise<DefaultPageResults<LearningProvider>> {

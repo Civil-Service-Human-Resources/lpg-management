@@ -68,11 +68,11 @@ describe('Cancellation Policy Controller Tests', function() {
 		expect(cancellationPolicyFactory.create).to.have.been.calledWith(request.body)
 		expect(cancellationPolicyValidator.check).to.have.been.calledWith(request.body, ['name'])
 		expect(cancellationPolicyValidator.check).to.have.returned(errors)
-		expect(request.session!.sessionFlash.errors).to.equal(errors)
 
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/learning-providers/${learningProviderId}/cancellation-policies`
-		)
+		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/cancellation-policy', {
+			errors: errors,
+			cancellationPolicy: cancellationPolicy,
+		})
 	})
 
 	it('should call set cancellation policy, create and redirect successfully if no errors', async function() {

@@ -5,14 +5,8 @@
 
 {% block pageTitle %}{{ i18n['learning_provider_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management/learning-providers") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/learning-providers" %}
 
 {% block content %}
     <div class="govuk-grid-row">
@@ -38,7 +32,7 @@
                     </div>
                 </div>
             {%endif%}
-            <form action="/content-management/learning-providers/learning-provider" method="post">
+            <form action="/content-management/learning-providers/learning-provider" method="post" class="module-form">
                 <fieldset class="govuk-fieldset">
                  {% if errors.fields %}
                     {{ govukInput({
@@ -61,9 +55,11 @@
                     }) }}
                 {% endif %}
                 </fieldset>
-                {{ govukButton({
-                    text: "Add a new learning provider"
-                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Add a new learning provider"
+                    }) }}
+                </div>
             </form>
             <a href="/content-management/learning-providers" class="govuk-link">Cancel</a>
         </div>

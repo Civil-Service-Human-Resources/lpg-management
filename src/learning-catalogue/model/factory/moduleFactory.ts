@@ -5,6 +5,8 @@ import {LinkModule} from '../linkModule'
 import {FileModule} from '../fileModule'
 import {ELearningModule} from '../eLearningModule'
 import {Module} from '../module'
+import {Event} from '../event'
+import {DateTime} from '../../../lib/dateTime'
 
 export class ModuleFactory {
 	private eventFactory: EventFactory
@@ -12,17 +14,19 @@ export class ModuleFactory {
 	constructor(eventFactory: EventFactory = new EventFactory()) {
 		this.eventFactory = eventFactory
 
-		this.defaultCreate = this.defaultCreate.bind(this)
 		this.create = this.create.bind(this)
 	}
 
-	public defaultCreate(module: any, data: any) {
+	private static defaultCreate(
+		module: VideoModule | LinkModule | FileModule | FaceToFaceModule | ELearningModule,
+		data: any
+	) {
 		module.id = data.id
 		module.type = data.type
 		module.title = data.title
 		module.description = data.description
 		module.duration = data.duration
-		module.price = data.price
+		module.cost = !isNaN(Number(data.cost)) ? Number(data.cost) : data.cost
 		module.optional = data.optional
 
 		return module
@@ -38,37 +42,43 @@ export class ModuleFactory {
 
 	private createMethods: {[key in Module.Type]: any} = {
 		video: (data: any) => {
-			const module = this.defaultCreate(new VideoModule(), data)
-			module.location = data.location
+			const module = <VideoModule>ModuleFactory.defaultCreate(new VideoModule(), data)
 			module.url = data.url
 			return module
 		},
 		link: (data: any) => {
-			const module = this.defaultCreate(new LinkModule(), data)
-			module.id = data.id
-			module.title = data.title
+			const module = <LinkModule>ModuleFactory.defaultCreate(new LinkModule(), data)
 			module.description = data.description
-			module.url = data.url
 			module.duration = data.duration
+			module.id = data.id
 			module.isOptional = data.isOptional
-
+			module.title = data.title
+			module.url = data.url
 			return module
 		},
 		file: (data: any) => {
-			const module = this.defaultCreate(new FileModule(), data)
-			module.url = data.url
+			const module = <FileModule>ModuleFactory.defaultCreate(new FileModule(), data)
 			module.fileSize = data.fileSize
+			module.mediaId = data.mediaId
 			return module
 		},
 		'face-to-face': (data: any) => {
-			const module = this.defaultCreate(new FaceToFaceModule(), data)
+			const module = <FaceToFaceModule>ModuleFactory.defaultCreate(new FaceToFaceModule(), data)
 			module.events = (data.events || []).map(this.eventFactory.create)
 			module.productCode = data.productCode
+
+			module.events.sort((event1: Event, event2: Event) => {
+				return !event1.dateRanges[0]
+					? 1
+					: !event2.dateRanges[0]
+						? -1
+						: DateTime.sortDateRanges(event1.dateRanges[0], event2.dateRanges[0])
+			})
 
 			return module
 		},
 		elearning: (data: any) => {
-			const module = this.defaultCreate(new ELearningModule(), data)
+			const module = <ELearningModule>ModuleFactory.defaultCreate(new ELearningModule(), data)
 			module.startPage = data.startPage
 			return module
 		},

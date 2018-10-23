@@ -89,12 +89,12 @@ export class TermsAndConditionsController {
 
 			const termsAndConditions = this.termsAndConditionsFactory.create(data)
 
-			const errors = await this.termsAndConditionsValidator.check(request.body, ['title'])
+			const errors = await this.termsAndConditionsValidator.check(request.body, ['name', 'content'])
 			if (errors.size) {
-				request.session!.sessionFlash = {errors: errors}
-				return response.redirect(
-					'/content-management/learning-providers/' + learningProviderId + '/terms-and-conditions'
-				)
+				return response.render('page/learning-provider/terms-and-conditions', {
+					errors: errors,
+					termsAndConditions: termsAndConditions,
+				})
 			}
 
 			if (request.params.termsAndConditionsId) {

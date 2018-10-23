@@ -29,6 +29,10 @@ function set<T>(defaultValue: T, envValues: Record<string, T> = {}): T {
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
+export const CONTENT_URL = env.CONTENT_URL || 'http://local-cdn.cshr.digital/lpgdevcontent'
+
+export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
+
 export const LOGGING = set(
 	{
 		appenders: {
@@ -64,13 +68,14 @@ export const AUTHENTICATION_PATH = '/authenticate'
 export const YOUTUBE_API_KEY = env.YOUTUBE_API_KEY
 
 export const COURSE_CATALOGUE = set({
-	auth: {
-		password: env.COURSE_CATALOGUE_PASS || 'password',
-		username: env.COURSE_CATALOGUE_USER || 'user',
-	},
 	url: env.COURSE_CATALOGUE_URL || 'http://localhost:9001',
 })
 
 export const REGISTRY_SERVICE_URL = set({
 	url: env.REGISTRY_SERVICE_URL || 'http://localhost:9002',
 })
+
+export const CACHE = {
+	TTL_SECONDS: 3600,
+	CHECK_PERIOD_SECONDS: 600,
+}

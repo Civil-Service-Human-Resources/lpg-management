@@ -5,21 +5,11 @@
 {% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}
-    {% if course %}
-        {{ i18n['course_title_edit_title'] }} - {{ i18n['proposition_name'] }}
-    {% else %}
-        {{ i18n['course_title_add_title'] }} - {{ i18n['proposition_name'] }}
-    {% endif %}
+    {{ i18n.course.pageTitle.editCourseTitle if course else i18n.course.pageTitle.addCourseTitle }} - {{ i18n.proposition_name }}
 {% endblock %}
 
-{% block beforeContent %}
-    {% block phaseBanner %}
-        {{ phaseBanner("beta") }}
-    {% endblock%}
-    {% block backLink %}
-        {{ backLink("/content-management") }}
-    {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management" %}
 
 {% block content %}
     {% set errors = sessionFlash.errors %}
@@ -28,30 +18,26 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            {% if course %}
-                <p class="govuk-body form-header govuk-!-font-size-24">Edit course title</p>
-            {% else %}
-                <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
-            {% endif %}
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Course details</h2>
-            <form action="/content-management/courses/title/{{ course.id }}" method="post">
+            <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course else i18n.course.text.addNew}}</p>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.details}}</h2>
+            <form action="/content-management/courses/title/{{ course.id }}" method="post" class="course-form">
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.title %}
                         {{ govukInput({
-                        label: {
-                            text: "Course title"
+                            label: {
+                                text: i18n.course.text.title
                             },
                             id: "title",
                             name: "title",
                             value: course.title,
                             errorMessage: {
-                                text: "Title is required"
+                                text: i18n.course.validation.title.empty
                             }
                         }) }}
                     {% else %}
-                    {{ govukInput({
-                        label: {
-                            text: "Course title"
+                        {{ govukInput({
+                            label: {
+                                text: i18n.course.text.title
                             },
                             id: "title",
                             name: "title",
@@ -59,10 +45,11 @@
                         }) }}
                     {% endif %}
                 </fieldset>
-                {{ govukButton({
-                    text: "Continue"
-                }) }}
-
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Continue"
+                    }) }}
+                </div>
                 <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
             </form>
         </div>

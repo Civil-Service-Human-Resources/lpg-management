@@ -6,14 +6,8 @@
 
 {% block pageTitle %}{{ i18n['event_add_location'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management" %}
 
 {% block content %}
 
@@ -26,7 +20,9 @@
             <h2 class="govuk-heading-m govuk-!-font-size-36">Event location and availability</h2>
             <p class="govuk-body">This event is for the {{ module.title }} module on the {{ course.title }} course</p>
 
-            <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/{{event.Id}}" method="post">
+            <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/{{event.id}}" method="post">
+                <input type="hidden" name="eventJson" value="{{eventJson}}" />
+
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.location %}
                         {{ govukInput({
@@ -124,5 +120,4 @@
         <div class="govuk-column-width-one-third">
         </div>
     </div>
-
 {% endblock %}

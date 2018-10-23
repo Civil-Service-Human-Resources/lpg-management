@@ -3,24 +3,33 @@ import {beforeEach, describe, it} from 'mocha'
 import * as sinon from 'sinon'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
+import * as url from 'url'
 
 import {expect} from 'chai'
 import {LearningCatalogueConfig} from '../../../../src/learning-catalogue/learningCatalogueConfig'
-import {RestService} from '../../../../src/learning-catalogue/service/restService'
 import {Course} from '../../../../src/learning-catalogue/model/course'
+import {Auth} from 'src/identity/auth'
+import {Identity} from '../../../../src/identity/identity'
+import {JsonRestService} from '../../../../src/lib/http/jsonRestService'
+import * as sinonChai from 'sinon-chai'
 
 chai.use(chaiAsPromised)
+chai.use(sinonChai)
 
-describe('RestService tests', () => {
+describe('JsonRestService tests', () => {
 	let http: AxiosInstance
-	let config = new LearningCatalogueConfig({username: 'test-user', password: 'test-pass'}, 'http://example.org')
-	let restService: RestService
+	let config = new LearningCatalogueConfig('http://example.org')
+	let auth: Auth
+	let restService: JsonRestService
 
 	beforeEach(() => {
 		http = <AxiosInstance>{
 			defaults: {},
 		}
-		restService = new RestService(config)
+		auth = <Auth>{}
+		auth.currentUser = new Identity('user123', [], 'access123')
+
+		restService = new JsonRestService(config, auth)
 		restService.http = http
 	})
 
@@ -39,7 +48,6 @@ describe('RestService tests', () => {
 			.returns(response)
 
 		const data = await restService.get(path)
-
 		return expect(data).to.eql(response.data)
 	})
 
@@ -61,6 +69,9 @@ describe('RestService tests', () => {
 			data: {
 				id: 'course-id',
 			},
+			headers: {
+				location: '/test',
+			},
 		}
 
 		http.get = sinon
@@ -71,6 +82,7 @@ describe('RestService tests', () => {
 		const data = await restService.get(path)
 
 		return expect(data).to.eql(getResponse.data)
+		return expect(restService.get(path)).to.be.calledWith(url.parse(`${config.url}${path}`).path!)
 	})
 
 	it('should throw error if problem with GET request', async () => {

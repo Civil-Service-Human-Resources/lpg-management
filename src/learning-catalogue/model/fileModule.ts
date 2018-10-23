@@ -3,22 +3,10 @@ import {IsNotEmpty, IsPositive} from 'class-validator'
 
 export class FileModule extends Module {
 	@IsNotEmpty({
-		groups: ['all', 'url'],
-		message: 'validation_module_url_empty',
+		groups: ['all', 'mediaId'],
+		message: 'validation_module_mediaId_empty',
 	})
-	url: string
-
-	@IsNotEmpty({
-		groups: ['all', 'title'],
-		message: 'validation_module_title_empty',
-	})
-	title: string
-
-	@IsNotEmpty({
-		groups: ['all', 'description'],
-		message: 'validation_module_description_empty',
-	})
-	description: string
+	mediaId: string
 
 	@IsNotEmpty({
 		groups: ['all', 'fileSize'],

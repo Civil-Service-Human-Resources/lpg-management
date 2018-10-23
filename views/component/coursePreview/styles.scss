@@ -10,6 +10,10 @@
 .course-summary-item {
 	border-bottom: 1px solid $border;
 
+	&:last-of-type {
+		border-bottom: none;
+	}
+
 	.item-container {
 		display: flex;
 

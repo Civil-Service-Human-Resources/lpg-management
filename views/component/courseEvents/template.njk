@@ -1,24 +1,29 @@
-{% if faceToFaceModules.length > 0 %}
-    <p class="govuk-body">Only modules which allow events are shown below.</p>
-{% else %}
-    <p class="govuk-body">No modules which allow events are part of the course.</p>
-{% endif %}
+<div class="module-container-small">
+    {% if faceToFaceModules.length > 0 %}
+        <p class="govuk-body">Only modules which allow events are shown below.</p>
+    {% else %}
+        <p class="govuk-body">No modules which allow events are part of the course.</p>
+    {% endif %}
+</div>
 
 {% for module in faceToFaceModules %}
     <div class="module-container-small">
         <div class="title-container">
             <p class="govuk-body no-margin"><strong>{{ module.title | default(course.title, true) }}</strong></p>
-             <a class="govuk-body govuk-link" href="/content-management/courses/{{  course.id }}/modules/{{ module.id }}/events/">Add new event</a>               
+             <a class="govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/modules/{{ module.id }}/events/">Add new event</a>               
         </div>
         {% if module.events.length > 0 %}
-            <h3 class="govuk-heading-s">Event details</h3>
+            <h3 class="govuk-heading-s no-margin">Event details</h3>
             <ul class="list">
                 {% for event in module.events %}
                     <li class="module-item list-item u--border--bgrey">
                         <div class="title-container">
-                            <p class="govuk-body no-margin">{{ event.venue.location | default("title not set") }}, {{ event.dateRanges[0].date |  default("date not set")}}</p>
+                            <p class="govuk-body no-margin">{{ event.venue.location | default("location unset", true) }}, {{ (event.dateRanges[0].date | dateWithMonthAsText)}}</p>
                             <a href="/content-management/courses/{{ course.id }}/modules/{{ module.id }}/events-overview/{{ event.id }}" class="govuk-body govuk-link">View</a>
                         </div>
+                        {% if event.dateRanges.length > 1 %}
+                            <p class="govuk-body no-margin hint">This event occurs over a number of days</p>
+                        {% endif %}
                     </li>
                 {% endfor %}
             </ul>

@@ -7,25 +7,18 @@
 
 {% block pageTitle %}{{ i18n['course_preview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-  {% block backLink %}
-    {{ backLink("/content-management") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
+{% set backButton = "/content-management/" %}
 
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full govuk-!-margin-bottom-6">
             <div class="panel panel-blue">
                 <h5 class="govuk-heading-s">This page is in preview and has not been published yet.</h5>
-                <p class="govuk-body govuk-!-margin-bottom-0">Edit: <a href="/content-management/courses/title/{{ course.id }}" class="govuk-link panel-links">Title</a> <a href="/content-management/courses/details/{{ course.id }}" +{{course.id}} class="govuk-link panel-links">Details</a> <a href="#" class="govuk-link panel-links">Content</a> <a href="#" class="govuk-link panel-links">Files</a> <a href="/content-management/courses/{{course.id}}/add-module" class="govuk-link panel-links">Modules</a> <a href="#" class="govuk-link panel-links">Audiences</a></p>
+                <p class="govuk-body govuk-!-margin-bottom-0">Edit: <a href="/content-management/courses/title/{{ course.id }}" class="govuk-link panel-links">Title</a> <a href="/content-management/courses/details/{{ course.id }}" class="govuk-link panel-links">Details</a><a href="/content-management/courses/{{course.id}}/add-module" class="govuk-link panel-links">Modules</a></p>
             </div>
         </div>
     </div>
-
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             {% block coursePreview %}
@@ -37,9 +30,7 @@
                     {{ courseModules(course.modules) }}
                 {% endblock %}
             {% endif %}
-
         </div>
-
         <div class="govuk-grid-column-one-third">
             <div class="right-menu">
                 <ul class="course-summary">
@@ -57,40 +48,20 @@
                     </li>
                     <li class="course-summary-item">
                         <div class="item-container">
-                            <span class="item item-header">Dates and Location</span>
-                            <span class="item item-value"></span>
-                        </div>
-                    </li>
-                    <li class="course-summary-item">
-                        <div class="item-container">
-                            <span class="item item-header">Level</span>
-                            <span class="item item-value">EO to HEO/SEO</span>
-                        </div>
-                    </li>
-                    <li class="course-summary-item">
-                        <div class="item-container">
                             <span class="item item-header">Cost</span>
                             <span class="item item-value">£{{ course.getCost() }} (ex VAT)</span>
-                        </div>  
+                        </div>
                         <a href="#" class="govuk-link">See cost for group bookings</a>
                     </li>
                 </ul>
-                <div class="pre-learning">
-                    <p class="govuk-!-font-weight-bold govuk-body govuk-!-margin-bottom-1">Pre-learning required</p>
-                    <a href="#" class="govuk-link">See all pre-learning</a>
-                </div>
-            </div> 
+            </div>
         </div>
     </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <div class="panel panel-blue">
-                <h5 class="govuk-heading-s">When you have completed the course page, save it using the button below</h5>
-                <p class="govuk-body govuk-!-margin-bottom-0">You can make edits later, and add events to the course.</p>
-            </div>
             {{ govukButton({
                 text: "Return to course",
-                href: "/content-management/courses/"+ course.id + "/overview"
+                href: "/content-management/courses/"+ course.id +"/overview"
             }) }}
         </div>
     </div>

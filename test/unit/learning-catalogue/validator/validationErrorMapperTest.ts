@@ -4,8 +4,6 @@ import {expect} from 'chai'
 import {ValidationErrorMapper} from '../../../../src/learning-catalogue/validator/validationErrorMapper'
 
 describe('ValidationErrorMapper tests', () => {
-	const errorMapper = new ValidationErrorMapper()
-
 	it('should reduce arrays of validation errors to object with fields and messages', () => {
 		const validationErrors: ValidationError[] = [
 			{
@@ -30,7 +28,7 @@ describe('ValidationErrorMapper tests', () => {
 			},
 		]
 
-		const errors = errorMapper.map(validationErrors)
+		const errors = ValidationErrorMapper.map(validationErrors)
 
 		expect(errors).to.eql({
 			size: 4,

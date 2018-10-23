@@ -5,11 +5,7 @@
 
 {% block pageTitle %}{{ i18n['content_management_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
-{% block beforeContent %}
-  {% block phaseBanner %}
-    {{ phaseBanner("beta") }}
-  {% endblock%}
-{% endblock %}
+{% set banner = true %}
 
 {% block content %}
     <div class="govuk-grid-row">

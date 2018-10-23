@@ -4,21 +4,21 @@ import * as sinon from 'sinon'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
-import {RestService} from '../../../../src/learning-catalogue/service/restService'
 import {Factory} from '../../../../src/learning-catalogue/model/factory/factory'
 import {EntityService} from '../../../../src/learning-catalogue/service/entityService'
 import {LearningProvider} from '../../../../src/learning-catalogue/model/learningProvider'
+import {OauthRestService} from 'lib/http/oauthRestService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
 
 describe('EntityService tests', () => {
-	let restService: RestService
+	let restService: OauthRestService
 	let learningProviderFactory: Factory<LearningProvider>
 	let entityService: EntityService<LearningProvider>
 
 	beforeEach(() => {
-		restService = <RestService>{}
+		restService = <OauthRestService>{}
 		learningProviderFactory = <Factory<LearningProvider>>{}
 		entityService = new EntityService<LearningProvider>(restService, learningProviderFactory)
 	})

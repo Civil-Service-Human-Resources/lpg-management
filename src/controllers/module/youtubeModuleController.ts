@@ -1,10 +1,9 @@
 import {Request, Response, Router} from 'express'
 import {LearningCatalogue} from '../../learning-catalogue'
 import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactory'
-import {ContentRequest} from '../../extended'
-import {YoutubeService} from '../../lib/youtubeService'
 import {Module} from '../../learning-catalogue/model/module'
 import {Validator} from '../../learning-catalogue/validator/validator'
+import {YoutubeService} from '../../youtube/youtubeService'
 
 export class YoutubeModuleController {
 	learningCatalogue: LearningCatalogue
@@ -52,17 +51,11 @@ export class YoutubeModuleController {
 	}
 
 	public setModule() {
-		return async (request: Request, response: Response) => {
-			const req = request as ContentRequest
+		return async (req: Request, res: Response) => {
+			let data = {...req.body}
 
-			let data = {
-				...req.body,
-			}
-
-			const course = response.locals.course
-
+			const course = res.locals.course
 			let module = await this.moduleFactory.create(data)
-
 			let errors = await this.moduleValidator.check(data, ['title', 'url'])
 
 			let duration
@@ -71,6 +64,7 @@ export class YoutubeModuleController {
 
 			if (!youtubeResponse || !this.youtube.checkYoutubeResponse(youtubeResponse)) {
 				errors.fields.youtubeResponse = 'validation_module_video_notFound'
+				errors.size += 1
 			} else {
 				const info = this.youtube.getBasicYoutubeInfo(youtubeResponse)
 
@@ -78,28 +72,29 @@ export class YoutubeModuleController {
 
 				if (!duration) {
 					errors.fields.youtubeDuration = 'validation_module_video_noDuration'
+					errors.size += 1
 				}
 			}
 
-			if (Object.keys(errors.fields).length != 0) {
-				request.session!.sessionFlash = {errors: errors, module: module}
-				return response.redirect(`/content-management/courses/${course.id}/module-video`)
+			if (errors.size) {
+				req.session!.sessionFlash = {errors: errors, module: module}
+				req.session!.save(() => {
+					res.redirect(`/content-management/courses/${course.id}/module-video`)
+				})
+			} else {
+				const newData = {
+					type: data.type || 'video',
+					title: data.title,
+					description: data.description || 'No description',
+					duration: duration,
+					optional: data.isOptional || false,
+					url: data.url,
+				}
+
+				module = await this.moduleFactory.create(newData)
+				await this.learningCatalogue.createModule(course.id, module)
+				res.redirect(`/content-management/courses/${course.id}/preview`)
 			}
-
-			const newData = {
-				type: data.type || 'video',
-				title: data.title,
-				description: data.description || 'No description',
-				duration: duration,
-				optional: data.isOptional || false,
-				url: data.url,
-			}
-
-			module = await this.moduleFactory.create(newData)
-
-			await this.learningCatalogue.createModule(course.id, module)
-
-			response.redirect(`/content-management/courses/${course.id}/preview`)
 		}
 	}
 }

@@ -1,19 +1,22 @@
 import * as config from '../config'
-import * as datetime from './datetime'
-import {YoutubeConfig} from 'lib/youtubeConfig'
-import {RestService} from '../learning-catalogue/service/restService'
 import * as log4js from 'log4js'
+import {Auth} from '../identity/auth'
+import {YoutubeRestService} from './youtubeRestService'
+import {YoutubeConfig} from './youtubeConfig'
+import {DateTime} from '../lib/dateTime'
 
 const logger = log4js.getLogger('learning-catalogue/service/restService')
 
 export class YoutubeService {
 	youtubeConfig: YoutubeConfig
-	_restService: RestService
+	_restService: YoutubeRestService
+	public auth: Auth
 
-	constructor(youtubeConfig: YoutubeConfig) {
+	constructor(youtubeConfig: YoutubeConfig, auth: Auth) {
 		this.youtubeConfig = youtubeConfig
+		this.auth = auth
 
-		this._restService = new RestService(youtubeConfig)
+		this._restService = new YoutubeRestService(youtubeConfig, this.auth)
 	}
 
 	async getYoutubeResponse(url: string) {
@@ -75,7 +78,7 @@ export class YoutubeService {
 		}
 
 		if (resp && resp.items && resp.items[0]) {
-			return datetime.parseDuration(resp.items[0].contentDetails.duration)
+			return DateTime.parseDuration(resp.items[0].contentDetails.duration)
 		}
 	}
 }

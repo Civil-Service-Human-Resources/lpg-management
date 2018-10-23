@@ -1,12 +1,12 @@
-import {RestService} from './restService'
 import {Factory} from '../model/factory/factory'
 import {DefaultPageResults} from '../model/defaultPageResults'
+import {OauthRestService} from '../../lib/http/oauthRestService'
 
 export class EntityService<T> {
-	private _restService: RestService
+	private _restService: OauthRestService
 	private _factory: Factory<T>
 
-	constructor(restService: RestService, factory: Factory<T>) {
+	constructor(restService: OauthRestService, factory: Factory<T>) {
 		this._restService = restService
 		this._factory = factory
 	}
