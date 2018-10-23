@@ -13,6 +13,7 @@ import {Validator} from '../../../src/learning-catalogue/validator/validator'
 import {Module} from '../../../src/learning-catalogue/model/module'
 import {CourseService} from '../../../src/lib/courseService'
 import {CsrsService} from '../../../src/csrs/service/csrsService'
+import {Status} from '../../../src/learning-catalogue/model/status'
 
 chai.use(sinonChai)
 
@@ -174,11 +175,10 @@ describe('Course Controller Tests', function() {
 
 		await courseController.setCourseDetails()(req, res)
 
-		expect(courseFactory.create).to.have.been.calledWith(req.body)
+		expect(courseFactory.create).to.have.been.calledOnce
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.returned(noErrors)
 		expect(learningCatalogue.createCourse).to.have.been.calledWith(course)
-		expect(req.session!.sessionFlash).to.contain({courseAddedSuccessMessage: 'course_added_success_message'})
 		expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${course.id}/overview`)
 	})
 
@@ -201,7 +201,7 @@ describe('Course Controller Tests', function() {
 
 		await courseController.setCourseDetails()(req, res)
 
-		expect(courseFactory.create).to.have.been.calledWith(req.body)
+		expect(courseFactory.create).to.have.been.calledOnce
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.returned(errors)
 		expect(req.session!.sessionFlash.errors).to.be.equal(errors)
@@ -262,5 +262,93 @@ describe('Course Controller Tests', function() {
 		const allGrades = [].concat.apply([], audiences.map(audience => audience.grades))
 
 		expect(allGrades).to.eql(['a', 'b', 'c', 'd', 'e', 'f'])
+	})
+
+	describe('Update status', () => {
+		it('should update with valid status', async () => {
+			let course = new Course()
+			course.status = Status.DRAFT
+
+			const request = mockReq({
+				originalUrl: 'http://test-url',
+				body: {
+					status: 'Published',
+				},
+				params: {
+					courseId: 'course-id',
+				},
+				session: {
+					save: (x: any) => {
+						x()
+					},
+				},
+			})
+			const response = mockRes({
+				locals: {
+					course: course,
+				},
+			})
+
+			const errors = {
+				size: 0,
+			}
+
+			response.redirect = sinon.stub().returns('hello')
+			courseValidator.check = sinon.stub().returns(errors)
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await courseController.setStatus()(request, response)
+
+			// expect(request.session.save).to.have.been.called
+			expect(courseValidator.check).to.have.been.calledOnceWith(request.body)
+			expect(course.status).to.equal(Status.PUBLISHED)
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith(course)
+			expect(response.redirect).to.have.been.calledWith('/content-management/courses/course-id/overview')
+		})
+
+		it('should not update if status is invalid', async () => {
+			let course = new Course()
+			course.status = Status.DRAFT
+
+			const request = mockReq({
+				originalUrl: 'http://test-url',
+				body: {
+					status: 'Not a status',
+				},
+				params: {
+					courseId: 'course-id',
+				},
+				session: {
+					save: (x: any) => {
+						x()
+					},
+				},
+			})
+			const response = mockRes({
+				locals: {
+					course: course,
+				},
+			})
+
+			const errors = {
+				size: 1,
+				fields: [
+					{
+						status: ['course.validation.status.invalid'],
+					},
+				],
+			}
+
+			courseValidator.check = sinon.stub().returns(errors)
+			learningCatalogue.updateCourse = sinon.stub()
+
+			await courseController.setStatus()(request, response)
+
+			expect(learningCatalogue.updateCourse).to.not.have.been.called
+			expect(request.session.sessionFlash).to.eql({
+				errors: errors,
+			})
+			expect(response.redirect).to.have.been.calledOnceWith('/content-management/courses/course-id/overview')
+		})
 	})
 })

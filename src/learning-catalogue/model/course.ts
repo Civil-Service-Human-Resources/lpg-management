@@ -1,6 +1,7 @@
 import {Module} from './module'
-import {IsNotEmpty, MaxLength} from 'class-validator'
+import {IsIn, IsNotEmpty, MaxLength} from 'class-validator'
 import {Audience} from './audience'
+import {LearningProvider} from './learningProvider'
 import {Status} from './status'
 
 export class Course {
@@ -36,7 +37,13 @@ export class Course {
 	learningOutcomes: string
 	modules: Module[]
 	audiences: Audience[]
-	status: Status = Status.DRAFT
+	learningProvider: LearningProvider
+
+	@IsIn(['Draft', 'Published', 'Archived'], {
+		groups: ['all', 'status'],
+		message: 'course.validation.status.invalid',
+	})
+	status: Status
 
 	getCost() {
 		return this.modules.map(module => module.cost).reduce((acc: number, moduleCost) => acc + (moduleCost || 0), 0)

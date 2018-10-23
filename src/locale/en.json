@@ -64,11 +64,14 @@
 			"description": {
 				"empty": "Description is required",
 				"maxLength": "Description is too long"
+			},
+			"status": {
+				"invalid": "Status needs to one of 'Draft', 'Published' or 'Archived'"
 			}
 		}
 	},
 
-	"module": {
+    "module": {
 		"validation": {
 			"cost": {
 				"positive": "Module cost must be a positive number"
