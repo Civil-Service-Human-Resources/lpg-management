@@ -175,7 +175,7 @@ describe('Course Controller Tests', function() {
 
 		await courseController.setCourseDetails()(req, res)
 
-		expect(courseFactory.create).to.have.been.calledWith(req.body)
+		expect(courseFactory.create).to.have.been.calledOnce
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.returned(noErrors)
 		expect(learningCatalogue.createCourse).to.have.been.calledWith(course)
@@ -201,7 +201,7 @@ describe('Course Controller Tests', function() {
 
 		await courseController.setCourseDetails()(req, res)
 
-		expect(courseFactory.create).to.have.been.calledWith(req.body)
+		expect(courseFactory.create).to.have.been.calledOnce
 		expect(courseValidator.check).to.have.been.calledWith(course)
 		expect(courseValidator.check).to.have.returned(errors)
 		expect(req.session!.sessionFlash.errors).to.be.equal(errors)
