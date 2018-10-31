@@ -9,4 +9,6 @@ export class ELearningModule extends Module {
 	startPage: string
 
 	type: Module.Type.E_LEARNING
+
+	url: string
 }

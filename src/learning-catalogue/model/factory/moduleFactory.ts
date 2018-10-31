@@ -60,6 +60,7 @@ export class ModuleFactory {
 			const module = <FileModule>ModuleFactory.defaultCreate(new FileModule(), data)
 			module.fileSize = data.fileSize
 			module.mediaId = data.mediaId
+			module.url = data.url
 			return module
 		},
 		'face-to-face': (data: any) => {
@@ -80,6 +81,7 @@ export class ModuleFactory {
 		elearning: (data: any) => {
 			const module = <ELearningModule>ModuleFactory.defaultCreate(new ELearningModule(), data)
 			module.startPage = data.startPage
+			module.url = data.url
 			return module
 		},
 	}

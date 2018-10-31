@@ -43,8 +43,8 @@ export class FileController {
 		})
 		this.router.get('/content-management/courses/:courseId/module-file', this.getFile('file'))
 		this.router.post('/content-management/courses/:courseId/module-file', this.setFile())
-		this.router.get('/content-management/courses/:courseId/module-e-learning', this.getFile('e-learning'))
-		this.router.get('/content-management/courses/:courseId/module-mp4', this.getFile('mp4'))
+		this.router.get('/content-management/courses/:courseId/module-e-learning', this.getFile('elearning'))
+		this.router.get('/content-management/courses/:courseId/module-mp4', this.getFile('video'))
 	}
 
 	public getFile(type: string) {

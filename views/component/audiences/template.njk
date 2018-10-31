@@ -9,7 +9,7 @@
                     <a class="govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
                 </div>
                 {% set audienceHTML = '<ul class="list audience">
-                    <li class="audience-item u--border--bgrey"><span class="audience-header">Course type</span><span class="audience-info">'
+                    <li class="audience-item u--border--bgrey"><span class="audience-header">Audience type</span><span class="audience-info">'
                         + (i18n.audience.type[audienceTypeAsString] | default("Unspecified", true)) + '</span></li>' %}
                 {% if audienceTypeAsString !== 'PRIVATE_COURSE' %}
                     {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span class="audience-info">'
@@ -17,6 +17,9 @@
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span class="audience-info">' + (audience.grades | jsonpath(gradeCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span class="audience-info">' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
                     <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span class="audience-info">' + (audience.interests | join(', ') | default("Unspecified", true)) + '</span></li>' %}
+                    {% if audienceTypeAsString == 'REQUIRED_LEARNING' %}
+                        {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Required by</span><span class="audience-info">' + (audience.requiredBy | formatDate | default("Unspecified", true)) + '</span></li>' %}
+                    {% endif %}
                 {% else %}
                     {% set audienceEvent = audienceIdToEvent[audience.id] %}
                     {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span>' %}

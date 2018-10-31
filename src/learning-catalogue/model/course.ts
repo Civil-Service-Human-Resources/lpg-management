@@ -1,6 +1,7 @@
 import {Module} from './module'
 import {IsIn, IsNotEmpty, MaxLength} from 'class-validator'
 import {Audience} from './audience'
+import {LearningProvider} from './learningProvider'
 import {Status} from './status'
 
 export class Course {
@@ -34,8 +35,10 @@ export class Course {
 
 	duration: number
 	learningOutcomes: string
+	preparation: string
 	modules: Module[]
 	audiences: Audience[]
+	learningProvider: LearningProvider
 
 	@IsIn(['Draft', 'Published', 'Archived'], {
 		groups: ['all', 'status'],

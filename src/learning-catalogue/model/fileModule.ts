@@ -19,4 +19,6 @@ export class FileModule extends Module {
 	fileSize: number
 
 	type: Module.Type.FILE
+
+	url: string
 }

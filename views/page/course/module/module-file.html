@@ -10,7 +10,7 @@
 {% block pageTitle %}
 {% if type === 'file' %}
     {{ i18n['module_add_file'] }}
-{% elif type === 'mp4' %}
+{% elif type === 'video' %}
     {{ i18n['module_add_video_mp4'] }}
 {% else %}
     {{ i18n['module_add_scorm'] }}
@@ -160,7 +160,7 @@
                         <div class="add-file-form govuk-form-group">
                             {% if type === 'file' %}
                                 {% set fileTypes = 'PDF, Powerpoint, Excel, Word' %}
-                            {% elif  type === 'mp4'%}
+                            {% elif  type === 'video'%}
                                 {% set fileTypes = 'MP4' %}
                             {% else %}
                                 {% set fileTypes = 'E-learning (.zip)' %}

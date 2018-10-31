@@ -12,10 +12,11 @@
 {% set banner = true %}
 {% set backButton = "/content-management/courses/title/" %}
 
-
 {% block content %}
-    {% set errors = sessionFlash.errors %}
-    
+{% set errors = sessionFlash.errors %}
+{% set form = sessionFlash.form %}
+{% set course = sessionFlash.course %}
+
     {{ errorSummary(errors.fields) }}
 
     <div class="govuk-grid-row">
@@ -23,14 +24,16 @@
             <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course else i18n.course.text.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.details}}</h2>
             <form action="/content-management/courses/details/{{ course.id }}" method="post" class="course-form">
-                {% set course = sessionFlash.course %}
-                <input id="title" name="title" type="hidden" value="{{ course.title }}">
+                {% if course.id %}
+                <input type="hidden" name="id" value="{{ form.id|default(course.id) }}">
+                {% endif %}
+                <input id="title" name="title" type="hidden" value="{{ form.title|default(course.title)}}">
                 <fieldset class="govuk-fieldset">
                     {% block textarea %}
-                        {{ textarea("shortDescription", "shortDescription", "Maximum of 160 characters", 160, course.shortDescription, "Short description") }}
-                        {{ textarea("description", "description", "Maximum of 1500 characters", 1500, course.description, "Description") }}
-                        {{ textarea("learningOutcomes", "learningOutcomes", "Maximum of 1500 characters", 1500, course.learningOutcomes, "Learning outcomes (optional)") }}
-                        {{ textarea("preparation", "preparation", "Maximum of 1500 characters", 1500, "", "Preparation (optional)") }}
+                        {{ textarea("shortDescription", "shortDescription", "Maximum of 160 characters", 160, form.shortDescription|default(course.shortDescription), "Short description") }}
+                        {{ textarea("description", "description", "Maximum of 1500 characters", 1500, form.description|default(course.description), "Description") }}
+                        {{ textarea("learningOutcomes", "learningOutcomes", "Maximum of 1500 characters", 1500, form.learningOutcomes|default(course.learningOutcomes), "Learning outcomes (optional)") }}
+                        {{ textarea("preparation", "preparation", "Maximum of 1500 characters", 1500, form.preparation|default(course.preparation), "Preparation (optional)") }}
                     {% endblock %}
                 </fieldset>
                 <div class="button-container">

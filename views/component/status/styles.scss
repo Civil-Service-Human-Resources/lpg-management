@@ -1,0 +1,22 @@
+.status {
+    font-weight: bold;
+    padding: 2px 4px;
+    border: 1px solid $border;
+    min-width: 50px;
+    text-align: center;
+
+    &.Draft {
+        color: $font-color;
+        background-color: $outline;
+    }
+
+    &.Published {
+        color: $white;
+        background-color: $link;
+    }
+
+    &.Archived {
+        color: $white;
+        background-color: $theme;
+    }
+}

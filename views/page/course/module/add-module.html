@@ -40,7 +40,7 @@
                             {% set counter = ( counter | default(0) ) + 1 %}
                             <li class="list-details u--border--bgrey draggable" id="{{ module.id }}" data-id={{counter}}>
                                 <p class="govuk-body title">{{ module.title | default("Module", true) }}</p>
-                                <p class="govuk-body type">{{ i18n[module.type] | default("Unknown Type", true) }}</p>
+                                <p class="govuk-body type">{{ i18n.courseType[module.type] | default("Unknown Type", true) }}</p>
                                 <p class="govuk-body added-on">{{ module.addedOn | default("23rd August 2018", true) }}</p>
                                 <p class="govuk-body buttons"><a class="govuk-link" href="#">Delete</a></p>
                                 <span class="handle"></span>

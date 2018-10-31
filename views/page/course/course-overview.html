@@ -1,5 +1,6 @@
 {% from "../../component/list/macro.njk" import list %}
 {% from "../../component/menu/macro.njk" import menu %}
+{% from "../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
 {% from "../../component/courseDetails/macro.njk" import courseDetails with context %}
 {% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
 {% from "../../component/audiences/macro.njk" import audiences with context %}
@@ -54,6 +55,9 @@
     </div>
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
+            {% block statusWithLabel %}
+                {{ statusWithLabel(course.status) }}
+            {% endblock %}
             {% block menu %}
                 {% set actions = [
                     {
