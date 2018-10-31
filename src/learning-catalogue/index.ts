@@ -81,6 +81,10 @@ export class LearningCatalogue {
 		return this._moduleService.get(`/courses/${courseId}/modules/${moduleId}`)
 	}
 
+	async updateModule(courseId: string, module: Module): Promise<Module> {
+		return this._moduleService.update(`/courses/${courseId}/modules/${module.id}`, module)
+	}
+
 	async createEvent(courseId: string, moduleId: string, event: Event): Promise<Event> {
 		return this._eventService.create(`/courses/${courseId}/modules/${moduleId}/events`, event)
 	}

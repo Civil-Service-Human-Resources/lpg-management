@@ -1,16 +1,8 @@
-import {IsIn, IsNotEmpty, IsOptional, IsPositive} from 'class-validator'
+import {IsNotEmpty, IsOptional, IsPositive} from 'class-validator'
 
 export class Module {
 	id: string
 
-	@IsNotEmpty({
-		groups: ['all', 'type'],
-		message: 'validation.module.type.empty',
-	})
-	@IsIn(['face-to-face', 'link', 'video', 'elearning', 'file'], {
-		groups: ['all', 'type'],
-		message: 'validation.module.type.validType',
-	})
 	type: Module.Type
 
 	@IsNotEmpty({

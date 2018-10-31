@@ -8,7 +8,7 @@
 {% block pageTitle %}{{ i18n['module_link_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/" %}
+{% set backButton = "/content-management/courses/{{ course.id }}/add-module" %}
 
 {% block content %}
 
@@ -22,44 +22,85 @@
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
             <p class="govuk-body no-margin">You are adding a <strong>link</strong> module</p>
 
-            <form action="/content-management/courses/{{ course.id }}/module-link" method="post" class="module-form">
+            <form action="/content-management/courses/{{ course.id }}/module-link/{{ module.id }}" method="post" class="module-form">
+                {% if module.id %}
+                <input type="hidden" name="id" value="{{ form.id|default(module.id) }}">
+                {% endif %}
+                <input type="hidden" name="type" value="link">
                 <fieldset class="govuk-fieldset">
-                    {{
-                        govukInput({
+                    {% if errors.fields.title %}
+                        {{ govukInput({
                             label: {
-                                text: "Module title"
+                                text: i18n.module.text.title
                             },
                             id: "title",
                             name: "title",
-                            value: module.title
-                        })
-                    }}
+                            value: form.title,
+                            errorMessage: {
+                                text: i18n.module.validation.title.empty
+                            }
+                        }) }}
+                    {% else %}
+                        {{ govukInput({
+                            label: {
+                                text: i18n.module.text.title
+                            },
+                            id: "title",
+                            name: "title",
+                            value: form.title|default(module.title)
+                        }) }}
+                    {% endif %}
 
-                    {{
-                        govukTextarea({
+                    {% if errors.fields.description %}
+                        {{ govukTextarea ({
+                            label: {
+                                text: i18n.module.text.description
+                            },
+                            id: "description",
+                            name: "description",
+                            value: form.description,
+                            errorMessage: {
+                                text: i18n.module.validation.description.empty
+                            }
+                        }) }}
+                    {% else %}
+                        {{ govukTextarea({
                             name: "description",
                             id: "description",
                             label: {
-                                text: "Description"
+                                text: i18n.module.text.description
                             },
-                            value: module.description
-                        })
-                    }}
+                            value: form.description|default(module.description)
+                            })
+                        }}
+                    {% endif %}
 
-                    {{
-                        govukInput({
+                    {% if errors.fields.url %}
+                        {{ govukInput({
                             label: {
-                                text: "URL"
+                                text: i18n.module.text.url
                             },
                             id: "url",
                             name: "url",
-                            value: module.url
-                        })
-                    }}
+                            value: form.url,
+                            errorMessage: {
+                                text: i18n.module.validation.url.empty
+                            }
+                        }) }}
+                    {% else %}
+                        {{ govukInput({
+                            label: {
+                                text: i18n.module.text.url
+                            },
+                            id: "url",
+                            name: "url",
+                            value: form.url|default(module.url)
+                        }) }}
+                    {% endif %}
 
                     <p class="govuk-body govuk-!-margin-bottom-1 font-bold">Reading duration</p>
                     <div class="time-inputs">
-
+                        {% if errors.fields.url %}
                         {{ govukInput({
                             type: "number",
                             label: {
@@ -70,7 +111,7 @@
                             },
                             id: "hours",
                             name: "hours",
-                            value: module.hours,
+                            value: form.hours|default(module.hours),
                             classes: "govuk-date-input__input govuk-input--width-3 font-light"
                         }) }}
                         {{ govukInput({
@@ -82,7 +123,7 @@
                                 maxlength: "2"
                             },
                             id: "minutes",
-                            value: module.minutes,
+                            value: form.hours|default(module.minutes),
                             name: "minutes",
                             classes: "govuk-date-input__input govuk-input--width-3"
                         }) }}
@@ -114,7 +155,7 @@
                 }) }}
             </form>
 
-            <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/add-module">Cancel</a>
         </div>
 
         <div class="govuk-grid-column-one-third">

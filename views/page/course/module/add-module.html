@@ -30,7 +30,7 @@
                         <li class="module-headers">
                             <p class="govuk-body header title"><strong>Module title</strong></p>
                             <p class="govuk-body header type"><strong>Type</strong></p>
-                            <p class="govuk-body header added-on"><strong>Added on</strong></p>
+                            <p class="govuk-body header buttons"></p>
                             <p class="govuk-body header buttons"></p>
                             <span class="spacer"></span>
                         </li>
@@ -41,8 +41,8 @@
                             <li class="list-details u--border--bgrey draggable" id="{{ module.id }}" data-id={{counter}}>
                                 <p class="govuk-body title">{{ module.title | default("Module", true) }}</p>
                                 <p class="govuk-body type">{{ i18n.courseType[module.type] | default("Unknown Type", true) }}</p>
-                                <p class="govuk-body added-on">{{ module.addedOn | default("23rd August 2018", true) }}</p>
                                 <p class="govuk-body buttons"><a class="govuk-link" href="#">Delete</a></p>
+                                <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/module-link/{{ module.id }}">Edit</a></p>
                                 <span class="handle"></span>
                             </li>
                         {% endfor %}

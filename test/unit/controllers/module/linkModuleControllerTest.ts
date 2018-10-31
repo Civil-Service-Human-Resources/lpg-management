@@ -1,6 +1,5 @@
 import {LearningCatalogue} from '../../../../src/learning-catalogue'
 import {LinkFactory} from '../../../../src/learning-catalogue/model/factory/linkFactory'
-import {Module} from '../../../../src/learning-catalogue/model/module'
 import {Validator} from '../../../../src/learning-catalogue/validator/validator'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import * as sinonChai from 'sinon-chai'
@@ -8,21 +7,23 @@ import * as chai from 'chai'
 import {LinkModuleController} from '../../../../src/controllers/module/linkModuleController'
 import {expect} from 'chai'
 import sinon = require('sinon')
+import {CourseService} from "lib/courseService"
+import {LinkModule} from "../../../../src/learning-catalogue/model/linkModule"
 
 chai.use(sinonChai)
 
 describe('LinkModuleController tests', () => {
 	let learningCatalogue: LearningCatalogue
 	let linkFactory: LinkFactory
-	let moduleValidator: Validator<Module>
+	let moduleValidator: Validator<LinkModule>
 	let controller: LinkModuleController
-
+	let courseService: CourseService
 	before(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		linkFactory = <LinkFactory>{}
-		moduleValidator = <Validator<Module>>{}
+		moduleValidator = <Validator<LinkModule>>{}
 
-		controller = new LinkModuleController(learningCatalogue, linkFactory, moduleValidator)
+		controller = new LinkModuleController(learningCatalogue, linkFactory, moduleValidator, courseService)
 	})
 
 	it('should render add link module template', async () => {

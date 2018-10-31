@@ -75,11 +75,23 @@
 		"validation": {
 			"cost": {
 				"positive": "Module cost must be a positive number"
+			},
+			"title":{
+				"empty": "Title is required"
+			},
+			"description":{
+				"empty": "Description is required"
+			},
+			"url":{
+				"empty": "A URL should include a protocol and be a top level domain"
 			}
 		},
 
 		"text": {
-			"cost": "Cost £ (ex VAT)"
+			"cost": "Cost £ (ex VAT)",
+			"title": "Module title",
+			"description": "Description",
+			"url": "URL"
 		}
 	},
 
