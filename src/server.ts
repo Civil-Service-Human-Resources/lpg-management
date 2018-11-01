@@ -10,6 +10,7 @@ import {ApplicationContext} from './applicationContext'
 import * as bodyParser from 'body-parser'
 import {AppConfig} from './config/appConfig'
 import moment = require('moment')
+import {DateTime} from './lib/dateTime'
 
 Properties.initialize()
 
@@ -66,11 +67,7 @@ nunjucks
 			: null
 	})
 	.addFilter('formatTime', function(dateTime: Date) {
-		return dateTime
-			? moment(dateTime)
-					.local()
-					.format('h:mma')
-			: null
+		return dateTime ? DateTime.formatTimeAccordingToGdsStandard(dateTime) : null
 	})
 
 app.set('view engine', 'html')
