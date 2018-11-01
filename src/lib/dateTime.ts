@@ -65,16 +65,12 @@ export class DateTime {
 	static formatTimeAccordingToGdsStandard(dateTime: Date): string {
 		const localMomentDateTime = moment(dateTime).local()
 
-		if (localMomentDateTime.minute() == 0) {
-			if (localMomentDateTime.hour() == 0) {
-				return 'midnight'
-			} else if (localMomentDateTime.hour() == 12) {
-				return 'midday'
-			} else {
-				return localMomentDateTime.format('ha')
-			}
-		} else {
-			return localMomentDateTime.format('h:mma')
-		}
+		return localMomentDateTime.minute() == 0
+			? localMomentDateTime.hour() == 0
+				? 'midnight'
+				: localMomentDateTime.hour() == 12
+					? 'midday'
+					: localMomentDateTime.format('ha')
+			: localMomentDateTime.format('h:mma')
 	}
 }
