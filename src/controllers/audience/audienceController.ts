@@ -301,11 +301,11 @@ export class AudienceController {
 			const month = req.body['deadline-month'] || ''
 			const day = req.body['deadline-day'] || ''
 
-			const date = DateTime.yearMonthDayToDate(year, month, day)
-			const errors = await this.audienceValidator.check({requiredBy: date.toDate()}, ['audience.requiredBy'])
+			const requiredBy = DateTime.yearMonthDayToDate(year, month, day)
+			const errors = await this.audienceValidator.check({requiredBy}, ['audience.requiredBy'])
 
 			if (!errors.size) {
-				res.locals.audience.requiredBy = date.toDate()
+				res.locals.audience.requiredBy = requiredBy
 				await this.learningCatalogue.updateCourse(res.locals.course)
 				res.redirect(
 					`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
@@ -412,7 +412,7 @@ export class AudienceController {
 	getPrivateCourseEvent() {
 		return async (req: Request, res: Response) => {
 			const courseEvents = this.courseService.getAllEventsOnCourse(res.locals.course).map((event: Event) => {
-				event.dateRanges.sort((dr1, dr2) => (dr1.date < dr2.date ? -1 : dr1.date > dr2.date ? 1 : 0))
+				event.dateRanges.sort(DateTime.compareDateRangesByStartDateTime)
 				return event
 			})
 			res.render('page/course/audience/add-event', {courseEvents})

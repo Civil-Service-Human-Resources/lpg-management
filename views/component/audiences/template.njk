@@ -26,7 +26,7 @@
                     {% if audienceEvent %}
                         {% set audienceHTML = audienceHTML + 'This is a private course assigned to this event: <a href="/content-management/courses/' + course.id
                             + '/modules/' + eventIdToModuleId[audienceEvent.id] + '/events-overview/' + audienceEvent.id + '">' + audienceEvent.venue.location
-                            + ', ' + (audienceEvent.dateRanges[0].date | formatDate) + '</a>. You can invite anyone from your organisation using their email address.' %}
+                            + ', ' + (audienceEvent.dateRanges[0].startDateTime | formatDate) + '</a>. You can invite anyone from your organisation using their email address.' %}
                     {% else %}
                         {% set audienceHTML = audienceHTML + 'No event assigned yet.' %}
                     {% endif %}

@@ -11,7 +11,7 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l no-margin">{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}}</h1>
+      <h1 class="govuk-heading-l no-margin">{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].startDateTime) | formatDate | default('date unset', true)}}</h1>
     </div>
   </div>
      <div class="govuk-grid-row">
@@ -22,7 +22,7 @@
 
             {% set dateList = [] %}
               {% for dateRange in event.dateRanges %}
-                {% set eventDate = dateList.push('<p class="govuk-body no-margin">'+(dateRange.date | dateWithMonthAsText)+'</p>') %}
+                {% set eventDate = dateList.push('<p class="govuk-body no-margin">'+(dateRange.startDateTime | formatDate | default('date unset', true))+'</p>') %}
               {% endfor %}
               {% set list = dateList|join %}
 

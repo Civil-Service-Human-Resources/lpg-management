@@ -11,9 +11,8 @@ import {mockReq, mockRes} from 'sinon-express-mock'
 import {Request, Response} from 'express'
 import * as sinon from 'sinon'
 import {DateRange} from '../../../../../src/learning-catalogue/model/dateRange'
-import {DateRangeCommand} from '../../../../../src/controllers/command/dateRangeCommand'
-import {DateRangeCommandFactory} from '../../../../../src/controllers/command/factory/dateRangeCommandFactory'
 import {Venue} from '../../../../../src/learning-catalogue/model/venue'
+import moment = require('moment')
 
 chai.use(sinonChai)
 
@@ -22,26 +21,15 @@ describe('EventController', function() {
 	let learningCatalogue: LearningCatalogue
 	let eventValidator: Validator<Event>
 	let eventFactory: EventFactory
-	let dateRangeCommandValidator: Validator<DateRangeCommand>
 	let dateRangeValidator: Validator<DateRange>
-	let dateRangeCommandFactory: DateRangeCommandFactory
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		eventValidator = <Validator<Event>>{}
 		eventFactory = <EventFactory>{}
-		dateRangeCommandValidator = <Validator<DateRangeCommand>>{}
 		dateRangeValidator = <Validator<DateRange>>{}
-		dateRangeCommandFactory = <DateRangeCommandFactory>{}
 
-		eventController = new EventController(
-			learningCatalogue,
-			eventValidator,
-			eventFactory,
-			dateRangeCommandValidator,
-			dateRangeValidator,
-			dateRangeCommandFactory
-		)
+		eventController = new EventController(learningCatalogue, eventValidator, eventFactory, dateRangeValidator)
 	})
 
 	describe('date time paths', function() {
@@ -68,14 +56,6 @@ describe('EventController', function() {
 			req.params.courseId = 'abc'
 			req.params.moduleId = 'def'
 
-			// const event: Event = new Event()
-			// event.dateRanges = [new DateRange()]
-
-			const dateRange = <DateRange>{}
-			const dateRangeCommand = <DateRangeCommand>{}
-			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
-			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
-			dateRangeCommandValidator.check = sinon.stub().returns({fields: [], size: 0})
 			dateRangeValidator.check = sinon.stub().returns({fields: [], size: 0})
 
 			const event = new Event()
@@ -83,14 +63,13 @@ describe('EventController', function() {
 
 			await eventController.setDateTime()(req, res)
 
-			expect(dateRangeCommandValidator.check).to.have.been.calledOnceWith(req.body)
 			expect(res.render).to.have.been.calledWith('page/course/module/events/events', {
 				event: event,
 				eventJson: JSON.stringify(event),
 			})
 		})
 
-		it('should render errors in DateRangeCommand', async function() {
+		it('should render errors if part of the date is missing', async function() {
 			const req: Request = mockReq()
 			const res: Response = mockRes()
 
@@ -103,10 +82,9 @@ describe('EventController', function() {
 			}
 
 			const errors = {fields: {day: ['error']}, size: 1}
-			dateRangeCommandValidator.check = sinon.stub().returns(errors)
-
 			const event = new Event()
 			eventFactory.create = sinon.stub().returns(event)
+			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			await eventController.setDateTime()(req, res)
 
@@ -214,9 +192,8 @@ describe('EventController', function() {
 				},
 				dateRanges: [
 					{
-						date: '2019-02-28',
-						startTime: '09:00',
-						endTime: '17:00',
+						startDateTime: moment('20190228T0900').toDate(),
+						endDateTime: moment('20190228T1700').toDate(),
 					},
 				],
 			}
@@ -318,9 +295,8 @@ describe('EventController', function() {
 	it('should render event overview page', async function() {
 		let event: Event = new Event()
 		let dateRange: DateRange = new DateRange()
-		dateRange.date = '2019-02-01'
-		dateRange.startTime = '9:00:00'
-		dateRange.endTime = '17:00:00'
+		dateRange.startDateTime = moment('20190201T0900').toDate()
+		dateRange.endDateTime = moment('20190201T1700').toDate()
 		event.dateRanges = [dateRange]
 
 		const getEventOverview: (request: Request, response: Response) => void = eventController.getEventOverview()
@@ -360,9 +336,8 @@ describe('EventController', function() {
 				},
 				dateRanges: [
 					{
-						date: '2019-03-31',
-						startTime: '09:15',
-						endTime: '17:30',
+						startDateTime: moment('20190331T0915').toDate(),
+						endDateTime: moment('20190331T1730').toDate(),
 					},
 				],
 			}
@@ -373,22 +348,19 @@ describe('EventController', function() {
 				},
 			}
 
-			// learningCatalogue.getEvent = sinon.stub().returns(event)
-
 			const request = mockReq(requestConfig)
 			const response = mockRes(responseConfig)
 
 			await eventController.editDateRange()(request, response)
 
-			// expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit', {
 				day: 31,
 				month: 3,
 				year: 2019,
-				startHours: '09',
-				startMinutes: '15',
-				endHours: '17',
-				endMinutes: '30',
+				startHours: 9,
+				startMinutes: 15,
+				endHours: 17,
+				endMinutes: 30,
 				dateRangeIndex: 0,
 			})
 		})
@@ -418,18 +390,6 @@ describe('EventController', function() {
 			const response = mockRes()
 
 			const errors: any = {}
-
-			const dateRange = <DateRange>{
-				date: '2019-12-01',
-				startTime: '11:30',
-				endTime: '12:30',
-			}
-
-			let dateRangeCommand = <DateRangeCommand>{}
-			dateRangeCommandValidator.check = sinon.stub().returns(errors)
-			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
-			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
-
 			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			const event = <Event>{
@@ -458,9 +418,8 @@ describe('EventController', function() {
 				},
 				dateRanges: [
 					{
-						date: '2019-12-01',
-						startTime: '11:30',
-						endTime: '12:30',
+						startDateTime: moment('2019-12-01 11:30').toDate(),
+						endDateTime: moment('2019-12-01 12:30').toDate(),
 					},
 				],
 			})
@@ -502,8 +461,7 @@ describe('EventController', function() {
 				],
 				size: 1,
 			}
-
-			dateRangeCommandValidator.check = sinon.stub().returns(errors)
+			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.getEvent = sinon.stub()
 			learningCatalogue.updateEvent = sinon.stub()
@@ -513,7 +471,7 @@ describe('EventController', function() {
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit', {
-				errors: errors,
+				errors,
 				day: request.body.day,
 				month: request.body.month,
 				year: request.body.year,
@@ -521,7 +479,7 @@ describe('EventController', function() {
 				startMinutes: request.body.startMinutes,
 				endHours: request.body.endHours,
 				endMinutes: request.body.endMinutes,
-				dateRangeIndex: dateRangeIndex,
+				dateRangeIndex,
 			})
 		})
 
@@ -558,14 +516,12 @@ describe('EventController', function() {
 				],
 				size: 1,
 			}
-
-			dateRangeCommandValidator.check = sinon.stub().returns({})
-
-			const dateRangeCommand = <DateRangeCommand>{}
-			const dateRange = <DateRange>{}
-			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
-			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
 			dateRangeValidator.check = sinon.stub().returns(errors)
+
+			const dateRange = {
+				startDateTime: moment('2019-12-01 11:30').toDate(),
+				endDateTime: moment('2019-12-01 12:30').toDate(),
+			}
 
 			learningCatalogue.getEvent = sinon.stub()
 			learningCatalogue.updateEvent = sinon.stub()
@@ -574,9 +530,6 @@ describe('EventController', function() {
 
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called
-			expect(dateRangeCommandValidator.check).to.have.been.calledOnceWith(request.body)
-			expect(dateRangeCommandFactory.create).to.have.been.calledOnceWith(request.body)
-			expect(dateRangeCommand.asDateRange).to.have.been.calledOnce
 			expect(dateRangeValidator.check).to.have.been.calledOnceWith(dateRange)
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit', {
 				errors: errors,
@@ -625,18 +578,6 @@ describe('EventController', function() {
 			const response = mockRes()
 
 			const errors: any = {}
-
-			const dateRange = <DateRange>{
-				date: '2019-12-01',
-				startTime: '11:30',
-				endTime: '12:30',
-			}
-
-			let dateRangeCommand = <DateRangeCommand>{}
-			dateRangeCommandValidator.check = sinon.stub().returns(errors)
-			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
-			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
-
 			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			const event = <Event>{
@@ -649,9 +590,8 @@ describe('EventController', function() {
 				},
 				dateRanges: [
 					{
-						date: '2019-03-31',
-						startTime: '09:30',
-						endTime: '16:30',
+						startDateTime: moment('2019-03-31 09:30').toDate(),
+						endDateTime: moment('2019-03-31 16:30').toDate(),
 					},
 				],
 			}
@@ -671,14 +611,12 @@ describe('EventController', function() {
 				},
 				dateRanges: [
 					{
-						date: '2019-03-31',
-						startTime: '09:30',
-						endTime: '16:30',
+						startDateTime: moment('2019-03-31 09:30').toDate(),
+						endDateTime: moment('2019-03-31 16:30').toDate(),
 					},
 					{
-						date: '2019-12-01',
-						startTime: '11:30',
-						endTime: '12:30',
+						startDateTime: moment('2019-12-01 11:30').toDate(),
+						endDateTime: moment('2019-12-01 12:30').toDate(),
 					},
 				],
 			})
@@ -718,8 +656,7 @@ describe('EventController', function() {
 				],
 				size: 1,
 			}
-
-			dateRangeCommandValidator.check = sinon.stub().returns(errors)
+			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.getEvent = sinon.stub()
 			learningCatalogue.updateEvent = sinon.stub()
@@ -771,14 +708,12 @@ describe('EventController', function() {
 				],
 				size: 1,
 			}
-
-			dateRangeCommandValidator.check = sinon.stub().returns({})
-
-			const dateRangeCommand = <DateRangeCommand>{}
-			const dateRange = <DateRange>{}
-			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
-			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
 			dateRangeValidator.check = sinon.stub().returns(errors)
+
+			const dateRange = {
+				startDateTime: moment('2019-12-01 11:30').toDate(),
+				endDateTime: moment('2019-12-01 12:30').toDate(),
+			}
 
 			learningCatalogue.getEvent = sinon.stub()
 			learningCatalogue.updateEvent = sinon.stub()
@@ -787,9 +722,6 @@ describe('EventController', function() {
 
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called
-			expect(dateRangeCommandValidator.check).to.have.been.calledOnceWith(request.body)
-			expect(dateRangeCommandFactory.create).to.have.been.calledOnceWith(request.body)
-			expect(dateRangeCommand.asDateRange).to.have.been.calledOnce
 			expect(dateRangeValidator.check).to.have.been.calledOnceWith(dateRange)
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit', {
 				errors: errors,

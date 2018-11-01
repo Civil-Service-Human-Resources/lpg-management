@@ -6,6 +6,7 @@ import {VenueFactory} from '../../../../../src/learning-catalogue/model/factory/
 import {DateRangeFactory} from '../../../../../src/learning-catalogue/model/factory/dateRangeFactory'
 import {Venue} from '../../../../../src/learning-catalogue/model/venue'
 import * as sinon from 'sinon'
+import moment = require('moment')
 
 describe('EventFactory tests', () => {
 	let eventFactory: EventFactory
@@ -52,9 +53,9 @@ describe('EventFactory tests', () => {
 	it('should sort dates if more than one exists', () => {
 		const id: string = 'LmYAPQseRqm7dk1Q2WjA2w'
 		const dateRanges = [
-			{date: '2019-01-01', startTime: '6:00:00', endTime: '9:00:00'},
-			{date: '2020-01-01', startTime: '6:00:00', endTime: '9:00:00'},
-			{date: '2018-01-01', startTime: '6:00:00', endTime: '9:00:00'},
+			{startDateTime: moment('2019-01-01 06:00').toDate()},
+			{startDateTime: moment('2020-01-01 06:00').toDate()},
+			{startDateTime: moment('2018-01-01 06:00').toDate()},
 		]
 		const location: string = 'London'
 		const address: string = 'SE1'

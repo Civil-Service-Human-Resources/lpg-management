@@ -75,6 +75,16 @@
 		"validation": {
 			"cost": {
 				"positive": "Module cost must be a positive number"
+			},
+
+			"event": {
+				"startDateTime": {
+					"invalidDate": "Enter valid event date",
+					"dateIsNotInFuture": "Event date must be in the future"
+				},
+				"endDateTime": {
+					"endTimeNotAfterStart": "End time must be after the start time"
+				}
 			}
 		},
 
@@ -130,9 +140,7 @@
 	"validation_module_description_empty": "Description is required",
 	"validation_module_video_notFound": "There was a problem finding this video",
 	"validation_module_video_noDuration": "There was a problem finding the length of this video",
-	"validation_module_event_dateRanges_empty": "Start date is required",
-	"validation_module_event_dateRanges_past": "Start date must be in the future",
-	"validation_module_event_dateRanges_endBeforeStart": "End time must be after start time",
 	"validation_module_event_date_invalid": "Start date is not valid",
+	"validation_module_event_dateRanges_empty": "No dates on the event",
 	"validation_module_mediaId_empty": "File is required"
 }

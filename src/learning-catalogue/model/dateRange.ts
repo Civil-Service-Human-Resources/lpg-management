@@ -1,31 +1,21 @@
-import {IsFutureDateString} from '../validator/custom/isFutureDateString'
-import {IsNotEmpty} from 'class-validator'
-import {IsAfterTimeString} from '../validator/custom/isAfterTimeString'
+import {IsDate} from 'class-validator'
+import {IsFutureDate} from '../validator/custom/isFutureDate'
+import {IsAfterDate} from '../validator/custom/isAfterDate'
 
 export class DateRange {
-	@IsFutureDateString({
-		groups: ['all', 'event.all', 'event.dateRanges.date'],
-		message: 'validation_module_event_dateRanges_past',
+	@IsDate({
+		groups: ['all', 'event.all', 'event.dateRanges'],
+		message: 'module.validation.event.startDateTime.invalidDate',
 	})
-	@IsNotEmpty({
-		groups: ['all', 'event.all', 'event.dateRanges.date'],
-		message: 'validation_module_event_dateRanges_empty',
+	@IsFutureDate({
+		groups: ['all', 'event.all', 'event.dateRanges'],
+		message: 'module.validation.event.startDateTime.dateIsNotInFuture',
 	})
-	date: string
+	startDateTime: Date
 
-	@IsNotEmpty({
-		groups: ['all', 'event.all', 'event.dateRanges.startTime'],
-		message: 'validation_module_event_start_empty',
+	@IsAfterDate('startDateTime', {
+		groups: ['all', 'event.all', 'event.dateRanges'],
+		message: 'module.validation.event.endDateTime.endTimeNotAfterStart',
 	})
-	startTime: string
-
-	@IsNotEmpty({
-		groups: ['all', 'event.all', 'event.dateRanges.endTime'],
-		message: 'validation_module_event_end_empty',
-	})
-	@IsAfterTimeString('startTime', {
-		groups: ['all', 'event.all', 'event.dateRanges.endTime'],
-		message: 'validation_module_event_dateRanges_endBeforeStart',
-	})
-	endTime: string
+	endDateTime: Date
 }

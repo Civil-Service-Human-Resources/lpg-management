@@ -9,7 +9,7 @@ export function IsFutureDate(validationOptions?: ValidationOptions) {
 			constraints: [],
 			validator: {
 				validate(value: any) {
-					return value > Date.now()
+					return value > new Date()
 				},
 			},
 		})

@@ -45,8 +45,6 @@ import {YoutubeService} from './youtube/youtubeService'
 import {YoutubeConfig} from './youtube/youtubeConfig'
 import {OauthRestService} from './lib/http/oauthRestService'
 import {CacheService} from './lib/cacheService'
-import {DateRangeCommand} from './controllers/command/dateRangeCommand'
-import {DateRangeCommandFactory} from './controllers/command/factory/dateRangeCommandFactory'
 import {DateRange} from './learning-catalogue/model/dateRange'
 import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFactory'
 
@@ -92,8 +90,6 @@ export class ApplicationContext {
 	courseService: CourseService
 	csrsConfig: CsrsConfig
 	csrsService: CsrsService
-	dateRangeCommandFactory: DateRangeCommandFactory
-	dateRangeCommandValidator: Validator<DateRangeCommand>
 	dateRangeFactory: DateRangeFactory
 	dateRangeValidator: Validator<DateRange>
 
@@ -217,8 +213,6 @@ export class ApplicationContext {
 
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 
-		this.dateRangeCommandFactory = new DateRangeCommandFactory()
-		this.dateRangeCommandValidator = new Validator<DateRangeCommand>(this.dateRangeCommandFactory)
 		this.dateRangeFactory = new DateRangeFactory()
 		this.dateRangeValidator = new Validator<DateRange>(this.dateRangeFactory)
 
@@ -226,9 +220,7 @@ export class ApplicationContext {
 			this.learningCatalogue,
 			this.eventValidator,
 			this.eventFactory,
-			this.dateRangeCommandValidator,
-			this.dateRangeValidator,
-			this.dateRangeCommandFactory
+			this.dateRangeValidator
 		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)

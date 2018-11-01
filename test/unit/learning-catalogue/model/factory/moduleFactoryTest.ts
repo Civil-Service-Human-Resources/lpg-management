@@ -4,6 +4,7 @@ import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import {ModuleFactory} from '../../../../../src/learning-catalogue/model/factory/moduleFactory'
 import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
+import moment = require('moment')
 
 chai.use(chaiAsPromised)
 
@@ -66,7 +67,12 @@ describe('ModuleFactory tests', () => {
 					capacity: 99,
 					minCapacity: 10,
 				},
-				dateRanges: [{date: '2019-01-01', startTime: '09:00:00', endTime: '17:00:00'}],
+				dateRanges: [
+					{
+						startDateTime: moment('2019-01-01 09:00').toDate(),
+						endDateTime: moment('2019-01-01 17:00').toDate(),
+					},
+				],
 			},
 		]
 
@@ -76,9 +82,8 @@ describe('ModuleFactory tests', () => {
 
 		testProperties(module.events[0], data.events[0], ['date'])
 
-		expect(module.events[0].dateRanges[0].date).to.be.equal('2019-01-01')
-		expect(module.events[0].dateRanges[0].startTime).to.be.equal('09:00:00')
-		expect(module.events[0].dateRanges[0].endTime).to.be.equal('17:00:00')
+		expect(module.events[0].dateRanges[0].startDateTime).to.be.deep.equal(moment('2019-01-01 09:00').toDate())
+		expect(module.events[0].dateRanges[0].endDateTime).to.be.deep.equal(moment('2019-01-01 17:00').toDate())
 	})
 
 	it('should set events to empt lists of missing', async () => {

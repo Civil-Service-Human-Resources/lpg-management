@@ -23,9 +23,9 @@
                     </li> 
                 </ul>
                 <ul class="event-list">
-                    {% for date in event.dateRanges %}
+                    {% for dateRange in event.dateRanges %}
                         <li class="events u--border--bgrey">
-                            <p class="govuk-body event date">{{ date.date }}</p><p class="govuk-body event time">{{ date.startTime }}</p><p class="govuk-body event time">{{ date.endTime }}</p><p class="govuk-body event edit"><p class="govuk-body"><a href="#" class="govuk-link">Delete</a> <a href="#" class="govuk-link">Edit</a>
+                            <p class="govuk-body event date">{{ dateRange.startDateTime | formatDate }}</p><p class="govuk-body event time">{{ dateRange.startDateTime | formatTime }}</p><p class="govuk-body event time">{{ dateRange.endDateTime | formatTime }}</p><p class="govuk-body event edit"><p class="govuk-body"><a href="#" class="govuk-link">Delete</a> <a href="#" class="govuk-link">Edit</a>
                         </li>
                     {% endfor %}
                 </ul>

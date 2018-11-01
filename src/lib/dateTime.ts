@@ -52,10 +52,27 @@ export class DateTime {
 	}
 
 	static yearMonthDayToDate(year: string, month: string, day: string) {
-		return moment(`${year.padStart(4, '0')}${month.padStart(2, '0')}${day.padStart(2, '0')}`)
+		return moment(`${year.padStart(4, '0')}${month.padStart(2, '0')}${day.padStart(2, '0')}`).toDate()
 	}
 
-	static sortDateRanges(dateRange1: DateRange, dateRange2: DateRange) {
-		return +(dateRange1.date > dateRange2.date) || -1
+	static yearMonthDayHourMinuteToDate(year: string, month: string, day: string, hour: string, minute: string) {
+		return moment(
+			`${year.padStart(4, '0')}${month.padStart(2, '0')}${day.padStart(2, '0')}T${hour.padStart(
+				2,
+				'0'
+			)}${minute.padStart(2, '0')}`
+		).toDate()
+	}
+
+	static compareDateRangesByStartDateTime(dateRange1: DateRange, dateRange2: DateRange) {
+		return !dateRange1
+			? 1
+			: !dateRange2
+				? -1
+				: dateRange1.startDateTime > dateRange2.startDateTime
+					? 1
+					: dateRange1.startDateTime < dateRange2.startDateTime
+						? -1
+						: 0
 	}
 }

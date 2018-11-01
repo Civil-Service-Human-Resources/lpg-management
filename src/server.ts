@@ -66,8 +66,12 @@ nunjucks
 					.format('D MMM YYYY')
 			: null
 	})
-	.addFilter('dateWithMonthAsText', function(date: string) {
-		return date ? DateTime.convertDate(date) : 'date unset'
+	.addFilter('formatTime', function(dateTime: Date) {
+		return dateTime
+			? moment(dateTime)
+					.local()
+					.format('HH:mm')
+			: null
 	})
 
 app.set('view engine', 'html')

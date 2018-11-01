@@ -4,33 +4,26 @@ import {Request, Response, Router} from 'express'
 import {EventFactory} from '../../../learning-catalogue/model/factory/eventFactory'
 import {Event} from '../../../learning-catalogue/model/event'
 import * as moment from 'moment'
-import {DateRangeCommand} from '../../command/dateRangeCommand'
 import {DateRange} from '../../../learning-catalogue/model/dateRange'
-import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFactory'
+import {DateTime} from '../../../lib/dateTime'
 
 export class EventController {
 	learningCatalogue: LearningCatalogue
 	eventValidator: Validator<Event>
 	eventFactory: EventFactory
-	dateRangeCommandValidator: Validator<DateRangeCommand>
 	dateRangeValidator: Validator<DateRange>
-	dateRangeCommandFactory: DateRangeCommandFactory
 	router: Router
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
 		eventValidator: Validator<Event>,
 		eventFactory: EventFactory,
-		dateRangeCommandValidator: Validator<DateRangeCommand>,
-		dateRangeValidator: Validator<DateRange>,
-		dateRangeCommandFactory: DateRangeCommandFactory
+		dateRangeValidator: Validator<DateRange>
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.eventValidator = eventValidator
 		this.eventFactory = eventFactory
-		this.dateRangeCommandValidator = dateRangeCommandValidator
 		this.dateRangeValidator = dateRangeValidator
-		this.dateRangeCommandFactory = dateRangeCommandFactory
 		this.router = Router()
 
 		this.setRouterPaths()
@@ -135,42 +128,45 @@ export class EventController {
 
 	public setDateTime() {
 		return async (request: Request, response: Response) => {
-			let data = {
-				...request.body,
-			}
-			const event = data.eventJson ? JSON.parse(data.eventJson) : this.eventFactory.create({})
-			let errors = await this.dateRangeCommandValidator.check(data)
+			const event = request.body.eventJson ? JSON.parse(request.body.eventJson) : this.eventFactory.create({})
+			const dateRange: DateRange = EventController.parseRequestBodyToDateRange(request.body)
+			const errors = await this.dateRangeValidator.check(dateRange)
 
 			if (errors.size) {
 				response.render('page/course/module/events/events', {
-					event: event,
+					event,
 					eventJson: JSON.stringify(event),
-					errors: errors,
+					errors,
 				})
 			} else {
-				const dateRangeCommand: DateRangeCommand = this.dateRangeCommandFactory.create(data)
-				const dateRange: DateRange = dateRangeCommand.asDateRange()
+				event.dateRanges.push(dateRange)
 
-				errors = await this.dateRangeValidator.check(dateRange)
-
-				if (errors.size) {
-					const event = data.eventJson ? JSON.parse(data.eventJson) : this.eventFactory.create({})
-					response.render('page/course/module/events/events', {
-						event: event,
-						eventJson: JSON.stringify(event),
-						errors: errors,
-					})
-				} else {
-					const event = data.eventJson ? JSON.parse(data.eventJson) : this.eventFactory.create({})
-					event.dateRanges.push(dateRange)
-
-					response.render('page/course/module/events/events', {
-						event: event,
-						eventJson: JSON.stringify(event),
-					})
-				}
+				response.render('page/course/module/events/events', {
+					event,
+					eventJson: JSON.stringify(event),
+				})
 			}
 		}
+	}
+
+	private static parseRequestBodyToDateRange(body: any) {
+		const dateRange: DateRange = new DateRange()
+		dateRange.startDateTime = DateTime.yearMonthDayHourMinuteToDate(
+			body.year,
+			body.month,
+			body.day,
+			body.startTime[0],
+			body.startTime[1]
+		)
+		dateRange.endDateTime = DateTime.yearMonthDayHourMinuteToDate(
+			body.year,
+			body.month,
+			body.day,
+			body.endTime[0],
+			body.endTime[1]
+		)
+
+		return dateRange
 	}
 
 	public dateRangeOverview() {
@@ -181,25 +177,22 @@ export class EventController {
 
 	public editDateRange() {
 		return async (request: Request, response: Response) => {
-			const dateRangeIndex = request.params.dateRangeIndex
-
 			const event = response.locals.event
 
-			const dateRange = event!.dateRanges![dateRangeIndex]
+			const dateRangeIndex = request.params.dateRangeIndex
+			const dateRange: DateRange = event.dateRanges[dateRangeIndex]
 
-			const date: any = moment(dateRange.date)
-
-			const startTime = moment(dateRange.startTime, 'HH:mm')
-			const endTime = moment(dateRange.endTime, 'HH:mm')
+			const startDateTime = moment(dateRange.startDateTime).local()
+			const endDateTime = moment(dateRange.endDateTime).local()
 
 			response.render('page/course/module/events/event-dateRange-edit', {
-				day: date.date(),
-				month: date.month() + 1,
-				year: date.year(),
-				startHours: startTime.format('HH'),
-				startMinutes: startTime.format('mm'),
-				endHours: endTime.format('HH'),
-				endMinutes: endTime.format('mm'),
+				day: startDateTime.date(),
+				month: startDateTime.month() + 1,
+				year: startDateTime.year(),
+				startHours: startDateTime.hour(),
+				startMinutes: startDateTime.minute(),
+				endHours: endDateTime.hour(),
+				endMinutes: endDateTime.minute(),
 				dateRangeIndex: dateRangeIndex,
 			})
 		}
@@ -207,19 +200,16 @@ export class EventController {
 
 	public addDateRange() {
 		return async (request: Request, response: Response) => {
-			let data = {
-				...request.body,
-			}
-
 			const courseId = request.params.courseId
 			const moduleId = request.params.moduleId
 			const eventId = request.params.eventId
 
-			const errors = await this.dateRangeCommandValidator.check(data)
+			const dateRange = EventController.parseRequestBodyToDateRange(request.body)
+			const errors = await this.dateRangeValidator.check(dateRange)
 
 			if (errors.size) {
 				response.render('page/course/module/events/event-dateRange-edit', {
-					errors: errors,
+					errors,
 					day: request.body.day,
 					month: request.body.month,
 					year: request.body.year,
@@ -229,48 +219,26 @@ export class EventController {
 					endMinutes: request.body.endMinutes,
 				})
 			} else {
-				const dateRangeCommand = this.dateRangeCommandFactory.create(data)
-				const dateRange = dateRangeCommand.asDateRange()
+				const event = await this.learningCatalogue.getEvent(courseId, moduleId, eventId)
+				event.dateRanges.push(dateRange)
+				await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
 
-				const errors = await this.dateRangeValidator.check(dateRange)
-				if (errors.size) {
-					response.render('page/course/module/events/event-dateRange-edit', {
-						errors: errors,
-						day: request.body.day,
-						month: request.body.month,
-						year: request.body.year,
-						startHours: request.body.startHours,
-						startMinutes: request.body.startMinutes,
-						endHours: request.body.endHours,
-						endMinutes: request.body.endMinutes,
-					})
-				} else {
-					const event = await this.learningCatalogue.getEvent(courseId, moduleId, eventId)
-
-					event!.dateRanges!.push(dateRange)
-
-					await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
-
-					response.redirect(
-						`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
-					)
-				}
+				response.redirect(
+					`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
+				)
 			}
 		}
 	}
 
 	public updateDateRange() {
 		return async (request: Request, response: Response) => {
-			let data = {
-				...request.body,
-			}
-
 			const courseId = request.params.courseId
 			const moduleId = request.params.moduleId
 			const eventId = request.params.eventId
 			const dateRangeIndex = request.params.dateRangeIndex
 
-			const errors = await this.dateRangeCommandValidator.check(data)
+			const dateRange = EventController.parseRequestBodyToDateRange(request.body)
+			const errors = await this.dateRangeValidator.check(dateRange)
 
 			if (errors.size) {
 				response.render('page/course/module/events/event-dateRange-edit', {
@@ -285,33 +253,13 @@ export class EventController {
 					dateRangeIndex: dateRangeIndex,
 				})
 			} else {
-				const dateRangeCommand = this.dateRangeCommandFactory.create(data)
-				const dateRange = dateRangeCommand.asDateRange()
+				const event = await this.learningCatalogue.getEvent(courseId, moduleId, eventId)
+				event.dateRanges[dateRangeIndex] = dateRange
+				await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
 
-				const errors = await this.dateRangeValidator.check(dateRange)
-				if (errors.size) {
-					response.render('page/course/module/events/event-dateRange-edit', {
-						errors: errors,
-						day: request.body.day,
-						month: request.body.month,
-						year: request.body.year,
-						startHours: request.body.startHours,
-						startMinutes: request.body.startMinutes,
-						endHours: request.body.endHours,
-						endMinutes: request.body.endMinutes,
-						dateRangeIndex: dateRangeIndex,
-					})
-				} else {
-					const event = await this.learningCatalogue.getEvent(courseId, moduleId, eventId)
-
-					event!.dateRanges![dateRangeIndex] = dateRange
-
-					await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
-
-					response.redirect(
-						`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
-					)
-				}
+				response.redirect(
+					`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
+				)
 			}
 		}
 	}

@@ -16,71 +16,95 @@ describe('DateRange validation tests', () => {
 
 	it('should pass validation if date is in the future and start time is after end time', async () => {
 		const data: any = {
-			date: moment().add(1, 'day').format('YYYY-MM-DD'),
-			startTime: moment([9,30], 'HH:mm').format('HH:mm'),
-			endTime: moment([17,30], 'HH:mm').format('HH:mm'),
+			startDateTime: moment()
+				.add(1, 'day')
+				.hour(9)
+				.minute(30)
+				.toDate(),
+			endDateTime: moment()
+				.add(1, 'day')
+				.hour(17)
+				.minute(30)
+				.toDate(),
 		}
 
-		const result = await validator.check(data, ['event.dateRanges.date'])
+		const result = await validator.check(data, ['event.dateRanges'])
 
 		return expect(result.size).to.be.equal(0)
 	})
 
 	it('should fail validation if date is in the past', async () => {
 		const data: any = {
-			date: moment().subtract(1, 'day').format('YYYY-MM-DD'),
-			startTime: moment([9,30], 'HH:mm').format('HH:mm'),
-			endTime: moment([17,30], 'HH:mm').format('HH:mm'),
+			startDateTime: moment()
+				.subtract(1, 'day')
+				.hour(9)
+				.minute(30)
+				.toDate(),
+			endDateTime: moment()
+				.subtract(1, 'day')
+				.hour(17)
+				.minute(30)
+				.toDate(),
 		}
 
-		const result = await validator.check(data, ['event.dateRanges.date'])
+		const result = await validator.check(data, ['event.dateRanges'])
 
 		expect(result.size).to.be.equal(1)
-		expect(result.fields).to.be.eql({  "date": [
-			"validation_module_event_dateRanges_past"
-		]})
+		expect(result.fields).to.be.eql({
+			startDateTime: ['module.validation.event.startDateTime.dateIsNotInFuture'],
+		})
 	})
 
-	it('should fail validation if startTime is missing', async () => {
+	it('should fail validation if startDateTime is missing', async () => {
 		const data: any = {
-			date: moment().subtract(1, 'day').format('YYYY-MM-DD'),
-			endTime: moment([17,30], 'HH:mm').format('HH:mm'),
+			endDateTime: new Date(),
 		}
 
-		const result = await validator.check(data, ['event.dateRanges.startTime'])
+		const result = await validator.check(data, ['event.dateRanges'])
 
-		expect(result.size).to.be.equal(1)
-		expect(result.fields).to.be.eql({  "startTime": [
-				"validation_module_event_start_empty"
-			]})
+		expect(result.size).to.be.greaterThan(0)
+		expect(result.fields).to.deep.include({
+			startDateTime: [
+				'module.validation.event.startDateTime.invalidDate',
+				'module.validation.event.startDateTime.dateIsNotInFuture',
+			],
+		})
 	})
 
-	it('should fail validation if endTime is missing', async () => {
+	it('should fail validation if endDateTime is missing', async () => {
 		const data: any = {
-			date: moment().subtract(1, 'day').format('YYYY-MM-DD'),
-			startTime: moment([9,30], 'HH:mm').format('HH:mm'),
+			startDateTime: moment()
+				.add(1, 'day')
+				.toDate(),
 		}
 
-		const result = await validator.check(data, ['event.dateRanges.endTime'])
+		const result = await validator.check(data, ['event.dateRanges'])
 
 		expect(result.size).to.be.equal(1)
-		expect(result.fields).to.be.eql({  "endTime": [
-			"validation_module_event_end_empty"
-		]})
+		expect(result.fields).to.be.eql({
+			endDateTime: ['module.validation.event.endDateTime.endTimeNotAfterStart'],
+		})
 	})
 
-	it('should fail validation if endTime is before startTime', async () => {
+	it('should fail validation if endDateTime is before startDateTime', async () => {
 		const data: any = {
-			date: moment().subtract(1, 'day').format('YYYY-MM-DD'),
-			startTime: moment([17,30], 'HH:mm').format('HH:mm'),
-			endTime: moment([9,30], 'HH:mm').format('HH:mm'),
+			startDateTime: moment()
+				.add(1, 'day')
+				.hour(17)
+				.minute(30)
+				.toDate(),
+			endDateTime: moment()
+				.add(1, 'day')
+				.hour(9)
+				.minute(30)
+				.toDate(),
 		}
 
-		const result = await validator.check(data, ['event.dateRanges.endTime'])
+		const result = await validator.check(data, ['event.dateRanges'])
 
 		expect(result.size).to.be.equal(1)
-		expect(result.fields).to.be.eql({  "endTime": [
-				"validation_module_event_dateRanges_endBeforeStart"
-			]})
+		expect(result.fields).to.be.eql({
+			endDateTime: ['module.validation.event.endDateTime.endTimeNotAfterStart'],
+		})
 	})
 })
