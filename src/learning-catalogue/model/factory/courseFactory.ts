@@ -2,7 +2,6 @@ import {Course} from '../course'
 import {ModuleFactory} from './moduleFactory'
 import {AudienceFactory} from './audienceFactory'
 import {LearningProviderFactory} from './learningProviderFactory'
-import {Status} from '../status'
 
 export class CourseFactory {
 	private _moduleFactory: ModuleFactory
@@ -26,12 +25,13 @@ export class CourseFactory {
 		course.id = data.id
 		course.description = data.description
 		course.learningOutcomes = data.learningOutcomes
+		course.preparation = data.preparation
 		course.shortDescription = data.shortDescription
 		course.title = data.title
 		course.modules = (data.modules || []).map(this._moduleFactory.create)
 		course.audiences = (data.audiences || []).map(this.audienceFactory.create)
+		course.status = 'status' in data ? data.status : course.status
 		course.learningProvider = this._learningProviderFactory.create(data.learningProvider || {})
-		course.status = data.status || Status.DRAFT
 		return course
 	}
 

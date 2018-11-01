@@ -71,7 +71,9 @@ describe('Learning Catalogue tests', () => {
 		courseService.listAll = sinon.stub()
 
 		await learningCatalogue.listCourses()
-		return expect(courseService.listAll).to.have.been.calledOnce
+		return expect(courseService.listAll).to.have.been.calledOnceWith(
+			'/courses?status=Draft&status=Published&status=Archived&page=0&size=10'
+		)
 	})
 
 	it('should call moduleService when creating a module', async () => {

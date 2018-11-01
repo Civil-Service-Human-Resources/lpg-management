@@ -38,9 +38,7 @@ export class EntityService<T> {
 	}
 
 	async update(path: string, entity: any): Promise<T> {
-		const data = await this._restService.put(path, entity)
-
-		return this._factory.create(data)
+		return await this._restService.put(path, entity)
 	}
 
 	async delete(path: string): Promise<void> {

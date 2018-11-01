@@ -1,0 +1,8 @@
+{% from "../status/macro.njk" import status with context %}
+
+<div class="status-container">
+  <h4 class="govuk-heading-s">Status</h4>
+  {% block status %}
+    {{ status(text) }}
+  {% endblock %}
+</div>

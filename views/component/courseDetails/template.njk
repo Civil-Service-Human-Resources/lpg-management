@@ -1,36 +1,5 @@
 {% from "table/macro.njk" import govukTable %}
 
-{% set rows = [
-       [
-         {
-           text: "Type"
-         },
-         {
-           text: i18n[course.getType()]  | default("Course", true),
-           format: "numeric"
-         }
-       ],
-       [
-           {
-           text: "Cost"
-           },
-           {
-           text: "£" + course.getCost() | default("Free", true),
-           format: "numeric"
-           }
-       ],
-       [
-           {
-               text: "Grades"
-           },
-           {
-               text: grades|join(", ") if grades.length > 0 else "Unspecified",
-               format: "numeric"
-           }
-       ]
-     ]
-%}
-
 {% set faceToFace = false %}
 {% for module in course.modules %}
     {% if module.type == 'face-to-face' %}
@@ -38,21 +7,23 @@
     {% endif %}
 {% endfor %}
 
-{% if faceToFace %}
-    {{ rows.push([
-        {
-            text: "Learning Provider"
-        },
-        {
-            text: course.learningProvider.name | default("Unspecified", true),
-            format: "numeric"
-        }
-        ])
-    }}
-{% endif %}
-
-{{ govukTable({
-          firstCellIsHeader: true,
-          classes: "course-table",
-          rows: rows
-}) }}
+<ul class="list course-list">
+    <li class="list-item course-item">
+        <h3 class="govuk-heading-s">Type</h3>
+        <p class="govuk-body no-margin">{{ i18n[course.getType()]  | default("Course", true) }}</p>
+    </li>
+    <li class="list-item course-item">
+        <h3 class="govuk-heading-s">Cost</h3>
+        <p class="govuk-body no-margin">£{{ course.getCost() | default("Free", true) }}</p>
+    </li>
+    <li class="list-item course-item">
+        <h3 class="govuk-heading-s">Grades</h3>
+        <p class="govuk-body no-margin">{{ grades|join(", ") if grades.length > 0 else "Unspecified" }}</p>
+    </li>
+    {% if faceToFace === true %}
+        <li class="list-item course-item">
+            <h3 class="govuk-heading-s">Learning Provider</h3>
+            <p class="govuk-body no-margin">{{ course.learningProvider.name | default("Unspecified", true) }}</p>
+        </li>
+    {% endif %}
+</ul>

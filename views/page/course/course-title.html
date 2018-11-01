@@ -12,8 +12,9 @@
 {% set backButton = "/content-management" %}
 
 {% block content %}
-    {% set errors = sessionFlash.errors %}
-    
+{% set errors = sessionFlash.errors %}
+{% set form = sessionFlash.form %}
+
     {{ errorSummary(errors.fields) }}
 
     <div class="govuk-grid-row">
@@ -21,6 +22,10 @@
             <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course else i18n.course.text.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.details}}</h2>
             <form action="/content-management/courses/title/{{ course.id }}" method="post" class="course-form">
+                {% if course.id %}
+                <input type="hidden" name="id" value="{{ course.id }}">
+                {% endif %}
+
                 <fieldset class="govuk-fieldset">
                     {% if errors.fields.title %}
                         {{ govukInput({
@@ -29,7 +34,7 @@
                             },
                             id: "title",
                             name: "title",
-                            value: course.title,
+                            value: form.title,
                             errorMessage: {
                                 text: i18n.course.validation.title.empty
                             }
@@ -55,7 +60,7 @@
         </div>
 
         <div class="govuk-grid-column-one-third">
-       
+
         </div>
     </div>
 {% endblock %}

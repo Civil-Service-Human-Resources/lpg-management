@@ -30,7 +30,7 @@ describe('ModuleValidator tests', () => {
 		}
 	})
 
-	describe('Validate properties individually', async () => {
+	describe('ValidateCourse properties individually', async () => {
 		it('should fail validation if title is not present', async () => {
 			delete params.title
 			const errors = await validator.check(params, ['title'])
@@ -183,7 +183,7 @@ describe('ModuleValidator tests', () => {
 		})
 	})
 
-	describe('Validate all properties of ELearningModule', () => {
+	describe('ValidateCourse all properties of ELearningModule', () => {
 		it('should fail validation if title is not present', async () => {
 			const params = {
 				type: 'elearning',
@@ -273,7 +273,7 @@ describe('ModuleValidator tests', () => {
 		})
 	})
 
-	describe('Validate all properties of FaceToFaceModule', () => {
+	describe('ValidateCourse all properties of FaceToFaceModule', () => {
 		let params: any
 
 		beforeEach(() => {
@@ -362,7 +362,7 @@ describe('ModuleValidator tests', () => {
 		})
 	})
 
-	describe('Validate all properties of FileModule', () => {
+	describe('ValidateCourse all properties of FileModule', () => {
 		it('should fail validation if title is not present', async () => {
 			const params = {
 				type: 'file',
@@ -470,7 +470,7 @@ describe('ModuleValidator tests', () => {
 		})
 	})
 
-	describe('Validate all properties of LinkModule', () => {
+	describe('ValidateCourse all properties of LinkModule', () => {
 		it('should fail validation if title is not present', async () => {
 			const params = {
 				type: 'link',
@@ -568,7 +568,7 @@ describe('ModuleValidator tests', () => {
 		})
 	})
 
-	describe('Validate all properties of VideoModule', () => {
+	describe('ValidateCourse all properties of VideoModule', () => {
 		let params: any
 
 		beforeEach(() => {

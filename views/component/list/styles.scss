@@ -4,6 +4,22 @@
 	.list-details {
 		padding: 15px 0;
 
+		&.course {
+			display: flex;
+			justify-content: space-between;
+
+			.course-details {
+				padding-right: 5px;
+			}
+
+			.course-status {
+				text-align: right;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+		}
+
 		.list-name {
 			margin: 0;
 			display: inline-block;
@@ -22,7 +38,7 @@
 
 		.list-link {
 			padding: 0;
-			margin: 10px 8px 10px 0;
+			display: block;
 		}
 	}
 }
