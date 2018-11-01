@@ -62,6 +62,7 @@ export class DateTime {
 						: 0
 	}
 
+	/* Time format as per https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style */
 	static formatTimeAccordingToGdsStandard(dateTime: Date): string {
 		const localMomentDateTime = moment(dateTime).local()
 
