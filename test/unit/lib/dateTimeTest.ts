@@ -8,14 +8,6 @@ import {DateRange} from '../../../src/learning-catalogue/model/dateRange'
 chai.use(sinonChai)
 
 describe('Tests for dateTime', () => {
-	it('should return date with month as text', () => {
-		const date = '2020-02-01'
-
-		const response = DateTime.convertDate(date)
-
-		expect(response).to.equal('1 February 2020')
-	})
-
 	describe('#compareDateRangesByStartDateTime', () => {
 		let dateRange1: DateRange
 		let dateRange2: DateRange

@@ -10,7 +10,6 @@ import {ApplicationContext} from './applicationContext'
 import * as bodyParser from 'body-parser'
 import {AppConfig} from './config/appConfig'
 import moment = require('moment')
-import {DateTime} from './lib/dateTime'
 
 Properties.initialize()
 
@@ -70,7 +69,7 @@ nunjucks
 		return dateTime
 			? moment(dateTime)
 					.local()
-					.format('HH:mm')
+					.format('h:mma')
 			: null
 	})
 
