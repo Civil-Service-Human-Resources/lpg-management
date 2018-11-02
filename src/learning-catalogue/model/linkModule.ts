@@ -32,10 +32,6 @@ export class LinkModule extends Module {
 	)
 	url: string
 
-	@IsNotEmpty({
-		groups: ['all', 'duration'],
-		message: 'validation.module.duration.empty',
-	})
 	duration: number
 
 	isOptional: boolean

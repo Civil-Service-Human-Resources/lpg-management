@@ -109,6 +109,6 @@ export class LinkModuleController implements FormController{
 
 			await this.learningCatalogue.updateModule(course.id, module)
 
-			res.redirect(`/content-management/courses/${req.params.courseId}/preview`)		}
+			res.redirect(`/content-management/courses/${req.params.courseId}/add-module`)		}
 	}
 }

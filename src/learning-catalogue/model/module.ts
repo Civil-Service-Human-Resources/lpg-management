@@ -17,14 +17,6 @@ export class Module {
 	})
 	description: string
 
-	@IsPositive({
-		groups: ['all', 'duration'],
-		message: 'validation.module.duration.positive',
-	})
-	@IsNotEmpty({
-		groups: ['all', 'duration'],
-		message: 'validation.module.duration.empty',
-	})
 	duration: number
 
 	formattedDuration: string

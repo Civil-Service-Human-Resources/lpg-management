@@ -85,6 +85,10 @@ export class LearningCatalogue {
 		return this._moduleService.update(`/courses/${courseId}/modules/${module.id}`, module)
 	}
 
+	async deleteModule(courseId: string, moduleId: string) {
+		return this._moduleService.delete(`/courses/${courseId}/modules/${moduleId}`)
+	}
+
 	async createEvent(courseId: string, moduleId: string, event: Event): Promise<Event> {
 		return this._eventService.create(`/courses/${courseId}/modules/${moduleId}/events`, event)
 	}
