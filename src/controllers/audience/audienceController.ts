@@ -8,6 +8,7 @@ import {CourseService} from '../../lib/courseService'
 import {AudienceService} from '../../lib/audienceService'
 import {CsrsService} from '../../csrs/service/csrsService'
 import {DateTime} from '../../lib/dateTime'
+import {FrequencyService} from '../../lib/frequencyService'
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -62,11 +63,17 @@ export class AudienceController {
 			'/content-management/courses/:courseId/audiences/:audienceId/organisation/delete',
 			this.deleteOrganisation()
 		)
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.getDeadline())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/deadline', this.setDeadline())
+		this.router.get(
+			'/content-management/courses/:courseId/audiences/:audienceId/deadline-and-frequency',
+			this.getDeadlineAndFrequency()
+		)
 		this.router.post(
-			'/content-management/courses/:courseId/audiences/:audienceId/deadline/delete',
-			this.deleteDeadline()
+			'/content-management/courses/:courseId/audiences/:audienceId/deadline-and-frequency',
+			this.setDeadlineAndFrequency()
+		)
+		this.router.post(
+			'/content-management/courses/:courseId/audiences/:audienceId/deadline-and-frequency/delete',
+			this.deleteDeadlineAndFrequency()
 		)
 		this.router.get(
 			'/content-management/courses/:courseId/audiences/:audienceId/delete',
@@ -289,23 +296,39 @@ export class AudienceController {
 		}
 	}
 
-	getDeadline() {
+	getDeadlineAndFrequency() {
 		return async (req: Request, res: Response) => {
-			res.render('page/course/audience/add-deadline', {exampleYear: new Date(Date.now()).getFullYear() + 1})
+			res.render('page/course/audience/add-deadline-and-frequency', {
+				exampleYear: new Date().getFullYear() + 1,
+				audienceFrequencyYears: FrequencyService.getYears(res.locals.audience.frequency),
+				audienceFrequencyMonths: FrequencyService.getMonths(res.locals.audience.frequency),
+				audienceFrequencyDays: FrequencyService.getDays(res.locals.audience.frequency),
+			})
 		}
 	}
 
-	setDeadline() {
+	setDeadlineAndFrequency() {
 		return async (req: Request, res: Response) => {
 			const year = req.body['deadline-year'] || ''
 			const month = req.body['deadline-month'] || ''
 			const day = req.body['deadline-day'] || ''
+
+			const frequencyYears: number = Number.parseInt(req.body['frequency-years']) || 0
+			const frequencyMonths: number = Number.parseInt(req.body['frequency-months']) || 0
+			const frequencyDays: number = Number.parseInt(req.body['frequency-days']) || 0
 
 			const date = DateTime.yearMonthDayToDate(year, month, day)
 			const errors = await this.audienceValidator.check({requiredBy: date.toDate()}, ['audience.requiredBy'])
 
 			if (!errors.size) {
 				res.locals.audience.requiredBy = date.toDate()
+				if (frequencyYears || frequencyMonths || frequencyDays) {
+					res.locals.audience.frequency = FrequencyService.yearMonthDayToFrequency(
+						frequencyYears,
+						frequencyMonths,
+						frequencyDays
+					)
+				}
 				await this.learningCatalogue.updateCourse(res.locals.course)
 				res.redirect(
 					`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`
@@ -314,16 +337,19 @@ export class AudienceController {
 				req.session!.sessionFlash = {errors, deadlineDate: {year, month, day}}
 				req.session!.save(() => {
 					res.redirect(
-						`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/deadline`
+						`/content-management/courses/${req.params.courseId}/audiences/${
+							req.params.audienceId
+						}/deadline-and-frequency`
 					)
 				})
 			}
 		}
 	}
 
-	deleteDeadline() {
+	deleteDeadlineAndFrequency() {
 		return async (req: Request, res: Response) => {
 			res.locals.audience.requiredBy = undefined
+			res.locals.audience.frequency = undefined
 			await this.learningCatalogue.updateCourse(res.locals.course)
 
 			res.redirect(

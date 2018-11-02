@@ -1,5 +1,6 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "date-input/macro.njk" import govukDateInput %}
+{% from "input/macro.njk" import govukInput %}
 
 {% extends "../../../component/Page.njk" %}
 
@@ -17,7 +18,7 @@
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Add a deadline date</h2>
-            <form class="audience-form" action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" method="post">
+            <form class="audience-form" action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline-and-frequency" method="post">
                 {% if errors.fields.requiredBy %}
                     {{ govukDateInput({
                         id: "deadline",
@@ -66,6 +67,33 @@
                         }
                     }) }}
                 {% endif %}
+
+                {{ govukInput({
+                    label: {
+                        text: "Years"
+                    },
+                    id: "frequency-years",
+                    name: "frequency-years",
+                    value: audienceFrequencyYears
+                }) }}
+
+                {{ govukInput({
+                    label: {
+                        text: "Months"
+                    },
+                    id: "frequency-months",
+                    name: "frequency-months",
+                    value: audienceFrequencyMonths
+                }) }}
+
+                {{ govukInput({
+                    label: {
+                        text: "Days"
+                    },
+                    id: "frequency-days",
+                    name: "frequency-days",
+                    value: audienceFrequencyDays
+                }) }}
                 <div class="button-container">
                     {{ govukButton({
                         text: "Continue"

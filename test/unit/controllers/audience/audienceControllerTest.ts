@@ -418,14 +418,15 @@ describe('AudienceController', () => {
 		})
 	})
 
-	describe('#getDeadline', () => {
+	describe('#getDeadlineAndFrequency', () => {
 		it('should render add deadline page', async () => {
-			await audienceController.getDeadline()(req, res)
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-deadline')
+			res.locals.audience = {}
+			await audienceController.getDeadlineAndFrequency()(req, res)
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-deadline-and-frequency')
 		})
 	})
 
-	describe('#setDeadline', () => {
+	describe('#setDeadlineAndFrequency', () => {
 		it('should update course with deadline date if the date is valid and redirect to audience configuration page', async () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, requiredBy: null}
@@ -435,7 +436,7 @@ describe('AudienceController', () => {
 
 			learningCatalogue.updateCourse = sinon.stub()
 
-			await audienceController.setDeadline()(req, res)
+			await audienceController.setDeadlineAndFrequency()(req, res)
 
 			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
 				audiences: [{id: audienceId, requiredBy: moment('2018-12-16').toDate()}],
@@ -452,16 +453,16 @@ describe('AudienceController', () => {
 			res.locals.audience = audience
 			req.body = {'deadline-year': '1999', 'deadline-month': '1', 'deadline-day': '1'}
 
-			await audienceController.setDeadline()(req, res)
+			await audienceController.setDeadlineAndFrequency()(req, res)
 
 			expect(req.session!.sessionFlash.errors).is.not.undefined
 			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/audiences/${audienceId}/deadline`
+				`/content-management/courses/${courseId}/audiences/${audienceId}/deadline-and-frequency`
 			)
 		})
 	})
 
-	describe('#deleteDeadline', () => {
+	describe('#deleteDeadlineAndFrequency', () => {
 		it('should update course with null deadline and redirect to audience configuration page', async () => {
 			req.params.audienceId = audienceId
 			const audience = {id: audienceId, requiredBy: new Date()}
@@ -470,10 +471,10 @@ describe('AudienceController', () => {
 
 			learningCatalogue.updateCourse = sinon.stub()
 
-			await audienceController.deleteDeadline()(req, res)
+			await audienceController.deleteDeadlineAndFrequency()(req, res)
 
 			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith({
-				audiences: [{id: audienceId, requiredBy: undefined}],
+				audiences: [{id: audienceId, requiredBy: undefined, frequency: undefined}],
 			})
 		})
 	})

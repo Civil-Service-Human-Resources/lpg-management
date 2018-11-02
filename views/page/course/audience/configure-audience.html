@@ -96,34 +96,17 @@
                     {% if audienceTypeAsString === 'REQUIRED_LEARNING' %}
                         <div class="flex-container u--border--bgrey">
                             <div class="audience-content">
-                                <p class="govuk-body">Deadline date</p>
-                                {% if audience.requiredBy %}
-                                    <p class="audience-type no-margin">{{audience.requiredBy | formatDate}}</p>
-                                {% else %}
-                                    <p class="unset">No date has been added</p>
-                                {% endif %}
+                                <p class="govuk-body">Deadline date and frequency</p>
+                                <p class="{{'audience-type no-margin' if audience.requiredBy else 'unset'}}">
+                                    {{audience.requiredBy | formatDate | default('Deadline date unset', true)}}, {{audience.frequency | formatFrequency | default('frequency unset', true)}}
+                                </p>
                             </div>
                             {% if audience.requiredBy %}
-                                <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline/delete" method="post" class="audience-link">
+                                <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline-and-frequency/delete" method="post" class="audience-link">
                                     <button class="govuk-link linkish-button">Delete</button>
                                 </form>
                             {% else %}
-                                <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline" class="govuk-link audience-link">Add</a>
-                            {% endif %}
-                        </div>
-                        <div class="flex-container u--border--bgrey">
-                            <div class="audience-content">
-                                <p class="govuk-body">Frequency</p>
-                                {% if audience.frequency %}
-                                    <p class="audience-type no-margin">{{ audience.frequency }}</p>
-                                {% else %}
-                                    <p class="unset">No frequency has been added</p>
-                                {% endif %}
-                            </div>
-                            {% if audience.frequency %}
-                                <a href="#" class="govuk-link audience-link">Delete</a>
-                            {% else %}
-                                <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/frequency" class="govuk-link audience-link">Add</a>
+                                <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/deadline-and-frequency" class="govuk-link audience-link">Add</a>
                             {% endif %}
                         </div>
                     {% endif %}
