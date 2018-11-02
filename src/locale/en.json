@@ -96,6 +96,11 @@
 			"description": "Description",
 			"duration": "Duration",
 			"url": "URL"
+		},
+
+		"title":{
+			"link_add": "Add a link",
+			"link_edit": "Edit a link"
 		}
 	},
 
@@ -125,7 +130,6 @@
 	"module_add_video_mp4": "Add a Video (MP4)",
 	"module_add_scorm": "Add e-learning",
 	"module_add_title": "Add a module",
-	"module_link_add_title": "Add a link",
 	"module_youtube_add_title": "Add a YouTube video",
 	"module_face_to_face_add": "Add a classroom module",
 	"proposition_name": "Civil Service Learning",

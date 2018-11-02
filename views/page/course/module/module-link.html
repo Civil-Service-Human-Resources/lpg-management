@@ -5,10 +5,16 @@
 
 {% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['module_link_add_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}
+{% if module.id %}
+{{ i18n.module.title.link_edit }} - {{ i18n.proposition_name }}
+{% else %}
+{{ i18n.module.title.link_add }} - {{ i18n.proposition_name }}
+{% endif %}
+{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/{{ course.id }}/add-module" %}
+{% set backButton = "/content-management/courses/" + course.id + "/add-module" %}
 
 {% block content %}
 
@@ -18,9 +24,9 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24">Add a new course</p>
+            <p class="govuk-body form-header govuk-!-font-size-24">Edit a course</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Course module details</h2>
-            <p class="govuk-body no-margin">You are adding a <strong>link</strong> module</p>
+            <p class="govuk-body no-margin">You are {% if module.id %} editing {% else %}adding{% endif %} a <strong>link</strong> module</p>
 
             <form action="/content-management/courses/{{ course.id }}/module-link/{{ module.id }}" method="post" class="module-form">
                 {% if module.id %}
@@ -150,7 +156,7 @@
                     }) }}
 
                 {{ govukButton({
-                text: "Add item",
+                text: "Edit item" if module.id else "Add item",
                 classes: "button-blue left-aligned"
                 }) }}
             </form>
