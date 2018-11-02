@@ -94,7 +94,7 @@ export class LinkModuleController implements FormController{
 	}
 
 	@Validate({
-		fields: ['title', 'description', 'url'],
+		fields: ['all'],
 		redirect: '/content-management/courses/:courseId/module-link/:moduleId',
 	})
 	public updateLinkModule() {

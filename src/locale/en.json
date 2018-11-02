@@ -84,6 +84,9 @@
 			},
 			"url":{
 				"empty": "A URL should include a protocol and be a top level domain"
+			},
+			"duration":{
+				"empty": "Duration is required"
 			}
 		},
 
@@ -91,6 +94,7 @@
 			"cost": "Cost £ (ex VAT)",
 			"title": "Module title",
 			"description": "Description",
+			"duration": "Duration",
 			"url": "URL"
 		}
 	},
