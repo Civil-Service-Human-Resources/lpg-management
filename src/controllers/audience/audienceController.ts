@@ -8,7 +8,7 @@ import {CourseService} from '../../lib/courseService'
 import {AudienceService} from '../../lib/audienceService'
 import {CsrsService} from '../../csrs/service/csrsService'
 import {DateTime} from '../../lib/dateTime'
-import {FrequencyService} from '../../lib/frequencyService'
+import moment = require('moment')
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -300,9 +300,6 @@ export class AudienceController {
 		return async (req: Request, res: Response) => {
 			res.render('page/course/audience/add-deadline-and-frequency', {
 				exampleYear: new Date().getFullYear() + 1,
-				audienceFrequencyYears: FrequencyService.getYears(res.locals.audience.frequency),
-				audienceFrequencyMonths: FrequencyService.getMonths(res.locals.audience.frequency),
-				audienceFrequencyDays: FrequencyService.getDays(res.locals.audience.frequency),
 			})
 		}
 	}
@@ -323,11 +320,11 @@ export class AudienceController {
 			if (!errors.size) {
 				res.locals.audience.requiredBy = date.toDate()
 				if (frequencyYears || frequencyMonths || frequencyDays) {
-					res.locals.audience.frequency = FrequencyService.yearMonthDayToFrequency(
-						frequencyYears,
-						frequencyMonths,
-						frequencyDays
-					)
+					res.locals.audience.frequency = moment.duration({
+						years: frequencyYears,
+						months: frequencyMonths,
+						days: frequencyDays,
+					})
 				}
 				await this.learningCatalogue.updateCourse(res.locals.course)
 				res.redirect(

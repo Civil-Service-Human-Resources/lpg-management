@@ -11,7 +11,8 @@ import * as bodyParser from 'body-parser'
 import {AppConfig} from './config/appConfig'
 import moment = require('moment')
 import {DateTime} from './lib/dateTime'
-import {FrequencyService} from './lib/frequencyService'
+import {DurationService} from './lib/durationService'
+import {Duration} from 'moment'
 
 Properties.initialize()
 
@@ -70,8 +71,8 @@ nunjucks
 	.addFilter('dateWithMonthAsText', function(date: string) {
 		return date ? DateTime.convertDate(date) : 'date unset'
 	})
-	.addFilter('formatFrequency', function(frequency: string) {
-		return frequency ? FrequencyService.formatFrequency(frequency) : null
+	.addFilter('formatDuration', function(duration: Duration) {
+		return duration ? DurationService.formatDuration(duration) : null
 	})
 
 app.set('view engine', 'html')

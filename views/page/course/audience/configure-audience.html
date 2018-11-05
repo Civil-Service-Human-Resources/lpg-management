@@ -98,7 +98,7 @@
                             <div class="audience-content">
                                 <p class="govuk-body">Deadline date and frequency</p>
                                 <p class="{{'audience-type no-margin' if audience.requiredBy else 'unset'}}">
-                                    {{audience.requiredBy | formatDate | default('Deadline date unset', true)}}, {{audience.frequency | formatFrequency | default('frequency unset', true)}}
+                                    {{audience.requiredBy | formatDate | default('Deadline date unset', true)}}, {{audience.frequency | formatDuration | default('frequency unset', true)}}
                                 </p>
                             </div>
                             {% if audience.requiredBy %}

@@ -4,6 +4,7 @@ import * as sinonChai from 'sinon-chai'
 import {describe} from 'mocha'
 import {Audience} from '../../../src/learning-catalogue/model/audience'
 import {AudienceService} from '../../../src/lib/audienceService'
+import moment = require('moment')
 
 chai.use(sinonChai)
 
@@ -16,7 +17,7 @@ describe('AudienceService', () => {
 			audience.grades = ['grade']
 			audience.interests = ['interest']
 			audience.requiredBy = new Date()
-			audience.frequency = 'frequency'
+			audience.frequency = moment.duration('P1D')
 
 			AudienceService.updateAudienceType(audience, Audience.Type.PRIVATE_COURSE)
 

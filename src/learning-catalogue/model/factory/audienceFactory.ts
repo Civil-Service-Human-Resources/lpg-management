@@ -1,4 +1,5 @@
 import {Audience} from '../audience'
+import moment = require('moment')
 
 export class AudienceFactory {
 	constructor() {
@@ -15,7 +16,7 @@ export class AudienceFactory {
 		audience.interests = data.interests
 		audience.requiredBy = data.requiredBy
 		audience.type = Audience.Type[data.type as keyof typeof Audience.Type]
-		audience.frequency = data.frequency
+		audience.frequency = data.frequency ? moment.duration(data.frequency) : undefined
 		audience.eventId = data.eventId
 
 		return audience

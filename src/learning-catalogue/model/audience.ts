@@ -1,5 +1,6 @@
 import {IsFutureDate} from '../validator/custom/isFutureDate'
 import {IsDate, IsNotEmpty, MaxLength} from 'class-validator'
+import {Duration} from 'moment'
 
 export class Audience {
 	id: string
@@ -38,7 +39,7 @@ export class Audience {
 	})
 	requiredBy?: Date
 
-	frequency?: string
+	frequency?: Duration
 
 	eventId?: string
 }
