@@ -4,15 +4,15 @@ import {LearningCatalogue} from '../../learning-catalogue'
 import {LinkFactory} from '../../learning-catalogue/model/factory/linkFactory'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import moment = require('moment')
-import {FormController} from "../formController"
-import {CourseService} from "lib/courseService"
-import {LinkModule} from "../../learning-catalogue/model/linkModule"
-import {Validate} from "../formValidator"
-import {Module} from "../../learning-catalogue/model/module"
+import {FormController} from '../formController'
+import {CourseService} from 'lib/courseService'
+import {LinkModule} from '../../learning-catalogue/model/linkModule'
+import {Validate} from '../formValidator'
+import {Module} from '../../learning-catalogue/model/module'
 
 const logger = log4js.getLogger('controllers/linkModuleController')
 
-export class LinkModuleController implements FormController{
+export class LinkModuleController implements FormController {
 	learningCatalogue: LearningCatalogue
 	linkFactory: LinkFactory
 	validator: Validator<LinkModule>
@@ -20,7 +20,12 @@ export class LinkModuleController implements FormController{
 
 	router: Router
 
-	constructor(learningCatalogue: LearningCatalogue, linkFactory: LinkFactory, moduleValidator: Validator<LinkModule>, courseService: CourseService) {
+	constructor(
+		learningCatalogue: LearningCatalogue,
+		linkFactory: LinkFactory,
+		moduleValidator: Validator<LinkModule>,
+		courseService: CourseService
+	) {
 		this.learningCatalogue = learningCatalogue
 		this.linkFactory = linkFactory
 		this.validator = moduleValidator
@@ -109,6 +114,7 @@ export class LinkModuleController implements FormController{
 
 			await this.learningCatalogue.updateModule(course.id, module)
 
-			res.redirect(`/content-management/courses/${req.params.courseId}/add-module`)		}
+			res.redirect(`/content-management/courses/${req.params.courseId}/add-module`)
+		}
 	}
 }

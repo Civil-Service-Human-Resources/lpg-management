@@ -90,7 +90,7 @@ export class CourseService {
 		return _.uniq(_.flatten((course.audiences || []).map((audience: Audience) => audience.grades))).sort()
 	}
 
-	getModuleByModuleId(course: Course, moduleId: String){
+	getModuleByModuleId(course: Course, moduleId: String) {
 		return course.modules.find((module: Module) => module.id == moduleId)
 	}
 }

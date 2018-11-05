@@ -59,7 +59,7 @@ export class ModuleController {
 		}
 	}
 
-	public deleteModule(){
+	public deleteModule() {
 		return async (request: Request, response: Response) => {
 			const courseId = response.locals.course.id
 			const moduleId = request.params.moduleId

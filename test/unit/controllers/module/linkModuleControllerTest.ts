@@ -7,8 +7,8 @@ import * as chai from 'chai'
 import {LinkModuleController} from '../../../../src/controllers/module/linkModuleController'
 import {expect} from 'chai'
 import sinon = require('sinon')
-import {CourseService} from "lib/courseService"
-import {LinkModule} from "../../../../src/learning-catalogue/model/linkModule"
+import {CourseService} from 'lib/courseService'
+import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
 
 chai.use(sinonChai)
 
