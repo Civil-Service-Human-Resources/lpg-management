@@ -45,9 +45,31 @@ export class DateTime {
 	static formatDuration(seconds: number): string {
 		if (seconds) {
 			const duration = this.convert(seconds)
-			return duration.hours + 'h' + duration.minutes + 'm'
+			let formattedDuration = ''
+			if (duration.minutes != 0) {
+				if (duration.minutes == 1) {
+					formattedDuration = duration.minutes + ' minute'
+				} else {
+					formattedDuration = duration.minutes + ' minutes'
+				}
+			}
+			if (duration.hours > 0 && duration.hours % 24 != 0) {
+				if (duration.hours % 24 == 1) {
+					formattedDuration = (duration.hours % 24) + ' hour ' + formattedDuration
+				} else {
+					formattedDuration = (duration.hours % 24) + ' hours ' + formattedDuration
+				}
+			}
+			if (duration.hours > 23) {
+				if (Math.floor(duration.hours / 24) == 1) {
+					formattedDuration = Math.floor(duration.hours / 24) + ' day ' + formattedDuration
+				} else {
+					formattedDuration = Math.floor(duration.hours / 24) + ' days ' + formattedDuration
+				}
+			}
+			return formattedDuration
 		} else {
-			return '0m'
+			return '0 minutes'
 		}
 	}
 

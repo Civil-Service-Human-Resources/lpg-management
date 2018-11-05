@@ -220,11 +220,9 @@ describe('Auth tests', function() {
 	})
 
 	it('should add return next() if user is authorised with role', function() {
-		const hasRole: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = auth.hasRole('COURSE_MANAGER')
+		const hasRole: (request: Request, response: Response, next: NextFunction) => void = auth.hasRole(
+			'COURSE_MANAGER'
+		)
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
@@ -238,11 +236,9 @@ describe('Auth tests', function() {
 	})
 
 	it('should add return 401 if no user', function() {
-		const hasRole: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = auth.hasRole('COURSE_MANAGER')
+		const hasRole: (request: Request, response: Response, next: NextFunction) => void = auth.hasRole(
+			'COURSE_MANAGER'
+		)
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
@@ -255,11 +251,9 @@ describe('Auth tests', function() {
 	})
 
 	it('should add return 401 if user is not authorised with role', function() {
-		const hasRole: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = auth.hasRole('COURSE_MANAGER')
+		const hasRole: (request: Request, response: Response, next: NextFunction) => void = auth.hasRole(
+			'COURSE_MANAGER'
+		)
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}

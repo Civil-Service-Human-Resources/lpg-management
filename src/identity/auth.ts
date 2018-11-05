@@ -125,11 +125,7 @@ export class Auth {
 	}
 
 	hasRole(role: string) {
-		return (
-			req: Request,
-			res: Response,
-			next: NextFunction
-		) => {
+		return (req: Request, res: Response, next: NextFunction) => {
 			if (req.user && req.user.hasRole(role)) {
 				return next()
 			}
