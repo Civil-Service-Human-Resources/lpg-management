@@ -48,9 +48,7 @@ nunjucks
 	.addFilter('jsonpath', function(path: string | string[], map: any) {
 		return Object.is(path, undefined)
 			? undefined
-			: Array.isArray(path)
-				? path.map(pathElem => jsonpath.value(map, pathElem))
-				: jsonpath.value(map, path)
+			: Array.isArray(path) ? path.map(pathElem => jsonpath.value(map, pathElem)) : jsonpath.value(map, path)
 	})
 	.addFilter('formatDate', function(date: Date) {
 		return date

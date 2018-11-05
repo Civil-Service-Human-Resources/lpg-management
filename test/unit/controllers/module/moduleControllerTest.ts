@@ -8,7 +8,7 @@ import {LearningCatalogue} from '../../../../src/learning-catalogue'
 import {ModuleController} from '../../../../src/controllers/module/moduleController'
 import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/moduleFactory'
 import {Course} from '../../../../src/learning-catalogue/model/course'
-import * as sinon from "sinon"
+import * as sinon from 'sinon'
 
 chai.use(sinonChai)
 
