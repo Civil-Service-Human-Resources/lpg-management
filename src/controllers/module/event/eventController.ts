@@ -118,6 +118,10 @@ export class EventController {
 			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex',
 			this.updateDateRange()
 		)
+		this.router.get(
+			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel',
+			this.cancelEvent()
+		)
 	}
 
 	public getDateTime() {
@@ -369,6 +373,12 @@ export class EventController {
 	public getEventOverview() {
 		return async (req: Request, res: Response) => {
 			res.render('page/course/module/events/events-overview')
+		}
+	}
+
+	public cancelEvent() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/module/events/cancel')
 		}
 	}
 }

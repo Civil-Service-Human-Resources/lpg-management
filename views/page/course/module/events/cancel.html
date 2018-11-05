@@ -1,0 +1,40 @@
+{% from "input/macro.njk" import govukInput %}
+
+{% extends "../../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.event.title.cancel }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% set banner = true %}
+{% if event %}
+    {% set backButton = "/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id %}
+{% else %}
+    {% set backButton = "/content-management/courses/" + course.id + "/overview" %}
+{% endif %}
+
+
+{% block content %}
+
+    {% set errors = sessionFlash.errors %}
+    {{ errorSummary(errors.fields) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l no-margin">Cancel event</h1>
+            <p class="govuk-body">This event is for the <strong>{{module.title | default("Module title", true)}}</strong> module on the <a href="/content-management/courses/{{course.id}}/overview" class="govuk-link">{{course.title}}</a> course</p>
+            <p class="govuk-body no-margin">Cancelling an event will notify attendeed by email and refund any paid POs.
+            <p class="govuk-body">The event will be labelled as cancelled.</p>
+            <p class="govuk-body">This cannot be undone</p>
+            <form action="" method="post">
+                {{ govukInput({
+                    label: {
+                        text: "Two-thirds width",
+                        classes: "govuk-!-width-two-thirds"
+                    },
+                    classes: "govuk-!-width-two-thirds",
+                    id: "cancel",
+                    name: "cancel"
+                }) }}
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

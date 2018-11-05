@@ -5,3 +5,9 @@
 .module-item {
 	padding: 15px 0;
 }
+
+.item-value {
+	&.type {
+		text-transform: capitalize;
+	}
+}

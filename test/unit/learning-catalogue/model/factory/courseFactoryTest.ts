@@ -93,7 +93,7 @@ describe('CourseFactory tests', () => {
 			description: description,
 			learningOutcomes: learningOutcomes,
 			modules: null,
-			status: "Published"
+			status: 'Published',
 		}
 
 		moduleFactory.create = sinon.stub()
