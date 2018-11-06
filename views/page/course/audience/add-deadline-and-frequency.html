@@ -68,31 +68,33 @@
                     }) }}
                 {% endif %}
 
-                {{ govukInput({
-                    label: {
-                        text: "Years"
+                {{ govukDateInput({
+                    id: "frequency",
+                    namePrefix: "frequency",
+                    fieldset: {
+                        legend: {
+                            text: "What is the course frequency (optional)?",
+                            isPageHeading: false,
+                            classes: "govuk-fieldset__legend--s"
+                        }
                     },
-                    id: "frequency-years",
-                    name: "frequency-years",
-                    value: audience.frequency.years
-                }) }}
-
-                {{ govukInput({
-                    label: {
-                        text: "Months"
-                    },
-                    id: "frequency-months",
-                    name: "frequency-months",
-                    value: audience.frequency.months
-                }) }}
-
-                {{ govukInput({
-                    label: {
-                        text: "Days"
-                    },
-                    id: "frequency-days",
-                    name: "frequency-days",
-                    value: audience.frequency.days
+                    items: [
+                        {
+                            name: "years",
+                            value: audience.frequency.years,
+                            classes: "govuk-input--width-2"
+                        },
+                        {
+                            name: "months",
+                            value: audience.frequency.months,
+                            classes: "govuk-input--width-2"
+                        },
+                        {
+                            name: "days",
+                            value: audience.frequency.days,
+                            classes: "govuk-input--width-2"
+                        }
+                    ]
                 }) }}
                 <div class="button-container">
                     {{ govukButton({
