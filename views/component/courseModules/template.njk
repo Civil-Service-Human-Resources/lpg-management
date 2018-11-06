@@ -6,7 +6,7 @@
                     {% set counter = ( counter | default(0) ) + 1 %}
                     <h3 class="govuk-heading-s">{{ module.title | default("Module "+ counter, true)}}</h3>
 
-                    <p class="govuk-body">{{ module.description }}</p>
+                    <p class="govuk-body no-margin">{{ module.description }}</p>
 
                     {% if module.optional === true %}
                         <p class="optional">This module is optional</p>

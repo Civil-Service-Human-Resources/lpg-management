@@ -39,7 +39,6 @@
 			"REQUIRED_LEARNING": "Required learning"
 		}
 	},
-
 	"course": {
 		"pageTitle": {
 			"addCourseTitle": "Add course title",
@@ -70,6 +69,12 @@
 			}
 		}
 	},
+	"event": {
+		"title": {
+			"cancel": "Cancel event"
+		}
+	},
+	"blended": "Blended",
 
     "module": {
 		"validation": {

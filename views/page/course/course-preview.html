@@ -37,21 +37,43 @@
                     <li class="course-summary-item">
                         <div class="item-container">
                             <span class="item item-header">Course type</span>
-                            <span class="item item-value">{{ course.getType() }}</span>
+                            <span class="item item-value type">{{ course.getType() | default("Unspecified", true) }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Grades</span>
+                            <span class="item item-value">{{ course.getGrades() | default("Unspecified", true) }}</span>
                         </div>
                     </li>
                     <li class="course-summary-item">
                         <div class="item-container">
                             <span class="item item-header">Duration</span>
-                            <span class="item item-value">1 day</span>
+                            <span class="item item-value">{{ course.getDuration() | default("Unspecified", true) }}</span>
                         </div>
                     </li>
                     <li class="course-summary-item">
                         <div class="item-container">
                             <span class="item item-header">Cost</span>
-                            <span class="item item-value">£{{ course.getCost() }} (ex VAT)</span>
+                            <span class="item item-value">£{%- if course.getCost() === 0 -%}
+                                                                Free {%- else -%}
+                                                                {{ course.getCost() }} 
+                                                            {%- endif %}
+                                                            (ex VAT)
+                            </span>
                         </div>
-                        <a href="#" class="govuk-link">See cost for group bookings</a>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Next availabile date</span>
+                            <span class="item item-value">{{ course.getNextAvailableDate() | default("Unspecified", true) }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Primary area</span>
+                            <span class="item item-value">{{ course.getAreasOfWork() | default("Unspecified", true) }}</span>
+                        </div>
                     </li>
                 </ul>
             </div>
