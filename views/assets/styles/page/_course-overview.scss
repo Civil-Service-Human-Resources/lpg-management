@@ -36,3 +36,13 @@
 		}
 	}
 }
+
+.date-inputs {
+	.govuk-date-input__item {
+		width: 68px;
+	}
+
+	input {
+		width: 100%;
+	}
+}

@@ -24,6 +24,7 @@
                         id: "deadline",
                         namePrefix: "deadline",
                         fieldset: {
+                            classes: "date-inputs", 
                             legend: {
                                 text: "When does this course need to be completed by?",
                                 isPageHeading: false,
@@ -56,15 +57,33 @@
                         id: "deadline",
                         namePrefix: "deadline",
                         fieldset: {
+                            classes: "date-inputs",
                             legend: {
                                 text: "When does this course need to be completed by?",
                                 isPageHeading: false,
-                                classes: "govuk-fieldset__legend--s"
+                                classes: "date-inputs govuk-fieldset__legend--s"
                             }
                         },
                         hint: {
                             text: "For example, 30 11 " + exampleYear
+                        },
+                        items: [
+                        {
+                            name: "day",
+                            value: deadlineDate.day,
+                            classes: "govuk-input--width-2"
+                        },
+                        {
+                            name: "month",
+                            value: deadlineDate.month,
+                            classes: "govuk-input--width-2"
+                        },
+                        {
+                            name: "year",
+                            value: deadlineDate.year,
+                            classes: "govuk-input--width-4"
                         }
+                        ]
                     }) }}
                 {% endif %}
 
@@ -72,10 +91,11 @@
                     id: "frequency",
                     namePrefix: "frequency",
                     fieldset: {
+                        classes: "date-inputs",
                         legend: {
                             text: "What is the course frequency (optional)?",
                             isPageHeading: false,
-                            classes: "govuk-fieldset__legend--s"
+                            classes: "date-inputs govuk-fieldset__legend--s"
                         }
                     },
                     items: [
