@@ -13,9 +13,9 @@
 {% set backButton = "/content-management/courses/title/" %}
 
 {% block content %}
-{% set errors = sessionFlash.errors %}
-{% set form = sessionFlash.form %}
-{% set course = sessionFlash.course %}
+    {% set errors = sessionFlash.errors %}
+    {% set form = sessionFlash.form %}
+    {% set course = sessionFlash.course %}
 
     {{ errorSummary(errors.fields) }}
 

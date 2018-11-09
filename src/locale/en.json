@@ -88,6 +88,22 @@
 		}
 	},
 
+	"termsAndConditions": {
+		"text": {
+			"addNew": "Add new terms and conditions",
+			"edit": "Edit terms and conditions"
+		},
+
+		"validation": {
+			"name": {
+				"empty": "Name is required"
+			},
+			"content": {
+				"empty": "Content is required"
+			}
+		}
+	},
+
 	"courseType": {
 		"face-to-face": "Face to Face",
 		"link": "Link",
@@ -124,8 +140,6 @@
 	"validation.cancellationPolicy.name.empty": "Name is required",
 	"validation.cancellationPolicy.shortVersion.empty": "Short version is required",
 	"validation.cancellationPolicy.fullVersion.empty": "Full version is required",
-	"validation.termsAndConditions.name.empty": "Name is required",
-	"validation.termsAndConditions.content.empty": "Content is required",
 	"validation_learningProvider_name_empty": "Name is required",
 	"validation_module_url_empty": "URL is required",
 	"validation_module_url_invalid": "A URL should include a protocol and be a top level domain",

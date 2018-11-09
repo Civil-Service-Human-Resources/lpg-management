@@ -8,6 +8,7 @@ import {LearningCatalogue} from '../../../../src/learning-catalogue'
 import {ModuleController} from '../../../../src/controllers/module/moduleController'
 import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/moduleFactory'
 import {Course} from '../../../../src/learning-catalogue/model/course'
+import * as sinon from 'sinon'
 
 chai.use(sinonChai)
 
@@ -91,5 +92,23 @@ describe('Module Controller Tests', function() {
 		await addFile(request, response)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/module-file')
+	})
+
+	it('should delete module', async function() {
+		const deleteModule: (request: Request, response: Response) => void = moduleController.deleteModule()
+
+		const request: Request = mockReq()
+		const response: Response = mockRes()
+
+		const course = new Course()
+		course.title = 'New Course'
+		course.id = 'abc123'
+		response.locals.course = course
+
+		learningCatalogue.deleteModule = sinon.stub()
+
+		await deleteModule(request, response)
+
+		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${course.id}/add-module`)
 	})
 })
