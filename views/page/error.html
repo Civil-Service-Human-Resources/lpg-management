@@ -1,0 +1,21 @@
+{% from "../component/list/macro.njk" import list with context %}
+{% from "../component/menu/macro.njk" import menu %}
+
+{% extends "../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.error }} - {{ i18n['proposition_name'] }} – GOV.UK{% endblock %}
+
+{% set banner = true %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-xl">Sorry, there is a problem with the service</h1>
+        <p class="govuk-body">Something went horribly wrong. But don't worry, we're looking into it.</p>
+        <p class="govuk-body">Please <a class="govuk-link" href="{{ lpgUiUrl }}/sign-out">log-out</a> and try again.</p>
+        <p class="govuk-body">
+            <a class="govuk-link" href="mailto:feedback@cslearning.gov.uk">Contact us </a>for more information.
+        </p>
+    </div>
+</div>
+{% endblock %}

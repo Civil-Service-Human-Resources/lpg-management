@@ -112,7 +112,7 @@
 		"file": "File",
 		"blended": "Blended"
 	},
-
+	"error": "There is a problem with the service",
 	"content_management_title": "Content management",
 	"cancellation_policy_add_title": "Add cancellation policy",
 	"cancellation_policy_edit_title": "Edit cancellation policy",

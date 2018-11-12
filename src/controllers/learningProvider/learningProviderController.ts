@@ -6,6 +6,7 @@ import {LearningProviderFactory} from '../../learning-catalogue/model/factory/le
 import {DefaultPageResults} from '../../learning-catalogue/model/defaultPageResults'
 import {LearningProvider} from '../../learning-catalogue/model/learningProvider'
 import {Validator} from '../../learning-catalogue/validator/validator'
+import * as asyncHandler from 'express-async-handler'
 
 const logger = log4js.getLogger('controllers/learningProviderController')
 
@@ -45,7 +46,7 @@ export class LearningProviderController {
 			}
 		})
 
-		this.router.get('/content-management/learning-providers', this.index())
+		this.router.get('/content-management/learning-providers', asyncHandler(this.index()))
 		this.router.get('/content-management/learning-providers/learning-provider', this.getLearningProvider())
 		this.router.post('/content-management/learning-providers/learning-provider', this.setLearningProvider())
 		this.router.get(
