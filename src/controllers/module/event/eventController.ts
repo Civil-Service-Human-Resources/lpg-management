@@ -8,7 +8,10 @@ import {DateRangeCommand} from '../../command/dateRangeCommand'
 import {DateRange} from '../../../learning-catalogue/model/dateRange'
 import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFactory'
 import {DateTime} from '../../../lib/dateTime'
+import {IdentityService} from '../../../identity/identityService'
 import {LearnerRecord} from '../../../learner-record'
+import {InviteFactory} from '../../../learner-record/model/factory/inviteFactory'
+import * as config from '../../../config'
 import {Booking} from '../../../learner-record/model/booking'
 
 export class EventController {
@@ -16,9 +19,11 @@ export class EventController {
 	learnerRecord: LearnerRecord
 	eventValidator: Validator<Event>
 	eventFactory: EventFactory
+	inviteFactory: InviteFactory
 	dateRangeCommandValidator: Validator<DateRangeCommand>
 	dateRangeValidator: Validator<DateRange>
 	dateRangeCommandFactory: DateRangeCommandFactory
+	identityService: IdentityService
 	router: Router
 
 	constructor(
@@ -26,17 +31,21 @@ export class EventController {
 		learnerRecord: LearnerRecord,
 		eventValidator: Validator<Event>,
 		eventFactory: EventFactory,
+		inviteFactory: InviteFactory,
 		dateRangeCommandValidator: Validator<DateRangeCommand>,
 		dateRangeValidator: Validator<DateRange>,
-		dateRangeCommandFactory: DateRangeCommandFactory
+		dateRangeCommandFactory: DateRangeCommandFactory,
+		identityService: IdentityService
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.learnerRecord = learnerRecord
 		this.eventValidator = eventValidator
 		this.eventFactory = eventFactory
+		this.inviteFactory = inviteFactory
 		this.dateRangeCommandValidator = dateRangeCommandValidator
 		this.dateRangeValidator = dateRangeValidator
 		this.dateRangeCommandFactory = dateRangeCommandFactory
+		this.identityService = identityService
 		this.router = Router()
 
 		this.setRouterPaths()
@@ -71,6 +80,17 @@ export class EventController {
 
 			if (event) {
 				res.locals.event = event
+				next()
+			} else {
+				res.sendStatus(404)
+			}
+		})
+
+		this.router.param('eventId', async (req, res, next, eventId) => {
+			const invitees = await this.learnerRecord.getEventInvitees(eventId)
+
+			if (invitees) {
+				res.locals.invitees = invitees
 				next()
 			} else {
 				res.sendStatus(404)
@@ -155,6 +175,11 @@ export class EventController {
 		this.router.get(
 			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel',
 			this.cancelEvent()
+		)
+
+		this.router.post(
+			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/invite',
+			this.inviteLearner()
 		)
 	}
 
@@ -457,6 +482,47 @@ export class EventController {
 		}
 	}
 
+	public inviteLearner() {
+		return async (req: Request, res: Response) => {
+			const data = {
+				...req.body,
+			}
+
+			const emailAddress = data.learnerEmail
+			const identityDetails = await this.identityService.getDetailsByEmail(emailAddress, req.user!.accessToken)
+
+			if (!identityDetails) {
+				req.session!.sessionFlash = {
+					emailAddressFoundMessage: 'email_address_not_found_message',
+					emailAddress: emailAddress,
+				}
+			} else {
+				data.event = `${config.COURSE_CATALOGUE.url}/courses/${req.params.courseId}/modules/${
+					req.params.moduleId
+				}/events/${req.params.eventId}`
+
+				await this.learnerRecord.inviteLearner(req.params.eventId, this.inviteFactory.create(data))
+
+				req.session!.sessionFlash = {
+					emailAddressFoundMessage: 'email_address_found_message',
+					emailAddress: emailAddress,
+				}
+			}
+
+			return res.redirect(
+				`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${
+					req.params.eventId
+				}`
+			)
+		}
+	}
+
+	public cancelEvent() {
+		return async (request: Request, response: Response) => {
+			response.render('page/course/module/events/cancel')
+		}
+	}
+
 	public getAttendeeDetails() {
 		return async (req: Request, res: Response) => {
 			const bookings = res.locals.bookings
@@ -493,12 +559,6 @@ export class EventController {
 					req.params.eventId
 				}/attendee/${req.params.bookingId}`
 			)
-		}
-	}
-
-	public cancelEvent() {
-		return async (request: Request, response: Response) => {
-			response.render('page/course/module/events/cancel')
 		}
 	}
 }

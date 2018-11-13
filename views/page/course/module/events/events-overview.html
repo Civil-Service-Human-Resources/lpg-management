@@ -1,4 +1,6 @@
 {% from "table/macro.njk" import govukTable %}
+{% from "input/macro.njk" import govukInput %}
+{% from "button/macro.njk" import govukButton %}
 {% from "../../../../component/menu/macro.njk" import menu %}
 
 {% extends "../../../../component/Page.njk" %}
@@ -9,6 +11,21 @@
 {% set backButton = "/content-management/courses/" + course.id + "/overview" %}
 
 {% block content %}
+
+    {% set emailAddressFoundMessage = sessionFlash.emailAddressFoundMessage %}
+    {% set emailAddress = sessionFlash.emailAddress %}
+
+    {% if emailAddressFoundMessage %}
+        {% if emailAddressFoundMessage == "email_address_not_found_message"%}
+            {% set panelError = "error" %}
+        {% endif %}
+        <div class="panel govuk-panel govuk-panel--confirmation {{panelError}}">
+            <div class="govuk-panel__body custom-panel">
+                <p class="govuk-body"><strong>{{ emailAddress }}</strong>{{ i18n[emailAddressFoundMessage] }}</p>
+            </div>
+        </div>
+    {% endif %}
+
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-l no-margin">{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}}</h1>
@@ -125,6 +142,34 @@
               {% else %}
                 <p class="govuk-body">This course doesn't have any attendees yet.</p>
               {% endif %}
+            </div>
+            {% if invitees.length > 0 %}
+            <div class="course-invitees">
+                <h3 class="govuk-heading-m">Course invitees</h3>
+                <ul class="attendees headers">
+                    <li class="list-headers"><p class="govuk-body header title"><strong>Name</strong></p></li>
+                </ul>
+                <ul class="attendees list">
+                    {% for invitee in invitees %}
+                    <li class="list-details"><p class="govuk-body title">{{ invitee.learnerEmail}}</p></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            <div class="add-attendee">
+              <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}/invite" method="post" class="attendee-form">
+                <p class="govuk-body no-margin"><strong>Add an attendee with their email address</strong></p>
+                <div class="input-with-button">
+                  {{ govukInput({
+                    id: "learnerEmail",
+                    name: "learnerEmail"
+                  }) }}
+                  {{ govukButton({
+                    text: "Search for user",
+                    classes: "button-blue"
+                  }) }}
+                  </div>
+              </form>
             </div>
         </div>
         <div class="govuk-grid-column-one-third">

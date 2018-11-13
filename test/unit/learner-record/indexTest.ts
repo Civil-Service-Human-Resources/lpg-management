@@ -10,6 +10,8 @@ import * as chaiAsPromised from 'chai-as-promised'
 import {OauthRestService} from 'lib/http/oauthRestService'
 import {BookingFactory} from '../../../src/learner-record/model/factory/bookingFactory'
 import {Booking} from '../../../src/learner-record/model/booking'
+import {InviteFactory} from '../../../src/learner-record/model/factory/inviteFactory'
+import {Invite} from '../../../src/learner-record/model/invite'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -17,15 +19,17 @@ chai.use(sinonChai)
 describe('Leaner Record Tests', () => {
 	let learnerRecord: LearnerRecord
 	let bookingFactory: BookingFactory
+	let inviteFactory: InviteFactory
 	let restService: OauthRestService
 
 	const config = new LearnerRecordConfig('http://example.org')
 
 	beforeEach(() => {
 		bookingFactory = <BookingFactory>{}
+		inviteFactory = <InviteFactory>{}
 		restService = <OauthRestService>{}
 
-		learnerRecord = new LearnerRecord(config, {} as Auth, bookingFactory)
+		learnerRecord = new LearnerRecord(config, {} as Auth, inviteFactory)
 		learnerRecord.restService = restService
 	})
 
@@ -54,5 +58,27 @@ describe('Leaner Record Tests', () => {
 		expect(restService.patch).to.have.been.calledOnceWith('/event/test-event-id/booking/99', {
 			status: booking.status,
 		})
+	})
+
+	it('Should call rest service when getting invitees', async () => {
+		const eventId = 'eventId'
+		restService.get = sinon.stub().returns([{learnerEmail: 'test1@test.com'}])
+		inviteFactory.create = sinon.stub()
+
+		await learnerRecord.getEventInvitees(eventId)
+
+		expect(restService.get).to.have.been.calledOnceWith('/event/eventId/invitee')
+		expect(inviteFactory.create).to.have.been.calledOnceWith({learnerEmail: 'test1@test.com'})
+	})
+
+	it('Should call rest service when posting learner', async () => {
+		const eventId = 'eventId'
+		const invite: Invite = new Invite()
+
+		restService.post = sinon.stub()
+
+		await learnerRecord.inviteLearner(eventId, invite)
+
+		expect(restService.post).to.have.been.calledOnceWith('/event/eventId/invitee', invite)
 	})
 })

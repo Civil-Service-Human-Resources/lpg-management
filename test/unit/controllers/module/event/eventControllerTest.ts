@@ -14,8 +14,10 @@ import {DateRange} from '../../../../../src/learning-catalogue/model/dateRange'
 import {DateRangeCommand} from '../../../../../src/controllers/command/dateRangeCommand'
 import {DateRangeCommandFactory} from '../../../../../src/controllers/command/factory/dateRangeCommandFactory'
 import {Venue} from '../../../../../src/learning-catalogue/model/venue'
-import {LearnerRecord} from '../../../../../src/learner-record'
 import {Booking} from '../../../../../src/learner-record/model/booking'
+import {LearnerRecord} from '../../../../../src/learner-record'
+import {IdentityService} from '../../../../../src/identity/identityService'
+import {InviteFactory} from '../../../../../src/learner-record/model/factory/inviteFactory'
 
 chai.use(sinonChai)
 
@@ -25,27 +27,33 @@ describe('EventController', function() {
 	let learnerRecord: LearnerRecord
 	let eventValidator: Validator<Event>
 	let eventFactory: EventFactory
+	let inviteFactory: InviteFactory
 	let dateRangeCommandValidator: Validator<DateRangeCommand>
 	let dateRangeValidator: Validator<DateRange>
 	let dateRangeCommandFactory: DateRangeCommandFactory
+	let identityService: IdentityService
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		learnerRecord = <LearnerRecord>{}
 		eventValidator = <Validator<Event>>{}
 		eventFactory = <EventFactory>{}
+		inviteFactory = <InviteFactory>{}
 		dateRangeCommandValidator = <Validator<DateRangeCommand>>{}
 		dateRangeValidator = <Validator<DateRange>>{}
 		dateRangeCommandFactory = <DateRangeCommandFactory>{}
+		identityService = <IdentityService>{}
 
 		eventController = new EventController(
 			learningCatalogue,
 			learnerRecord,
 			eventValidator,
 			eventFactory,
+			inviteFactory,
 			dateRangeCommandValidator,
 			dateRangeValidator,
-			dateRangeCommandFactory
+			dateRangeCommandFactory,
+			identityService
 		)
 	})
 
@@ -72,9 +80,6 @@ describe('EventController', function() {
 
 			req.params.courseId = 'abc'
 			req.params.moduleId = 'def'
-
-			// const event: Event = new Event()
-			// event.dateRanges = [new DateRange()]
 
 			const dateRange = <DateRange>{}
 			const dateRangeCommand = <DateRangeCommand>{}
@@ -366,7 +371,7 @@ describe('EventController', function() {
 	})
 
 	it('should render event overview page', async function() {
-		const event: Event = new Event()
+		let event: Event = new Event()
 		event.dateRanges = [{date: '2019-02-01', startTime: '9:00:00', endTime: '17:00:00'}]
 
 		const getEventOverview: (request: Request, response: Response) => void = eventController.getEventOverview()
@@ -462,6 +467,73 @@ describe('EventController', function() {
 			`/content-management/courses/courseId/modules/moduleId/events/eventId/attendee/99`
 		)
 		expect(booking.status).to.be.equal(Booking.Status.REQUESTED)
+	})
+
+	it('Should check email address and redirect to event overview with success message', async () => {
+		const request = mockReq()
+		const response = mockRes()
+
+		request.body.learnerEmail = 'test@test.com'
+		request.user = {accessToken: 'test-token'}
+
+		request.params.courseId = 'courseId'
+		request.params.moduleId = 'moduleId'
+		request.params.eventId = 'eventId'
+
+		const dateRange = new DateRange()
+		dateRange.date = '01-01-2020'
+		const dateRanges: DateRange[] = [dateRange]
+		response.locals.event = {dateRanges}
+
+		eventController.identityService.getDetailsByEmail = sinon
+			.stub()
+			.withArgs('test@test.com', 'test-token')
+			.returns({test: 'test'})
+
+		learnerRecord.inviteLearner = sinon.stub()
+
+		inviteFactory.create = sinon.stub()
+
+		await eventController.inviteLearner()(request, response)
+
+		expect(eventController.identityService.getDetailsByEmail).to.have.been.calledOnceWith(
+			'test@test.com',
+			'test-token'
+		)
+		expect(response.redirect).to.have.been.calledOnceWith(
+			`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`
+		)
+		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('email_address_found_message')
+	})
+
+	it('Should check email address and redirect to event overview with not found message', async () => {
+		const request = mockReq()
+		const response = mockRes()
+
+		request.body.learnerEmail = 'test@test.com'
+		request.user = {accessToken: 'test-token'}
+
+		request.params.courseId = 'courseId'
+		request.params.moduleId = 'moduleId'
+		request.params.eventId = 'eventId'
+
+		const dateRange = new DateRange()
+		dateRange.date = '01-01-2020'
+		const dateRanges: DateRange[] = [dateRange]
+		response.locals.event = {dateRanges}
+
+		eventController.identityService.getDetailsByEmail = sinon.stub().returns(null)
+
+		await eventController.inviteLearner()(request, response)
+
+		expect(eventController.identityService.getDetailsByEmail).to.have.been.calledOnceWith(
+			'test@test.com',
+			'test-token'
+		)
+		expect(response.redirect).to.have.been.calledOnceWith(
+			`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`
+		)
+		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('email_address_not_found_message')
 	})
 
 	describe('Edit and update DateRange', () => {

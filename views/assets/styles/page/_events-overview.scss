@@ -4,6 +4,8 @@
 	}
 
 	&.list {
+		margin-bottom: 30px;
+
 		.list-details,
 		.list-headers {
 			padding: 10px 0;
@@ -20,6 +22,7 @@
 		&.headers {
 			display: block;
 		}
+
 		.list-details,
 		.list-headers {
 			display: flex;
