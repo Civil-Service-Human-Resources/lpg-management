@@ -29,7 +29,7 @@ describe('Leaner Record Tests', () => {
 		inviteFactory = <InviteFactory>{}
 		restService = <OauthRestService>{}
 
-		learnerRecord = new LearnerRecord(config, {} as Auth, inviteFactory)
+		learnerRecord = new LearnerRecord(config, {} as Auth, inviteFactory, bookingFactory)
 		learnerRecord.restService = restService
 	})
 
