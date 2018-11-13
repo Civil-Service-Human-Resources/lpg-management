@@ -2,7 +2,7 @@ import {registerDecorator, ValidationArguments, ValidationOptions} from 'class-v
 import moment = require('moment')
 
 export function IsFutureDateString(validationOptions?: ValidationOptions) {
-	return function (object: Object, propertyName: string) {
+	return function(object: Object, propertyName: string) {
 		registerDecorator({
 			target: object.constructor,
 			propertyName: propertyName,
@@ -11,8 +11,8 @@ export function IsFutureDateString(validationOptions?: ValidationOptions) {
 			validator: {
 				validate(value: any, args: ValidationArguments) {
 					return moment(value, 'YYYY-MM-DD').isAfter(Date.now())
-				}
-			}
-		});
-	};
+				},
+			},
+		})
+	}
 }

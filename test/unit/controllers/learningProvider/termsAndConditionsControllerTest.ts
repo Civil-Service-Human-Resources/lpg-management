@@ -19,6 +19,9 @@ describe('Terms and Conditions Controller Tests', function() {
 	let termsAndConditionsValidator: Validator<TermsAndConditions>
 	let termsAndConditionsFactory: TermsAndConditionsFactory
 
+	let req: Request
+	let res: Response
+
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		termsAndConditionsFactory = <TermsAndConditionsFactory>{}
@@ -29,6 +32,13 @@ describe('Terms and Conditions Controller Tests', function() {
 			termsAndConditionsFactory,
 			termsAndConditionsValidator
 		)
+
+		req = mockReq()
+		res = mockRes()
+
+		req.session!.save = callback => {
+			callback(undefined)
+		}
 	})
 
 	it('should call get terms and conditions page ', async function() {
@@ -37,26 +47,16 @@ describe('Terms and Conditions Controller Tests', function() {
 			response: Response
 		) => void = termsAndConditionsController.getTermsAndConditions()
 
-		const request: Request = mockReq()
-		const response: Response = mockRes()
+		await getTermsAndConditions(req, res)
 
-		await getTermsAndConditions(request, response)
-
-		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/terms-and-conditions')
+		expect(res.render).to.have.been.calledOnceWith('page/learning-provider/terms-and-conditions')
 	})
 
-	it('should call set terms and conditions and render errors', async function() {
+	it('should redirect to terms and conditions page and render errors', async function() {
 		const learningProviderId = 'lp-123'
-		const setTermsAndConditions: (
-			request: Request,
-			response: Response
-		) => void = termsAndConditionsController.setTermsAndConditions()
 
-		const request: Request = mockReq()
-		const response: Response = mockRes()
-
-		request.body = {name: ''}
-		request.params.learningProviderId = learningProviderId
+		req.body = {name: ''}
+		req.params.learningProviderId = learningProviderId
 		const termsAndConditions = new TermsAndConditions()
 		termsAndConditionsFactory.create = sinon.stub().returns(termsAndConditions)
 
@@ -64,30 +64,21 @@ describe('Terms and Conditions Controller Tests', function() {
 
 		termsAndConditionsValidator.check = sinon.stub().returns(errors)
 
-		await setTermsAndConditions(request, response)
+		await termsAndConditionsController.createTermsAndConditions()(req, res)
 
-		expect(termsAndConditionsFactory.create).to.have.been.calledWith(request.body)
-		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name', 'content'])
+		expect(termsAndConditionsValidator.check).to.have.been.calledWith(req.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 
-		expect(response.render).to.have.been.calledOnceWith('page/learning-provider/terms-and-conditions', {
-			errors: errors,
-			termsAndConditions: termsAndConditions,
-		})
+		expect(res.redirect).to.have.been.calledOnceWith(
+			`/content-management/learning-providers/${learningProviderId}/terms-and-conditions/`
+		)
 	})
 
-	it('should call set terms and conditions, create and redirect successfully if no errors', async function() {
+	it('should call create terms and conditions, create and redirect successfully if no errors', async function() {
 		const learningProviderId = 'lp-123'
-		const setTermsAndConditions: (
-			request: Request,
-			response: Response
-		) => void = termsAndConditionsController.setTermsAndConditions()
 
-		const request: Request = mockReq()
-		const response: Response = mockRes()
-
-		request.body = {name: ''}
-		request.params.learningProviderId = learningProviderId
+		req.body = {name: ''}
+		req.params.learningProviderId = learningProviderId
 		const termsAndConditions = new TermsAndConditions()
 		termsAndConditionsFactory.create = sinon.stub().returns(termsAndConditions)
 
@@ -96,86 +87,64 @@ describe('Terms and Conditions Controller Tests', function() {
 		const errors = {fields: [], size: 0}
 		termsAndConditionsValidator.check = sinon.stub().returns(errors)
 
-		await setTermsAndConditions(request, response)
+		await termsAndConditionsController.createTermsAndConditions()(req, res)
 
-		expect(termsAndConditionsFactory.create).to.have.been.calledWith(request.body)
-		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name', 'content'])
+		expect(termsAndConditionsFactory.create).to.have.been.calledWith(req.body)
+		expect(termsAndConditionsValidator.check).to.have.been.calledWith(req.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 		expect(learningCatalogue.createTermsAndConditions).to.have.been.calledWith(
 			learningProviderId,
 			termsAndConditions
 		)
 
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/learning-providers/${learningProviderId}`
-		)
+		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}`)
 	})
 
-	it('should call set terms and conditions, edit and redirect successfully if no errors', async function() {
+	it('should call update terms and conditions, edit and redirect successfully if no errors', async function() {
 		const learningProviderId = 'lp-123'
 		const termsAndConditionsId = 'tc-123'
-		const setTermsAndConditions: (
-			request: Request,
-			response: Response
-		) => void = termsAndConditionsController.setTermsAndConditions()
 
-		const request: Request = mockReq()
-		const response: Response = mockRes()
-
-		request.body = {name: ''}
-		request.params.learningProviderId = learningProviderId
-		request.params.termsAndConditionsId = termsAndConditionsId
+		req.body = {name: ''}
+		req.params.learningProviderId = learningProviderId
+		req.params.termsAndConditionsId = termsAndConditionsId
 
 		const termsAndConditions = new TermsAndConditions()
 		termsAndConditions.id = termsAndConditionsId
 		termsAndConditionsFactory.create = sinon.stub().returns(termsAndConditions)
-		response.locals.termsAndConditions = termsAndConditions
+		res.locals.termsAndConditions = termsAndConditions
 
 		const errors = {fields: [], size: 0}
 		termsAndConditionsValidator.check = sinon.stub().returns(errors)
 
 		learningCatalogue.updateTermsAndConditions = sinon.stub().returns('123')
 
-		await setTermsAndConditions(request, response)
+		await termsAndConditionsController.updateTermsAndConditions()(req, res)
 
-		expect(termsAndConditionsFactory.create).to.have.been.calledWith(request.body)
-		expect(termsAndConditionsValidator.check).to.have.been.calledWith(request.body, ['name', 'content'])
+		expect(termsAndConditionsValidator.check).to.have.been.calledWith(req.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 		expect(learningCatalogue.updateTermsAndConditions).to.have.been.calledWith(
 			learningProviderId,
 			termsAndConditions
 		)
 
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/learning-providers/${learningProviderId}`
-		)
+		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}`)
 	})
 
 	it('should call delete terms and conditions and redirect successfully if no errors', async function() {
 		const learningProviderId = 'lp-123'
 		const termsAndConditionsId = 'tc-123'
 
-		const deleteTermsAndConditions: (
-			request: Request,
-			response: Response
-		) => void = termsAndConditionsController.deleteTermsAndConditions()
-
-		const request: Request = mockReq()
-		const response: Response = mockRes()
-
-		request.params.learningProviderId = learningProviderId
-		request.params.termsAndConditionsId = termsAndConditionsId
+		req.params.learningProviderId = learningProviderId
+		req.params.termsAndConditionsId = termsAndConditionsId
 
 		learningCatalogue.deleteTermsAndConditions = sinon.stub()
 
-		await deleteTermsAndConditions(request, response)
+		await termsAndConditionsController.deleteTermsAndConditions()(req, res)
 
 		expect(learningCatalogue.deleteTermsAndConditions).to.have.been.calledOnceWith(
 			learningProviderId,
 			termsAndConditionsId
 		)
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/learning-providers/${learningProviderId}`
-		)
+		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}`)
 	})
 })

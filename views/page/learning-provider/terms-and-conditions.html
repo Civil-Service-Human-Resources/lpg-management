@@ -7,78 +7,58 @@
 {% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}
-{% if termsAndConditions %}
-{{ i18n['terms_and_conditions_edit_title'] }} - {{ i18n['proposition_name'] }}
-{% else %}
-{{ i18n['terms_and_conditions_add_title'] }} - {{ i18n['proposition_name'] }}
-{% endif %}
+    {{ i18n['terms_and_conditions_edit_title'] if termsAndConditions else i18n['terms_and_conditions_add_title'] }} - {{ i18n['proposition_name'] }}
 {% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/learning-providers/" + learningProvider.id %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            {% if termsAndConditions %}
-            <p class="govuk-heading-m govuk-!-font-size-36">Edit terms and conditions</p>
-            {% else %}
-            <p class="govuk-heading-m govuk-!-font-size-36">Add new terms and conditions</p>
-            {% endif %}
+    {% set errors = sessionFlash.errors %}
+    {% set form = sessionFlash.form %}
+    {{ errorSummary(errors.fields) }}
 
-            {% if errors.size %}
-                <div class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="error-summary">
-                    <h2 class="govuk-error-summary__title" id="error-summary-title">
-                        There is a problem
-                    </h2>
-                    <div class="govuk-error-summary__body">
-                        <ul class="govuk-list govuk-error-summary__list">
-                            {% for field, message in errors.fields %}
-                                <li><a href="#">{{ i18n[message] }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            {%endif%}
-        </div>
-    </div>
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
+            {% if termsAndConditions %}
+            <p class="govuk-heading-m govuk-!-font-size-36">{{i18n.terms_and_conditions_edit_title}}</p>
+            {% else %}
+            <p class="govuk-heading-m govuk-!-font-size-36">{{i18n.terms_and_conditions_add_title}}</p>
+            {% endif %}
+
             <form action="/content-management/learning-providers/{{learningProvider.id}}/terms-and-conditions/{{termsAndConditions.id}}" method="post" class="module-form">
 
                 {% if termsAndConditions.id %}
                     <input type="hidden" value="{{termsAndConditions.id}}" name="id"/>
                 {% endif %}
                 <fieldset class="govuk-fieldset">
-                    {% if errors.fields %}
+                    {% if errors.fields.name %}
                         {{ govukInput({
-                        label: {
-                            text: "Name"
+                            label: {
+                                text: "Name"
                             },
                             id: "name",
                             name: "name",
+                            value: form.name,
                             errorMessage: {
-                                text: "Name is required"
-                            },
-                            value: termsAndConditions.name
-
+                                text: i18n.termsAndConditions.validation.name.empty
+                            }
                         }) }}
                     {% else %}
                         {{ govukInput({
-                        label: {
-                            text: "Name"
+                            label: {
+                                text: "Name"
                             },
                             id: "name",
                             name: "name",
-                            value: termsAndConditions.name
+                            value: form.name or termsAndConditions.name
                         }) }}
                     {% endif %}
 
                     {% block textarea %}
                         {% if errors.fields.content %}
-                            {{ textareaError("content", "content", "", null, "Terms and conditions", "Terms and conditions is required") }}
+                            {{ textareaError("content", "content", "", null, "Content", i18n.termsAndConditions.validation.content.empty) }}
                         {% else %}
-                            {{ textarea("content", "content", "",  null, termsAndConditions.content, "Content") }}
+                            {{ textarea("content", "content", "",  null, form.content or termsAndConditions.content, "Content") }}
                         {% endif %}
                     {% endblock %}
                 </fieldset>
@@ -90,27 +70,5 @@
                 <a class="cancel-button govuk-body govuk-link" href="/content-management/learning-providers/{{learningProvider.id}}">Cancel</a>
             </form>
         </div>
-        <div class="govuk-grid-column-one-third">
-            <div class="right-menu">
-                {% block menu %}
-                    {% set actions = [
-                        {
-                            link: '#',
-                            text: 'Headings'
-                        },
-                        {
-                            link: '#',
-                            text: 'Lists'
-                        },
-                        {
-                            link: '#',
-                            text: 'Links'
-                        }
-                    ] %}
-                {{ menu("Using markdown", actions) }}
-            {% endblock %}
-        </div>
-        </div>
     </div>
 {% endblock %}
-

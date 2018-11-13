@@ -91,7 +91,7 @@ describe('Course Controller Tests', function() {
 		await coursePreview(req, res)
 
 		expect(res.render).to.have.been.calledOnceWith('page/course/course-preview')
-		expect(course.modules[0].formattedDuration).to.equal('0m')
+		expect(course.modules[0].formattedDuration).to.equal('0 minutes')
 	})
 
 	it('should render add-course-title page', async function() {

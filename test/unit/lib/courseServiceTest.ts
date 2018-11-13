@@ -197,9 +197,8 @@ describe('CourseService tests', () => {
 						name: 'name',
 						type: Audience.Type.OPEN,
 						grades: ['e', 'f', 'g'],
-					}
+					},
 				]
-
 
 				const uniqueGrades = courseService.getUniqueGrades(course)
 
@@ -213,7 +212,6 @@ describe('CourseService tests', () => {
 
 				expect(uniqueGrades).to.eql([])
 			})
-
 		})
 	})
 })

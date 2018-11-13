@@ -103,8 +103,7 @@ export class ApplicationContext {
 	learnerRecordConfig: LearnerRecordConfig
 	eventRecordFactory: EventRecordFactory
 
-	@EnvValue('LPG_UI_URL')
-	public lpgUiUrl: String
+	@EnvValue('LPG_UI_URL') public lpgUiUrl: String
 
 	constructor() {
 		this.axiosInstance = axios.create({

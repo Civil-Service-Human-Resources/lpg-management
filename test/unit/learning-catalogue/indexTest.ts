@@ -94,6 +94,15 @@ describe('Learning Catalogue tests', () => {
 		return expect(moduleService.get).to.have.been.calledOnceWith(`/courses/${courseId}/modules/${moduleId}`)
 	})
 
+	it('should call moduleService when deleting a module', async () => {
+		const courseId: string = 'course-id'
+		const moduleId: string = 'module-id'
+		moduleService.delete = sinon.stub()
+
+		await learningCatalogue.deleteModule(courseId, moduleId)
+		return expect(moduleService.delete).to.have.been.calledOnceWith(`/courses/${courseId}/modules/${moduleId}`)
+	})
+
 	it('should call learningProviderService when creating a learning provider', async () => {
 		const learningProvider: LearningProvider = <LearningProvider>{}
 		learningProviderService.create = sinon.stub()

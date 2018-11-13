@@ -5,6 +5,9 @@ import {VideoModule} from '../../../../src/learning-catalogue/model/videoModule'
 import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
 import {FaceToFaceModule} from '../../../../src/learning-catalogue/model/faceToFaceModule'
 import {Module} from '../../../../src/learning-catalogue/model/module'
+import {Event} from '../../../../src/learning-catalogue/model/event'
+import {DateRange} from '../../../../src/learning-catalogue/model/dateRange'
+import {Audience} from '../../../../src/learning-catalogue/model/audience'
 
 describe('Course tests', () => {
 	let course: Course
@@ -115,5 +118,107 @@ describe('Course tests', () => {
 
 			expect(course.getType()).to.equal('video')
 		})
+	})
+
+	it('should be able to get first available date', () => {
+		const module1 = new FaceToFaceModule()
+		const event1 = new Event()
+		const event2 = new Event()
+		const dateRange1 = new DateRange()
+		const dateRange2 = new DateRange()
+
+		dateRange1.date = '2020-02-01'
+		dateRange2.date = '2021-02-01'
+
+		event1.dateRanges = [dateRange1]
+		event2.dateRanges = [dateRange2]
+
+		module1.events = [event1, event2]
+		module1.type = Module.Type.FACE_TO_FACE
+
+		course.modules = [module1]
+
+		expect(course.getNextAvailableDate()).to.equal('2020-02-01')
+	})
+
+	it('should return undefined when no face to face modules exist', () => {
+		const module1 = new Module()
+		module1.type = Module.Type.E_LEARNING
+
+		course.modules = [module1]
+
+		expect(course.getNextAvailableDate()).to.be.undefined
+	})
+
+	it('should return undefined when no dates exist', () => {
+		const module1 = new FaceToFaceModule()
+		const event1 = new Event()
+
+		module1.events = [event1]
+		module1.type = Module.Type.FACE_TO_FACE
+
+		course.modules = [module1]
+
+		expect(course.getNextAvailableDate()).to.be.undefined
+	})
+
+	it('should be able to get duration of course', () => {
+		const module1 = new Module()
+		const module2 = new Module()
+
+		module1.duration = 3600
+		module2.duration = 7320
+
+		course.modules = [module1, module2]
+
+		expect(course.getDuration()).to.be.equal('3 hours 2 minutes')
+	})
+
+	it('should be able to get grades', () => {
+		const audience1 = new Audience()
+		const audience2 = new Audience()
+		audience1.grades = ['One', 'Two']
+		audience2.grades = ['Three']
+
+		course.audiences = [audience1, audience2]
+
+		expect(course.getGrades()).to.be.equal('One,Two,Three')
+	})
+
+	it('should return empty string if no grades exist', () => {
+		const audience1 = new Audience()
+		const audience2 = new Audience()
+
+		course.audiences = [audience1, audience2]
+
+		expect(course.getGrades()).to.be.equal('')
+	})
+
+	it('should return empty string no audiences exist', () => {
+		expect(course.getGrades()).to.be.equal('')
+	})
+
+	it('should be able to get areas of work', () => {
+		const audience1 = new Audience()
+		const audience2 = new Audience()
+
+		audience1.areasOfWork = ['One', 'Two']
+		audience2.areasOfWork = ['Three']
+
+		course.audiences = [audience1, audience2]
+
+		expect(course.getAreasOfWork()).to.be.equal('One,Two,Three')
+	})
+
+	it('should return empty string if no areas of work exist', () => {
+		const audience1 = new Audience()
+
+		course.audiences = [audience1]
+
+		expect(course.getAreasOfWork()).to.be.equal('')
+	})
+
+	it('should return empty string if no audiences exist', () => {
+		expect(course.getAreasOfWork()).to.be.equal('')
 	})
 })
