@@ -45,6 +45,13 @@
 	}
 }
 
+.search-results-row {
+	.govuk-heading-m {
+		font-weight: normal;
+		font-size: $font-normal;
+	}
+}
+
 @media screen and (min-width: $tablet-small) {
 	.list {
 		.list-details {

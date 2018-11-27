@@ -1,6 +1,6 @@
 {% from "../component/list/macro.njk" import list with context %}
 {% from "../component/menu/macro.njk" import menu %}
-{% from "../component/search/macro.njk" import search %}
+{% from "../component/search/macro.njk" import search with context %}
 {% from "../component/pagination/macro.njk" import pagination with context %}
 
 {% extends "../component/Page.njk" %}
@@ -14,18 +14,23 @@
         <div class="govuk-grid-column-full">
             <div class="header-search">
                 <h1 class="govuk-heading-l">Search results</h1>
-                {{ search() }}
+                {{ search(query) }}
             </div>
         </div>
     </div>
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
+        <div class="govuk-grid-column-full search-results-row">
         {% if pageResults %}
             {% if pageResults.totalResults !== 0 %}
-                <p class="">
+                {% if pageResults.totalResults > 2 %}
+                    {% set multiple = 's' %}
+                {% else  %}
+                    {% set multiple = '' %}
+                {% endif %}
+                {% set listTitle =  pageResults.totalResults + ' result' + multiple + ' found'  %}
                 {% block list %}
-                    {{ list("Courses", pageResults) }}
+                    {{ list(listTitle, pageResults) }}
                 {% endblock %}
             {% else %}
                 <p class="govuk-body">There are currently no courses</p>
