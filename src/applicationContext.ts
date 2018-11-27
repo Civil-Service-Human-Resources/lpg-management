@@ -56,6 +56,7 @@ import {LearnerRecord} from './learner-record'
 import {LearnerRecordConfig} from './learner-record/learnerRecordConfig'
 import {BookingFactory} from './learner-record/model/factory/bookingFactory'
 import {OrganisationalUnit} from './csrs/model/organisationalUnit'
+import {SearchController} from "./controllers/searchController"
 
 log4js.configure(config.LOGGING)
 
@@ -106,6 +107,7 @@ export class ApplicationContext {
 	learnerRecord: LearnerRecord
 	learnerRecordConfig: LearnerRecordConfig
 	bookingFactory: BookingFactory
+	searchController: SearchController
 	organisationController: OrganisationController
 	csrs: Csrs
 	organisationalUnitFactory: OrganisationalUnitFactory
@@ -220,6 +222,8 @@ export class ApplicationContext {
 		this.organisationalUnitFactory = new OrganisationalUnitFactory()
 		this.organisationalUnitValidator = new Validator<OrganisationalUnit>(this.organisationalUnitFactory)
 		this.organisationController = new OrganisationController(this.csrs, this.organisationalUnitFactory, this.organisationalUnitValidator)
+		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
+
 	}
 
 	addToResponseLocals() {
