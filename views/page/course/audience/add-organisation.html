@@ -13,7 +13,7 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</p>
+            <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</h1>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Organisation</h2>
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" method="post">
                 {% if errors.fields %}
@@ -26,7 +26,6 @@
 
                 <div class="{{classNames}}">
                     <p class="{{message}}">Select which organisations are included</p>
-
                     {% set typeaheadHtml %}
                         <div class="typeahead-container">
                             <label class="govuk-body no-margin" for="autocomplete">Name of organisation</label>

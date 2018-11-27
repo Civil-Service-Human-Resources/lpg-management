@@ -27,11 +27,7 @@ describe('Terms and Conditions Controller Tests', function() {
 		termsAndConditionsFactory = <TermsAndConditionsFactory>{}
 		termsAndConditionsValidator = <Validator<TermsAndConditions>>{}
 
-		termsAndConditionsController = new TermsAndConditionsController(
-			learningCatalogue,
-			termsAndConditionsFactory,
-			termsAndConditionsValidator
-		)
+		termsAndConditionsController = new TermsAndConditionsController(learningCatalogue, termsAndConditionsFactory, termsAndConditionsValidator)
 
 		req = mockReq()
 		res = mockRes()
@@ -42,10 +38,7 @@ describe('Terms and Conditions Controller Tests', function() {
 	})
 
 	it('should call get terms and conditions page ', async function() {
-		const getTermsAndConditions: (
-			request: Request,
-			response: Response
-		) => void = termsAndConditionsController.getTermsAndConditions()
+		const getTermsAndConditions: (request: Request, response: Response) => void = termsAndConditionsController.getTermsAndConditions()
 
 		await getTermsAndConditions(req, res)
 
@@ -69,9 +62,7 @@ describe('Terms and Conditions Controller Tests', function() {
 		expect(termsAndConditionsValidator.check).to.have.been.calledWith(req.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
 
-		expect(res.redirect).to.have.been.calledOnceWith(
-			`/content-management/learning-providers/${learningProviderId}/terms-and-conditions/`
-		)
+		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}/terms-and-conditions/`)
 	})
 
 	it('should call create terms and conditions, create and redirect successfully if no errors', async function() {
@@ -92,10 +83,7 @@ describe('Terms and Conditions Controller Tests', function() {
 		expect(termsAndConditionsFactory.create).to.have.been.calledWith(req.body)
 		expect(termsAndConditionsValidator.check).to.have.been.calledWith(req.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
-		expect(learningCatalogue.createTermsAndConditions).to.have.been.calledWith(
-			learningProviderId,
-			termsAndConditions
-		)
+		expect(learningCatalogue.createTermsAndConditions).to.have.been.calledWith(learningProviderId, termsAndConditions)
 
 		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}`)
 	})
@@ -122,10 +110,7 @@ describe('Terms and Conditions Controller Tests', function() {
 
 		expect(termsAndConditionsValidator.check).to.have.been.calledWith(req.body, ['name', 'content'])
 		expect(termsAndConditionsValidator.check).to.have.returned(errors)
-		expect(learningCatalogue.updateTermsAndConditions).to.have.been.calledWith(
-			learningProviderId,
-			termsAndConditions
-		)
+		expect(learningCatalogue.updateTermsAndConditions).to.have.been.calledWith(learningProviderId, termsAndConditions)
 
 		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}`)
 	})
@@ -141,10 +126,7 @@ describe('Terms and Conditions Controller Tests', function() {
 
 		await termsAndConditionsController.deleteTermsAndConditions()(req, res)
 
-		expect(learningCatalogue.deleteTermsAndConditions).to.have.been.calledOnceWith(
-			learningProviderId,
-			termsAndConditionsId
-		)
+		expect(learningCatalogue.deleteTermsAndConditions).to.have.been.calledOnceWith(learningProviderId, termsAndConditionsId)
 		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/learning-providers/${learningProviderId}`)
 	})
 })

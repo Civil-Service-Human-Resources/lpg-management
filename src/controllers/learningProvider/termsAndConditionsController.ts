@@ -12,11 +12,7 @@ export class TermsAndConditionsController implements FormController {
 	termsAndConditionsFactory: TermsAndConditionsFactory
 	router: Router
 
-	constructor(
-		learningCatalogue: LearningCatalogue,
-		termsAndConditionsFactory: TermsAndConditionsFactory,
-		termsAndConditionsValidator: Validator<TermsAndConditions>
-	) {
+	constructor(learningCatalogue: LearningCatalogue, termsAndConditionsFactory: TermsAndConditionsFactory, termsAndConditionsValidator: Validator<TermsAndConditions>) {
 		this.learningCatalogue = learningCatalogue
 		this.validator = termsAndConditionsValidator
 		this.termsAndConditionsFactory = termsAndConditionsFactory
@@ -31,10 +27,7 @@ export class TermsAndConditionsController implements FormController {
 		this.router.param('termsAndConditionsId', async (req, res, next, termsAndConditionsId) => {
 			const learningProviderId = req.params.learningProviderId
 
-			const termsAndConditions = await this.learningCatalogue.getTermsAndConditions(
-				learningProviderId,
-				termsAndConditionsId
-			)
+			const termsAndConditions = await this.learningCatalogue.getTermsAndConditions(learningProviderId, termsAndConditionsId)
 
 			if (termsAndConditions) {
 				res.locals.termsAndConditions = termsAndConditions
@@ -55,24 +48,12 @@ export class TermsAndConditionsController implements FormController {
 			}
 		})
 
-		this.router.get(
-			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?',
-			this.getTermsAndConditions()
-		)
+		this.router.get('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?', this.getTermsAndConditions())
 
-		this.router.post(
-			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/',
-			this.createTermsAndConditions()
-		)
-		this.router.post(
-			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId',
-			this.updateTermsAndConditions()
-		)
+		this.router.post('/content-management/learning-providers/:learningProviderId/terms-and-conditions/', this.createTermsAndConditions())
+		this.router.post('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId', this.updateTermsAndConditions())
 
-		this.router.get(
-			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?/delete',
-			this.deleteTermsAndConditions()
-		)
+		this.router.get('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?/delete', this.deleteTermsAndConditions())
 	}
 
 	public getTermsAndConditions() {
@@ -95,8 +76,7 @@ export class TermsAndConditionsController implements FormController {
 
 	@Validate({
 		fields: ['name', 'content'],
-		redirect:
-			'/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId',
+		redirect: '/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId',
 	})
 	public updateTermsAndConditions() {
 		return async (req: Request, res: Response) => {

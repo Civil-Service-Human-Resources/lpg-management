@@ -1,0 +1,19 @@
+.organisations-list {
+	width: 100%;
+	margin-bottom: 30px;
+
+	.organisation-item {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.sub-list {
+		margin-left: 30px;
+	}
+
+	.flex-conatainer {
+		display: flex;
+		justify-content: space-between;
+	}
+}

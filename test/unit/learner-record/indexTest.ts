@@ -47,9 +47,7 @@ describe('Leaner Record Tests', () => {
 
 		restService.get = sinon.stub().throws(new Error(`An error occurred when GETTING`))
 
-		expect(learnerRecord.getEventBookings(eventId)).to.be.rejectedWith(
-			`An error occurred when trying to get event bookings: An error occurred when GETTING`
-		)
+		expect(learnerRecord.getEventBookings(eventId)).to.be.rejectedWith(`An error occurred when trying to get event bookings: An error occurred when GETTING`)
 	})
 
 	it('should update booking', async () => {
@@ -72,8 +70,6 @@ describe('Leaner Record Tests', () => {
 
 		restService.patch = sinon.stub().throws(new Error(`An error occurred when PATCHING`))
 
-		expect(learnerRecord.updateBooking(eventId, booking)).to.be.rejectedWith(
-			'An error occurred when trying to update booking: An error occurred when PATCHING'
-		)
+		expect(learnerRecord.updateBooking(eventId, booking)).to.be.rejectedWith('An error occurred when trying to update booking: An error occurred when PATCHING')
 	})
 })

@@ -57,7 +57,7 @@ describe('EntityService tests', () => {
 
 		const page = 0
 		const size = 10
-		const result = await entityService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		const result = await entityService.listAllWithPagination(`/learning-providers?page=${page}&size=${size}`)
 
 		expect(learningProviderFactory.create).to.have.been.calledTwice
 		expect(result.results).to.eql([learningProvider1, learningProvider2])
@@ -85,7 +85,7 @@ describe('EntityService tests', () => {
 
 		learningProviderFactory.create = sinon.stub()
 
-		await entityService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		await entityService.listAllWithPagination(`/learning-providers?page=${page}&size=${size}`)
 
 		return expect(restService.get).to.have.been.calledOnceWith(`/learning-providers?page=2&size=99`)
 	})
@@ -107,7 +107,7 @@ describe('EntityService tests', () => {
 
 		const page: number = 0
 		const size: number = 10
-		await entityService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		await entityService.listAllWithPagination(`/learning-providers?page=${page}&size=${size}`)
 
 		expect(learningProviderFactory.create).to.not.have.been.called
 		expect(data.results).to.eql([])

@@ -9,7 +9,7 @@
 {% set backButton = "/content-management/organisations" %}
 
 {% block content %}
-    {{ errorSummary(errors.fields) }}
+{% set form = sessionFlash.form %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <h1 class="govuk-heading-l">Add a new organisation</h1>
@@ -23,12 +23,13 @@
             
               <form action="/content-management/organisations/organisation" method="post">
 
+
                 <div class="govuk-form-group">
-                    <h2 class="govuk-heading-s no-margin">Parent organisation</h2>
+                    <h2 class="govuk-heading-s no-margin">{{ i18n.organisations.text.parent }}</h2>
                     <p class="govuk-body custom-margin">If your new organisation has an existing parent, find them in the list below.</p>
                     <p for="organisationalUnit no-margin" class="govuk-body hint custom-margin">Start typing to find your organisation name</p>
                     <div class="autocomplete-wrapper">
-                        <select name="organisationalUnit" id="organisationalUnit">
+                        <select name="parent" id="parent">
                             <option value=""></option>
                             {% for key, item in organisationalUnits %}
                                 <option value={{ key }}>{{ item }}</option>
@@ -36,55 +37,58 @@
                         </select>
                     </div>
                 </div>
-                {% if errors.fields.newName %}
+                {% if errors.fields.name %}
                     {{ govukInput({
                         label: {
-                            text: "Organisation name"
+                            text: i18n.organisations.text.name
                         },
                         id: "name",
                         name: "name",
                         errorMessage: {
-                            text: i18n['organistaion_new_name_empty']
+                            text: i18n.organisations.validation.name.empty
                         }
                     }) }}
                 {% else %}
                     {{ govukInput({
                         label: {
-                            text: "Organisation name"
+                            text: i18n.organisations.text.name
                         },
                         id: "name",
-                        name: "name"
+                        name: "name",
+                        value: form.name|default(organisationalUnit.name)
                     }) }}
                 {% endif %}
                 {% if errors.fields.code %}
                     {{ govukInput({
-                    label: {
-                        text: "Organisation code"
-                    },
-                    classes: "govuk-input--width-10",
-                    id: "code",
-                    name: "code",
-                    errorMessage: {
-                        text: i18n['organistaion_code_empty']
-                    }
+                        label: {
+                            text: i18n.organisations.text.code
+                        },
+                        classes: "govuk-input--width-10",
+                        id: "code",
+                        name: "code",
+                        errorMessage: {
+                            text: i18n.organisations.validation.code.empty
+                        }
                     }) }}
                 {% else %}
                     {{ govukInput({
-                    label: {
-                        text: "Organisation code"
-                    },
-                    classes: "govuk-input--width-10",
-                    id: "code",
-                    name: "code"
+                        label: {
+                            text: i18n.organisations.text.code
+                        },
+                        classes: "govuk-input--width-10",
+                        id: "code",
+                        name: "code",
+                        value: form.code|default(organisationalUnit.code)
                     }) }}
                 {% endif %}
-                    {{ govukInput({
+                {{ govukInput({
                     label: {
-                        text: "Abbreviation"
+                        text: i18n.organisations.text.abbreviation
                     },
                     classes: "govuk-input--width-10",
                     id: "abbreviation",
-                    name: "abbr"
+                    name: "abbreviation",
+                    value: organisationalUnit.abbreviation
                 }) }}
                 <div class="button-container">
                     {{ govukButton({

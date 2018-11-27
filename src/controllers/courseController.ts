@@ -20,13 +20,7 @@ export class CourseController implements FormController {
 	courseService: CourseService
 	csrsService: CsrsService
 
-	constructor(
-		learningCatalogue: LearningCatalogue,
-		courseValidator: Validator<Course>,
-		courseFactory: CourseFactory,
-		courseService: CourseService,
-		csrsService: CsrsService
-	) {
+	constructor(learningCatalogue: LearningCatalogue, courseValidator: Validator<Course>, courseFactory: CourseFactory, courseService: CourseService, csrsService: CsrsService) {
 		this.learningCatalogue = learningCatalogue
 		this.validator = courseValidator
 		this.courseFactory = courseFactory
@@ -73,9 +67,7 @@ export class CourseController implements FormController {
 
 	courseOverview() {
 		return async (req: Request, res: Response) => {
-			const faceToFaceModules = res.locals.course.modules.filter(
-				(module: Module) => module.type == Module.Type.FACE_TO_FACE
-			)
+			const faceToFaceModules = res.locals.course.modules.filter((module: Module) => module.type == Module.Type.FACE_TO_FACE)
 			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
 			const gradeCodeToName = await this.csrsService.getGradeCodeToNameMapping()
 			const audienceIdToEvent = this.courseService.getAudienceIdToEventMapping(res.locals.course)

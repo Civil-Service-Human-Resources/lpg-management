@@ -1,0 +1,47 @@
+{% from "../../component/menu/macro.njk" import menu %}
+{% from "../../component/recursiveList/macro.njk" import recursiveList %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.organisations.title.manageOrganisations }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-l">{{ i18n.organisations.title.manageOrganisations }}</h1>
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h2 class="govuk-heading-m">{{ i18n.organisations.headers.organisationName }}</h2>
+        {% if organisationalUnits %}
+            <ul class="list organisations-list">
+                {% for org in organisationalUnits %}
+                    <li class="list-item organisation-item"><p class="govuk-body flex-container no-margin u--border--bgrey"><span>{{ org.name }}</span><a href="/content-management/organisations/{{org.id}}/overview">View</a></p>
+                    {% if org.subOrgs %} 
+                        {{ recursiveList(org) }}
+                    {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        <a class="govuk-body govuk-link cancel" href="/content-management">&lt; Back to dashboard</a>
+    </div>
+    <div class="govuk-grid-column-one-third">
+        <div class="right-menu">
+            {% block menu %}
+            {% set actions = [
+            {
+            link: '/content-management/add-organisation',
+            text: 'Add a new organisation'
+            }
+            ] %}
+            {{ menu("Actions", actions) }}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

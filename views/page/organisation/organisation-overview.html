@@ -1,0 +1,60 @@
+{% from "../../component/list/macro.njk" import list %}
+{% from "../../component/menu/macro.njk" import menu %}
+{% from "../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
+{% from "../../component/courseDetails/macro.njk" import courseDetails with context %}
+{% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
+{% from "../../component/audiences/macro.njk" import audiences with context %}
+{% from "back-link/macro.njk" import govukBackLink %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.organisations.title.organisationOverview }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">Organisations</h1>
+        <h2 class="govuk-heading-m govuk-!-font-size-36">{{ organisationalUnit.name }}</h2>
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+       
+        {% set organisationAddedSuccessMessage = sessionFlash.organisationAddedSuccessMessage%}
+
+        {% if organisationAddedSuccessMessage %}
+            <div class="panel govuk-panel govuk-panel--confirmation">
+                <div class="govuk-panel__body custom-panel">
+                    <p class="govuk-body">The organisation <strong>{{ organisationalUnit.name }} {{ ", " + organisationalUnit.abbreviation if organisationalUnit.abbreviation else "" }}</strong> has been added</p>
+                </div>
+            </div>
+        {% endif %}
+        <h3 class="govuk-heading-m">Organisation details</h3>
+        <ul class="list module-list">
+            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Parent organisation</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.parent.name | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Organisation code</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.code | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Organisation abbreviation</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.abbreviation | default("Unspecified", true) }}</p></li>
+        </ul>
+    </div>
+    <div class="govuk-grid-column-one-third">
+        <div class="right-menu">
+            {% block menu %}
+                {% set actions = [
+                    {
+                        link: "/content-management/add-organisation/",
+                        text: "Edit organisation"
+                    },
+                    {
+                        link: "/content-management/delete-organisation/",
+                        text: "Remove organisation"
+                    }
+                ] %}
+                {{ menu("Actions", actions) }}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

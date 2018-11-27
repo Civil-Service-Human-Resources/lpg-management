@@ -36,21 +36,12 @@ app.use(
 )
 
 nunjucks
-	.configure(
-		[
-			appRoot + '/views',
-			appRoot + '/node_modules/govuk-frontend/',
-			appRoot + '/node_modules/govuk-frontend/components',
-		],
-		{
-			autoescape: true,
-			express: app,
-		}
-	)
+	.configure([appRoot + '/views', appRoot + '/node_modules/govuk-frontend/', appRoot + '/node_modules/govuk-frontend/components'], {
+		autoescape: true,
+		express: app,
+	})
 	.addFilter('jsonpath', function(path: string | string[], map: any) {
-		return Object.is(path, undefined)
-			? undefined
-			: Array.isArray(path) ? path.map(pathElem => jsonpath.value(map, pathElem)) : jsonpath.value(map, path)
+		return Object.is(path, undefined) ? undefined : Array.isArray(path) ? path.map(pathElem => jsonpath.value(map, pathElem)) : jsonpath.value(map, path)
 	})
 	.addFilter('formatDate', function(date: Date) {
 		return date
@@ -110,7 +101,7 @@ app.use(ctx.youtubeModuleController.router)
 app.use(ctx.linkModuleController.router)
 app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
-app.use(ctx.searchController.router)
+app.use(ctx.organisationController.router)
 
 app.get('/', function(req, res) {
 	res.redirect('/content-management')

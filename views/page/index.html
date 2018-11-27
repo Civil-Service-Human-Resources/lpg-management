@@ -45,8 +45,15 @@
                             link: '/content-management/learning-providers',
                             text: 'Manage learning providers'
                         }
-                    ] %}
-                    {{ menu("Actions", actions) }}
+                    ]
+                %}
+                {% if identity.isOrganisationManager() %}
+                    {% set action = actions.push({
+                        link: '/content-management/organisations',
+                        text: 'Manage organisations'
+                    }) %}
+                {% endif %}
+                {{ menu("Actions", actions) }}
                 {% endblock %}
             </div>
         </div>

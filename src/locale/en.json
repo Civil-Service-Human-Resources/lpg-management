@@ -74,9 +74,32 @@
 			"cancel": "Cancel event"
 		}
 	},
-	"blended": "Blended",
+	"organisations": {
+		"headers": {
+			"organisationName": "Organisation name"
+		},
+		"text": {
+			"code": "Organisation code",
+			"name": "Organisation name",
+			"abbreviation": "Organisation abbreviation",
+			"parent": "Parent"
+		},
+		"title": {
+			"manageOrganisations": "Manage organisations",
+			"addANewOrganisation": "Add a new organisation",
+			"organisationOverview": "Organisation overview"
+		},
+		"validation": {
+			"name": {
+				"empty": "Organisation name is required"
+			},
+			"code": {
+				"empty": "Organisation code is required"
+			}
+		}
+	},
 
-    "module": {
+	"module": {
 		"validation": {
 			"cost": {
 				"positive": "Module cost must be a positive number"
@@ -112,6 +135,7 @@
 		"file": "File",
 		"blended": "Blended"
 	},
+	"blended": "Blended",
 	"error": "There is a problem with the service",
 	"content_management_title": "Content management",
 	"cancellation_policy_add_title": "Add cancellation policy",
@@ -133,6 +157,9 @@
 	"module_link_add_title": "Add a link",
 	"module_youtube_add_title": "Add a YouTube video",
 	"module_face_to_face_add": "Add a classroom module",
+	"organisations_code_empty": "A valid code is required",
+	"organisations_new_name_empty": "Name is required",
+	"organisations_page_title": "Manage organisations",
 	"proposition_name": "Civil Service Learning",
 	"terms_and_conditions_add_title": "Add terms and conditions",
 	"terms_and_conditions_edit_title": "Edit terms and conditions",
