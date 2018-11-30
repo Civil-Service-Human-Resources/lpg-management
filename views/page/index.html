@@ -1,5 +1,7 @@
 {% from "../component/list/macro.njk" import list with context %}
 {% from "../component/menu/macro.njk" import menu %}
+{% from "../component/search/macro.njk" import search with context %}
+{% from "../component/pagination/macro.njk" import pagination with context %}
 
 {% extends "../component/Page.njk" %}
 
@@ -10,7 +12,10 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h1 class="govuk-heading-l">Content management</h1>
+            <div class="header-search">
+                <h1 class="govuk-heading-l">Content management</h1>
+                {{ search() }}
+            </div>
         </div>
     </div>
 
@@ -25,33 +30,8 @@
                 <p class="govuk-body">There are currently no courses</p>
             {% endif %}
         {% endif %}
-        {% if pageResults.totalResults !== 0 %}
-            <div class="pager">
-                <div class="pager__controls">
-                    {% if pageResults.getPageCount() != 1 %}
-                        <div class="pager-buttons">
-                            {% if pageResults.page > 0 %}
-                                <a class="pager__prev govuk-link" href="/content-management?s={{pageResults.size}}&p={{pageResults.getPreviousPage()}}">Prev</a>
-                            {% endif %}
-                            {% for x in range(pageResults.getPageCount()) %}
-                                {% if x == pageResults.page %}
-                                    <span>{{ x + 1 }}</span>
-                                {% else %}
-                                    <a class="govuk-link" href="/content-management/?s={{pageResults.size}}&p={{x}}">{{ x+1 }}</a>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if pageResults.page != pageResults.getPageCount() - 1 %}
-                                <a class="pager__next govuk-link" href="/content-management/?s={{pageResults.size}}&p={{pageResults.getNextPage()}}">Next</a>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                    <div class="pager__summary">
-                        <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+        {% set paginationBaseUrl = '/content-management/' %}
+        {{ pagination(paginationBaseUrl) }}
         </div>
         <div class="govuk-grid-column-one-third">
             <div class="right-menu">
@@ -65,8 +45,15 @@
                             link: '/content-management/learning-providers',
                             text: 'Manage learning providers'
                         }
-                    ] %}
-                    {{ menu("Actions", actions) }}
+                    ]
+                %}
+                {% if identity.isOrganisationManager() %}
+                    {% set action = actions.push({
+                        link: '/content-management/organisations',
+                        text: 'Manage organisations'
+                    }) %}
+                {% endif %}
+                {{ menu("Actions", actions) }}
                 {% endblock %}
             </div>
         </div>

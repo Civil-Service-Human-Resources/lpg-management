@@ -1,0 +1,111 @@
+{% from "input/macro.njk" import govukInput with context%}
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.organisations.title.addANewOrganisation }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations" %}
+
+{% block content %}
+{% set form = sessionFlash.form %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">Add a new organisation</h1>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            {% set errors = sessionFlash.errors %}
+
+            {{ errorSummary(errors.fields) }}
+            
+              <form action="/content-management/organisations/organisation" method="post">
+
+
+                <div class="govuk-form-group">
+                    <h2 class="govuk-heading-s no-margin">{{ i18n.organisations.text.parent }}</h2>
+                    <p class="govuk-body custom-margin">If your new organisation has an existing parent, find them in the list below.</p>
+                    <p for="organisationalUnit no-margin" class="govuk-body hint custom-margin">Start typing to find your organisation name</p>
+                    <div class="autocomplete-wrapper">
+                        <select name="organisationalUnit" id="organisationalUnit">
+                            <option value=""></option>
+                            {% for key, item in organisationalUnits %}
+                                <option value={{ key }}>{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% if errors.fields.name %}
+                    {{ govukInput({
+                        label: {
+                            text: i18n.organisations.text.name
+                        },
+                        id: "name",
+                        name: "name",
+                        errorMessage: {
+                            text: i18n.organisations.validation.name.empty
+                        }
+                    }) }}
+                {% else %}
+                    {{ govukInput({
+                        label: {
+                            text: i18n.organisations.text.name
+                        },
+                        id: "name",
+                        name: "name",
+                        value: form.name|default(organisationalUnit.name)
+                    }) }}
+                {% endif %}
+                {% if errors.fields.code %}
+                    {{ govukInput({
+                        label: {
+                            text: i18n.organisations.text.code
+                        },
+                        classes: "govuk-input--width-10",
+                        id: "code",
+                        name: "code",
+                        errorMessage: {
+                            text: i18n.organisations.validation.code.empty
+                        }
+                    }) }}
+                {% else %}
+                    {{ govukInput({
+                        label: {
+                            text: i18n.organisations.text.code
+                        },
+                        classes: "govuk-input--width-10",
+                        id: "code",
+                        name: "code",
+                        value: form.code|default(organisationalUnit.code)
+                    }) }}
+                {% endif %}
+                {{ govukInput({
+                    label: {
+                        text: i18n.organisations.text.abbreviation
+                    },
+                    classes: "govuk-input--width-10",
+                    id: "abbreviation",
+                    name: "abbreviation",
+                    value: organisationalUnit.abbreviation
+                }) }}
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Add organisation"
+                    }) }}
+                </div>
+            </form>
+            <a href="/content-management/organisations" class="govuk-link">Cancel</a>
+        </div>
+        <div class="govuk-grid-column-one-third">
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
+    <script type="text/javascript" src="/js/manage-orgs.js"></script>
+{% endblock %}

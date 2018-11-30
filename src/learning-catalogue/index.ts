@@ -39,26 +39,19 @@ export class LearningCatalogue {
 
 		this._audienceService = new EntityService<Audience>(this._restService, new AudienceFactory())
 
-		this._learningProviderService = new EntityService<LearningProvider>(
-			this._restService,
-			new LearningProviderFactory()
-		)
+		this._learningProviderService = new EntityService<LearningProvider>(this._restService, new LearningProviderFactory())
 
-		this._cancellationPolicyService = new EntityService<CancellationPolicy>(
-			this._restService,
-			new CancellationPolicyFactory()
-		)
+		this._cancellationPolicyService = new EntityService<CancellationPolicy>(this._restService, new CancellationPolicyFactory())
 
-		this._termsAndConditionsService = new EntityService<TermsAndConditions>(
-			this._restService,
-			new TermsAndConditionsFactory()
-		)
+		this._termsAndConditionsService = new EntityService<TermsAndConditions>(this._restService, new TermsAndConditionsFactory())
 	}
 
 	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
-		return await this._courseService.listAll(
-			`/courses?status=Draft&status=Published&status=Archived&page=${page}&size=${size}`
-		)
+		return await this._courseService.listAllWithPagination(`/courses?status=Draft&status=Published&status=Archived&page=${page}&size=${size}`)
+	}
+
+	async searchCourses(query: string, page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
+		return await this._courseService.listAllWithPagination(`/search/courses/?status=Draft&status=Published&status=Archived&query=${query}&page=${page}&size=${size}`)
 	}
 
 	async createCourse(course: Course): Promise<Course> {
@@ -110,7 +103,7 @@ export class LearningCatalogue {
 	}
 
 	async listLearningProviders(page: number = 0, size: number = 10): Promise<DefaultPageResults<LearningProvider>> {
-		return await this._learningProviderService.listAll(`/learning-providers?page=${page}&size=${size}`)
+		return await this._learningProviderService.listAllWithPagination(`/learning-providers?page=${page}&size=${size}`)
 	}
 
 	async getLearningProvider(learningProviderId: string): Promise<LearningProvider> {
@@ -122,67 +115,35 @@ export class LearningCatalogue {
 	}
 
 	async getCancellationPolicy(learningProviderId: string, cancellationPolicyId: string): Promise<CancellationPolicy> {
-		return this._cancellationPolicyService.get(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`
-		)
+		return this._cancellationPolicyService.get(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`)
 	}
 
-	async createCancellationPolicy(
-		learningProviderId: string,
-		cancellationPolicy: CancellationPolicy
-	): Promise<CancellationPolicy> {
-		return this._cancellationPolicyService.create(
-			`/learning-providers/${learningProviderId}/cancellation-policies`,
-			cancellationPolicy
-		)
+	async createCancellationPolicy(learningProviderId: string, cancellationPolicy: CancellationPolicy): Promise<CancellationPolicy> {
+		return this._cancellationPolicyService.create(`/learning-providers/${learningProviderId}/cancellation-policies`, cancellationPolicy)
 	}
 
-	async updateCancellationPolicy(
-		learningProviderId: string,
-		cancellationPolicy: CancellationPolicy
-	): Promise<CancellationPolicy> {
-		return this._cancellationPolicyService.update(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`,
-			cancellationPolicy
-		)
+	async updateCancellationPolicy(learningProviderId: string, cancellationPolicy: CancellationPolicy): Promise<CancellationPolicy> {
+		return this._cancellationPolicyService.update(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`, cancellationPolicy)
 	}
 
 	async deleteCancellationPolicy(learningProviderId: string, cancellationPolicyId: string): Promise<void> {
-		return this._cancellationPolicyService.delete(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`
-		)
+		return this._cancellationPolicyService.delete(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`)
 	}
 
 	async getTermsAndConditions(learningProviderId: string, termsAndConditionsId: string): Promise<TermsAndConditions> {
-		return this._termsAndConditionsService.get(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
-		)
+		return this._termsAndConditionsService.get(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
 	}
 
-	async createTermsAndConditions(
-		learningProviderId: string,
-		termsAndConditions: TermsAndConditions
-	): Promise<TermsAndConditions> {
-		return this._termsAndConditionsService.create(
-			`/learning-providers/${learningProviderId}/terms-and-conditions`,
-			termsAndConditions
-		)
+	async createTermsAndConditions(learningProviderId: string, termsAndConditions: TermsAndConditions): Promise<TermsAndConditions> {
+		return this._termsAndConditionsService.create(`/learning-providers/${learningProviderId}/terms-and-conditions`, termsAndConditions)
 	}
 
-	async updateTermsAndConditions(
-		learningProviderId: string,
-		termsAndConditions: TermsAndConditions
-	): Promise<TermsAndConditions> {
-		return this._termsAndConditionsService.update(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditions.id}`,
-			termsAndConditions
-		)
+	async updateTermsAndConditions(learningProviderId: string, termsAndConditions: TermsAndConditions): Promise<TermsAndConditions> {
+		return this._termsAndConditionsService.update(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditions.id}`, termsAndConditions)
 	}
 
 	async deleteTermsAndConditions(learningProviderId: string, termsAndConditionsId: string): Promise<void> {
-		return this._termsAndConditionsService.delete(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
-		)
+		return this._termsAndConditionsService.delete(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
 	}
 
 	set courseService(value: EntityService<Course>) {

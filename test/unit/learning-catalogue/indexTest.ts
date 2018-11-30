@@ -68,12 +68,10 @@ describe('Learning Catalogue tests', () => {
 	})
 
 	it('should call courseService when listing courses', async () => {
-		courseService.listAll = sinon.stub()
+		courseService.listAllWithPagination = sinon.stub()
 
 		await learningCatalogue.listCourses()
-		return expect(courseService.listAll).to.have.been.calledOnceWith(
-			'/courses?status=Draft&status=Published&status=Archived&page=0&size=10'
-		)
+		return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith('/courses?status=Draft&status=Published&status=Archived&page=0&size=10')
 	})
 
 	it('should call moduleService when creating a module', async () => {
@@ -108,10 +106,7 @@ describe('Learning Catalogue tests', () => {
 		learningProviderService.create = sinon.stub()
 
 		await learningCatalogue.createLearningProvider(learningProvider)
-		return expect(learningProviderService.create).to.have.been.calledOnceWith(
-			'/learning-providers/',
-			learningProvider
-		)
+		return expect(learningProviderService.create).to.have.been.calledOnceWith('/learning-providers/', learningProvider)
 	})
 
 	it('should call learningProviderService when getting a learning provider', async () => {
@@ -119,16 +114,14 @@ describe('Learning Catalogue tests', () => {
 		learningProviderService.get = sinon.stub()
 
 		await learningCatalogue.getLearningProvider(learningProviderId)
-		return expect(learningProviderService.get).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}`
-		)
+		return expect(learningProviderService.get).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}`)
 	})
 
 	it('should call learningProviderService when listing learning providers', async () => {
-		learningProviderService.listAll = sinon.stub()
+		learningProviderService.listAllWithPagination = sinon.stub()
 
 		await learningCatalogue.listLearningProviders()
-		return expect(learningProviderService.listAll).to.have.been.calledOnce
+		return expect(learningProviderService.listAllWithPagination).to.have.been.calledOnce
 	})
 
 	it('should call cancellationPolicyService when creating a cancellation policy', async () => {
@@ -138,10 +131,7 @@ describe('Learning Catalogue tests', () => {
 		cancellationPolicyService.create = sinon.stub()
 
 		await learningCatalogue.createCancellationPolicy(learningProviderId, cancellationPolicy)
-		return expect(cancellationPolicyService.create).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/cancellation-policies`,
-			cancellationPolicy
-		)
+		return expect(cancellationPolicyService.create).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/cancellation-policies`, cancellationPolicy)
 	})
 
 	it('should call cancellationPolicyService when updating a cancellation policy', async () => {
@@ -166,9 +156,7 @@ describe('Learning Catalogue tests', () => {
 		cancellationPolicyService.get = sinon.stub()
 
 		await learningCatalogue.getCancellationPolicy(learningProviderId, cancellationPolicyId)
-		return expect(cancellationPolicyService.get).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`
-		)
+		return expect(cancellationPolicyService.get).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`)
 	})
 
 	it('should call cancellationPolicyService when deleting a cancellation policy', async () => {
@@ -180,9 +168,7 @@ describe('Learning Catalogue tests', () => {
 		cancellationPolicyService.delete = sinon.stub()
 
 		await learningCatalogue.deleteCancellationPolicy(learningProviderId, cancellationPolicy.id)
-		return expect(cancellationPolicyService.delete).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`
-		)
+		return expect(cancellationPolicyService.delete).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`)
 	})
 
 	it('should call termsAndConditionsService when creating a terms and conditions', async () => {
@@ -193,10 +179,7 @@ describe('Learning Catalogue tests', () => {
 
 		await learningCatalogue.createTermsAndConditions(learningProviderId, termsAndConditions)
 
-		return expect(termsAndConditionsService.create).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions`,
-			termsAndConditions
-		)
+		return expect(termsAndConditionsService.create).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/terms-and-conditions`, termsAndConditions)
 	})
 
 	it('should call termsAndConditionsService when getting a terms and conditions', async () => {
@@ -207,9 +190,7 @@ describe('Learning Catalogue tests', () => {
 
 		await learningCatalogue.getTermsAndConditions(learningProviderId, termsAndConditionsId)
 
-		return expect(termsAndConditionsService.get).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
-		)
+		return expect(termsAndConditionsService.get).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
 	})
 
 	it('should call termsAndConditionsService when updating a terms and conditions', async () => {
@@ -223,9 +204,7 @@ describe('Learning Catalogue tests', () => {
 
 		await learningCatalogue.updateTermsAndConditions(learningProviderId, termsAndConditions)
 
-		return expect(termsAndConditionsService.update).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
-		)
+		return expect(termsAndConditionsService.update).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
 	})
 
 	it('should call termsAndConditionsService when deleting a terms and conditions', async () => {
@@ -236,8 +215,16 @@ describe('Learning Catalogue tests', () => {
 
 		await learningCatalogue.deleteTermsAndConditions(learningProviderId, termsAndConditionsId)
 
-		return expect(termsAndConditionsService.delete).to.have.been.calledOnceWith(
-			`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`
+		return expect(termsAndConditionsService.delete).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
+	})
+
+	it('should call courseService when searching courses', async () => {
+		courseService.listAllWithPagination = sinon.stub()
+
+		await learningCatalogue.searchCourses("test", 0, 10)
+
+		return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith(
+			`/search/courses/?status=Draft&status=Published&status=Archived&query=test&page=0&size=10`
 		)
 	})
 })

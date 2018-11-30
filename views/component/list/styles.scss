@@ -17,8 +17,8 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				align-items: flex-end;
 				min-width: 82px;
+				align-items: flex-end;
 			}
 		}
 
@@ -42,6 +42,13 @@
 			padding: 0;
 			display: block;
 		}
+	}
+}
+
+.search-results-row {
+	.govuk-heading-m {
+		font-weight: normal;
+		font-size: $font-normal;
 	}
 }
 

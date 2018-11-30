@@ -8,7 +8,6 @@ import {Pagination} from 'lib/pagination'
 
 export class HomeController {
 	logger = log4js.getLogger('controllers/homeController')
-
 	learningCatalogue: LearningCatalogue
 	pagination: Pagination
 

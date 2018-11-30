@@ -1,0 +1,8 @@
+{% if org.subOrgs.length %}
+        <ul class="list sub-list">
+            {% for org in org.subOrgs %}
+                <li class="list-item organisation-item"><p class="govuk-body flex-container no-margin u--border--bgrey"><span>{{ org.name }}</span><a href="/content-management/{{org.id}}/organisation-overview">View</a></p></li>
+                {{ recursiveList(org)}}
+            {% endfor %}
+        </ul>
+{% endif %}

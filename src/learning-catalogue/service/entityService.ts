@@ -11,7 +11,7 @@ export class EntityService<T> {
 		this._factory = factory
 	}
 
-	async listAll(path: string): Promise<DefaultPageResults<T>> {
+	async listAllWithPagination(path: string): Promise<DefaultPageResults<T>> {
 		const data = await this._restService.get(path)
 
 		data.results = (data.results || []).map(this._factory.create)
@@ -24,6 +24,20 @@ export class EntityService<T> {
 		pageResults.totalResults = data.totalResults
 
 		return pageResults
+	}
+
+	async listAll(path: string): Promise<DefaultPageResults<T>> {
+		const data = await this._restService.get(path)
+
+		data.results = (data || []).map(this._factory.create)
+
+		return data.results
+	}
+
+	async listAllAsRawData(path: string): Promise<DefaultPageResults<T>> {
+		const data = await this._restService.get(path)
+
+		return data
 	}
 
 	async create(path: string, entity: any): Promise<T> {

@@ -1,14 +1,11 @@
-{% from "textarea/macro.njk" import govukTextarea %}
-
-{{ govukTextarea({
+{{ govukCharacterCount({
     name: name,
     id: textareaId,
+    maxlength: maxlength,
     value: value,
+   
     hint: {
         text: hint
-    },
-    attributes: {
-        maxlength: maxlength
     },
     label: {
         text: label

@@ -119,14 +119,13 @@
 
             {% if event.dateRanges and event.dateRanges.length > 0 %}
             <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/location/create" method="post">
-            <input type="hidden" name="eventJson" value="{{eventJson}}" />
-
-            <div class="button-container">
-                {{ govukButton({
-                text: "Continue",
-                classes: "govuk-button"
-                }) }}
-            </div>
+                <input type="hidden" name="eventJson" value="{{eventJson}}" />
+                <div class="button-container">
+                    {{ govukButton({
+                    text: "Continue",
+                    classes: "govuk-button"
+                    }) }}
+                </div>
             </form>
             {% endif %}
             <a href="/content-management/courses/{{course.id}}/overview">Cancel</a>

@@ -83,3 +83,5 @@ export const CACHE = {
 	TTL_SECONDS: 3600,
 	CHECK_PERIOD_SECONDS: 600,
 }
+
+export const INSTRUMENTATION_KEY = env.instrumentation_key || 'instrumentation_key'

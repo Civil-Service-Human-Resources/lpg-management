@@ -1,0 +1,44 @@
+{% from "../component/list/macro.njk" import list with context %}
+{% from "../component/menu/macro.njk" import menu %}
+{% from "../component/search/macro.njk" import search with context %}
+{% from "../component/pagination/macro.njk" import pagination with context %}
+
+{% extends "../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n['content_management_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+
+{% set banner = true %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <div class="header-search">
+                <h1 class="govuk-heading-l">Search results</h1>
+                {{ search(query) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full search-results-row">
+        {% if pageResults %}
+            {% if pageResults.totalResults !== 0 %}
+                {% if pageResults.totalResults > 2 %}
+                    {% set multiple = 's' %}
+                {% else  %}
+                    {% set multiple = '' %}
+                {% endif %}
+                {% set listTitle =  pageResults.totalResults + ' result' + multiple + ' found'  %}
+                {% block list %}
+                    {{ list(listTitle, pageResults) }}
+                {% endblock %}
+            {% endif %}
+        {% else %}
+            <p class="govuk-body">0 results found</p>
+        {% endif %}
+        {% set paginationBaseUrl = '/content-management/search' %}
+        {% set query = '&q=' + query %}
+        {{ pagination(paginationBaseUrl, query) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,7 +1,8 @@
-{% from "../../component/textarea/macro.njk" import textarea with context %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "../../component/textarea/macro.njk" import textarea with context %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -52,6 +53,4 @@
 {% block bodyEnd %}
     <script src="/govuk-frontend/all.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>
-    <script type="text/javascript" src="/js/char-count.js"></script>
-    <script type="text/javascript" src="/js/char-count-init.js"></script>
 {% endblock %}

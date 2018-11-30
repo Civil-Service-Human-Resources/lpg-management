@@ -49,10 +49,7 @@ export class LearningProviderController {
 		this.router.get('/content-management/learning-providers', asyncHandler(this.index()))
 		this.router.get('/content-management/learning-providers/learning-provider', this.getLearningProvider())
 		this.router.post('/content-management/learning-providers/learning-provider', this.setLearningProvider())
-		this.router.get(
-			'/content-management/learning-providers/:learningProviderId',
-			this.getLearningProviderOverview()
-		)
+		this.router.get('/content-management/learning-providers/:learningProviderId', this.getLearningProviderOverview())
 	}
 
 	public index() {

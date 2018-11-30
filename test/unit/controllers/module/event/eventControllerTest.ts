@@ -219,14 +219,8 @@ describe('EventController', function() {
 
 			await eventController.setLocation()(req, res)
 
-			expect(learningCatalogue.createEvent).to.have.been.calledOnceWith(
-				req.params.courseId,
-				req.params.moduleId,
-				event
-			)
-			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/course-id/modules/module-id/events-overview/event-id`
-			)
+			expect(learningCatalogue.createEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, event)
+			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/courses/course-id/modules/module-id/events-overview/event-id`)
 		})
 
 		it('should update event and redirect to events overview page if no errors', async function() {
@@ -276,20 +270,9 @@ describe('EventController', function() {
 
 			await eventController.updateLocation()(req, res)
 
-			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(
-				req.params.courseId,
-				req.params.moduleId,
-				req.params.eventId
-			)
-			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(
-				req.params.courseId,
-				req.params.moduleId,
-				req.params.eventId,
-				event
-			)
-			expect(res.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/course-id/modules/module-id/events-overview/event-id`
-			)
+			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, req.params.eventId)
+			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, req.params.eventId, event)
+			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/courses/course-id/modules/module-id/events-overview/event-id`)
 		})
 
 		it('should redirect back to location page if errors on create', async function() {
@@ -442,9 +425,7 @@ describe('EventController', function() {
 		await registerLearner(request, response)
 
 		expect(learnerRecord.getEventBookings).to.have.been.calledOnceWith('eventId')
-		expect(response.redirect).to.have.been.calledOnceWith(
-			`/content-management/courses/courseId/modules/moduleId/events/eventId/attendee/99`
-		)
+		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events/eventId/attendee/99`)
 		expect(booking.status).to.be.equal(Booking.Status.CONFIRMED)
 	})
 
@@ -577,9 +558,7 @@ describe('EventController', function() {
 					},
 				],
 			})
-			expect(response.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
-			)
+			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
 		})
 
 		it('should display errors if form validation fails on update', async () => {
@@ -795,9 +774,7 @@ describe('EventController', function() {
 					},
 				],
 			})
-			expect(response.redirect).to.have.been.calledOnceWith(
-				`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
-			)
+			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
 		})
 
 		it('should display errors if form validation fails on add', async () => {

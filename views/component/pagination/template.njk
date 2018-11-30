@@ -1,0 +1,27 @@
+{% if pageResults.totalResults !== 0 %}
+    <div class="pager">
+        <div class="pager__controls">
+            {% if pageResults.getPageCount() != 1 %}
+                <div class="pager-buttons">
+                    {% if pageResults.page > 0 %}
+                        <a class="pager__prev govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ pageResults.getPreviousPage() }}{{ query }}">Prev</a>
+                    {% endif %}
+                    {% for x in range(pageResults.getPageCount()) %}
+                        {% if x == pageResults.page %}
+                            <span>{{ x + 1 }}</span>
+                        {% else %}
+                            <a class="govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ x }}{{ query }}">{{ x+1 }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if pageResults.page != pageResults.getPageCount() - 1 %}
+                        <a class="pager__next govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ pageResults.getNextPage() }}{{ query }}">Next</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <div class="pager__summary">
+                <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}

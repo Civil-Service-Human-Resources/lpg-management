@@ -83,68 +83,35 @@ export class EventController {
 			next()
 		})
 
-		this.router.post(
-			'/content-management/courses/:courseId/modules/:moduleId/events/location/create',
-			this.getLocation()
-		)
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', this.getLocation())
 
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location',
-			this.editLocation()
-		)
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', this.editLocation())
 
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', this.setLocation())
 
-		this.router.post(
-			'/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId',
-			this.updateLocation()
-		)
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', this.updateLocation())
 
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?',
-			this.getDatePreview()
-		)
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events-overview/:eventId',
-			this.getEventOverview()
-		)
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', this.getDatePreview())
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-overview/:eventId', this.getEventOverview())
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', this.getDateTime())
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', this.setDateTime())
 
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex',
-			this.editDateRange()
-		)
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', this.editDateRange())
 
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/',
-			this.dateRangeOverview()
-		)
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', this.dateRangeOverview())
 
-		this.router.post(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/',
-			this.addDateRange()
-		)
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', this.addDateRange())
 
-		this.router.post(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex',
-			this.updateDateRange()
-		)
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', this.updateDateRange())
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', this.cancelEvent())
 
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId',
-			this.getAttendeeDetails()
-		)
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', this.updateDateRange())
 
-		this.router.post(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId/update',
-			this.updateBooking()
-		)
-		this.router.get(
-			'/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel',
-			this.cancelEvent()
-		)
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId', this.getAttendeeDetails())
+
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId/update', this.updateBooking())
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', this.cancelEvent())
 	}
 
 	public getDateTime() {
@@ -271,9 +238,7 @@ export class EventController {
 
 					await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
 
-					response.redirect(
-						`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
-					)
+					response.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
 				}
 			}
 		}
@@ -328,9 +293,7 @@ export class EventController {
 
 					await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
 
-					response.redirect(
-						`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`
-					)
+					response.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
 				}
 			}
 		}
@@ -373,16 +336,8 @@ export class EventController {
 				let event = JSON.parse(req.body.eventJson || '{}')
 				event.venue = data.venue
 
-				const savedEvent = await this.learningCatalogue.createEvent(
-					req.params.courseId,
-					req.params.moduleId,
-					event
-				)
-				res.redirect(
-					`/content-management/courses/${req.params.courseId}/modules/${
-						req.params.moduleId
-					}/events-overview/${savedEvent.id}`
-				)
+				const savedEvent = await this.learningCatalogue.createEvent(req.params.courseId, req.params.moduleId, event)
+				res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${savedEvent.id}`)
 			}
 		}
 	}
@@ -415,25 +370,12 @@ export class EventController {
 					errors: errors,
 				})
 			} else {
-				let event = await this.learningCatalogue.getEvent(
-					req.params.courseId,
-					req.params.moduleId,
-					req.params.eventId
-				)
+				let event = await this.learningCatalogue.getEvent(req.params.courseId, req.params.moduleId, req.params.eventId)
 
 				event.venue = data.venue
 
-				await this.learningCatalogue.updateEvent(
-					req.params.courseId,
-					req.params.moduleId,
-					req.params.eventId,
-					event
-				)
-				res.redirect(
-					`/content-management/courses/${req.params.courseId}/modules/${
-						req.params.moduleId
-					}/events-overview/${req.params.eventId}`
-				)
+				await this.learningCatalogue.updateEvent(req.params.courseId, req.params.moduleId, req.params.eventId, event)
+				res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${req.params.eventId}`)
 			}
 		}
 	}
@@ -472,11 +414,7 @@ export class EventController {
 
 			this.learnerRecord.updateBooking(req.params.eventId, booking)
 
-			res.redirect(
-				`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${
-					req.params.eventId
-				}/attendee/${req.params.bookingId}`
-			)
+			res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${req.params.eventId}/attendee/${req.params.bookingId}`)
 		}
 	}
 
