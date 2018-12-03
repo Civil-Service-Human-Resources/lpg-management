@@ -148,4 +148,27 @@ describe('Organisation Controller Tests', function() {
 		expect(req.session!.sessionFlash).to.eql({errors: errors})
 		expect(res.redirect).to.have.been.calledWith('/content-management/add-organisation')
 	})
+
+	it('should check for render confirm delete page', async function() {
+		const confirmDelete: (request: Request, response: Response) => void = organisationController.confirmDelete()
+
+		req.params.organisationId = 1
+
+		await confirmDelete(req, res)
+
+		expect(res.render).to.have.been.calledOnceWith('page/organisation/confirm-delete', {organisationId: 1})
+	})
+
+	it('should call delete organisation on csrs and redirect to organisations page', async function() {
+		const deleteOrganisation: (request: Request, response: Response) => void = organisationController.deleteOrganisation()
+
+		req.params.organisationId = 1
+
+		csrs.deleteOrganisationalUnit = sinon.stub()
+
+		await deleteOrganisation(req, res)
+
+		expect(csrs.deleteOrganisationalUnit).to.have.been.calledOnceWith(1)
+		expect(res.redirect).to.have.been.calledOnceWith('/content-management/organisations')
+	})
 })

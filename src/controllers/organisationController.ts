@@ -31,6 +31,8 @@ export class OrganisationController implements FormController {
 		this.router.get('/content-management/organisations', asyncHandler(this.getOrganisations()))
 		this.router.get('/content-management/add-organisation', asyncHandler(this.addOrganisation()))
 		this.router.get('/content-management/organisations/:organisationId/overview', asyncHandler(this.getOrganisation()))
+		this.router.get('/content-management/organisations/:organisationId/confirm-delete', asyncHandler(this.confirmDelete()))
+		this.router.post('/content-management/organisations/:organisationId/delete', asyncHandler(this.deleteOrganisation()))
 		this.router.post('/content-management/organisations/organisation', asyncHandler(this.createOrganisation()))
 	}
 
@@ -81,6 +83,24 @@ export class OrganisationController implements FormController {
 					response.redirect(`/content-management/add-organisation`)
 				})
 			}
+		}
+	}
+
+	public confirmDelete(){
+		return async (request: Request, response: Response) => {
+			const organisationId = request.params.organisationId
+
+			response.render('page/organisation/confirm-delete', {organisationId: organisationId})
+		}
+	}
+
+	public deleteOrganisation(){
+		return async (request: Request, response: Response) => {
+			const organisationId = request.params.organisationId
+
+			await this.csrs.deleteOrganisationalUnit(organisationId)
+
+			response.redirect('/content-management/organisations')
 		}
 	}
 }
