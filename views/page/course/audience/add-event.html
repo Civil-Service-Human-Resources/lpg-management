@@ -29,7 +29,7 @@
                     {% for event in courseEvents %}
                         {% set eventListLength = eventList.push({
                             value: event.id,
-                            text: event.venue.location + ", " + event.dateRanges[0].date
+                            text: event.venue.location + ", " + event.dateRanges[0].date | dateWithMonthAsText
                         }) %}
                     {% endfor %} 
                     {{ govukRadios({

@@ -4,7 +4,6 @@
     {% for policy in learningProvider.cancellationPolicies %}
     <li class="list-details plist-details u--border--bgrey">
         <p class="govuk-body list-item list-name" href="/content-management/course/{{ policy.id }}">{{ policy.name }}</p>
-        <p class="govuk-body list-item list-date">13th August 2018</p>
         <a class="govuk-link list-link " href="/content-management/learning-providers/{{learningProvider.id}}/cancellation-policies/{{ policy.id }}/delete">Delete</a>
         <a class="govuk-link list-link " href="/content-management/learning-providers/{{learningProvider.id}}/cancellation-policies/{{ policy.id }}">Edit</a>
     </li>
