@@ -44,23 +44,34 @@ describe('CSRS tests', () => {
 	})
 
 	it('should call organisationalUnitService when creating organisational units', async () => {
-		const organsationalUnit: OrganisationalUnit = new OrganisationalUnit()
+		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
 
 		organisationalUnitService.create = sinon.stub()
 
-		await csrs.createOrganisationalUnit(organsationalUnit)
+		await csrs.createOrganisationalUnit(organisationalUnit)
 
-		return expect(organisationalUnitService.create).to.have.been.calledOnceWith(`/organisationalUnits/`, organsationalUnit)
+		return expect(organisationalUnitService.create).to.have.been.calledOnceWith(`/organisationalUnits/`, organisationalUnit)
 	})
 
 	it('should call organisationalUnitService when getting an organisational unit', async () => {
-		const organsationalUnit: OrganisationalUnit = new OrganisationalUnit()
-		organsationalUnit.id = 'id123'
+		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
+		organisationalUnit.id = 'id123'
 
 		organisationalUnitService.get = sinon.stub()
 
-		await csrs.getOrganisationalUnit(organsationalUnit.id)
+		await csrs.getOrganisationalUnit(organisationalUnit.id)
 
-		return expect(organisationalUnitService.get).to.have.been.calledOnceWith(`/organisationalUnits/${organsationalUnit.id}`	)
+		return expect(organisationalUnitService.get).to.have.been.calledOnceWith(`/organisationalUnits/${organisationalUnit.id}`	)
+	})
+
+	it('should call organisationalUnitService when deleting an organisational unit', async () => {
+		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
+		organisationalUnit.id = 'id123'
+
+		organisationalUnitService.delete = sinon.stub()
+
+		await csrs.deleteOrganisationalUnit(organisationalUnit.id)
+
+		return expect(organisationalUnitService.delete).to.have.been.calledOnceWith(`/organisationalUnits/${organisationalUnit.id}`	)
 	})
 })
