@@ -20,7 +20,7 @@
         {% set organisationalUnit = sessionFlash.organisationalUnit %}
 
         {% if organisationRemovedMessage %}
-        <div class="panel govuk-panel govuk-panel--confirmation panel-blue">
+        <div class="panel panel-blue">
             <div class="govuk-panel__body custom-panel panel-blue">
                 <p class="govuk-body">The organisation <strong>{{ organisationalUnit.name }}{{ ", " + organisationalUnit.abbreviation if organisationalUnit.abbreviation else "" }}</strong> has been removed</p>
             </div>

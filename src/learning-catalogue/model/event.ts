@@ -17,11 +17,18 @@ export class Event {
 	venue: Venue
 
 	status: Event.Status
+
+	cancellationReason: Event.CancellationReason
 }
 
 export namespace Event {
 	export enum Status {
 		ACTIVE = 'Active',
 		CANCELLED = 'Cancelled',
+	}
+
+	export enum CancellationReason {
+		UNAVAILABLE = 'cancellation_reason_unavailable',
+		VENUE = 'cancellation_reason_venue',
 	}
 }

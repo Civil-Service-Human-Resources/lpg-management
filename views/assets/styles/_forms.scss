@@ -123,6 +123,16 @@
 			flex: none;
 			width: 149px;
 		}
+      &.invitee {
+        align-items: flex-end;
+        margin-bottom: 30px;
+        .govuk-form-group {
+          margin-bottom: 0px;
+        }
+        .button-blue {
+          bottom: 2px;
+        }
+      }
 	}
 }
 

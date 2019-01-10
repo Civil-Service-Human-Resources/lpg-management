@@ -8,7 +8,7 @@ import {Validator} from '../../../../../src/learning-catalogue/validator/validat
 import {Event} from '../../../../../src/learning-catalogue/model/event'
 import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
 import {mockReq, mockRes} from 'sinon-express-mock'
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import * as sinon from 'sinon'
 import {DateRange} from '../../../../../src/learning-catalogue/model/dateRange'
 import {DateRangeCommand} from '../../../../../src/controllers/command/dateRangeCommand'
@@ -212,6 +212,7 @@ describe('EventController', function() {
 		it('should create event and redirect to events overview page if no errors', async function() {
 			const req: Request = mockReq()
 			const res: Response = mockRes()
+			let next: NextFunction
 
 			req.params.courseId = 'course-id'
 			req.params.moduleId = 'module-id'
@@ -241,12 +242,65 @@ describe('EventController', function() {
 				venue: venue,
 				dateRanges: [],
 				status: Event.Status.ACTIVE,
+				cancellationReason: Event.CancellationReason.UNAVAILABLE,
 			})
 
-			await eventController.setLocation()(req, res)
+			learnerRecord.createEvent = sinon.stub().returns(Promise.resolve(event))
+
+			next = sinon.stub()
+
+			await eventController.setLocation()(req, res, next)
 
 			expect(learningCatalogue.createEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, event)
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/courses/course-id/modules/module-id/events-overview/event-id`)
+		})
+
+		it('should pass to next if error occurs when creating event', async function() {
+			const req: Request = mockReq()
+			const res: Response = mockRes()
+			let next: NextFunction
+
+			req.params.courseId = 'course-id'
+			req.params.moduleId = 'module-id'
+
+			const venue = <Venue>{
+				location: 'London',
+				address: 'Victoria Street',
+				capacity: 10,
+				minCapacity: 5,
+			}
+
+			const event = new Event()
+
+			req.body = {
+				location: venue.location,
+				address: venue.address,
+				capacity: venue.capacity,
+				minCapacity: venue.minCapacity,
+				eventJson: JSON.stringify(event),
+			}
+
+			event.venue = venue
+
+			eventValidator.check = sinon.stub().returns({fields: [], size: 0})
+			learningCatalogue.createEvent = sinon.stub().returns(<Event>{
+				id: 'event-id',
+				venue: venue,
+				dateRanges: [],
+				status: Event.Status.ACTIVE,
+				cancellationReason: Event.CancellationReason.UNAVAILABLE,
+			})
+
+			const error: Error = new Error()
+			learnerRecord.createEvent = sinon.stub().returns(Promise.reject(error))
+
+			next = sinon.stub()
+
+			await eventController.setLocation()(req, res, next)
+
+			expect(learningCatalogue.createEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, event)
+			expect(res.redirect).to.not.have.been.calledWith(`/content-management/courses/course-id/modules/module-id/events-overview/event-id`)
+			expect(next).to.have.been.calledWith(error)
 		})
 
 		it('should update event and redirect to events overview page if no errors', async function() {
@@ -304,6 +358,7 @@ describe('EventController', function() {
 		it('should redirect back to location page if errors on create', async function() {
 			const req: Request = mockReq()
 			const res: Response = mockRes()
+			let next: NextFunction
 
 			const event: Event = new Event()
 
@@ -317,10 +372,10 @@ describe('EventController', function() {
 			const errors = {fields: [{location: ['validation.module.event.venue.location.empty']}], size: 1}
 
 			eventValidator.check = sinon.stub().returns(errors)
-
 			learningCatalogue.createEvent = sinon.stub().returns(event)
+			next = sinon.stub()
 
-			await eventController.setLocation()(req, res)
+			await eventController.setLocation()(req, res, next)
 
 			expect(learningCatalogue.createEvent).to.not.have.been.called
 			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/event-location', {
@@ -420,8 +475,9 @@ describe('EventController', function() {
 		response.locals.event = {dateRanges}
 
 		learnerRecord.inviteLearner = sinon.stub().returns(new Invite())
+		learnerRecord.inviteLearner('eventId', new Invite()).catch = sinon.stub()
 
-		inviteFactory.create = sinon.stub()
+		inviteFactory.create = sinon.stub().returns(new Invite())
 
 		await eventController.inviteLearner()(request, response)
 
@@ -429,7 +485,7 @@ describe('EventController', function() {
 		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('email_address_found_message')
 	})
 
-	it('Should fail to invite user and redirect to event overview with not found message', async () => {
+	it('should redirect to event overview page with error if email format is invalid', async () => {
 		const request = mockReq()
 		const response = mockRes()
 
@@ -437,56 +493,17 @@ describe('EventController', function() {
 			callback(undefined)
 		}
 
-		request.body.learnerEmail = 'test@test.com'
+		request.body.learnerEmail = 'test'
 		request.user = {accessToken: 'test-token'}
 
 		request.params.courseId = 'courseId'
 		request.params.moduleId = 'moduleId'
 		request.params.eventId = 'eventId'
 
-		const dateRange = new DateRange()
-		dateRange.date = '01-01-2020'
-		const dateRanges: DateRange[] = [dateRange]
-		response.locals.event = {dateRanges}
-
-		learnerRecord.inviteLearner = sinon.stub().throws(new Error('learnerEmail: The learner must be registered'))
-
-		inviteFactory.create = sinon.stub()
-
 		await eventController.inviteLearner()(request, response)
 
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`)
-		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('email_address_not_found_message')
-	})
-
-	it('Should fail to invite user and redirect to event overview with not already added', async () => {
-		const request = mockReq()
-		const response = mockRes()
-
-		request.session!.save = callback => {
-			callback(undefined)
-		}
-
-		request.body.learnerEmail = 'test@test.com'
-		request.user = {accessToken: 'test-token'}
-
-		request.params.courseId = 'courseId'
-		request.params.moduleId = 'moduleId'
-		request.params.eventId = 'eventId'
-
-		const dateRange = new DateRange()
-		dateRange.date = '01-01-2020'
-		const dateRanges: DateRange[] = [dateRange]
-		response.locals.event = {dateRanges}
-
-		learnerRecord.inviteLearner = sinon.stub().throws(new Error('learnerEmail: The learner has already booked'))
-
-		inviteFactory.create = sinon.stub()
-
-		await eventController.inviteLearner()(request, response)
-
-		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`)
-		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('email_address_already_invited_message')
+		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('validation_email_address_invalid')
 	})
 
 	it('should render attendee details page', async function() {
@@ -788,6 +805,7 @@ describe('EventController', function() {
 				},
 				dateRanges: [],
 				status: Event.Status.ACTIVE,
+				cancellationReason: Event.CancellationReason.UNAVAILABLE,
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
 			learningCatalogue.updateEvent = sinon.stub()
@@ -812,6 +830,7 @@ describe('EventController', function() {
 					},
 				],
 				status: Event.Status.ACTIVE,
+				cancellationReason: Event.CancellationReason.UNAVAILABLE,
 			})
 			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
 		})

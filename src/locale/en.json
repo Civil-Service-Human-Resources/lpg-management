@@ -226,8 +226,9 @@
 	"terms_and_conditions_add_title": "Add terms and conditions",
 	"terms_and_conditions_edit_title": "Edit terms and conditions",
     "email_address_found_message": " has been invited to this event",
-    "email_address_not_found_message": " is not registered. Check the email address and try adding them again",
-    "email_address_already_invited_message": " has already been invited to this event",
+    "could_not_invite_learner": " could not be invited due to an unexpected error",
+    "cancellation_reason_unavailable": "the event is no longer available",
+    "cancellation_reason_venue": "of short notice unavailability of the venue",
 	"validation.learningProvider.name.empty": "Name is required",
 	"validation.cancellationPolicy.name.empty": "Name is required",
 	"validation.cancellationPolicy.shortVersion.empty": "Short version is required",
@@ -245,5 +246,6 @@
 	"validation_module_event_dateRanges_past": "Start date must be in the future",
 	"validation_module_event_dateRanges_endBeforeStart": "End time must be after start time",
 	"validation_module_event_date_invalid": "Start date is not valid",
-	"validation_module_mediaId_empty": "File is required"
+	"validation_module_mediaId_empty": "File is required",
+    "validation_email_address_invalid": "Enter an email address in the correct format, like name@example.com"
 }
