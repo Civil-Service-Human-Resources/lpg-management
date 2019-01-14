@@ -54,9 +54,9 @@ export class DateTime {
 			}
 			if (duration.hours > 0 && duration.hours % 24 != 0) {
 				if (duration.hours % 24 == 1) {
-					formattedDuration = duration.hours % 24 + ' hour ' + formattedDuration
+					formattedDuration = (duration.hours % 24) + ' hour ' + formattedDuration
 				} else {
-					formattedDuration = duration.hours % 24 + ' hours ' + formattedDuration
+					formattedDuration = (duration.hours % 24) + ' hours ' + formattedDuration
 				}
 			}
 			if (duration.hours > 23) {

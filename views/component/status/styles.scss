@@ -19,4 +19,14 @@
         color: $white;
         background-color: $theme;
     }
+
+    &.Active {
+        color: $white;
+        background-color: $link;
+    }
+
+    &.Cancelled {
+        color: $white;
+        background-color: $theme;
+    }
 }

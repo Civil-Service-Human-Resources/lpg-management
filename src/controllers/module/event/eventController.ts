@@ -19,6 +19,7 @@ import {FormController} from '../../formController'
 import {Course} from '../../../learning-catalogue/model/course'
 import {Module} from '../../../learning-catalogue/model/module'
 import * as log4js from 'log4js'
+import * as EmailValidator from 'email-validator'
 
 export class EventController implements FormController {
 	logger = log4js.getLogger('controllers/homeController')
@@ -352,7 +353,7 @@ export class EventController implements FormController {
 	}
 
 	public setLocation() {
-		return async (req: Request, res: Response) => {
+		return async (req: Request, res: Response, next: NextFunction) => {
 			const data = {
 				venue: {
 					location: req.body.location,
@@ -374,7 +375,16 @@ export class EventController implements FormController {
 				event.venue = data.venue
 
 				const savedEvent = await this.learningCatalogue.createEvent(req.params.courseId, req.params.moduleId, event)
-				res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${savedEvent.id}`)
+
+				const eventUri = `${config.COURSE_CATALOGUE.url}/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${savedEvent.id}`
+				await this.learnerRecord
+					.createEvent(savedEvent.id, eventUri)
+					.then(() => {
+						res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${savedEvent.id}`)
+					})
+					.catch(error => {
+						next(error)
+					})
 			}
 		}
 	}
@@ -477,25 +487,31 @@ export class EventController implements FormController {
 
 			data.event = `${config.COURSE_CATALOGUE.url}/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${req.params.eventId}`
 
-			try {
-				await this.learnerRecord.inviteLearner(req.params.eventId, this.inviteFactory.create(data))
+			req.session!.sessionFlash = {
+				emailAddressFoundMessage: 'email_address_found_message',
+				emailAddress: emailAddress,
+			}
 
+			if (!EmailValidator.validate(emailAddress)) {
 				req.session!.sessionFlash = {
-					emailAddressFoundMessage: 'email_address_found_message',
+					errors: {fields: {emailAddress: 'validation_email_address_invalid'}},
+					emailAddressFoundMessage: 'validation_email_address_invalid',
 					emailAddress: emailAddress,
 				}
-			} catch (e) {
-				if (e.toString().indexOf('learnerEmail: The learner must be registered') >= 0) {
-					req.session!.sessionFlash = {
-						emailAddressFoundMessage: 'email_address_not_found_message',
-						emailAddress: emailAddress,
+			} else {
+				await this.learnerRecord.inviteLearner(req.params.eventId, this.inviteFactory.create(data)).catch(error => {
+					if ((error.response.status = 400)) {
+						req.session!.sessionFlash = {
+							emailAddressFoundMessage: error.response.data.errors[0],
+							emailAddress: emailAddress,
+						}
+					} else {
+						req.session!.sessionFlash = {
+							emailAddressFoundMessage: 'could_not_invite_learner',
+							emailAddress: emailAddress,
+						}
 					}
-				} else {
-					req.session!.sessionFlash = {
-						emailAddressFoundMessage: 'email_address_already_invited_message',
-						emailAddress: emailAddress,
-					}
-				}
+				})
 			}
 
 			return req.session!.save(() => {
