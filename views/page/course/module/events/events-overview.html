@@ -198,7 +198,7 @@
               {% endblock %}
               {% if event.status == "Cancelled" %}
                 {% block cancellationReason %}
-                    {{ cancellationReason("This event has been cancelled because " + i18n[event.cancellationReason]) }}
+                    {{ cancellationReason("This event has been cancelled because " + event.cancellationReason) }}
                 {% endblock %}
               {% else %}
                 {% block menu %}

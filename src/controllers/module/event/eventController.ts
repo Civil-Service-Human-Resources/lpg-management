@@ -461,7 +461,10 @@ export class EventController implements FormController {
 		return async (req: Request, res: Response) => {
 			const course: Course = await this.learningCatalogue.getCourse(req.params.courseId)
 			const module: Module = await this.learningCatalogue.getModule(req.params.courseId, req.params.moduleId)
-			res.render('page/course/module/events/cancel', {course: course, module: module})
+
+			const cancellationReasons = await this.learnerRecord.getCancellationReasons()
+
+			res.render('page/course/module/events/cancel', {course: course, module: module, cancellationReasons: cancellationReasons})
 		}
 	}
 

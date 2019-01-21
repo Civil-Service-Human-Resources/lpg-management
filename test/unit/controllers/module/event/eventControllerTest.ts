@@ -242,7 +242,7 @@ describe('EventController', function() {
 				venue: venue,
 				dateRanges: [],
 				status: Event.Status.ACTIVE,
-				cancellationReason: Event.CancellationReason.UNAVAILABLE,
+				cancellationReason: 'The event is no longer available',
 			})
 
 			learnerRecord.createEvent = sinon.stub().returns(Promise.resolve(event))
@@ -288,7 +288,7 @@ describe('EventController', function() {
 				venue: venue,
 				dateRanges: [],
 				status: Event.Status.ACTIVE,
-				cancellationReason: Event.CancellationReason.UNAVAILABLE,
+				cancellationReason: 'The event is no longer available',
 			})
 
 			const error: Error = new Error()
@@ -636,6 +636,8 @@ describe('EventController', function() {
 		learningCatalogue.getCourse = sinon.stub().returns(course)
 		learningCatalogue.getModule = sinon.stub().returns(module)
 
+		learnerRecord.getCancellationReasons = sinon.stub()
+
 		await eventController.cancelEvent()(request, response)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/events/cancel')
@@ -736,7 +738,6 @@ describe('EventController', function() {
 			}
 
 			// learningCatalogue.getEvent = sinon.stub().returns(event)
-
 			const request = mockReq(requestConfig)
 			const response = mockRes(responseConfig)
 
@@ -805,7 +806,7 @@ describe('EventController', function() {
 				},
 				dateRanges: [],
 				status: Event.Status.ACTIVE,
-				cancellationReason: Event.CancellationReason.UNAVAILABLE,
+				cancellationReason: 'The event is no longer available',
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
 			learningCatalogue.updateEvent = sinon.stub()
@@ -830,7 +831,7 @@ describe('EventController', function() {
 					},
 				],
 				status: Event.Status.ACTIVE,
-				cancellationReason: Event.CancellationReason.UNAVAILABLE,
+				cancellationReason: 'The event is no longer available',
 			})
 			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
 		})
