@@ -104,6 +104,7 @@
 			}
 		}
 	},
+	"blended": "Blended",
 	"organisations": {
 		"headers": {
 			"organisationName": "Organisation name"
@@ -168,6 +169,7 @@
 			"file": "a file",
 			"eLearning": "an e-learning",
 			"faceToFace": "a face to face",
+			"add": "Add",
 			"link_add": "Add a link",
 			"link_edit": "Edit a link",
 			"face_to_face_add": "Add a face-to-face module",
@@ -259,5 +261,8 @@
 	"validation_module_event_dateRanges_endBeforeStart": "End time must be after start time",
 	"validation_module_event_date_invalid": "Start date is not valid",
 	"validation_module_mediaId_empty": "File is required",
-	"validation_email_address_invalid": "Enter an email address in the correct format, like name@example.com"
+	"validation_email_address_invalid": "Enter an email address in the correct format, like name@example.com",
+    "validation_course_learning_provider_empty": "Learning provider is required",
+    "validation_course_cancellation_policy_empty": "Cancellation policy is required",
+    "validation_course_terms_and_conditions_empty": "Terms and conditions are required"
 }

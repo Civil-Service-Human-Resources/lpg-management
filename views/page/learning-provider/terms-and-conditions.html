@@ -1,8 +1,9 @@
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
-{% from "../../component/textarea/macro.njk" import textarea %}
-{% from "../../component/textareaError/macro.njk" import textareaError %}
-{% from "../../component/menu/macro.njk" import menu %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "../../component/textarea/macro.njk" import textarea with context %}
+{% from "../../component/textareaError/macro.njk" import textareaError with context %}
+{% from "../../component/menu/macro.njk" import menu with context %}
 
 {% extends "../../component/Page.njk" %}
 

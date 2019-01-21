@@ -12,7 +12,8 @@
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-body form-header govuk-!-font-size-24">Add a new event</h1>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Learning providers</h2>
-            <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/learning-provider/" method="post">
+            <form class="govuk-form" action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/learning-provider/{{event.id}}/policies" method="post">
+                <input name="learningProviderId" type="hidden" value="{{provider.id}}">
                 <fieldset class="govuk-fieldset">
                     <legend>
                         <h3 class="govuk-heading-s">Select a cancellation policy</h3>
@@ -23,15 +24,15 @@
                         selected: true,
                         disabled: true
                     }] %}
-                    {% for policy in provider.cancellationPolicy %}
+                    {% for policy in provider.cancellationPolicies %}
                        {% set policy = policies.push({
-                            text: provider.name,
-                            value: provider.name
+                            text: policy.name,
+                            value: policy.id
                        }) %}
                     {% endfor %}
                     {{ govukSelect({
                         id: "cancellation-policy",
-                        name: "cancellation-policy",
+                        name: "cancellationPolicy",
                         classes: "provider-input",
                         items: policies
                     }) }}
@@ -46,10 +47,11 @@
                         selected: true,
                         disabled: true
                     }] %}
-                    {% for terms in provider.termsandconditions %}
+                    {% for terms in provider.termsAndConditions %}
                        {% set prov = options.push({
+                            name: "termsAndConditions",
                             text: terms.name,
-                            value: terms.name
+                            value: terms.id
                        }) %}
                     {% endfor %}
                     {{ govukSelect({

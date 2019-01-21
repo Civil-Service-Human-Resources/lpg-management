@@ -227,6 +227,7 @@ export class ApplicationContext {
 		this.eventController = new EventController(
 			this.learningCatalogue,
 			this.learnerRecord,
+			this.courseValidator,
 			this.eventValidator,
 			this.bookingValidator,
 			this.eventFactory,

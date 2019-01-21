@@ -4,7 +4,7 @@
 {% block pageTitle %}{{ i18n['event_assign_learning_provider'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id %}
+{% set backButton = "/content-management/courses/" + courseId + "/modules/" + moduleId + "/events-overview/" + event.id %}
 {% block content %}
     {% set errors = sessionFlash.errors %}
     {{ errorSummary(errors.fields) }}
@@ -13,7 +13,7 @@
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-body form-header govuk-!-font-size-24">Add a new event</h1>
             <h2 class="govuk-heading-m govuk-!-font-size-36">Learning providers</h2>
-            <form class="govuk-form" action="/content-management/courses/{{course.id}}/modules/{{module.id}}/learning-provider/{{event.id}}/policies" method="post">          
+            <form class="govuk-form" action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/learning-provider/{{event.id}}" method="post">
                 <fieldset class="govuk-fieldset">
                     <legend>
                         <h3 class="govuk-heading-s">Select a learning provider</h3>
@@ -27,12 +27,12 @@
                     {% for provider in providers %}
                        {% set prov = options.push({
                             text: provider.name,
-                            value: provider.name
+                            value: provider.id
                        }) %}
                     {% endfor %}
                     {{ govukSelect({
-                        id: "learning-providers",
-                        name: "learning-providers",
+                        id: "learningProvider",
+                        name: "learningProvider",
                         classes: "provider-input",
                         items: options
                     }) }}
@@ -43,7 +43,7 @@
                     }) }}
                 </div>
             </form>
-            <a href="/content-management/courses/{{course.id}}/overview">Cancel</a>
+            <a href="/content-management/courses/{{courseId}}/overview">Cancel</a>
         </div>
         <div class="govuk-column-width-one-third">
         </div>

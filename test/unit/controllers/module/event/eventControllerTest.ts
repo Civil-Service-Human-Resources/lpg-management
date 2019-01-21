@@ -22,6 +22,8 @@ import {Booking} from '../../../../../src/learner-record/model/booking'
 import {DateTime} from '../../../../../src/lib/dateTime'
 import {Course} from '../../../../../src/learning-catalogue/model/course'
 import {Module} from '../../../../../src/learning-catalogue/model/module'
+import {DefaultPageResults} from '../../../../../src/learning-catalogue/model/defaultPageResults'
+import {LearningProvider} from '../../../../../src/learning-catalogue/model/learningProvider'
 
 chai.use(sinonChai)
 
@@ -29,6 +31,7 @@ describe('EventController', function() {
 	let eventController: EventController
 	let learningCatalogue: LearningCatalogue
 	let learnerRecord: LearnerRecord
+	let courseValidator: Validator<Course>
 	let validator: Validator<Booking>
 	let eventValidator: Validator<Event>
 	let eventFactory: EventFactory
@@ -41,6 +44,7 @@ describe('EventController', function() {
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		learnerRecord = <LearnerRecord>{}
+		courseValidator = <Validator<Course>>{}
 		eventValidator = <Validator<Event>>{}
 		validator = <Validator<Booking>>{}
 		eventFactory = <EventFactory>{}
@@ -53,6 +57,7 @@ describe('EventController', function() {
 		eventController = new EventController(
 			learningCatalogue,
 			learnerRecord,
+			courseValidator,
 			eventValidator,
 			validator,
 			eventFactory,
@@ -1169,6 +1174,165 @@ describe('EventController', function() {
 				endHours: request.body.endHours,
 				endMinutes: request.body.endMinutes,
 				moduleId: moduleId,
+			})
+		})
+	})
+
+	describe('Set learning provider', () => {
+		it('should render assign learning provider page', async () => {
+			const learningProviders = [new LearningProvider()]
+
+			const pageResults: DefaultPageResults<LearningProvider> = new DefaultPageResults()
+			pageResults.results = learningProviders
+
+			const req = mockReq()
+			const res = mockRes()
+
+			learningCatalogue.listLearningProviders = sinon.stub().returns(pageResults)
+
+			await eventController.getLearningProvider()(req, res)
+
+			expect(learningCatalogue.listLearningProviders).to.have.been.calledOnce
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/learning-provider/assign-learning-provider', {providers: learningProviders})
+		})
+
+		it('Should get learning provider and redirect to policies page', async () => {
+			const courseId = 'courseId'
+			const moduleId = 'moduleId'
+			const eventId = 'eventId'
+
+			const learningProviderId = 'learningProviderId'
+			const learningProvider = new LearningProvider()
+
+			const req = mockReq()
+			const res = mockRes()
+
+			req.session!.save = callback => {
+				callback(undefined)
+			}
+
+			req.params.courseId = courseId
+			req.params.moduleId = moduleId
+			req.params.eventId = eventId
+
+			req.body.learningProvider = learningProviderId
+
+			learningCatalogue.getLearningProvider = sinon.stub().returns(learningProvider)
+
+			await eventController.setLearningProvider()(req, res)
+
+			expect(learningCatalogue.getLearningProvider).to.have.been.calledOnceWith(learningProviderId)
+			expect(res.redirect).have.been.calledOnceWith('/content-management/courses/courseId/modules/moduleId/learning-provider/eventId/policies')
+		})
+
+		it('Should check for errors and redirect to assign learning provider page', async () => {
+			const learningProviders = [new LearningProvider()]
+
+			const pageResults: DefaultPageResults<LearningProvider> = new DefaultPageResults()
+			pageResults.results = learningProviders
+
+			const errors = {fields: {learningProvider: ['validation_course_learning_provider_empty']}, size: 1}
+
+			const req = mockReq()
+			const res = mockRes()
+
+			learningCatalogue.listLearningProviders = sinon.stub().returns(pageResults)
+
+			await eventController.setLearningProvider()(req, res)
+
+			expect(learningCatalogue.listLearningProviders).to.have.been.calledOnce
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/learning-provider/assign-learning-provider', {providers: learningProviders, errors: errors})
+		})
+
+		it('Should render assign policies page', async () => {
+			const learningProvider = new LearningProvider()
+
+			const req = mockReq()
+			const res = mockRes()
+
+			res.locals.sessionFlash = {learningProvider: learningProvider}
+
+			await eventController.getPolicies()(req, res)
+
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/learning-provider/assign-policies', {provider: learningProvider})
+		})
+
+		it('Should get policies and redirect to event overview page', async () => {
+			const courseId = 'courseId'
+			const moduleId = 'moduleId'
+			const eventId = 'eventId'
+
+			const learningProviderId = 'learningProvider(d'
+			const cancellationPolicyId = 'cancellationPolicyId'
+			const termsAndConditionsId = 'termsAndConditionsId'
+
+			const learningProvider = new LearningProvider()
+			const course = new Course()
+
+			const errors = {fields: [], size: 0}
+
+			const req = mockReq()
+			const res = mockRes()
+
+			req.session!.save = callback => {
+				callback(undefined)
+			}
+
+			req.params.courseId = courseId
+			req.params.moduleId = moduleId
+			req.params.eventId = eventId
+
+			req.body.learningProviderId = learningProviderId
+			req.body.cancellationPolicy = cancellationPolicyId
+			req.body.termsAndConditions = termsAndConditionsId
+
+			learningCatalogue.getLearningProvider = sinon.stub().returns(learningProvider)
+			learningCatalogue.getCourse = sinon.stub().returns(course)
+			learningCatalogue.updateCourse = sinon.stub()
+			courseValidator.check = sinon.stub().returns(errors)
+
+			await eventController.setPolicies()(req, res)
+
+			expect(learningCatalogue.getLearningProvider).to.have.been.calledOnceWith(learningProviderId)
+			expect(learningCatalogue.getCourse).to.have.been.calledOnceWith(courseId)
+			expect(courseValidator.check).to.have.been.calledOnceWith(course, ['termsAndConditionsId', 'cancellationPolicyId'])
+			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith(course)
+			expect(res.redirect).to.have.been.calledOnceWith('/content-management/courses/courseId/modules/moduleId/events-overview/eventId')
+		})
+
+		it('Should check for errors and render assign policies page', async () => {
+			const courseId = 'courseId'
+
+			const learningProviderId = 'learningProvider(d'
+
+			const learningProvider = new LearningProvider()
+			const course = new Course()
+
+			const errors = {fields: ['validation_policy_missing', 'validation_tAndC_missing'], size: 2}
+
+			const req = mockReq()
+			const res = mockRes()
+
+			req.session!.save = callback => {
+				callback(undefined)
+			}
+
+			req.params.courseId = courseId
+
+			req.body.learningProviderId = learningProviderId
+
+			learningCatalogue.getLearningProvider = sinon.stub().returns(learningProvider)
+			learningCatalogue.getCourse = sinon.stub().returns(course)
+			courseValidator.check = sinon.stub().returns(errors)
+
+			await eventController.setPolicies()(req, res)
+
+			expect(learningCatalogue.getLearningProvider).to.have.been.calledOnceWith(learningProviderId)
+			expect(learningCatalogue.getCourse).to.have.been.calledOnceWith(courseId)
+			expect(courseValidator.check).to.have.been.calledOnceWith(course, ['termsAndConditionsId', 'cancellationPolicyId'])
+			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/learning-provider/assign-policies', {
+				provider: learningProvider,
+				errors: errors,
 			})
 		})
 	})

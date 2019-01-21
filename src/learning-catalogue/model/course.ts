@@ -40,7 +40,24 @@ export class Course {
 	preparation: string
 	modules: Module[]
 	audiences: Audience[]
+
+	@IsNotEmpty({
+		groups: ['learningProvider'],
+		message: 'validation_course_learning_provider_empty',
+	})
 	learningProvider: LearningProvider
+
+	@IsNotEmpty({
+		groups: ['cancellationPolicyId'],
+		message: 'validation_course_cancellation_policy_empty',
+	})
+	cancellationPolicyId: string
+
+	@IsNotEmpty({
+		groups: ['termsAndConditionsId'],
+		message: 'validation_course_terms_and_conditions_empty',
+	})
+	termsAndConditionsId: string
 
 	@IsIn(['Draft', 'Published', 'Archived'], {
 		groups: ['all', 'status'],
