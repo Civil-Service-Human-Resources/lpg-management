@@ -27,7 +27,13 @@ export class CourseFactory {
 		course.modules = (data.modules || []).map(this._moduleFactory.create)
 		course.audiences = (data.audiences || []).map(this.audienceFactory.create)
 		course.status = 'status' in data ? data.status : course.status
-		course.learningProvider = this._learningProviderFactory.create(data.learningProvider || {})
+
+		if (data.learningProvider) {
+			course.learningProvider = this._learningProviderFactory.create(data.learningProvider)
+		}
+
+		course.termsAndConditionsId = data.termsAndConditionsId
+		course.cancellationPolicyId = data.cancellationPolicyId
 		return course
 	}
 

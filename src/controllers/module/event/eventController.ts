@@ -620,12 +620,12 @@ export class EventController implements FormController {
 			}
 
 			const learningProvider = await this.learningCatalogue.getLearningProvider(data.learningProviderId)
-			const course = await this.learningCatalogue.getCourse(req.params.courseId)
+			const course: Course = await this.learningCatalogue.getCourse(req.params.courseId)
 			course.learningProvider = learningProvider
 			course.cancellationPolicyId = data.cancellationPolicy
 			course.termsAndConditionsId = data.termsAndConditions
 
-			let errors = await this.courseValidator.check(course, ['termsAndConditionsId', 'cancellationPolicyId'])
+			const errors = await this.courseValidator.check(course, ['termsAndConditionsId', 'cancellationPolicyId'])
 
 			if (errors.size) {
 				return res.render('page/course/module/events/learning-provider/assign-policies', {
