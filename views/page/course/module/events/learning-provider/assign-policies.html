@@ -4,7 +4,7 @@
 {% block pageTitle %}{{ i18n['event_assign_policies'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id %}
+{% set backButton = "/content-management/courses/" + courseId + "/modules/" + moduleId + "/learning-provider/" + event.id %}
 {% block content %}
     {% set errors = sessionFlash.errors %}
     {{ errorSummary(errors.fields) }}
@@ -67,7 +67,7 @@
                     }) }}
                 </div>
             </form>
-            <a href="/content-management/courses/{{course.id}}/overview">Cancel</a>
+            <a href="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events-overview/{{event.id}}">Cancel</a>
         </div>
         <div class="govuk-column-width-one-third">
         </div>

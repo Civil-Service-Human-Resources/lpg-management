@@ -60,13 +60,13 @@
             {% set eventDate = dateList.push('<p class="govuk-body no-margin">'+(dateRange.date | dateWithMonthAsText)+'</p>') %}
             {% endfor %}
             {% set list = dateList|join %}
-            {% if course.learningProvider.id %}
-                {% set provider = ('<p class="govuk-body no-margin">'+course.learningProvider.id+'</p>') %}
+            {% if course.learningProvider.name %}
+                {% set provider = ('<p class="govuk-body no-margin">'+course.learningProvider.name+'</p>') %}
             {% else %}
-                {% set provider = '<a href="/add-learning-provider">Add</a>'%}
+                {% set provider = ('<a href="/content-management/courses/'+ course.id +'/modules/'+ module.id +'/learning-provider/'+ event.id +'">Add</a>') %}
             {% endif %}
 
-              {{ govukTable({
+            {{ govukTable({
                 firstCellIsHeader: true,
                 classes: "course-table event-table",
                 rows: [
