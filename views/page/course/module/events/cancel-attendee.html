@@ -40,56 +40,12 @@
                 </ul>
             </div>
             <form action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/{{event.id}}/attendee/{{booking.id}}/cancel" method="post">
-                {% if errors.fields.cancellationReason %}
-                    {{ govukSelect({
-                        id: "cancellationReason",
-                        name: "cancellationReason",
-                        errorMessage: {
-                            text: "Please select a reason"
-                        },
-                        label: {
-                            text: "Cancellation reason"
-                        },
-                        items: [
-                            {
-                                value: "",
-                                text: "Choose a cancellation reason",
-                                selected: true
-                            },
-                            {
-                                value: "reason1",
-                                text: "The booking has not been paid"
-                            },
-                            {
-                                value: "reason2",
-                                text: "The learner has requested that the booking be cancelled"
-                            }
-                        ]
-                    }) }}
-                {% else %}
-                    {{ govukSelect({
-                        id: "cancellationReason",
-                        name: "cancellationReason",
-                        label: {
-                            text: "Cancellation reason"
-                        },
-                        items: [
-                        {
-                            value: "",
-                            text: "Choose a cancellation reason",
-                            selected: true
-                        },
-                        {
-                            value: "reason1",
-                            text: "The booking has not been paid"
-                        },
-                        {
-                            value: "reason2",
-                            text: "The learner has requested that the booking be cancelled"
-                        }
-                        ]
-                    }) }}
-                {% endif %}
+                <select class="govuk-select" id="cancellationReason" name="cancellationReason">
+                    <option value="">Choose a cancellation reason</option>
+                    {% for cancellationReason, value in  cancellationReasons %}
+                        <option value="{{cancellationReason}}">{{value}}</option>
+                    {% endfor %}
+                </select>
                 <div class="button-container">
                     {{ govukButton({
                         text: "Cancel Attendee",

@@ -12,7 +12,7 @@
 
 {% set banner = true %}
 {% if course %}
-    {% set backButton = "/content-management" %}
+    {% set backButton = "/content-management/courses/"+course.id+"/preview" %}
 {% else %}
     {% set backButton = "/content-management/courses/title/" %}
 {% endif %}
