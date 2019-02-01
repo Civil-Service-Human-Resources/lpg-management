@@ -643,7 +643,7 @@ export class EventController implements FormController {
 	}
 
 	public getCancelBooking() {
-		return async (req: Request, res: Response) => {
+		return async (req: Request, res: Response, next: NextFunction) => {
 			const event = res.locals.event
 			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
 
@@ -651,10 +651,16 @@ export class EventController implements FormController {
 			const bookingId = req.params.bookingId
 			const booking = this.findBooking(bookings, bookingId)
 
-			res.render('page/course/module/events/cancel-attendee', {
-				booking: booking,
-				eventDateWithMonthAsText: eventDateWithMonthAsText,
-			})
+			await this.learnerRecord
+				.getBookingCancellationReasons()
+				.then(cancellationReasons => {
+					return res.render('page/course/module/events/cancel-attendee', {
+						booking: booking,
+						eventDateWithMonthAsText: eventDateWithMonthAsText,
+						cancellationReasons: cancellationReasons,
+					})
+				})
+				.catch(error => next(error))
 		}
 	}
 

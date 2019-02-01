@@ -55,10 +55,7 @@ describe('CourseValidator tests', () => {
 			const errors = await validator.check(params, ['shortDescription'])
 
 			expect(errors.size).to.equal(2)
-			expect(errors.fields.shortDescription).to.eql([
-				'course.validation.shortDescription.maxLength',
-				'course.validation.shortDescription.empty',
-			])
+			expect(errors.fields.shortDescription).to.eql(['course.validation.shortDescription.maxLength', 'course.validation.shortDescription.empty'])
 		})
 
 		it('should fail validation if shortDescription is greater than 160 characters', async () => {
@@ -100,10 +97,7 @@ describe('CourseValidator tests', () => {
 			const errors = await validator.check(params, ['description'])
 
 			expect(errors.size).to.equal(2)
-			expect(errors.fields.description).to.eql([
-				'course.validation.description.maxLength',
-				'course.validation.description.empty',
-			])
+			expect(errors.fields.description).to.eql(['course.validation.description.maxLength', 'course.validation.description.empty'])
 		})
 
 		it('should fail validation if description is empy string', async () => {
@@ -182,14 +176,8 @@ describe('CourseValidator tests', () => {
 			const errors = await validator.check(params)
 
 			expect(errors.size).to.equal(6)
-			expect(errors.fields.shortDescription).to.eql([
-				'course.validation.shortDescription.maxLength',
-				'course.validation.shortDescription.empty',
-			])
-			expect(errors.fields.description).to.eql([
-				'course.validation.description.maxLength',
-				'course.validation.description.empty',
-			])
+			expect(errors.fields.shortDescription).to.eql(['course.validation.shortDescription.maxLength', 'course.validation.shortDescription.empty'])
+			expect(errors.fields.description).to.eql(['course.validation.description.maxLength', 'course.validation.description.empty'])
 			expect(errors.fields.title).to.eql(['course.validation.title.empty'])
 		})
 
@@ -310,14 +298,8 @@ describe('CourseValidator tests', () => {
 			const errors = await validator.check(params, ['title', 'shortDescription', 'description'])
 
 			expect(errors.size).to.equal(5)
-			expect(errors.fields.shortDescription).to.eql([
-				'course.validation.shortDescription.maxLength',
-				'course.validation.shortDescription.empty',
-			])
-			expect(errors.fields.description).to.eql([
-				'course.validation.description.maxLength',
-				'course.validation.description.empty',
-			])
+			expect(errors.fields.shortDescription).to.eql(['course.validation.shortDescription.maxLength', 'course.validation.shortDescription.empty'])
+			expect(errors.fields.description).to.eql(['course.validation.description.maxLength', 'course.validation.description.empty'])
 			expect(errors.fields.title).to.eql(['course.validation.title.empty'])
 		})
 

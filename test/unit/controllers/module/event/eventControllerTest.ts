@@ -686,20 +686,23 @@ describe('EventController', function() {
 
 		const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
 
-		const getCancelAttendee: (request: Request, response: Response) => void = eventController.getCancelBooking()
+		const getCancelAttendee: (request: Request, response: Response, next: NextFunction) => void = eventController.getCancelBooking()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
+		const next: NextFunction = sinon.stub()
 
 		response.locals.event = event
 		request.params.bookingId = 99
 
 		learnerRecord.getEventBookings = sinon.stub().returns([booking])
+		learnerRecord.getBookingCancellationReasons = sinon.stub().returns(Promise.resolve(undefined))
 
-		await getCancelAttendee(request, response)
+		await getCancelAttendee(request, response, next)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/events/cancel-attendee', {
 			booking: booking,
+			cancellationReasons: undefined,
 			eventDateWithMonthAsText: eventDateWithMonthAsText,
 		})
 	})

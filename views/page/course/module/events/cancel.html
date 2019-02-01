@@ -25,12 +25,12 @@
         <p class="govuk-body">A cancellation cannot be undone.</p>
         <form action="{{'/content-management/courses/' + courseId + '/modules/' + moduleId + '/events/' + event.id + '/cancel'}}" method="post">
             <input type="hidden" value="{{event.id}}" name="id">
-                <select class="govuk-select" id="cancellationReason" name="cancellationReason">
-                    <option value="">Choose a cancellation reasons</option>
-                    {% for cancellationReason, value in  cancellationReasons %}
-                        <option value="{{cancellationReason}}">{{value}}</option>
-                    {% endfor %}
-                </select>
+            <select class="govuk-select" id="cancellationReason" name="cancellationReason">
+                <option value="">Choose a cancellation reason</option>
+                {% for cancellationReason, value in  cancellationReasons %}
+                    <option value="{{cancellationReason}}">{{value}}</option>
+                {% endfor %}
+            </select>
             <div class="button-container">
                 {{ govukButton({
                     text: "Cancel event",

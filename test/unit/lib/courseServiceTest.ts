@@ -75,9 +75,7 @@ describe('CourseService tests', () => {
 			.withArgs(courseId)
 			.returns(course)
 
-		return expect(courseService.sortModules(courseId, ['4', '2', '1'])).to.be.rejectedWith(
-			'Module (id: 4) not found in course (id: course-id)'
-		)
+		return expect(courseService.sortModules(courseId, ['4', '2', '1'])).to.be.rejectedWith('Module (id: 4) not found in course (id: course-id)')
 	})
 
 	it('should throw error if length of modules and module ids does not match', async () => {
@@ -104,9 +102,7 @@ describe('CourseService tests', () => {
 			.withArgs(courseId)
 			.returns(course)
 
-		return expect(courseService.sortModules(courseId, ['3', '2'])).to.be.rejectedWith(
-			'Course modules length(3) does not match module ids length(2)'
-		)
+		return expect(courseService.sortModules(courseId, ['3', '2'])).to.be.rejectedWith('Course modules length(3) does not match module ids length(2)')
 	})
 
 	describe('helper function for displaying audiences on front-end', () => {
@@ -148,11 +144,7 @@ describe('CourseService tests', () => {
 
 		describe('#getAllEventsOnCourse', () => {
 			it('should return an array of events on all course modules', () => {
-				expect(courseService.getAllEventsOnCourse(course)).to.be.deep.equal([
-					{id: event1Id},
-					{id: event2Id},
-					{id: event3Id},
-				])
+				expect(courseService.getAllEventsOnCourse(course)).to.be.deep.equal([{id: event1Id}, {id: event2Id}, {id: event3Id}])
 			})
 		})
 

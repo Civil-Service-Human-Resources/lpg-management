@@ -23,4 +23,9 @@
             {% endif %}
         </form>
     </div>
+{% elif course.status === "Archived" %}
+    <div class="change-status">
+        <p class="govuk-body">This course has been archived and is no longer available.</p>
+        <p class="govuk-body">It may appear in a learner's record of completed learning, but cannot be started or resumed.</p>
+    </div>
 {% endif %}

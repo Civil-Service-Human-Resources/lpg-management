@@ -105,9 +105,9 @@ ul {
 		background-color: $panel;
 	}
 
-    &.error {
-      background-color: $error-message;
-    }
+	&.error {
+		background-color: $error-message;
+	}
 
 	.govuk-heading-s {
 		color: $white;
@@ -208,7 +208,6 @@ ul {
 .button-red {
 	background-color: $theme;
 	color: $white;
-	padding: 5px 10px;
 	border: none;
 	text-decoration: none;
 
@@ -223,6 +222,12 @@ ul {
 
 .hidden {
 	display: none;
+}
+
+.zero-results {
+	list-style-type: disc;
+	list-style-position: inside;
+	font-size: $font-normal;
 }
 
 @media screen and (min-width: $tablet-small) {

@@ -8,7 +8,7 @@
 {% block pageTitle %}{{ i18n['course_preview_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/" %}
+{% set backButton = "/content-management/courses/"+course.id+"/overview" %}
 
 {% block content %}
     <div class="govuk-grid-row">

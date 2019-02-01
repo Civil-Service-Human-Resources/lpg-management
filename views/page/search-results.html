@@ -32,9 +32,16 @@
                 {% block list %}
                     {{ list(listTitle, pageResults) }}
                 {% endblock %}
+            {% else %}
+            <p class="govuk-body"><strong>0</strong> results found</p>
+            <h2 class="govuk-heading-m custom"><strong>Please try:</strong></h2>
+            <ul class="zero-results">
+                <li>searching again using different words</li>
+                <li>searching again using fewer words</li>
+            </ul>
             {% endif %}
         {% else %}
-            <p class="govuk-body">0 results found</p>
+           
         {% endif %}
         {% set paginationBaseUrl = '/content-management/search' %}
         {% set query = '&q=' + query %}

@@ -1,32 +1,31 @@
 .status {
-    font-weight: bold;
-    padding: 2px 4px;
-    border: 1px solid $border;
-    min-width: 50px;
-    text-align: center;
+	font-weight: bold;
+	padding: 2px 4px;
+	min-width: 50px;
+	text-align: center;
 
-    &.Draft {
-        color: $font-color;
-        background-color: $outline;
-    }
+	&.Draft {
+		color: $font-color;
+		background-color: $outline;
+	}
 
-    &.Published {
-        color: $white;
-        background-color: $link;
-    }
+	&.Published {
+		color: $white;
+		background-color: $link;
+	}
 
-    &.Archived {
-        color: $white;
-        background-color: $theme;
-    }
+	&.Archived {
+		color: $white;
+		background-color: $theme;
+	}
 
-    &.Active {
-        color: $white;
-        background-color: $link;
-    }
+	&.Active {
+		color: $white;
+		background-color: $link;
+	}
 
-    &.Cancelled {
-        color: $white;
-        background-color: $theme;
-    }
+	&.Cancelled {
+		color: $white;
+		background-color: $theme;
+	}
 }

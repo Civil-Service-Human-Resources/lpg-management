@@ -11,7 +11,11 @@
 {% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/title/" %}
+{% if course %}
+    {% set backButton = "/content-management/courses/"+course.id+"/preview" %}
+{% else %}
+    {% set backButton = "/content-management/courses/title/" %}
+{% endif %}
 
 {% block content %}
     {% set errors = sessionFlash.errors %}
