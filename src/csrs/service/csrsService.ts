@@ -25,7 +25,18 @@ export class CsrsService {
 		let areasOfWork = this.cacheService.cache.get(CsrsService.AREAS_OF_WORK)
 
 		if (!areasOfWork) {
-			areasOfWork = await this.restService.get('/professions')
+			areasOfWork = await this.restService.get('/professions/tree')
+			this.cacheService.cache.set(CsrsService.AREAS_OF_WORK, areasOfWork)
+		}
+
+		return areasOfWork
+	}
+
+	async getAreasOfWorkForTypeAhead() {
+		let areasOfWork = this.cacheService.cache.get(CsrsService.AREAS_OF_WORK)
+
+		if (!areasOfWork) {
+			areasOfWork = await this.restService.get('/professions/flat')
 			this.cacheService.cache.set(CsrsService.AREAS_OF_WORK, areasOfWork)
 		}
 
