@@ -1,7 +1,7 @@
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
-import {beforeEach} from 'mocha'
+import {beforeEach, describe} from 'mocha'
 import {EventController} from '../../../../../src/controllers/module/event/eventController'
 import {LearningCatalogue} from '../../../../../src/learning-catalogue'
 import {Validator} from '../../../../../src/learning-catalogue/validator/validator'
@@ -37,6 +37,8 @@ describe('EventController', function() {
 	let dateRangeValidator: Validator<DateRange>
 	let dateRangeCommandFactory: DateRangeCommandFactory
 	let identityService: IdentityService
+	let next: NextFunction
+	let error: Error
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
@@ -62,6 +64,9 @@ describe('EventController', function() {
 			dateRangeCommandFactory,
 			identityService
 		)
+
+		next = sinon.stub()
+		error = new Error()
 	})
 
 	describe('date time paths', function() {
@@ -224,7 +229,13 @@ describe('EventController', function() {
 				minCapacity: 5,
 			}
 
-			const event = new Event()
+			const event = {
+				id: 'event-id',
+				venue: venue,
+				dateRanges: [],
+				status: Event.Status.ACTIVE,
+				cancellationReason: 'The event is no longer available',
+			}
 
 			req.body = {
 				location: venue.location,
@@ -237,13 +248,7 @@ describe('EventController', function() {
 			event.venue = venue
 
 			eventValidator.check = sinon.stub().returns({fields: [], size: 0})
-			learningCatalogue.createEvent = sinon.stub().returns(<Event>{
-				id: 'event-id',
-				venue: venue,
-				dateRanges: [],
-				status: Event.Status.ACTIVE,
-				cancellationReason: 'The event is no longer available',
-			})
+			learningCatalogue.createEvent = sinon.stub().returns(Promise.resolve(event))
 
 			learnerRecord.createEvent = sinon.stub().returns(Promise.resolve(event))
 
@@ -270,8 +275,13 @@ describe('EventController', function() {
 				minCapacity: 5,
 			}
 
-			const event = new Event()
-
+			const event = {
+				id: 'event-id',
+				venue: venue,
+				dateRanges: [],
+				status: Event.Status.ACTIVE,
+				cancellationReason: 'The event is no longer available',
+			}
 			req.body = {
 				location: venue.location,
 				address: venue.address,
@@ -283,13 +293,7 @@ describe('EventController', function() {
 			event.venue = venue
 
 			eventValidator.check = sinon.stub().returns({fields: [], size: 0})
-			learningCatalogue.createEvent = sinon.stub().returns(<Event>{
-				id: 'event-id',
-				venue: venue,
-				dateRanges: [],
-				status: Event.Status.ACTIVE,
-				cancellationReason: 'The event is no longer available',
-			})
+			learningCatalogue.createEvent = sinon.stub().returns(Promise.resolve(event))
 
 			const error: Error = new Error()
 			learnerRecord.createEvent = sinon.stub().returns(Promise.reject(error))
@@ -346,9 +350,9 @@ describe('EventController', function() {
 
 			eventValidator.check = sinon.stub().returns({fields: [], size: 0})
 			learningCatalogue.getEvent = sinon.stub().returns(event)
-			learningCatalogue.updateEvent = sinon.stub()
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve())
 
-			await eventController.updateLocation()(req, res)
+			await eventController.updateLocation()(req, res, next)
 
 			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, req.params.eventId)
 			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(req.params.courseId, req.params.moduleId, req.params.eventId, event)
@@ -406,7 +410,7 @@ describe('EventController', function() {
 
 			learningCatalogue.createEvent = sinon.stub().returns(event)
 
-			await eventController.updateLocation()(req, res)
+			await eventController.updateLocation()(req, res, next)
 
 			expect(learningCatalogue.createEvent).to.not.have.been.called
 			expect(res.render).to.have.been.calledOnceWith('page/course/module/events/event-location', {
@@ -740,13 +744,11 @@ describe('EventController', function() {
 				},
 			}
 
-			// learningCatalogue.getEvent = sinon.stub().returns(event)
 			const request = mockReq(requestConfig)
 			const response = mockRes(responseConfig)
 
 			await eventController.editDateRange()(request, response)
 
-			// expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit', {
 				day: 31,
 				month: 3,
@@ -812,9 +814,9 @@ describe('EventController', function() {
 				cancellationReason: 'The event is no longer available',
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
-			learningCatalogue.updateEvent = sinon.stub()
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve(event))
 
-			await eventController.updateDateRange()(request, response)
+			await eventController.updateDateRange()(request, response, next)
 
 			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
 			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId, {
@@ -837,6 +839,86 @@ describe('EventController', function() {
 				cancellationReason: 'The event is no longer available',
 			})
 			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+		})
+
+		it('should pass to next if update throws errror', async () => {
+			const courseId = 'course-id'
+			const moduleId = 'module-id'
+			const eventId = 'event-id'
+
+			const requestConfig = {
+				params: {
+					courseId: courseId,
+					moduleId: moduleId,
+					eventId: eventId,
+					dateRangeIndex: 0,
+				},
+				body: {
+					day: '01',
+					month: '12',
+					year: '2019',
+					startTime: ['11', '30'],
+					endTime: ['12', '30'],
+				},
+			}
+
+			const request = mockReq(requestConfig)
+			const response = mockRes()
+
+			const errors: any = {}
+
+			const dateRange = <DateRange>{
+				date: '2019-12-01',
+				startTime: '11:30',
+				endTime: '12:30',
+			}
+
+			let dateRangeCommand = <DateRangeCommand>{}
+			dateRangeCommandValidator.check = sinon.stub().returns(errors)
+			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
+			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
+
+			dateRangeValidator.check = sinon.stub().returns(errors)
+
+			const event = <Event>{
+				id: 'event-id',
+				venue: {
+					address: 'London',
+					location: 'London',
+					minCapacity: 5,
+					capacity: 5,
+					availability: 5,
+				},
+				dateRanges: [],
+				status: Event.Status.ACTIVE,
+				cancellationReason: 'The event is no longer available',
+			}
+			learningCatalogue.getEvent = sinon.stub().returns(event)
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.reject(error))
+
+			await eventController.updateDateRange()(request, response, next)
+
+			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
+			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId, {
+				id: 'event-id',
+				venue: {
+					address: 'London',
+					location: 'London',
+					minCapacity: 5,
+					capacity: 5,
+					availability: 5,
+				},
+				dateRanges: [
+					{
+						date: '2019-12-01',
+						startTime: '11:30',
+						endTime: '12:30',
+					},
+				],
+				status: Event.Status.ACTIVE,
+				cancellationReason: 'The event is no longer available',
+			})
+			expect(next).to.have.been.calledOnceWith(error)
 		})
 
 		it('should display errors if form validation fails on update', async () => {
@@ -876,9 +958,9 @@ describe('EventController', function() {
 			dateRangeCommandValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.getEvent = sinon.stub()
-			learningCatalogue.updateEvent = sinon.stub()
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve())
 
-			await eventController.updateDateRange()(request, response)
+			await eventController.updateDateRange()(request, response, next)
 
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called
@@ -938,9 +1020,9 @@ describe('EventController', function() {
 			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.getEvent = sinon.stub()
-			learningCatalogue.updateEvent = sinon.stub()
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve())
 
-			await eventController.updateDateRange()(request, response)
+			await eventController.updateDateRange()(request, response, next)
 
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called
@@ -969,7 +1051,9 @@ describe('EventController', function() {
 
 			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/event-dateRange-edit')
 		})
+	})
 
+	describe('add date range', () => {
 		it('should add date range successfully', async () => {
 			const courseId = 'course-id'
 			const moduleId = 'module-id'
@@ -1026,9 +1110,9 @@ describe('EventController', function() {
 				],
 			}
 			learningCatalogue.getEvent = sinon.stub().returns(event)
-			learningCatalogue.updateEvent = sinon.stub()
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve(event))
 
-			await eventController.addDateRange()(request, response)
+			await eventController.addDateRange()(request, response, next)
 
 			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
 			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId, {
@@ -1053,6 +1137,91 @@ describe('EventController', function() {
 				],
 			})
 			expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+		})
+
+		it('should pass to next if error thrown', async () => {
+			const courseId = 'course-id'
+			const moduleId = 'module-id'
+			const eventId = 'event-id'
+
+			const requestConfig = {
+				params: {
+					courseId: courseId,
+					moduleId: moduleId,
+					eventId: eventId,
+					dateRangeIndex: 0,
+				},
+				body: {
+					day: '01',
+					month: '12',
+					year: '2019',
+					startTime: ['11', '30'],
+					endTime: ['12', '30'],
+				},
+			}
+
+			const request = mockReq(requestConfig)
+			const response = mockRes()
+
+			const errors: any = {}
+
+			const dateRange = <DateRange>{
+				date: '2019-12-01',
+				startTime: '11:30',
+				endTime: '12:30',
+			}
+
+			let dateRangeCommand = <DateRangeCommand>{}
+			dateRangeCommandValidator.check = sinon.stub().returns(errors)
+			dateRangeCommandFactory.create = sinon.stub().returns(dateRangeCommand)
+			dateRangeCommand.asDateRange = sinon.stub().returns(dateRange)
+
+			dateRangeValidator.check = sinon.stub().returns(errors)
+
+			const event = <Event>{
+				id: 'event-id',
+				venue: {
+					address: 'London',
+					location: 'London',
+					minCapacity: 5,
+					capacity: 5,
+				},
+				dateRanges: [
+					{
+						date: '2019-03-31',
+						startTime: '09:30',
+						endTime: '16:30',
+					},
+				],
+			}
+			learningCatalogue.getEvent = sinon.stub().returns(event)
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.reject(error))
+
+			await eventController.addDateRange()(request, response, next)
+
+			expect(learningCatalogue.getEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId)
+			expect(learningCatalogue.updateEvent).to.have.been.calledOnceWith(courseId, moduleId, eventId, {
+				id: 'event-id',
+				venue: {
+					address: 'London',
+					location: 'London',
+					minCapacity: 5,
+					capacity: 5,
+				},
+				dateRanges: [
+					{
+						date: '2019-03-31',
+						startTime: '09:30',
+						endTime: '16:30',
+					},
+					{
+						date: '2019-12-01',
+						startTime: '11:30',
+						endTime: '12:30',
+					},
+				],
+			})
+			expect(next).to.have.been.calledOnceWith(error)
 		})
 
 		it('should display errors if form validation fails on add', async () => {
@@ -1090,9 +1259,9 @@ describe('EventController', function() {
 			dateRangeCommandValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.getEvent = sinon.stub()
-			learningCatalogue.updateEvent = sinon.stub()
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve())
 
-			await eventController.addDateRange()(request, response)
+			await eventController.addDateRange()(request, response, next)
 
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called
@@ -1151,9 +1320,10 @@ describe('EventController', function() {
 			dateRangeValidator.check = sinon.stub().returns(errors)
 
 			learningCatalogue.getEvent = sinon.stub()
-			learningCatalogue.updateEvent = sinon.stub()
 
-			await eventController.addDateRange()(request, response)
+			learningCatalogue.updateEvent = sinon.stub().returns(Promise.resolve())
+
+			await eventController.addDateRange()(request, response, next)
 
 			expect(learningCatalogue.getEvent).to.have.not.been.called
 			expect(learningCatalogue.updateEvent).to.not.have.been.called

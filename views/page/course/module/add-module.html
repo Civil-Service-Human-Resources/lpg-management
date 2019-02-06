@@ -41,13 +41,19 @@
                             <li class="list-details u--border--bgrey draggable" id="{{ module.id }}" data-id={{counter}}>
                                 <p class="govuk-body title">{{ module.title | default("Module", true) }}</p>
                                 <p class="govuk-body type">{{ i18n.courseType[module.type] | default("Unknown Type", true) }}</p>
-                                {% if module.subtype %}
-                                    <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/module-{{module.subtype}}/{{ module.id }}">Edit</a></p>
-                                {% else %}
-                                    <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/module-{{module.type}}/{{ module.id }}">Edit</a></p>
+                                {% if identity.hasLearningEdit() %}
+                                    {% if module.subtype %}
+                                        <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/module-{{module.subtype}}/{{ module.id }}">Edit</a></p>
+                                    {% else %}
+                                        <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/module-{{module.type}}/{{ module.id }}">Edit</a></p>
+                                    {% endif %}
                                 {% endif %}
-                                <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/{{ module.id }}/delete">Delete</a></p>
-                                <span class="handle"></span>
+                                {% if identity.hasLearningDelete() %}
+                                    <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{ course.id }}/{{ module.id }}/delete">Delete</a></p>
+                                {% endif %}
+                                {% if identity.hasLearningEdit() %}
+                                    <span class="handle"></span>
+                                {% endif %}
                             </li>
                         {% endfor %}
                     </ul>
@@ -59,56 +65,58 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <div class="added-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
-                    <form action="/content-management/courses/{{ course.id }}/add-module" method="post" class="module-form">
-                        <h3 class="govuk-heading-m">Add a module</h3>
-                        <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
-                        <fieldset class="govuk-fieldset module-selector">
-                            {{ govukSelect({
-                                id: "modules",
-                                name: "module",
-                                classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
-                                label: {
-                                    text: "Add a new module"
-                                },
-                                items: [
-                                    {
-                                    value: "",
-                                    text: "Type of learning",
-                                    selected: true
+                    {% if identity.hasLearningCreate() %}
+                        <form action="/content-management/courses/{{ course.id }}/add-module" method="post" class="module-form">
+                            <h3 class="govuk-heading-m">Add a module</h3>
+                            <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
+                            <fieldset class="govuk-fieldset module-selector">
+                                {{ govukSelect({
+                                    id: "modules",
+                                    name: "module",
+                                    classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
+                                    label: {
+                                        text: "Add a new module"
                                     },
-                                    {
-                                    value: "elearning",
-                                    text: "E-learning"
-                                    },
-                                    {
-                                    value: "link",
-                                    text: "Link"
-                                    },
-                                    {
-                                    value: "face-to-face",
-                                    text: "Face-to-face"
-                                    },
-                                    {
-                                    value: "file",
-                                    text: "File (PDF, Word, Excel, PowerPoint)"
-                                    },
-                                    {
-                                    value: "mp4",
-                                    text: "Video (MP4)"
-                                    },
-                                    {
-                                    value: "youtube",
-                                    text: "Video (YouTube)"
-                                    }
-                            ]
-                            }) }}
-                            {{ govukButton({
-                                text: "Add item",
-                                classes: "button-blue"
-                            }) }}
-                        </fieldset>
-                    </form>
-                <div class="button-container">
+                                    items: [
+                                        {
+                                        value: "",
+                                        text: "Type of learning",
+                                        selected: true
+                                        },
+                                        {
+                                        value: "elearning",
+                                        text: "E-learning"
+                                        },
+                                        {
+                                        value: "link",
+                                        text: "Link"
+                                        },
+                                        {
+                                        value: "face-to-face",
+                                        text: "Face-to-face"
+                                        },
+                                        {
+                                        value: "file",
+                                        text: "File (PDF, Word, Excel, PowerPoint)"
+                                        },
+                                        {
+                                        value: "mp4",
+                                        text: "Video (MP4)"
+                                        },
+                                        {
+                                        value: "youtube",
+                                        text: "Video (YouTube)"
+                                        }
+                                ]
+                                }) }}
+                                {{ govukButton({
+                                    text: "Add item",
+                                    classes: "button-blue"
+                                }) }}
+                            </fieldset>
+                        </form>
+                    {% endif %}
+                    <div class="button-container">
                     <a class="govuk-button" href="/content-management/courses/{{course.id}}/preview">Return to course</a>
                 </div>
             </div>

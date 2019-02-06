@@ -4,7 +4,7 @@ import * as sinonChai from 'sinon-chai'
 import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/moduleFactory'
 import {LearningCatalogue} from '../../../../src/learning-catalogue'
 import {mockReq, mockRes} from 'sinon-express-mock'
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {Module} from '../../../../src/learning-catalogue/model/module'
 import {Validator} from '../../../../src/learning-catalogue/validator/validator'
 import {FaceToFaceModuleController} from '../../../../src/controllers/module/faceToFaceModuleController'
@@ -23,6 +23,7 @@ describe('Face-to-face module controller tests', function() {
 
 	let req: Request
 	let res: Response
+	let next: NextFunction
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
@@ -38,6 +39,8 @@ describe('Face-to-face module controller tests', function() {
 		req.session!.save = callback => {
 			callback(undefined)
 		}
+
+		next = sinon.stub()
 	})
 
 	it('Should render module-face-to-face-page', async function() {
@@ -54,9 +57,9 @@ describe('Face-to-face module controller tests', function() {
 
 		moduleValidator.check = sinon.stub().returns({fields: [], size: 0})
 		moduleFactory.create = sinon.stub().returns(module)
-		learningCatalogue.createModule = sinon.stub()
+		learningCatalogue.createModule = sinon.stub().returns(Promise.resolve(module))
 
-		await faceToFaceModuleController.setModule()(req, res)
+		await faceToFaceModuleController.setModule()(req, res, next)
 
 		expect(moduleValidator.check).to.have.been.calledOnceWith(req.body, ['title', 'description', 'cost'])
 		expect(moduleFactory.create).to.have.been.calledOnceWith(req.body)
@@ -73,7 +76,7 @@ describe('Face-to-face module controller tests', function() {
 		moduleValidator.check = sinon.stub().returns({fields: ['validation.module.duration.empty'], size: 1})
 		moduleFactory.create = sinon.stub().returns(module)
 
-		await faceToFaceModuleController.setModule()(req, res)
+		await faceToFaceModuleController.setModule()(req, res, next)
 
 		expect(moduleValidator.check).to.have.been.calledOnceWith(req.body, ['title', 'description', 'cost'])
 		expect(moduleFactory.create).to.have.been.calledOnceWith(req.body)
@@ -99,9 +102,9 @@ describe('Face-to-face module controller tests', function() {
 		res.locals.module = module
 
 		moduleValidator.check = sinon.stub().returns({})
-		learningCatalogue.updateModule = sinon.stub()
+		learningCatalogue.updateModule = sinon.stub().returns(Promise.resolve(module))
 
-		await faceToFaceModuleController.editModule()(req, res)
+		await faceToFaceModuleController.editModule()(req, res, next)
 
 		expect(moduleValidator.check).to.have.been.calledOnceWith(data, ['title', 'description', 'cost'])
 		expect(learningCatalogue.updateModule).to.have.been.calledOnceWith('abc', module)
@@ -126,7 +129,7 @@ describe('Face-to-face module controller tests', function() {
 
 		moduleValidator.check = sinon.stub().returns({size: 1})
 
-		await faceToFaceModuleController.editModule()(req, res)
+		await faceToFaceModuleController.editModule()(req, res, next)
 
 		expect(moduleValidator.check).to.have.been.calledOnceWith(req.body, ['title', 'description', 'cost'])
 		expect(res.redirect).to.have.been.calledOnceWith(`/content-management/courses/abc/module-face-to-face/def`)

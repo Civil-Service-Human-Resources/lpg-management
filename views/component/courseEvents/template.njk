@@ -10,7 +10,7 @@
     <div class="module-container-small">
         <div class="title-container">
             <p class="govuk-body no-margin"><strong>{{ module.title | default(course.title, true) }}</strong></p>
-            {% if course.status !== "Archived" %}
+            {% if course.status !== "Archived" and identity.hasLearningCreate()%}
                 <a class="govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/modules/{{ module.id }}/events/">Add new event</a>               
             {% endif %}
         </div>

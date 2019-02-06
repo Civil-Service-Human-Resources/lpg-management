@@ -1,4 +1,4 @@
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {FormController} from './formController'
 
 export function Validate(validationArgs: {fields: string[]; redirect: string}) {
@@ -17,7 +17,7 @@ export function Validate(validationArgs: {fields: string[]; redirect: string}) {
 			const callback = originalMethod.apply(this, args)
 			const validator = this.validator
 
-			return async (request: Request, response: Response) => {
+			return async (request: Request, response: Response, next: NextFunction) => {
 				const errors = await validator.check(request.body, validationArgs.fields)
 
 				if (errors.size) {
@@ -30,7 +30,11 @@ export function Validate(validationArgs: {fields: string[]; redirect: string}) {
 						response.redirect(substituteParams(validationArgs.redirect, request.params))
 					})
 				} else {
-					return await callback(request, response)
+					try {
+						return await callback(request, response, next)
+					} catch (e) {
+						return next(e)
+					}
 				}
 			}
 		}

@@ -72,7 +72,7 @@ export class FaceToFaceModuleController {
 	}
 
 	public setModule() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response, next: NextFunction) => {
 			const data = {...request.body}
 			if (!data.cost) {
 				delete data.cost
@@ -88,14 +88,20 @@ export class FaceToFaceModuleController {
 					response.redirect(`/content-management/courses/${course.id}/module-face-to-face`)
 				})
 			} else {
-				await this.learningCatalogue.createModule(course.id, module)
-				response.redirect(`/content-management/courses/${course.id}/preview`)
+				await this.learningCatalogue
+					.createModule(course.id, module)
+					.then(() => {
+						response.redirect(`/content-management/courses/${course.id}/preview`)
+					})
+					.catch(error => {
+						next(error)
+					})
 			}
 		}
 	}
 
 	public editModule() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response, next: NextFunction) => {
 			const data = {...request.body}
 			if (!data.cost) {
 				delete data.cost
@@ -116,8 +122,14 @@ export class FaceToFaceModuleController {
 				module.cost = data.cost
 				module.optional = data.isOptional || false
 
-				await this.learningCatalogue.updateModule(course.id, module)
-				response.redirect(`/content-management/courses/${course.id}/preview`)
+				await this.learningCatalogue
+					.updateModule(course.id, module)
+					.then(() => {
+						response.redirect(`/content-management/courses/${course.id}/preview`)
+					})
+					.catch(error => {
+						next(error)
+					})
 			}
 		}
 	}

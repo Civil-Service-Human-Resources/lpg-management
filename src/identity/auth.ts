@@ -22,7 +22,7 @@ export class Auth {
 		this.identityService = identityService
 	}
 
-	configure(app: any, authorisedRole: string) {
+	configure(app: any) {
 		app.use(this.initialize())
 		app.use(this.session())
 
@@ -32,7 +32,6 @@ export class Auth {
 
 		app.use(this.checkAuthenticatedAndAssignCurrentUser())
 		app.use(this.addToResponseLocals())
-		app.use(this.hasRole(authorisedRole))
 	}
 
 	initialize(): Handler {
@@ -121,15 +120,6 @@ export class Auth {
 			res.locals.isAuthenticated = req.isAuthenticated()
 			res.locals.identity = req.user
 			next()
-		}
-	}
-
-	hasRole(role: string) {
-		return (req: Request, res: Response, next: NextFunction) => {
-			if (req.user && req.user.hasRole(role)) {
-				return next()
-			}
-			res.sendStatus(401)
 		}
 	}
 }

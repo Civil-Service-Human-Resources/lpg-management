@@ -1,4 +1,4 @@
-import {Request, Response, Router} from 'express'
+import {NextFunction, Request, Response, Router} from 'express'
 import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactory'
 import * as log4js from 'log4js'
 import {LearningCatalogue} from '../../learning-catalogue'
@@ -61,13 +61,18 @@ export class ModuleController {
 	}
 
 	public deleteModule() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response, next: NextFunction) => {
 			const courseId = response.locals.course.id
 			const moduleId = request.params.moduleId
 
-			await this.learningCatalogue.deleteModule(courseId, moduleId)
-
-			return response.redirect(`/content-management/courses/${courseId}/add-module`)
+			await this.learningCatalogue
+				.deleteModule(courseId, moduleId)
+				.then(() => {
+					return response.redirect(`/content-management/courses/${courseId}/add-module`)
+				})
+				.catch(error => {
+					next(error)
+				})
 		}
 	}
 }

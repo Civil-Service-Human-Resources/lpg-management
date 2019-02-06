@@ -9,6 +9,7 @@ import {expect} from 'chai'
 import sinon = require('sinon')
 import {CourseService} from 'lib/courseService'
 import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
+import {NextFunction} from 'express'
 
 chai.use(sinonChai)
 
@@ -18,12 +19,16 @@ describe('LinkModuleController tests', () => {
 	let moduleValidator: Validator<LinkModule>
 	let controller: LinkModuleController
 	let courseService: CourseService
+	let next: NextFunction
+
 	before(() => {
 		learningCatalogue = <LearningCatalogue>{}
 		linkFactory = <LinkFactory>{}
 		moduleValidator = <Validator<LinkModule>>{}
 
 		controller = new LinkModuleController(learningCatalogue, linkFactory, moduleValidator, courseService)
+
+		next = sinon.stub()
 	})
 
 	it('should render add link module template', async () => {
@@ -47,9 +52,9 @@ describe('LinkModuleController tests', () => {
 
 		moduleValidator.check = sinon.stub().returns(errors)
 		linkFactory.create = sinon.stub()
-		learningCatalogue.createModule = sinon.stub()
+		learningCatalogue.createModule = sinon.stub().returns(Promise.resolve(module))
 
-		await controller.setLinkModule()(request, response)
+		await controller.setLinkModule()(request, response, next)
 
 		expect(linkFactory.create).to.not.have.been.called
 		expect(learningCatalogue.createModule).to.not.have.been.called
@@ -107,11 +112,11 @@ describe('LinkModuleController tests', () => {
 		}
 
 		moduleValidator.check = sinon.stub().returns(errors)
-		learningCatalogue.createModule = sinon.stub()
+		learningCatalogue.createModule = sinon.stub().returns(Promise.resolve(module))
 
 		linkFactory.create = sinon.stub().returns(linkModule)
 
-		await controller.setLinkModule()(request, response)
+		await controller.setLinkModule()(request, response, next)
 
 		expect(moduleValidator.check).to.have.been.calledOnceWith(
 			{
@@ -182,9 +187,9 @@ describe('LinkModuleController tests', () => {
 		response.locals.module = linkModule
 
 		moduleValidator.check = sinon.stub().returns(errors)
-		learningCatalogue.updateModule = sinon.stub()
+		learningCatalogue.updateModule = sinon.stub().returns(Promise.resolve(linkModule))
 
-		await controller.updateLinkModule()(request, response)
+		await controller.updateLinkModule()(request, response, next)
 
 		expect(moduleValidator.check).to.have.been.calledOnceWith(linkModule, ['title', 'description', 'url', 'duration'])
 
@@ -214,9 +219,9 @@ describe('LinkModuleController tests', () => {
 
 		moduleValidator.check = sinon.stub().returns(errors)
 		linkFactory.create = sinon.stub()
-		learningCatalogue.updateModule = sinon.stub()
+		learningCatalogue.updateModule = sinon.stub().returns(Promise.resolve(linkModule))
 
-		await controller.updateLinkModule()(request, response)
+		await controller.updateLinkModule()(request, response, next)
 
 		expect(linkFactory.create).to.not.have.been.called
 		expect(learningCatalogue.updateModule).to.not.have.been.called

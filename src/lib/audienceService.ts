@@ -36,4 +36,8 @@ export class AudienceService {
 			audience.type = updatedType
 		}
 	}
+
+	public getDefaults(request: Request) {
+		return ''
+	}
 }

@@ -10,52 +10,55 @@
 {% set banner = true %}
 
 {% block content %}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full">
-            <div class="header-search">
-                <h1 class="govuk-heading-l">Content management</h1>
-                {{ search() }}
-            </div>
+{% set errors = sessionFlash.errors %}
+
+{{ errorSummary(errors.fields) }}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <div class="header-search">
+            <h1 class="govuk-heading-l">Content management</h1>
+            {{ search() }}
         </div>
     </div>
+</div>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-        {% if pageResults %}
-            {% if pageResults.totalResults !== 0 %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+            {% if pageResults and pageResults.totalResults !== 0 %}
                 {% block list %}
-                    {{ list("Courses", pageResults) }}
+                {{ list("Courses", pageResults) }}
                 {% endblock %}
             {% else %}
-                <p class="govuk-body">There are currently no courses</p>
+                <p class="govuk-body">There are currently no courses available</p>
             {% endif %}
-        {% endif %}
         {% set paginationBaseUrl = '/content-management/' %}
         {{ pagination(paginationBaseUrl) }}
-        </div>
-        <div class="govuk-grid-column-one-third">
-            <div class="right-menu">
-                {% block menu %}
-                {% set actions = [
-                        {
-                            link: '/content-management/courses/title',
-                            text: 'Add a new course'
-                        },
-                        {
-                            link: '/content-management/learning-providers',
-                            text: 'Manage learning providers'
-                        }
-                    ]
-                %}
-                {% if identity.isOrganisationManager() %}
-                    {% set action = actions.push({
-                        link: '/content-management/organisations/manage',
-                        text: 'Manage organisations'
-                    }) %}
-                {% endif %}
-                {{ menu("Actions", actions) }}
-                {% endblock %}
-            </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+        <div class="right-menu">
+            {% block menu %}
+            {% set actions = [] %}
+            {% if identity.hasLearningCreate() %}
+                {% set action = actions.push({
+                    link: '/content-management/courses/title',
+                    text: 'Add a new course'
+                }) %}
+            {% endif %}
+            {% if identity.isLearningProviderManager() %}
+                {% set action = actions.push({
+                    link: '/content-management/learning-providers',
+                    text: 'Manage learning providers'
+                }) %}
+            {% endif %}
+            {% if identity.isOrganisationManagerOrSuperUser() %}
+                {% set action = actions.push({
+                    link: '/content-management/organisations/manage',
+                    text: 'Manage organisations'
+                }) %}
+            {% endif %}
+            {{ menu("Actions", actions) }}
+            {% endblock %}
         </div>
     </div>
+</div>
 {% endblock %}

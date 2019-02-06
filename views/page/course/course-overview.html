@@ -41,20 +41,22 @@
         <div class="section">
             <h3 class="govuk-heading-m">Course events</h3>
             {% block courseEvents %}
-                {{ courseEvents(course, faceToFaceModules) }}
+                {{ courseEvents(course, faceToFaceModules, identity) }}
             {% endblock %}
         </div>
+        {% if not identity.isSupplierAuthor() %}
         <div class="section">
             <div class="title-container"> 
                 <h3 class="govuk-heading-m">Course audiences</h3>
-                {% if course.status !== "Archived" %}
+                {% if course.status !== "Archived" and identity.hasLearningCreate() %}
                     <a class="govuk-body govuk-link" href="/content-management/courses/{{ course.id }}/audiences/">Add an audience</a>
                 {% endif %}
             </div>
             {% block audiences %}
-                {{ audiences(course) }}
+                {{ audiences(course, identity) }}
             {% endblock %}
-        </div> 
+        </div>
+        {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
@@ -65,15 +67,17 @@
                 {{ changeStatus(course.status) }}
             {% endblock %}
             {% if course.status !== "Archived" %}
-                {% block menu %}
-                    {% set actions = [
-                        {
-                            link: '/content-management/courses/' + course.id + "/preview",
-                            text: 'Preview and edit'
-                        }
-                    ] %}
-                    {{ menu("Actions", actions) }}
-                {% endblock %}
+                {% if identity.hasLearningEdit() %}
+                    {% block menu %}
+                        {% set actions = [
+                            {
+                                link: '/content-management/courses/' + course.id + "/preview",
+                                text: 'Preview and edit'
+                            }
+                        ] %}
+                        {{ menu("Actions", actions) }}
+                    {% endblock %}
+                {% endif %}
             {% endif %}
         </div>
     </div>

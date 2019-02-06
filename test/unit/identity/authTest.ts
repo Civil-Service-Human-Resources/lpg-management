@@ -32,11 +32,7 @@ describe('Auth tests', function() {
 	})
 
 	it('should return next function if user is authenticated', function() {
-		const authenticate: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = auth.checkAuthenticatedAndAssignCurrentUser()
+		const authenticate: (request: Request, response: Response, next: NextFunction) => void = auth.checkAuthenticatedAndAssignCurrentUser()
 
 		const reponse: Response = mockRes()
 		const request: Request = <Request>{}
@@ -52,11 +48,7 @@ describe('Auth tests', function() {
 	it('should return redirect if user is not authenticated', function() {
 		const originalUrl = 'original-url'
 
-		const authenticate: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = auth.checkAuthenticatedAndAssignCurrentUser()
+		const authenticate: (request: Request, response: Response, next: NextFunction) => void = auth.checkAuthenticatedAndAssignCurrentUser()
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
@@ -200,11 +192,7 @@ describe('Auth tests', function() {
 	})
 
 	it('should add authentication and identity to response locals', function() {
-		const addToResponseLocals: (
-			request: Request,
-			response: Response,
-			next: NextFunction
-		) => void = auth.addToResponseLocals()
+		const addToResponseLocals: (request: Request, response: Response, next: NextFunction) => void = auth.addToResponseLocals()
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
@@ -217,53 +205,5 @@ describe('Auth tests', function() {
 		expect(response.locals.isAuthenticated).to.eql(true)
 		expect(response.locals.identity).to.eql(request.user)
 		expect(next).to.have.been.calledOnce
-	})
-
-	it('should add return next() if user is authorised with role', function() {
-		const hasRole: (request: Request, response: Response, next: NextFunction) => void = auth.hasRole(
-			'COURSE_MANAGER'
-		)
-
-		const response: Response = mockRes()
-		const request: Request = <Request>{}
-		const next: NextFunction = sinon.stub()
-
-		request.user = new Identity('abc123', ['COURSE_MANAGER'], 'access-token')
-
-		hasRole(request, response, next)
-
-		expect(next).to.have.been.calledOnce
-	})
-
-	it('should add return 401 if no user', function() {
-		const hasRole: (request: Request, response: Response, next: NextFunction) => void = auth.hasRole(
-			'COURSE_MANAGER'
-		)
-
-		const response: Response = mockRes()
-		const request: Request = <Request>{}
-		const next: NextFunction = sinon.stub()
-
-		hasRole(request, response, next)
-
-		expect(next).to.not.been.calledOnce
-		expect(response.sendStatus).to.have.been.calledOnceWith(401)
-	})
-
-	it('should add return 401 if user is not authorised with role', function() {
-		const hasRole: (request: Request, response: Response, next: NextFunction) => void = auth.hasRole(
-			'COURSE_MANAGER'
-		)
-
-		const response: Response = mockRes()
-		const request: Request = <Request>{}
-		const next: NextFunction = sinon.stub()
-
-		request.user = new Identity('abc123', ['LEARNER'], 'access-token')
-
-		hasRole(request, response, next)
-
-		expect(next).to.not.been.calledOnce
-		expect(response.sendStatus).to.have.been.calledOnceWith(401)
 	})
 })

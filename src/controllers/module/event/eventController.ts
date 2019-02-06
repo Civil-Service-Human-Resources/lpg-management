@@ -222,7 +222,7 @@ export class EventController implements FormController {
 	}
 
 	public addDateRange() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response, next: NextFunction) => {
 			let data = {
 				...request.body,
 			}
@@ -269,16 +269,21 @@ export class EventController implements FormController {
 
 					event!.dateRanges!.push(dateRange)
 
-					await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
-
-					response.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+					await this.learningCatalogue
+						.updateEvent(courseId, moduleId, eventId, event)
+						.then(() => {
+							response.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+						})
+						.catch(error => {
+							next(error)
+						})
 				}
 			}
 		}
 	}
 
 	public updateDateRange() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response, next: NextFunction) => {
 			let data = {
 				...request.body,
 			}
@@ -324,9 +329,14 @@ export class EventController implements FormController {
 
 					event!.dateRanges![dateRangeIndex] = dateRange
 
-					await this.learningCatalogue.updateEvent(courseId, moduleId, eventId, event)
-
-					response.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+					await this.learningCatalogue
+						.updateEvent(courseId, moduleId, eventId, event)
+						.then(() => {
+							response.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/dateRanges`)
+						})
+						.catch(error => {
+							next(error)
+						})
 				}
 			}
 		}
@@ -374,9 +384,12 @@ export class EventController implements FormController {
 				let event = JSON.parse(req.body.eventJson || '{}')
 				event.venue = data.venue
 
-				const savedEvent = await this.learningCatalogue.createEvent(req.params.courseId, req.params.moduleId, event)
+				const savedEvent: any = await this.learningCatalogue.createEvent(req.params.courseId, req.params.moduleId, event).catch(error => {
+					next(error)
+				})
 
 				const eventUri = `${config.COURSE_CATALOGUE.url}/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${savedEvent.id}`
+
 				await this.learnerRecord
 					.createEvent(savedEvent.id, eventUri)
 					.then(() => {
@@ -396,7 +409,7 @@ export class EventController implements FormController {
 	}
 
 	public updateLocation() {
-		return async (req: Request, res: Response) => {
+		return async (req: Request, res: Response, next: NextFunction) => {
 			const data = {
 				venue: {
 					location: req.body.location,
@@ -422,8 +435,14 @@ export class EventController implements FormController {
 
 				event.venue = data.venue
 
-				await this.learningCatalogue.updateEvent(req.params.courseId, req.params.moduleId, req.params.eventId, event)
-				res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${req.params.eventId}`)
+				await this.learningCatalogue
+					.updateEvent(req.params.courseId, req.params.moduleId, req.params.eventId, event)
+					.then(() => {
+						res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${req.params.eventId}`)
+					})
+					.catch(error => {
+						next(error)
+					})
 			}
 		}
 	}

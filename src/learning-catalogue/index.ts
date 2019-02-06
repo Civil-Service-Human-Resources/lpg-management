@@ -47,11 +47,11 @@ export class LearningCatalogue {
 	}
 
 	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
-		return await this._courseService.listAllWithPagination(`/courses?status=Draft&status=Published&status=Archived&page=${page}&size=${size}`)
+		return await this._courseService.listAllWithPagination(`/courses/management?page=${page}&size=${size}`)
 	}
 
 	async searchCourses(query: string, page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
-		return await this._courseService.listAllWithPagination(`/search/courses/?status=Draft&status=Published&status=Archived&query=${query}&page=${page}&size=${size}`)
+		return await this._courseService.listAllWithPagination(`/search/management/courses/?status=Draft&status=Published&status=Archived&query=${query}&page=${page}&size=${size}`)
 	}
 
 	async createCourse(course: Course): Promise<Course> {
@@ -60,6 +60,14 @@ export class LearningCatalogue {
 
 	async updateCourse(course: Course): Promise<Course> {
 		return this._courseService.update(`/courses/${course.id}`, course)
+	}
+
+	async publishCourse(course: Course): Promise<Course> {
+		return this._courseService.update(`/courses/${course.id}/publish`, course)
+	}
+
+	async archiveCourse(course: Course): Promise<Course> {
+		return this._courseService.update(`/courses/${course.id}/archive`, course)
 	}
 
 	async getCourse(courseId: string): Promise<Course> {
@@ -100,6 +108,10 @@ export class LearningCatalogue {
 
 	async getAudience(courseId: string, audienceId: string): Promise<Audience> {
 		return this._audienceService.get(`/courses/${courseId}/audiences/${audienceId}`)
+	}
+
+	async updateAudience(courseId: string, audience: Audience): Promise<Audience> {
+		return this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
 	}
 
 	async deleteAudience(courseId: string, audienceId: string) {
@@ -156,6 +168,14 @@ export class LearningCatalogue {
 
 	set moduleService(value: EntityService<Module>) {
 		this._moduleService = value
+	}
+
+	set eventService(value: EntityService<Event>) {
+		this._eventService = value
+	}
+
+	set audienceService(value: EntityService<Audience>) {
+		this._audienceService = value
 	}
 
 	set learningProviderService(value: EntityService<LearningProvider>) {

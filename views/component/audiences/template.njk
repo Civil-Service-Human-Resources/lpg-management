@@ -6,7 +6,7 @@
             <li class="list-item">
                 <div class="title-container">
                     <h3 class="govuk-heading-s">{{ audience.name | default("Audience", true) }}</h3>
-                    {% if course.status !== "Archived" %}
+                    {% if course.status !== "Archived" and identity.hasLearningEdit()%}
                         <a class="govuk-body govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
                     {% endif %}
                 </div>

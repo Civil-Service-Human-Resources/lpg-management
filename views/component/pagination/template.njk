@@ -1,4 +1,4 @@
-{% if pageResults.totalResults !== 0 %}
+{% if pageResults and pageResults.totalResults !== 0 %}
     <div class="pager">
         <div class="pager__controls">
             {% if pageResults.getPageCount() != 1 %}

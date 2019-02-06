@@ -75,7 +75,7 @@ export class YoutubeModuleController {
 	}
 
 	public setModule() {
-		return async (req: Request, res: Response) => {
+		return async (req: Request, res: Response, next: NextFunction) => {
 			const data = {...req.body}
 
 			const course = res.locals.course
@@ -106,14 +106,19 @@ export class YoutubeModuleController {
 			}
 			module = await this.moduleFactory.create(newData)
 
-			await this.learningCatalogue.createModule(course.id, module)
-
-			return res.redirect(`/content-management/courses/${course.id}/preview`)
+			await this.learningCatalogue
+				.createModule(course.id, module)
+				.then(() => {
+					return res.redirect(`/content-management/courses/${course.id}/preview`)
+				})
+				.catch(error => {
+					next(error)
+				})
 		}
 	}
 
 	public updateModule() {
-		return async (req: Request, res: Response) => {
+		return async (req: Request, res: Response, next: NextFunction) => {
 			const data = {...req.body}
 
 			const course = res.locals.course
@@ -140,9 +145,14 @@ export class YoutubeModuleController {
 			module.url = data.url
 			module.duration = duration
 
-			await this.learningCatalogue.updateModule(course.id, module)
-
-			return res.redirect(`/content-management/courses/${course.id}/preview`)
+			await this.learningCatalogue
+				.updateModule(course.id, module)
+				.then(() => {
+					return res.redirect(`/content-management/courses/${course.id}/preview`)
+				})
+				.catch(error => {
+					next(error)
+				})
 		}
 	}
 

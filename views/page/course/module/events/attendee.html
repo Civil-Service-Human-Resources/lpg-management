@@ -29,7 +29,7 @@
                                     {% endif %}
                                 </p>
                             </span>
-                            {% if booking.status === "Requested" %}
+                            {% if booking.status === "Requested" and identity.hasLearningEdit()%}
                                 <form action="/content-management/courses/{{ course.id }}/modules/{{ module.id }}/events/{{ event.id }}/attendee/{{ booking.id }}/update" method="post" class="attendee-button">
                                     <button type="submit" class="linkish-button">Change to booked</button>
                                 </form>
@@ -44,15 +44,16 @@
         </div>
         <div class="govuk-grid-column-one-third">
             <div class="right-menu">
-                {% block menu %}
-                    {% set actions = [
-                        {
+                    {% block menu %}
+                    {% set actions = [] %}
+                    {% if course.status !== "Archived" and identity.hasLearningDelete() %}
+                        {% set action = actions.push({
                             link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/attendee/' + booking.id + '/cancel',
                             text: 'Cancel Attendee'
-                        }
-                    ] %}
+                        }) %}
+                    {% endif %}
                     {{ menu("Actions", actions) }}
-                {% endblock %}
+                    {% endblock %}
             </div>
         </div>
         <div class="govuk-grid-column-oneo-third">

@@ -14,7 +14,7 @@
                 {% block status %}
                     {{ status(Course.status) }}
                 {% endblock %}
-                {% if Course.status !== "Archived" %}
+                {% if Course.status !== "Archived" and identity.hasLearningEdit() %}
                     <a class="govuk-link list-link list-padding" href="/content-management/courses/{{ Course.id }}/preview">Edit</a> 
                 {% endif %}
             </div>
