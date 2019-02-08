@@ -85,3 +85,5 @@ export const CACHE = {
 }
 
 export const INSTRUMENTATION_KEY = env.instrumentation_key || 'instrumentation_key'
+
+export const COOKIE_URL = env.COOKIE_URL || 'https://lpg.cshr.digital/cookies'

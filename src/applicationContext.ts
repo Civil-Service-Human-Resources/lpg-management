@@ -124,6 +124,8 @@ export class ApplicationContext {
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
+	public cookieUrl: String
+
 	constructor() {
 		this.axiosInstance = axios.create({
 			headers: {
@@ -131,6 +133,8 @@ export class ApplicationContext {
 			},
 			timeout: config.REQUEST_TIMEOUT,
 		})
+
+		this.cookieUrl = config.COOKIE_URL
 
 		this.identityService = new IdentityService(this.axiosInstance)
 
@@ -252,6 +256,7 @@ export class ApplicationContext {
 	addToResponseLocals() {
 		return (req: Request, res: Response, next: NextFunction) => {
 			res.locals.lpgUiUrl = this.lpgUiUrl
+			res.locals.cookieUrl = this.cookieUrl
 			res.locals.sessionFlash = req.session!.sessionFlash
 			delete req.session!.sessionFlash
 
