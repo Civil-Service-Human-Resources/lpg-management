@@ -175,10 +175,11 @@ export class FileController {
 				...request.body,
 			}
 
-			data.type = fileType.getFileModuleType(data.file)
-
 			const course = response.locals.course
 			let module = response.locals.module
+
+			data.type = data.file ? fileType.getFileModuleType(data.file) : module.type
+
 			let errors = await this.moduleValidator.check(data, ['title', 'description', 'mediaId'])
 
 			let file
