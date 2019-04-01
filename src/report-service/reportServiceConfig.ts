@@ -5,7 +5,7 @@ export class ReportServiceConfig {
 	private _timeout: number
 	private _map: any
 
-	constructor(url: string = config.REPORT_SERVICE.url, timeout: number = 25000, map: any = config.REPORT_SERVICE.map) {
+	constructor(url: string = config.REPORT_SERVICE.url, timeout: number = 300000, map: any = config.REPORT_SERVICE.map) {
 		this._url = url
 		this._timeout = timeout
 		this._map = map
