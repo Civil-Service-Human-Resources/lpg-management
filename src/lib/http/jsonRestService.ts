@@ -23,6 +23,10 @@ export class JsonRestService {
 		return {}
 	}
 
+	async postWithoutFollowing(path: string, resource: any) {
+		return await this._http.post(path, resource, this.getHeaders())
+	}
+
 	async post(path: string, resource: any) {
 		const response: AxiosResponse = await this._http.post(path, resource, this.getHeaders())
 

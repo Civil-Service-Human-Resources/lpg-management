@@ -14,6 +14,7 @@ export class Identity {
 	public static readonly KORNFERRY_SUPPLIER_AUTHOR = 'KORNFERRY_SUPPLIER_AUTHOR'
 	public static readonly KNOWLEDGEPOOL_SUPPLIER_AUTHOR = 'KNOWLEDGEPOOL_SUPPLIER_AUTHOR'
 	public static readonly LEARNING_PROVIDER_MANAGER = 'LEARNING_PROVIDER_MANAGER'
+	public static readonly SKILLS_MANAGER = 'SKILLS_MANAGER'
 
 	readonly uid: string
 	readonly roles: string[]
@@ -119,5 +120,9 @@ export class Identity {
 
 	isKornferrySupplierReporter() {
 		return this.hasRole('KORNFERRY_SUPPLIER_REPORTER')
+	}
+
+	isSkillsManagerOrSuperUser() {
+		return this.hasRole(Identity.SKILLS_MANAGER) || this.isSuperUser()
 	}
 }

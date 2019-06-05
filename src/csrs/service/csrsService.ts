@@ -21,6 +21,10 @@ export class CsrsService {
 		return await this.restService.get('/organisationalUnits/?size=999')
 	}
 
+	async postSkills(quiz: any) {
+		return await this.restService.postWithoutFollowing('/quizzes', quiz)
+	}
+
 	async getAreasOfWork() {
 		let areasOfWork = await this.restService.get('/professions/flat')
 
@@ -88,5 +92,9 @@ export class CsrsService {
 		}
 
 		return mapping
+	}
+
+	async findByName(name: string) {
+		return await this.restService.get(`/professions/search/findByName?name=${name}`)
 	}
 }

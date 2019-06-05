@@ -1,0 +1,23 @@
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}
+{{ i18n.skills.title }} - {{ i18n['proposition_name'] }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body form-header govuk-!-font-size-24">Add a new skills quiz</p>
+        <h2 class="govuk-heading-m govuk-!-font-size-36">Skills quiz uploaded successfully</h2>
+        <div class="banner confirmation-banner-blue">
+            <h2><strong>Skills quiz successfully uploaded</strong></h2>
+        </div>
+        <div class="button-container">
+            <a href="/content-management" class="govuk-button">Continue</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

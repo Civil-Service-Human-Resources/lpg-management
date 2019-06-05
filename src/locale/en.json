@@ -192,6 +192,9 @@
 			}
 		}
 	},
+	"skills": {
+		"title": "Add a new skills quiz"
+	},
 
 	"courseType": {
 		"face-to-face": "Face to Face",

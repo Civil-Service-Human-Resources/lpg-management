@@ -7,6 +7,7 @@
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/suggestions-for-you">Suggestions for you</a>
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/learning-record">Learning record</a>
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/profile">Profile</a>
+            <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/skills">Skills</a>
             <a class="nav-item govuk-link {% if originalUrl === '/content-management' %}active{% endif %}" href="/content-management">Admin</a>
             {% if identity.isCshrReporter() or identity.isOrganisationReporter() or identity.isProfessionReporter() or identity.isKPMGSupplierReporter()  or identity.isKornferrySupplierReporter() %}
                 <a class="nav-item govuk-link {% if originalUrl === '/reporting' %}active{% endif %}" href="/reporting">Reporting</a>

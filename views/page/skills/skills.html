@@ -1,0 +1,65 @@
+{% from "file-upload/macro.njk" import govukFileUpload %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}
+{{ i18n.skills.title }} - {{ i18n['proposition_name'] }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management" %}
+
+{% set uploadedFileNotCSV = sessionFlash.uploadedFileNotCSV %}
+
+{% block content %}
+
+{% if not doesPolicyExist %}
+{{ govukErrorSummary({
+    titleText: "There is a problem",
+    errorList: [
+        {
+            text: "Policy profession does not exist, and a skills quiz cannot be created."
+        }
+    ],
+    classes: "custom-error-message"
+}) }}
+{% endif %}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <p class="govuk-body form-header govuk-!-font-size-24">Add a new skills quiz</p>
+        <h2 class="govuk-heading-m govuk-!-font-size-36">Skills quiz</h2>
+        <form action="/content-management/skills" method="post" class="skills-form" enctype="multipart/form-data">
+            <p class="govuk-body">Currently, only the <strong>Policy</strong> profession can upload a skills quiz.</p>
+            <p class="govuk-body">Quiz questions should be saved as CSV, an Excel file type. In your Excel question document, select
+                ‘Save as’. At ‘Save as type’, select CSV (comma delimited).</p>
+            {% if doesPolicyExist %}
+            <div class="add-file-form govuk-form-group">
+                <label class="govuk-label">Upload a file</label>
+                {% if uploadedFileNotCSV %}
+                <span id="file-upload-error" class="govuk-error-message">"The selected file must be a CSV"</span>
+                {% endif %}
+                <input class="govuk-file-upload custom-uploader" id="file-upload" name="file" type="file" aria-describedby="file-upload-hint">
+                <label class="btn" for="file-upload"><span>Choose file</span></label>
+            </div>
+            <div class="button-container">
+                {{ govukButton({
+                    text: "Add file"
+                }) }}
+            </div>
+            {% endif %}
+            <a class="cancel-button govuk-body govuk-link" href="/content-management">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+<script src="/govuk-frontend/all.js"></script>
+<script>window.GOVUKFrontend.initAll()</script>
+<script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
+<script type="text/javascript" src="/js/manage-orgs.js"></script>
+<script src="/js/file-uploader.js"></script>
+{% endblock %}
