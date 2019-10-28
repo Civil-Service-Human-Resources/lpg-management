@@ -10,7 +10,7 @@ export class LinkFactory {
 		linkModule.url = data.url
 		linkModule.duration = data.duration
 		linkModule.isOptional = data.isOptional
-
+		linkModule.associatedLearning = data.associatedLearning
 		return linkModule
 	}
 }

@@ -118,6 +118,7 @@ export class LinkModuleController {
 			module.description = req.body.description
 			module.url = req.body.url
 			module.optional = req.body.optional
+			module.associatedLearning = req.body.associatedLearning
 			module.duration = moment
 				.duration({
 					hours: req.body.hours,

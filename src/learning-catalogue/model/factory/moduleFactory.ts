@@ -26,7 +26,6 @@ export class ModuleFactory {
 		module.duration = data.duration
 		module.cost = !isNaN(Number(data.cost)) ? Number(data.cost) : data.cost
 		module.optional = data.optional
-
 		return module
 	}
 
@@ -53,6 +52,7 @@ export class ModuleFactory {
 			module.duration = data.duration
 			module.id = data.id
 			module.isOptional = data.isOptional
+			module.associatedLearning = data.associatedLearning
 			module.title = data.title
 			module.url = data.url
 			return module

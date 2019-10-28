@@ -39,6 +39,7 @@ export class LinkModule extends Module {
 	duration: number
 
 	isOptional: boolean
+	associatedLearning: boolean
 
 	type: Module.Type.LINK
 }
