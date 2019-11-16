@@ -116,6 +116,26 @@
                 ]
                 })
                 }}
+
+                {{ govukCheckboxes({
+                idPrefix: "associatedLearning",
+                name: "associatedLearning",
+                classes: "font-light",
+                fieldset: {
+                legend: {
+                text: "Is this an associated learning module?",
+                isPageHeading: true,
+                classes: "font-bold"
+                }
+                },
+                items: [
+                {
+                value: "true",
+                text: "Yes, this is associated learning module",
+                checked: true if module.associatedLearning
+                }
+                ]
+                }) }}
                 <div class="button-container">
                     {{ govukButton({
                     text: "Edit item" if module.id else "Add item",

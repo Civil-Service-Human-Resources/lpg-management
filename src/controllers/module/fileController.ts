@@ -155,6 +155,7 @@ export class FileController {
 				title: data.title,
 				description: data.description,
 				optional: data.isOptional || false,
+				associatedLearning: data.associatedLearning,
 				duration: moment
 					.duration({
 						hours: data.hours,

@@ -22,6 +22,8 @@ export class VideoModule extends Module {
 
 	type: Module.Type.VIDEO
 
+	associatedLearning: boolean
+
 	subtype: VideoModule.Subtype
 }
 

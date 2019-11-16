@@ -10,5 +10,7 @@ export class ELearningModule extends Module {
 
 	type: Module.Type.E_LEARNING
 
+	associatedLearning: boolean
+
 	url: string
 }
