@@ -42,13 +42,6 @@ export class Audience {
 	frequency?: Duration
 
 	eventId?: string
-
-	isConfigured() {
-		return this.areasOfWork !== undefined && this.areasOfWork.length > 0 ||
-			   this.departments !== undefined && this.departments.length > 0 ||
-			   this.interests !== undefined && this.interests.length > 0 ||
-			   this.grades !== undefined && this.grades.length > 0
-	}
 }
 
 export namespace Audience {

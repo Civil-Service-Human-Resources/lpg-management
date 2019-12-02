@@ -1,9 +1,24 @@
+/* tslint:disable:no-var-requires */
+import * as config from './config'
+const appInsights = require('applicationinsights')
+appInsights
+	.setup(config.INSTRUMENTATION_KEY)
+	.setAutoDependencyCorrelation(true)
+	.setAutoCollectRequests(true)
+	.setAutoCollectPerformance(true)
+	.setAutoCollectExceptions(true)
+	.setAutoCollectDependencies(true)
+	.setAutoCollectConsole(true, true)
+	.setUseDiskRetryCaching(true)
+	.start()
+/* tslint:enable */
+
 import * as express from 'express'
 import * as session from 'express-session'
 import * as cookieParser from 'cookie-parser'
 import * as sessionFileStore from 'session-file-store'
 import * as log4js from 'log4js'
-import * as config from './config'
+
 import * as serveStatic from 'serve-static'
 import {Properties} from 'ts-json-properties'
 import {ApplicationContext} from './applicationContext'
@@ -27,19 +42,6 @@ const app = express()
 const ctx = new ApplicationContext()
 const i18n = require('i18n-express')
 const fileUpload = require('express-fileupload')
-
-const appInsights = require('applicationinsights')
-
-appInsights
-	.setup(config.INSTRUMENTATION_KEY)
-	.setAutoDependencyCorrelation(true)
-	.setAutoCollectRequests(true)
-	.setAutoCollectPerformance(true)
-	.setAutoCollectExceptions(true)
-	.setAutoCollectDependencies(true)
-	.setAutoCollectConsole(true)
-	.setUseDiskRetryCaching(true)
-	.start()
 
 app.use(
 	i18n({
