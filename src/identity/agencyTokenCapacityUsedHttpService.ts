@@ -1,9 +1,9 @@
-import {EntityService} from '../../learning-catalogue/service/entityService'
-import {OauthRestService} from '../../lib/http/oauthRestService'
-import {Auth} from '../../identity/auth'
-import {AgencyTokenCapacityUsed} from '../model/agencyTokenCapacityUsed'
-import {AgencyTokenCapacityUsedFactory} from '../model/agencyTokenCapacityUsedFactory'
-import {IdentityConfig} from "../../identity/identityConfig";
+import {EntityService} from '../learning-catalogue/service/entityService'
+import {OauthRestService} from '../lib/http/oauthRestService'
+import {Auth} from './auth'
+import {AgencyTokenCapacityUsed} from './model/AgencyTokenCapacityUsed'
+import {AgencyTokenCapacityUsedFactory} from './model/AgencyTokenCapacityUsedFactory'
+import {IdentityConfig} from "./identityConfig";
 
 export class AgencyTokenCapacityUsedHttpService {
     private _agencyTokenCapacityUsedHttpService: EntityService<AgencyTokenCapacityUsed>

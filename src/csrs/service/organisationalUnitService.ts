@@ -2,7 +2,7 @@ import {OrganisationalUnitFactory} from '../model/organisationalUnitFactory'
 import {Csrs} from '../index'
 import * as log4js from 'log4js'
 import {AgencyTokenHttpService} from '../agencyTokenHttpService'
-import {AgencyTokenCapacityUsedHttpService} from "./agencyTokenCapacityUsedHttpService";
+import {AgencyTokenCapacityUsedHttpService} from "../../identity/agencyTokenCapacityUsedHttpService";
 
 const logger = log4js.getLogger('csrs/service/OrganisationalUnitService')
 
