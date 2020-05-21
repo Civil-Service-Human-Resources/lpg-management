@@ -6,6 +6,7 @@ import {IdentityService} from './identity/identityService'
 import {Auth} from './identity/auth'
 import * as passport from 'passport'
 import {AuthConfig} from './identity/authConfig'
+import {IdentityConfig} from './identity/identityConfig'
 
 import {LearningCatalogueConfig} from './learning-catalogue/learningCatalogueConfig'
 import {LearningCatalogue} from './learning-catalogue'
@@ -76,12 +77,15 @@ import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
 import {AgencyTokenController} from './controllers/agencyTokenController'
 import {FeatureConfig} from './config/featureConfig'
+import {AgencyTokenCapacityUsedHttpService} from "./csrs/service/agencyTokenCapacityUsedHttpService"
+import {AgencyTokenCapacityUsedFactory} from './csrs/model/agencyTokenCapacityUsedFactory'
 
 log4js.configure(config.LOGGING)
 
 export class ApplicationContext {
 	identityService: IdentityService
 	auth: Auth
+	identityConfig: IdentityConfig
 	axiosInstance: AxiosInstance
 	cacheService: CacheService
 	homeController: HomeController
@@ -136,6 +140,7 @@ export class ApplicationContext {
 	organisationController: OrganisationController
 	csrs: Csrs
 	agencyTokenHttpService: AgencyTokenHttpService
+	agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
 	organisationalUnitFactory: OrganisationalUnitFactory
 	organisationalUnitValidator: Validator<OrganisationalUnit>
 	searchController: SearchController
@@ -149,6 +154,7 @@ export class ApplicationContext {
 	agencyTokenValidator: Validator<AgencyToken>
 	agencyTokenService: AgencyTokenService
 	agencyTokenController: AgencyTokenController
+	agencyTokenCapacityUsedFactory: AgencyTokenCapacityUsedFactory
 	featureConfig: FeatureConfig
 
 	@EnvValue('LPG_UI_URL')
@@ -175,6 +181,8 @@ export class ApplicationContext {
 			passport,
 			this.identityService
 		)
+
+		this.identityConfig = new IdentityConfig(config.AUTHENTICATION.authenticationServiceUrl)
 
 		this.learningCatalogueConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url)
 
@@ -277,6 +285,7 @@ export class ApplicationContext {
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.csrs = new Csrs(this.csrsConfig, this.auth)
 		this.agencyTokenHttpService = new AgencyTokenHttpService(this.csrsConfig, this.auth)
+		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
 
 		this.audienceService = new AudienceService(this.csrsService)
 		this.audienceController = new AudienceController(
@@ -290,7 +299,7 @@ export class ApplicationContext {
 		)
 		this.organisationalUnitFactory = new OrganisationalUnitFactory()
 		this.organisationalUnitValidator = new Validator<OrganisationalUnit>(this.organisationalUnitFactory)
-		this.organisationalUnitService = new OrganisationalUnitService(this.csrs, this.organisationalUnitFactory, this.agencyTokenHttpService)
+		this.organisationalUnitService = new OrganisationalUnitService(this.csrs, this.organisationalUnitFactory, this.agencyTokenHttpService, this.agencyTokenCapacityUsedHttpService)
 
 		this.organisationController = new OrganisationController(this.csrs, this.organisationalUnitFactory, this.organisationalUnitValidator, this.organisationalUnitService)
 
@@ -304,6 +313,8 @@ export class ApplicationContext {
 			this.agencyTokenFactory,
 			this.csrs
 		)
+
+		this.agencyTokenCapacityUsedFactory = new AgencyTokenCapacityUsedFactory()
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
