@@ -9,6 +9,7 @@ import {OrganisationalUnitService} from '../../../../src/csrs/service/organisati
 import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {AgencyTokenHttpService} from '../../../../src/csrs/agencyTokenHttpService'
 import {AgencyToken} from '../../../../src/csrs/model/agencyToken'
+import {AgencyTokenCapacityUsedHttpService} from '../../../../src/csrs/service/agencyTokenCapacityUsedHttpService'
 
 chai.use(sinonChai)
 
@@ -17,12 +18,13 @@ describe('OrganisationalUnitService tests', () => {
 	let organisationalUnitFactory: OrganisationalUnitFactory
 	let organisationalUnitService: OrganisationalUnitService
 	let agencyTokenHttpService: AgencyTokenHttpService
+	let agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
 
 	beforeEach(() => {
 		csrs = <Csrs>{}
 		organisationalUnitFactory = <OrganisationalUnitFactory>{}
 		agencyTokenHttpService = <AgencyTokenHttpService>{}
-		organisationalUnitService = new OrganisationalUnitService(csrs, organisationalUnitFactory, agencyTokenHttpService)
+		organisationalUnitService = new OrganisationalUnitService(csrs, organisationalUnitFactory, agencyTokenHttpService, agencyTokenCapacityUsedHttpService)
 	})
 
 	it('should get organisationalUnit data', async () => {

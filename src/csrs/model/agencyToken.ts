@@ -4,6 +4,8 @@ import {IsNumberString} from 'class-validator'
 export class AgencyToken {
 	id: string
 
+	uid: string
+
 	token: string
 
 	@IsNumberString({
