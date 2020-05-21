@@ -44,6 +44,12 @@ export class OrganisationalUnitService {
 			agencyToken: organisationalUnit.agencyToken,
 		}
 
+		if(organisationalUnit.agencyToken !== undefined) {
+			// if org has an agency token get the capacity used
+			const response = await this.agencyTokenCapacityUsedHttpService.getCapacityUsed(data.agencyToken.uid)
+			organisationalUnit.agencyToken.capacityUsed = response.capacityUsed
+		}
+
 		return this.organisationalUnitFactory.create(data)
 	}
 }
