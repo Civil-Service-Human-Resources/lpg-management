@@ -77,7 +77,7 @@ import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
 import {AgencyTokenController} from './controllers/agencyTokenController'
 import {FeatureConfig} from './config/featureConfig'
-import {AgencyTokenCapacityUsedHttpService} from "./csrs/service/agencyTokenCapacityUsedHttpService"
+import {AgencyTokenCapacityUsedHttpService} from './csrs/service/agencyTokenCapacityUsedHttpService'
 import {AgencyTokenCapacityUsedFactory} from './csrs/model/agencyTokenCapacityUsedFactory'
 
 log4js.configure(config.LOGGING)
