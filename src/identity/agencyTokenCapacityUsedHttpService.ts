@@ -17,8 +17,4 @@ export class AgencyTokenCapacityUsedHttpService {
     async getCapacityUsed(uid: string): Promise<AgencyTokenCapacityUsed> {
         return await this._agencyTokenCapacityUsedHttpService.get(`/agency/${uid}`)
     }
-
-    set agencyTokenCapacityUsedHttpService(value: EntityService<AgencyTokenCapacityUsed>) {
-        this._agencyTokenCapacityUsedHttpService = value
-    }
 }

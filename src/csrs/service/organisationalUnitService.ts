@@ -1,21 +1,18 @@
 import {OrganisationalUnitFactory} from '../model/organisationalUnitFactory'
 import {Csrs} from '../index'
 import * as log4js from 'log4js'
-import {AgencyTokenHttpService} from '../agencyTokenHttpService'
 import {AgencyTokenCapacityUsedHttpService} from "../../identity/agencyTokenCapacityUsedHttpService";
 
 const logger = log4js.getLogger('csrs/service/OrganisationalUnitService')
 
 export class OrganisationalUnitService {
 	csrs: Csrs
-	agencyTokenHttpService: AgencyTokenHttpService
 	organisationalUnitFactory: OrganisationalUnitFactory
 	agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
 
-	constructor(csrs: Csrs, organisationalUnitFactory: OrganisationalUnitFactory, agencyTokenHttpService: AgencyTokenHttpService, agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService) {
+	constructor(csrs: Csrs, organisationalUnitFactory: OrganisationalUnitFactory, agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService) {
 		this.csrs = csrs
 		this.organisationalUnitFactory = organisationalUnitFactory
-		this.agencyTokenHttpService = agencyTokenHttpService
 		this.agencyTokenCapacityUsedHttpService = agencyTokenCapacityUsedHttpService
 	}
 
@@ -35,6 +32,12 @@ export class OrganisationalUnitService {
 			}
 		})
 
+		/*if(organisationalUnit.agencyToken !== undefined) {
+			// if org has an agency token get the capacity used
+			const response = await this.agencyTokenCapacityUsedHttpService.getCapacityUsed(organisationalUnit.agencyToken.uid)
+			organisationalUnit.agencyToken.capacityUsed = response.capacityUsed
+		}
+*/
 		const data = {
 			id: organisationalUnit.id,
 			name: organisationalUnit.name,
@@ -44,10 +47,11 @@ export class OrganisationalUnitService {
 			agencyToken: organisationalUnit.agencyToken,
 		}
 
-		if(organisationalUnit.agencyToken !== undefined) {
+		if(data.agencyToken !== undefined) {
 			// if org has an agency token get the capacity used
 			const response = await this.agencyTokenCapacityUsedHttpService.getCapacityUsed(data.agencyToken.uid)
-			organisationalUnit.agencyToken.capacityUsed = response.capacityUsed
+			//organisationalUnit.agencyToken.capacityUsed = response.capacityUsed
+			data.agencyToken.capacityUsed = response.capacityUsed
 		}
 
 		return this.organisationalUnitFactory.create(data)
