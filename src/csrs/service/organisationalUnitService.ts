@@ -32,12 +32,12 @@ export class OrganisationalUnitService {
 			}
 		})
 
-		/*if(organisationalUnit.agencyToken !== undefined) {
+		if(organisationalUnit.agencyToken !== undefined) {
 			// if org has an agency token get the capacity used
 			const response = await this.agencyTokenCapacityUsedHttpService.getCapacityUsed(organisationalUnit.agencyToken.uid)
 			organisationalUnit.agencyToken.capacityUsed = response.capacityUsed
 		}
-*/
+
 		const data = {
 			id: organisationalUnit.id,
 			name: organisationalUnit.name,
@@ -45,13 +45,6 @@ export class OrganisationalUnitService {
 			abbreviation: organisationalUnit.abbreviation,
 			parent: parent,
 			agencyToken: organisationalUnit.agencyToken,
-		}
-
-		if(data.agencyToken !== undefined) {
-			// if org has an agency token get the capacity used
-			const response = await this.agencyTokenCapacityUsedHttpService.getCapacityUsed(data.agencyToken.uid)
-			//organisationalUnit.agencyToken.capacityUsed = response.capacityUsed
-			data.agencyToken.capacityUsed = response.capacityUsed
 		}
 
 		return this.organisationalUnitFactory.create(data)
