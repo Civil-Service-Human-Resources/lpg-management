@@ -59,7 +59,7 @@ describe('OrganisationalUnitService tests', () => {
 		expect(result).to.eql(data)
 	})
 
-	it('should get capacity used data', async () => {
+	it('should get organisational unit data with agency token data', async () => {
 		let uri = '1'
 		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
 		organisationalUnit.id = uri

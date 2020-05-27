@@ -6,7 +6,7 @@ export class AgencyTokenCapacityUsedFactory {
         this.create = this.create.bind(this)
     }
 
-    public create(data: any): any {
+    public create(data: any): AgencyTokenCapacityUsed {
         const agencyTokenCapacityUsed: AgencyTokenCapacityUsed = new AgencyTokenCapacityUsed()
 
         agencyTokenCapacityUsed.capacityUsed = data.capacityUsed
