@@ -1,0 +1,19 @@
+import {expect} from 'chai'
+import {IdentityConfig} from '../../../src/identity/identityConfig'
+
+describe('IdentityConfig tests', () => {
+
+    it('should set config properties in constructor', () => {
+        const config: IdentityConfig = new IdentityConfig('aUrl', 100)
+
+        expect(config.url).to.equal('aUrl')
+        expect(config.timeout).to.equal(100)
+    })
+
+    it('should override config properties in setters', () => {
+        const config: IdentityConfig = new IdentityConfig('aUrl', )
+
+        expect(config.url).to.equal('aUrl')
+        expect(config.timeout).to.equal(3000)
+    })
+})
