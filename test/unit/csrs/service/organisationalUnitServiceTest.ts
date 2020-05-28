@@ -9,8 +9,8 @@ import {OrganisationalUnitService} from '../../../../src/csrs/service/organisati
 import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {AgencyToken} from '../../../../src/csrs/model/agencyToken'
 import {AgencyTokenCapacityUsedHttpService} from '../../../../src/identity/agencyTokenCapacityUsedHttpService'
-import {AgencyTokenCapacityUsed} from "../../../../src/identity/model/AgencyTokenCapacityUsed";
-import {AgencyDomain} from "../../../../src/csrs/model/agencyDomain";
+import {AgencyTokenCapacityUsed} from '../../../../src/identity/model/AgencyTokenCapacityUsed'
+import {AgencyDomain} from '../../../../src/csrs/model/agencyDomain'
 
 chai.use(sinonChai)
 
@@ -75,7 +75,7 @@ describe('OrganisationalUnitService tests', () => {
 		ad1.domain = 'domain1'
 		let ad2: AgencyDomain = new AgencyDomain()
 		ad2.domain = 'domain2'
-		let agencyDomains: AgencyDomain[] = [ad1, ad2];
+		let agencyDomains: AgencyDomain[] = [ad1, ad2]
 		agency.agencyDomains = agencyDomains
 
 		const agencyTokenCapacityUsed: AgencyTokenCapacityUsed = new AgencyTokenCapacityUsed()
@@ -115,21 +115,21 @@ describe('OrganisationalUnitService tests', () => {
 		const expectedAgencyTokenData = {
 			agencyDomains: [
 				{
-					domain: 'domain1'
+					domain: 'domain1',
 				},
 				{
-					domain: 'domain2'
-				}
+					domain: 'domain2',
+				},
 			],
 			capacity: 200,
 			capacityUsed: '9',
 			token: 'token978',
-			uid: '123'
+			uid: '123',
 		}
 
 		const expectedData = {
 			id: '1',
-			agencyToken: expectedAgencyTokenData
+			agencyToken: expectedAgencyTokenData,
 		}
 
 		const result = await organisationalUnitService.getOrganisationalUnit(uri)

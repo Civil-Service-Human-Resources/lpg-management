@@ -1,16 +1,15 @@
-import {AgencyTokenCapacityUsed} from "./AgencyTokenCapacityUsed";
+import {AgencyTokenCapacityUsed} from './AgencyTokenCapacityUsed'
 
 export class AgencyTokenCapacityUsedFactory {
+	constructor() {
+		this.create = this.create.bind(this)
+	}
 
-    constructor() {
-        this.create = this.create.bind(this)
-    }
+	public create(data: any): AgencyTokenCapacityUsed {
+		const agencyTokenCapacityUsed: AgencyTokenCapacityUsed = new AgencyTokenCapacityUsed()
 
-    public create(data: any): AgencyTokenCapacityUsed {
-        const agencyTokenCapacityUsed: AgencyTokenCapacityUsed = new AgencyTokenCapacityUsed()
+		agencyTokenCapacityUsed.capacityUsed = data.capacityUsed
 
-        agencyTokenCapacityUsed.capacityUsed = data.capacityUsed
-
-        return agencyTokenCapacityUsed
-    }
+		return agencyTokenCapacityUsed
+	}
 }

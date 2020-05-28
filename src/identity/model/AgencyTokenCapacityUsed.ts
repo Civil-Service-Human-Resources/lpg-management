@@ -1,3 +1,3 @@
 export class AgencyTokenCapacityUsed {
-    capacityUsed: string
+	capacityUsed: string
 }

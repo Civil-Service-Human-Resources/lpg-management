@@ -1,7 +1,7 @@
 import {OrganisationalUnitFactory} from '../model/organisationalUnitFactory'
 import {Csrs} from '../index'
 import * as log4js from 'log4js'
-import {AgencyTokenCapacityUsedHttpService} from "../../identity/agencyTokenCapacityUsedHttpService";
+import {AgencyTokenCapacityUsedHttpService} from '../../identity/agencyTokenCapacityUsedHttpService'
 
 const logger = log4js.getLogger('csrs/service/OrganisationalUnitService')
 
@@ -32,7 +32,7 @@ export class OrganisationalUnitService {
 			}
 		})
 
-		if(organisationalUnit.agencyToken !== undefined) {
+		if (organisationalUnit.agencyToken !== undefined) {
 			// if org has an agency token get the capacity used
 			const response = await this.agencyTokenCapacityUsedHttpService.getCapacityUsed(organisationalUnit.agencyToken.uid)
 			organisationalUnit.agencyToken.capacityUsed = response.capacityUsed

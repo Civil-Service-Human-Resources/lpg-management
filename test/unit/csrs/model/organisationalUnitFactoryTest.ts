@@ -2,8 +2,8 @@ import {expect} from 'chai'
 import {describe, it} from 'mocha'
 import {OrganisationalUnitFactory} from '../../../../src/csrs/model/organisationalUnitFactory'
 import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
-import {AgencyToken} from "../../../../src/csrs/model/agencyToken";
-import {AgencyDomain} from "../../../../src/csrs/model/agencyDomain";
+import {AgencyToken} from '../../../../src/csrs/model/agencyToken'
+import {AgencyDomain} from '../../../../src/csrs/model/agencyDomain'
 
 describe('OrganisationalUnitFactory tests', () => {
 	const organisationalUnitFactory: OrganisationalUnitFactory = new OrganisationalUnitFactory()
@@ -26,7 +26,7 @@ describe('OrganisationalUnitFactory tests', () => {
 		ad1.domain = 'domain1'
 		let ad2: AgencyDomain = new AgencyDomain()
 		ad2.domain = 'domain2'
-		let agencyDomains: AgencyDomain[] = [ad1, ad2];
+		let agencyDomains: AgencyDomain[] = [ad1, ad2]
 		agency.agencyDomains = agencyDomains
 		agency.capacityUsed = 9
 
@@ -36,7 +36,7 @@ describe('OrganisationalUnitFactory tests', () => {
 			code: code,
 			paymentMethods: paymentMethods,
 			children: children,
-			agencyToken: agency
+			agencyToken: agency,
 		}
 
 		const result: OrganisationalUnit = organisationalUnitFactory.create(data)
