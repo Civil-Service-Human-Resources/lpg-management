@@ -76,7 +76,6 @@ import {AgencyToken} from './csrs/model/agencyToken'
 import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
 import {AgencyTokenController} from './controllers/agencyTokenController'
-import {FeatureConfig} from './config/featureConfig'
 import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
 import {AgencyTokenCapacityUsedFactory} from './identity/model/AgencyTokenCapacityUsedFactory'
 
@@ -155,7 +154,6 @@ export class ApplicationContext {
 	agencyTokenService: AgencyTokenService
 	agencyTokenController: AgencyTokenController
 	agencyTokenCapacityUsedFactory: AgencyTokenCapacityUsedFactory
-	featureConfig: FeatureConfig
 
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
@@ -320,7 +318,6 @@ export class ApplicationContext {
 
 		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator)
 		this.skillsController = new SkillsController(this.csrsService)
-		this.featureConfig = new FeatureConfig()
 	}
 
 	addToResponseLocals() {
@@ -328,7 +325,6 @@ export class ApplicationContext {
 			res.locals.originalUrl = req.originalUrl
 			res.locals.lpgUiUrl = this.lpgUiUrl
 			res.locals.sessionFlash = req.session!.sessionFlash
-			res.locals.featureToggles = this.featureConfig.getFeatureToggleMap()
 
 			delete req.session!.sessionFlash
 

@@ -18,50 +18,6 @@ describe('Agency Token Service', () => {
 		})
 	})
 
-	describe('#validateCapacity', () => {
-		it('should return `true` when a valid capacity value is supplied', async () => {
-			const capacity = '250'
-			const capacityIsValid = agencyTokenService.validateCapacity(capacity)
-
-			expect(capacityIsValid).to.be.true
-		})
-
-		it('should return `true` when the minimum value is supplied', async () => {
-			const capacity = '1'
-			const capacityIsValid = agencyTokenService.validateCapacity(capacity)
-
-			expect(capacityIsValid).to.be.true
-		})
-
-		it('should return `true` when the maximum value is supplied', async () => {
-			const capacity = '1500'
-			const capacityIsValid = agencyTokenService.validateCapacity(capacity)
-
-			expect(capacityIsValid).to.be.true
-		})
-
-		it('should return `false` when a non-number value is supplied', async () => {
-			const capacity = 'abc'
-			const capacityIsValid = agencyTokenService.validateCapacity(capacity)
-
-			expect(capacityIsValid).to.be.false
-		})
-
-		it('should return `false` when a value below the minimum is supplied', async () => {
-			const capacity = '0'
-			const capacityIsValid = agencyTokenService.validateCapacity(capacity)
-
-			expect(capacityIsValid).to.be.false
-		})
-
-		it('should return `false` when a value above the maximum is supplied', async () => {
-			const capacity = '1501'
-			const capacityIsValid = agencyTokenService.validateCapacity(capacity)
-
-			expect(capacityIsValid).to.be.false
-		})
-	})
-
 	describe('#validateDomains', () => {
 		it('should return `true` when a valid domains list is supplied', async () => {
 			const domains = ['cabinetoffice.gov.uk', 'nhs.net']

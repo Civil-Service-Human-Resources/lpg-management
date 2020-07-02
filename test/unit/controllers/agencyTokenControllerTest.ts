@@ -72,7 +72,6 @@ describe('AgencyTokenController', () => {
 			req.session!.domainsForAgencyToken = domains
 
 			agencyTokenValidator.check = sinon.stub().returns([])
-			agencyTokenService.validateCapacity = sinon.stub().returns(true)
 			agencyTokenService.validateAgencyTokenNumber = sinon.stub().returns(true)
 			agencyTokenService.validateDomains = sinon.stub().returns(true)
 
@@ -84,6 +83,68 @@ describe('AgencyTokenController', () => {
 
 			expect(csrs.createAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/overview`)
+		})
+
+		it('should update agency token for organisation and redirect to the Organisation Overview page if data submitted is valid', async function() {
+			req.body = {capacity: capacity, tokenNumber: tokenNumber}
+			req.session!.domainsForAgencyToken = domains
+
+			agencyTokenValidator.check = sinon.stub().returns([])
+			agencyTokenService.validateAgencyTokenNumber = sinon.stub().returns(true)
+			agencyTokenService.validateDomains = sinon.stub().returns(true)
+
+			const agencyToken: AgencyToken = new AgencyToken()
+
+			agencyToken.capacityUsed = 11
+			res.locals.organisationalUnit.agencyToken = agencyToken
+
+			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
+			csrs.updateAgencyToken = sinon.stub().returns(Promise.resolve())
+
+			await agencyTokenController.updateAgencyToken()(req, res, next)
+
+			expect(csrs.updateAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/overview`)
+		})
+
+		it('should handle bad request and redirect to agency token screen when creating', async function() {
+			req.body = {capacity: capacity, tokenNumber: tokenNumber}
+			req.session!.domainsForAgencyToken = domains
+
+			agencyTokenValidator.check = sinon.stub().returns([])
+			agencyTokenService.validateAgencyTokenNumber = sinon.stub().returns(true)
+			agencyTokenService.validateDomains = sinon.stub().returns(true)
+
+			const error = {response: {status: 400, data:{capacity: "invalid"}}}
+
+			const agencyToken = new AgencyToken()
+			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
+			csrs.createAgencyToken = sinon.stub().returns(Promise.reject(error))
+
+			await agencyTokenController.createAgencyToken()(req, res, next)
+			expect(csrs.createAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/agency-token`)
+		})
+
+		it('should handle bad request and redirect to agency token screen when updating', async function() {
+			req.body = {capacity: capacity, tokenNumber: tokenNumber}
+			req.session!.domainsForAgencyToken = domains
+
+			agencyTokenValidator.check = sinon.stub().returns([])
+			agencyTokenService.validateAgencyTokenNumber = sinon.stub().returns(true)
+			agencyTokenService.validateDomains = sinon.stub().returns(true)
+			const agencyToken: AgencyToken = new AgencyToken()
+
+			agencyToken.capacityUsed = 11
+			res.locals.organisationalUnit.agencyToken = agencyToken
+			const error = {response: {status: 400, data: {capacity: "invalid"}}}
+
+			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
+			csrs.updateAgencyToken = sinon.stub().returns(Promise.reject(error))
+
+			await agencyTokenController.updateAgencyToken()(req, res, next)
+			expect(csrs.updateAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/agency-token`)
 		})
 	})
 })

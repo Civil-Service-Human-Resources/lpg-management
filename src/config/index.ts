@@ -92,5 +92,3 @@ export const CACHE = {
 }
 
 export const INSTRUMENTATION_KEY = env.instrumentation_key || 'instrumentation_key'
-
-export const AGENCY_TOGGLE = env.AGENCY_TOGGLE || false

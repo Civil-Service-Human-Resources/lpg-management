@@ -6,10 +6,17 @@
             {% set errorSummary = [] %}
 
             {% for field, message in errors %}
-                {% set error = errorSummary.push({
-                    "text": i18n[message[0]] if i18n[message[0]] else message[0] | jsonpath(i18n)
-                })
-                %}
+                {% if (message.length > 0) %}
+                    {% set error = errorSummary.push({
+                        "text": message
+                    })
+                    %}
+                {% else %}
+                    {% set error = errorSummary.push({
+                        "text": i18n["message[0]"] if i18n[message[0]] else message[0] | jsonpath(i18n)
+                    })
+                    %}
+                {% endif %}
             {% endfor %}
 
             {{ govukErrorSummary({
@@ -17,7 +24,6 @@
                 errorList: errorSummary,
                 classes: "custom-error-message"
             }) }}
-
         {% endif %}
     </div>
 </div>

@@ -116,12 +116,6 @@ export class AgencyTokenController implements FormController {
 
 			logger.debug(`Adding agency token to organisation: ${organisationalUnit.name}`)
 
-			const capacityIsValid = this.agencyTokenService.validateCapacity(request.body.capacity)
-			if (!capacityIsValid) {
-				const error = {fields: {capacity: ['agencyToken.validation.capacity.invalid']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
 			const domainsIsValid = this.agencyTokenService.validateDomains(request.session!.domainsForAgencyToken)
 			if (!domainsIsValid) {
 				let errorText = ''
@@ -153,8 +147,13 @@ export class AgencyTokenController implements FormController {
 				.then(() => {
 					response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 				})
-				.catch(error => {
-					next(error)
+				.catch(rejected => {
+					if (rejected.response.status == 400) {
+						const error = {fields: {capacity: rejected.response.data.capacity}, size: 1}
+						return this.redirectToAddEditAgencyTokenWithError(request, response, error)
+					} else {
+						next(rejected)
+					}
 				})
 		}
 	}
@@ -168,12 +167,6 @@ export class AgencyTokenController implements FormController {
 			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
 
 			logger.debug(`Updating agency token for organisation: ${organisationalUnit.name}`)
-
-			const capacityIsValid = this.agencyTokenService.validateCapacity(request.body.capacity)
-			if (!capacityIsValid) {
-				const error = {fields: {capacity: ['agencyToken.validation.capacity.invalid']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
 
 			if (request.body.capacity < organisationalUnit.agencyToken.capacityUsed) {
 				const error = {fields: {capacity: ['agencyToken.validation.capacity.lessThanCurrentUsage']}, size: 1}
@@ -211,8 +204,13 @@ export class AgencyTokenController implements FormController {
 				.then(() => {
 					response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 				})
-				.catch(error => {
-					next(error)
+				.catch(rejected => {
+					if (rejected.response.status == 400) {
+						const error = {fields: {capacity: rejected.response.data.capacity}, size: 1}
+						return this.redirectToAddEditAgencyTokenWithError(request, response, error)
+					} else {
+						next(rejected)
+					}
 				})
 		}
 	}
