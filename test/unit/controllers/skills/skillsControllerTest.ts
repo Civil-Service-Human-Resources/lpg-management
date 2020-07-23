@@ -4,8 +4,8 @@ import {NextFunction, Request, Response} from 'express'
 import * as sinon from 'sinon'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import {SkillsController} from '../../../../src/controllers/skills/skillsController'
-import {expect} from 'chai'
 import * as chai from 'chai'
+import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {QuestionFactory} from '../../../../src/controllers/skills/questionFactory'
 import {QuizFactory} from '../../../../src/controllers/skills/quizFactory'
@@ -107,26 +107,23 @@ describe('Skills Controller Tests', function() {
 			let questsionDTO = new Object()
 
 			let response = {
-				data: {
+				"id": 1,
+				"type": "MULTIPLE",
+				"value": "What is the capital of Ireland?",
+				"answer": {
 					"id": 1,
-					"type": "MULTIPLE",
-					"value": "What is the capital of Ireland?",
-					"answer": {
-						"id": 1,
-						"correctAnswers": [
-							"A",
-							"D"
-						],
-						"answers": {
-							"A": "Dublin",
-							"B": "London",
-							"C": "New York",
-							"D": "Melbourne"
-						}
-					},
-					"status": "ACTIVE"
-				}
-
+					"correctAnswers": [
+						"A",
+						"D"
+					],
+					"answers": {
+						"A": "Dublin",
+						"B": "London",
+						"C": "New York",
+						"D": "Melbourne"
+					}
+				},
+				"status": "ACTIVE"
 			}
 
 			csrsService.getQuestionbyID = sinon.stub().returns(Promise.resolve(response))
@@ -139,6 +136,22 @@ describe('Skills Controller Tests', function() {
 
 	describe('Skills report', () => {
 		it('should render Skills report page', async () => {
+			let response = [
+				{
+					"name": "Analysis",
+					"id": 1,
+					"href": "http://localhost:9002/professions/1",
+					"abbreviation": null,
+					"formattedName": "Analysis"
+				},
+				{
+					"name": "Commercial",
+					"id": 2,
+					"href": "http://localhost:9002/professions/2",
+					"abbreviation": null,
+					"formattedName": "Commercial"
+				}]
+			csrsService.getAreasOfWork = sinon.stub().returns(Promise.resolve(response))
 			await skillsController.getSkillsReport()(req, res, next)
 			expect(res.render).to.have.been.calledOnceWith('page/skills/generate-report')
 		})

@@ -96,12 +96,6 @@ export class CsrsService {
 		return areasOfWork
 	}
 
-	async getProfessionWithID() {
-		let areasOfWork = await this.restService.get('/professions/tree')
-
-		return areasOfWork
-	}
-
 	async isAreaOfWorkValid(areaOfWork: string) {
 		const areaOfWorkLookupResult = JsonpathService.queryWithLimit(await this.getAreasOfWork(), `$..professions[?(@.name==${JSON.stringify(areaOfWork)})]`, 1)
 		return areaOfWorkLookupResult.length > 0
