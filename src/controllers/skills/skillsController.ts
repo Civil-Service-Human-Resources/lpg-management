@@ -95,10 +95,6 @@ export class SkillsController implements FormController {
 					next(error)
 				})
 
-			const winston = require('winston')
-			const logger = winston.loggers.get('logger')
-			logger.info("organisationalID" + organisationalID)
-
 			await this.csrsService
 				.getQuizesByOrg(organisationalID, req.user)
 				.then(response => {
@@ -442,11 +438,6 @@ export class SkillsController implements FormController {
 			} else if (!professionID) {
 				errorMessage = "Profession is not set, Please set your profession in your profile page."
 			}
-
-			const winston = require('winston')
-			const logger = winston.loggers.get('logger')
-			logger.info("organisationalID" + organisationalID)
-			logger.info("professionID" + professionID)
 
 			if (professionID != null && organisationalID != null) {
 				let data = { profession: { id: professionID} , organisationId: organisationalID}
