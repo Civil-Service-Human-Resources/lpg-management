@@ -295,7 +295,7 @@ export class ApplicationContext {
 
 		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
-		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator, this.reportService)
+		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 
 	}
 

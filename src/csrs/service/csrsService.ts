@@ -43,8 +43,8 @@ export class CsrsService {
 		)
 	}
 
-	async deleteQuizByProfession(professionID: number, organisationalID: number, user: any): Promise<void> {
-		await this.restService.deleteWithConfig(`/api/quiz/delete?professionId=${professionID}&organisationId=${organisationalID}`, this.getAuthorizationHeader(user))
+	async deleteQuizByProfession(professionID: number, organisationID: number, user: any): Promise<void> {
+		await this.restService.deleteWithConfig(`/api/quiz/delete?professionId=${professionID}&organisationId=${organisationID}`, this.getAuthorizationHeader(user))
 	}
 
 	async deleteQuestionbyID(id: string, user: any): Promise<void> {
@@ -196,9 +196,9 @@ export class CsrsService {
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
 	}
 
-	async getReportForProfAdmin(startDate: any, endDate: any, user: any) {
+	async getReportForProfAdmin(startDate: any, endDate: any, professionID: any, user: any) {
 
-		const reportUrl = `/report/skills/report-for-department-admin?from=${startDate}&to=${endDate}`
+		let reportUrl = `/report/skills/report-for-profession-admin?from=${startDate}&to=${endDate}&professionId=${professionID}`
 
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
 	}

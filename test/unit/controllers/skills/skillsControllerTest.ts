@@ -12,7 +12,6 @@ import {QuizFactory} from '../../../../src/controllers/skills/quizFactory'
 import {Validator} from "../../../../src/learning-catalogue/validator/validator"
 import {Question} from "../../../../src/controllers/skills/question"
 import {Quiz} from "../../../../src/controllers/skills/quiz"
-import {ReportService} from '../../../../src/report-service'
 
 chai.use(sinonChai)
 
@@ -21,7 +20,6 @@ describe('Skills Controller Tests', function() {
 	let csrsService: CsrsService
 	let questionFactory: QuestionFactory
 	let quizFactory: QuizFactory
-	let reportService: ReportService
 	let req: Request
 	let res: Response
 	let validator: Validator<Question>
@@ -34,9 +32,8 @@ describe('Skills Controller Tests', function() {
 		questionFactory = <QuestionFactory>{}
 		quizFactory = <QuizFactory>{}
 		validator = <Validator<Question>>{}
-		reportService: <ReportService>{}
 
-		skillsController = new SkillsController(csrsService, questionFactory, quizFactory, validator, reportService)
+		skillsController = new SkillsController(csrsService, questionFactory, quizFactory, validator)
 
 		req = mockReq()
 		res = mockRes()

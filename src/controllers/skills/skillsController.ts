@@ -11,7 +11,6 @@ import {Answer} from "./answer"
 import * as config from "../../config"
 import { IsAnswersValid } from '../../learning-catalogue/validator/custom/quizQuestionAnswersValidator'
 import moment = require('moment')
-import {ReportService} from '../../report-service'
 
 export class SkillsController implements FormController {
 	csrsService: CsrsService
@@ -19,15 +18,13 @@ export class SkillsController implements FormController {
 	router: Router
 	questionFactory: QuestionFactory
 	quizFactory: QuizFactory
-	reportService: ReportService
 
-	constructor(csrsService: CsrsService, questionFactory: QuestionFactory, quizFactory: QuizFactory, questionValidator: Validator<Question>, reportService: ReportService) {
+	constructor(csrsService: CsrsService, questionFactory: QuestionFactory, quizFactory: QuizFactory, questionValidator: Validator<Question>) {
 		this.router = Router()
 		this.csrsService = csrsService
 		this.validator = questionValidator
 		this.questionFactory = questionFactory
 		this.quizFactory = quizFactory
-		this.reportService = reportService
 		this.configureRouterPaths()
 	}
 
@@ -609,6 +606,7 @@ export class SkillsController implements FormController {
 			// @ts-ignore
 			const userRoles: any = req.user.roles
 
+
 			if(userRoles.includes('CSHR_REPORTER') || userRoles.includes('LEARNING_MANAGER')) {
 				req.session!.save(() => {
 					res.render('page/skills/generate-report', {
@@ -621,7 +619,7 @@ export class SkillsController implements FormController {
 				req.session!.save(() => {
 					res.render('page/skills/generate-report', {
 						placeholder: new PlaceholderDateSkills(),
-						areasOfWork: areasOfWork,
+						professions: areasOfWork,
 						role: 'orgAdmin'
 					})
 				})
@@ -629,8 +627,8 @@ export class SkillsController implements FormController {
 				req.session!.save(() => {
 					res.render('page/skills/generate-report', {
 						placeholder: new PlaceholderDateSkills(),
-						areasOfWork: areasOfWork,
-						role: 'profAdmin'
+						professions: areasOfWork,
+						role: 'profAdmin'	
 					})
 				})
 			}
@@ -685,9 +683,23 @@ export class SkillsController implements FormController {
 					throw new Error(error)
 				}
 			} else if (role == 'profAdmin') {
+
 				try {
+
 					await this.csrsService
-						.getReportForProfAdmin(startDate, endDate, req.user)
+						.getCivilServant()
+						.then(civilServant => {
+							if (civilServant.profession) {
+								res.locals.professionID = civilServant.profession.id
+							}
+
+						})
+						.catch(error => {
+							next(error)
+						})
+
+					await this.csrsService
+						.getReportForProfAdmin(startDate, endDate, res.locals.professionID, req.user)
 						.then(report => {
 							res.writeHead(200, {
 								'Content-type': 'text/csv',
