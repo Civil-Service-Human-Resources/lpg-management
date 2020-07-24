@@ -628,7 +628,7 @@ export class SkillsController implements FormController {
 					res.render('page/skills/generate-report', {
 						placeholder: new PlaceholderDateSkills(),
 						professions: areasOfWork,
-						role: 'profAdmin'	
+						role: 'profAdmin'
 					})
 				})
 			}
@@ -666,8 +666,22 @@ export class SkillsController implements FormController {
 				}
 			} else if (role == 'orgAdmin') {
 				try {
+
 					await this.csrsService
-						.getReportForOrgAdmin(startDate, endDate, professionID, req.user)
+						.getCivilServant()
+						.then(civilServant => {
+							if (civilServant.organisationalUnit.id) {
+								res.locals.organisatonID = civilServant.organisationalUnit.id
+							}
+
+						})
+						.catch(error => {
+							next(error)
+						})
+
+
+					await this.csrsService
+						.getReportForOrgAdmin(startDate, endDate, res.locals.organisatonID, req.user)
 						.then(report => {
 							res.writeHead(200, {
 								'Content-type': 'text/csv',
