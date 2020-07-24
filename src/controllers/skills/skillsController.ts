@@ -681,7 +681,7 @@ export class SkillsController implements FormController {
 
 
 					await this.csrsService
-						.getReportForOrgAdmin(startDate, endDate, res.locals.organisatonID, req.user)
+						.getReportForOrgAdmin(startDate, endDate, res.locals.organisatonID,professionID, req.user)
 						.then(report => {
 							res.writeHead(200, {
 								'Content-type': 'text/csv',

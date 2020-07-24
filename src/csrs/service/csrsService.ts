@@ -190,8 +190,8 @@ export class CsrsService {
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
 	}
 
-	async getReportForOrgAdmin(startDate: any, endDate: any, organisationID: any, user: any) {
-		let reportUrl = `/report/skills/report-for-department-admin?from=${startDate}&to=${endDate}&professionId=${organisationID}`
+	async getReportForOrgAdmin(startDate: any, endDate: any, organisationID: any, professionID: any, user: any) {
+		let reportUrl = `/report/skills/report-for-department-admin?from=${startDate}&to=${endDate}&organisationId=${organisationID}&professionId=${professionID}`
 
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
 	}
