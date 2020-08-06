@@ -40,7 +40,7 @@
 		"email-validator": "^2.0.4",
 		"express": "4.16.3",
 		"express-async-handler": "1.1.1",
-		"express-fileupload": "^1.1.4",
+		"express-fileupload": "^1.1.9",
 		"express-session": "1.15.6",
 		"govuk-frontend": "3.3.0",
 		"i18n-express": "1.1.3",
