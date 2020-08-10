@@ -474,6 +474,7 @@ export class SkillsController implements FormController {
 					req.session!.save(() => {
 						res.render('page/skills/question', {
 							question: question,
+							answerId: response.answer.id,
 							keysAnswers: keys,
 							imageName: imageName,
 							courseCatalogueUrl: config.COURSE_CATALOGUE.url + '/media/skills/image'
@@ -543,8 +544,6 @@ export class SkillsController implements FormController {
 					res.redirect(`/content-management/skills/${req.params.questionID}/edit-question`)
 				})
 			} else {
-				console.log("****** QUESTION ******")
-				console.log(question)
 				await this.csrsService
 					.editQuestion(question, req.user)
 					.then( questionDTO => {
