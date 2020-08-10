@@ -66,7 +66,8 @@ window.onload = function () {
                 }
 
 
-                if (this.readyState == 4 && this.status == 500) {
+                if ( this.readyState == 4 &&
+                    ( this.status == 500 || this.status == 400 )) {
                     document.getElementById("progress").style.color = "red";
                     document.getElementById("progress").innerText = "Image upload failed. Please upload an image which is not greater than 5MB in size and not exceeding 960p width X 640p height."
                 }
