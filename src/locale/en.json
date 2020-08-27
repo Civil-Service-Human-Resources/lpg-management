@@ -222,7 +222,7 @@
 	},
 	"skills": {
 		"title": "Add a new skills quiz",
-		"description": "Edit skills description",
+		"description": "Edit quiz description",
 		"question": {
 			"add": "Add a question",
 			"edit": "Edit a question",
