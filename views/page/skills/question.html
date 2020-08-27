@@ -14,7 +14,7 @@
 {% extends "../../component/Page.njk" %}
 
 {% block pageTitle %}
-{{ i18n.course.pageTitle.editCourseDetails if course else i18n.course.pageTitle.addCourseDetails }} - {{ i18n.proposition_name }}
+{{ i18n.skills.question.edit if question.id else i18n.skills.question.add }} - {{ i18n.proposition_name }}
 {% endblock %}
 
 {% set banner = true %}

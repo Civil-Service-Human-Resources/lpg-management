@@ -4,7 +4,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 
 {% block pageTitle %}
-{{ i18n.course.pageTitle.editCourseDetails if course else i18n.course.pageTitle.addCourseDetails }} - {{ i18n.proposition_name }}
+{{ i18n.skills.question.preview }} - {{ i18n.proposition_name }}
 {% endblock %}
 
 {% set backButton = "/content-management/skills/" + question.id + "/edit-question"%}

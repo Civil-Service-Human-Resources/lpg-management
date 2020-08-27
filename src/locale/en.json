@@ -222,6 +222,13 @@
 	},
 	"skills": {
 		"title": "Add a new skills quiz",
+		"description": "Edit skills description",
+		"question": {
+			"add": "Add a question",
+			"edit": "Edit a question",
+			"preview": "Preview question",
+			"archive": "Archive question"
+		},
 		"validation": {
 			"question": {
 				"max": "A Question must be less than 500 characters.",
