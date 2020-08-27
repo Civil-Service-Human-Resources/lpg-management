@@ -221,7 +221,7 @@
 		}
 	},
 	"skills": {
-		"title": "Add a new skills quiz",
+		"title": "Manage quiz",
 		"description": "Edit quiz description",
 		"question": {
 			"add": "Add a question",
