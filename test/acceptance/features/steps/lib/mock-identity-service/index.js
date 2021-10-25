@@ -10,7 +10,7 @@ function MockIdentityService(host, port) {
 				path: '/oauth/authorize',
 				queryStringParameters : {
 					response_type: [ 'code' ],
-					redirect_uri: [ 'http://management.local.learn.civilservice.gov.uk:3005/authenticate' ],
+					redirect_uri: [ 'http://management.develop.learn.civilservice.gov.uk:3005/authenticate' ],
 					client_id: [ 'a5881544-6159-4d2f-9b51-8c47ce97454d' ]
 				},
 			},
@@ -18,11 +18,11 @@ function MockIdentityService(host, port) {
 				statusCode: 302,
 				headers: [{
 					name: 'Location',
-					values : [ 'http://management.local.learn.civilservice.gov.uk:3005/authenticate?code=secqBt' ]
+					values : [ 'http://management.develop.learn.civilservice.gov.uk:3005/authenticate?code=secqBt' ]
 				},
 					{
 						name: 'Host',
-						values: ['identity.local.learn.civilservice.gov.uk:8080']
+						values: ['identity.develop.learn.civilservice.gov.uk:8080']
 					}],
 			}
 		}).then(
@@ -42,7 +42,7 @@ function MockIdentityService(host, port) {
 				path: '/oauth/token',
 				"body" : {
 					"type" : "STRING",
-					"string" : "grant_type=authorization_code&redirect_uri=http%3A%2F%2Flocal.learn.civilservice.gov.uk%3A3005%2Fauthenticate&client_id=a5881544-6159-4d2f-9b51-8c47ce97454d&client_secret=test&code=secqBt",
+					"string" : "grant_type=authorization_code&redirect_uri=http%3A%2F%2Fdevelop.learn.civilservice.gov.uk%3A3005%2Fauthenticate&client_id=a5881544-6159-4d2f-9b51-8c47ce97454d&client_secret=test&code=secqBt",
 					"contentType" : "text/plain; charset=utf-8"
 				}
 			},
@@ -54,7 +54,7 @@ function MockIdentityService(host, port) {
 				}),
 				headers: [{
 					name: 'Host',
-					values: ['identity.local.learn.civilservice.gov.uk:8080']
+					values: ['identity.develop.learn.civilservice.gov.uk:8080']
 				}],
 			}
 		}).then(
@@ -85,7 +85,7 @@ function MockIdentityService(host, port) {
 				}),
 				headers: [{
 					name: 'Host',
-					values: ['identity.local.learn.civilservice.gov.uk:8080']
+					values: ['identity.develop.learn.civilservice.gov.uk:8080']
 				}],
 
 			}

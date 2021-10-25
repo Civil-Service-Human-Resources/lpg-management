@@ -12,7 +12,7 @@ axiosCookieJarSupport.default(axios);
 const cookieJar = new tough.CookieJar();
 
 const http = axios.create({
-    baseURL: 'http://management.local.learn.civilservice.gov.uk:3005',
+    baseURL: 'http://management.develop.learn.civilservice.gov.uk:3005',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -45,7 +45,7 @@ Then(/^I am redirected to the login page$/, (callback) => {
 });
 
 Given(/^I am an authenticated user$/, () => {
-	identityService = new MockIdentityService('identity.local.learn.civilservice.gov.uk', 8080)
+	identityService = new MockIdentityService('identity.develop.learn.civilservice.gov.uk', 8080)
 	identityService.stubLoginJourney()
 })
 
