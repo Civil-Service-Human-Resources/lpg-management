@@ -320,9 +320,5 @@
 	"validation_module_mediaId_empty": "File is required",
 	"validation_email_address_invalid": "Enter an email address in the correct format, like name@example.com",
 	"validation_report_start_invalid": "Start date must be a valid date",
-	"validation_report_end_invalid": "End date must be a valid date",
-	"serviceError": {
-		"sorryThereIsAProblem": "Sorry, there is a problem with this service",
-		"wereLookingIntoIt": "We're looking into it. Please <a href='/sign-out'>sign out</a> and try again."
-	}
+	"validation_report_end_invalid": "End date must be a valid date"
 }
