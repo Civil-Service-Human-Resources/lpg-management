@@ -53,6 +53,7 @@ export class OrganisationController implements FormController {
 		this.router.get('/content-management/organisations/:organisationalUnitId/overview', asyncHandler(this.organisationOverview()))
 		this.router.post('/content-management/organisations/', asyncHandler(this.createOrganisation()))
 		this.router.post('/content-management/organisations/:organisationalUnitId', asyncHandler(this.updateOrganisation()))
+		this.router.delete('/content-management/organisations/:organisationalUnitId/parent', asyncHandler(this.unlinkParentOrganisation()))
 		this.router.get('/content-management/organisations/:organisationalUnitId/confirm-delete', asyncHandler(this.confirmDelete()))
 		this.router.post('/content-management/organisations/:organisationalUnitId/delete', asyncHandler(this.deleteOrganisation()))
 	}
@@ -149,6 +150,22 @@ export class OrganisationController implements FormController {
 			response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 		}
 	}
+
+	public unlinkParentOrganisation(){
+        return async(request: Request, response: Response) => {
+            let organisationalUnit = response.locals.organisationalUnit
+
+            this.logger.debug(`Unlinking parent organisation from organisation: ${organisationalUnit.id}`)
+
+            const data = {
+                parent: null
+            }
+
+            await this.csrs.updateOrganisationalUnit(organisationalUnit.id, data)
+
+            response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
+        }
+    }
 
 	public confirmDelete() {
 		return async (request: Request, response: Response) => {
