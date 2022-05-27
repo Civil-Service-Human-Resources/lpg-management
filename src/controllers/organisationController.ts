@@ -55,6 +55,7 @@ export class OrganisationController implements FormController {
 		this.router.post('/content-management/organisations/:organisationalUnitId', asyncHandler(this.updateOrganisation()))
 		this.router.get('/content-management/organisations/:organisationalUnitId/confirm-delete', asyncHandler(this.confirmDelete()))
 		this.router.post('/content-management/organisations/:organisationalUnitId/delete', asyncHandler(this.deleteOrganisation()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/unlink-parent-confirm', asyncHandler(this.confirmParentOrganisationRemoval()))
 	}
 
 	public getOrganisationList() {
@@ -153,6 +154,12 @@ export class OrganisationController implements FormController {
 	public confirmDelete() {
 		return async (request: Request, response: Response) => {
 			response.render('page/organisation/delete-organisation')
+		}
+	}
+
+	public confirmParentOrganisationRemoval(){
+		return async (request: Request, response: Response) => {
+			response.render('page/organisation/remove-parent')
 		}
 	}
 
