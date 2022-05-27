@@ -13,7 +13,7 @@
         <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.organisations.title.removeParentOrganisation }}</h1>
         <p class="govuk-body">Are you sure you want to remove the parent organisation of {{ organisationalUnit.name }}{{ " (" + organisationalUnit.abbreviation + ")" if organisationalUnit.abbreviation else "" }}?</p>
         <p class="govuk-body">This action is irreversible.</p>
-        <form action="/content-management/organisations/{{ organisationalUnit.id }}/delete" method="post">
+        <form action="/content-management/organisations/{{ organisationalUnit.id }}/unlink-parent" method="post">
             <fieldset class="govuk-fieldset">
                 {{ govukButton({
                     text: "Remove parent organisation",
