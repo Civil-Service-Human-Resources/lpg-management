@@ -169,7 +169,7 @@ export class OrganisationController implements FormController {
 
 			await this.csrs.updateOrganisationalUnit(organisationalUnit.id, data)
 		
-			response.redirect(`/content-management/organisations/manage`)
+			response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 		}
 	}
 
