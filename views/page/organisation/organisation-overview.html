@@ -87,7 +87,8 @@
                     },
                     {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/unlink-parent-confirm",
-                        text: "Unlink parent organisation"
+                        text: "Unlink parent organisation",
+                        visibility: if organisationalUnit.parent == null ? "0" : "1"
                     }
                 ] %}
                 {{ menu("Actions", actions) }}
