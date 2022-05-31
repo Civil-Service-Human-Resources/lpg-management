@@ -88,10 +88,10 @@
                 ] %}
 
                 {% if organisationalUnit.parent.name !== undefined %} 
-                    set unlinkParentAction = {
+                    {% set unlinkParentAction = {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/unlink-parent-confirm",
                         text: "Unlink parent organisation"
-                    }
+                    } %}
                     {% set actions = (actions.push(unlinkParentAction), unlinkParentAction) %}
                 {% endif %}
 
