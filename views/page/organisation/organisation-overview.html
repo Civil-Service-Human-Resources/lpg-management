@@ -84,12 +84,17 @@
                     {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/confirm-delete",
                         text: "Remove organisation"
-                    },
-                    {
+                    }
+                ] %}
+
+                {% if organisationalUnit.parent.name !== undefined %} 
+                    let unlinkParentAction = {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/unlink-parent-confirm",
                         text: "Unlink parent organisation"
                     }
-                ] %}
+                    {% set actions = (actions.push(unlinkParentAction), unlinkParentAction) %}
+                {% endif %}
+
                 {{ menu("Actions", actions) }}
             {% endblock %}
         </div>
