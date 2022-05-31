@@ -88,7 +88,7 @@
                 ] %}
 
                 {% if organisationalUnit.parent.name !== undefined %} 
-                    let unlinkParentAction = {
+                    set unlinkParentAction = {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/unlink-parent-confirm",
                         text: "Unlink parent organisation"
                     }
