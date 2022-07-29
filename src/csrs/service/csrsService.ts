@@ -1,6 +1,8 @@
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {JsonpathService} from '../../lib/jsonpathService'
 import {CacheService} from '../../lib/cacheService'
+import { CivilServant } from '../model/civilServant'
+import { OrganisationalUnit } from '../model/organisationalUnit'
 
 export class CsrsService {
 	restService: OauthRestService
@@ -32,8 +34,16 @@ export class CsrsService {
 		return await this.restService.get('/organisationalUnits/normalised')
 	}
 
+	async getOrganisation(orgCode: string): Promise<OrganisationalUnit[]> {
+		return await this.restService.get(`organisationalUnits/parent/${orgCode}`)
+	}
+
 	async getCivilServant() {
 		return await this.restService.get('/civilServants/me')
+	}
+
+	async getCivilServantWithUid(userId: string): Promise<CivilServant> {
+		return await this.restService.get(`/civilServants/resource/${userId}`)
 	}
 
 	async createQuizByProfessionID(data: any, user: any) {

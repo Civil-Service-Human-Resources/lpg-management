@@ -6,8 +6,16 @@ import {InviteFactory} from './model/factory/inviteFactory'
 import {Booking} from './model/booking'
 import {BookingFactory} from './model/factory/bookingFactory'
 import {Event} from '../learning-catalogue/model/event'
+import { getLogger } from '../utils/logger'
+import { CourseRecord, CourseRecordResponse } from './model/courseRecord/courseRecord'
+import { plainToInstance } from 'class-transformer'
+import { CourseRecordInput } from './model/courseRecord/courseRecordInput'
+import { JsonPatch } from '../models/JsonPatch'
+import { ModuleRecordInput } from './model/moduleRecord/moduleRecordInput'
+import { ModuleRecord } from './model/moduleRecord/moduleRecord'
 
 export class LearnerRecord {
+	logger = getLogger('LearnerRecord')
 	private _restService: OauthRestService
 	private _inviteFactory: InviteFactory
 	private _bookingFactory: BookingFactory
@@ -17,6 +25,43 @@ export class LearnerRecord {
 
 		this._bookingFactory = bookingFactory
 		this._inviteFactory = inviteFactory
+	}
+
+	async patchModuleRecord(jsonPatch: JsonPatch[], moduleRecordId: number) {
+		const res: ModuleRecord = await this._restService.patchWithJsonPatch(`/module_records/${moduleRecordId}`, jsonPatch)
+		return plainToInstance(ModuleRecord, res)
+	}
+	
+	async createModuleRecord(moduleRecord: ModuleRecordInput) {
+		const res: ModuleRecord = await this.restService.post('/module_records', moduleRecord)
+		return plainToInstance(ModuleRecord, res)
+	}
+
+	async patchCourseRecord(jsonPatch: JsonPatch[], userId: string, courseId: string) {
+		this.logger.debug(`Patching course record for course ID ${courseId} and user ID ${userId}`)
+		const res: CourseRecord = await this._restService.patchWithJsonPatch(`/course_records?courseId=${courseId}&userId=${userId}`, jsonPatch)
+		return plainToInstance(CourseRecord, res)
+	}
+	
+	async createCourseRecord(courseRecord: CourseRecordInput) {
+		this.logger.debug(`Creating course record for course ID ${courseRecord.courseId}`)
+		const res: CourseRecord = await this.restService.post('/course_records', courseRecord)
+		return plainToInstance(CourseRecord, res)
+	}
+	
+	async getCourseRecord(courseId: string, userId: string): Promise<CourseRecord|undefined> {
+		this.logger.debug(`Getting course record for course ID ${courseId} and user ID ${userId}`)
+		const data: CourseRecordResponse = await this._restService.get(`/course_records?courseId=${courseId}&userId=${userId}`)
+		const courseRecords = plainToInstance(CourseRecordResponse, data).courseRecords
+		console.log(courseRecords)
+		let courseRecord
+		if (courseRecords.length === 1) {
+			courseRecord = plainToInstance(CourseRecord, courseRecords[0])
+		} else if (courseRecords.length > 1) {
+			this.logger.warn(`Course record for course ID ${courseId} and user ID ${userId} returned a result set greater than 1`)
+			courseRecord = plainToInstance(CourseRecord, courseRecords[0])
+		}
+		return courseRecord
 	}
 
 	async getEventBookings(eventId: string) {

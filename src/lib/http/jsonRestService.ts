@@ -1,5 +1,5 @@
 import * as url from 'url'
-import axios, {AxiosInstance, AxiosResponse} from 'axios'
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
 
 export class JsonRestService {
@@ -63,6 +63,10 @@ export class JsonRestService {
 
 	async patch(path: string, resource: any) {
 		return (await this._http.patch(path, resource, this.getHeaders())).data
+	}
+
+	async patchWithJsonPatch(path: string, resource: any) {
+		return (await this._http.patch(path, resource, {'headers':{'Content-Type': 'application/json-patch+json'}})).data
 	}
 
 	set http(value: AxiosInstance) {

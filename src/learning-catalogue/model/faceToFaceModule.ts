@@ -14,5 +14,14 @@ export class FaceToFaceModule extends Module {
 	})
 	events: Event[]
 
+	getEvent(eventUri: string) {
+		const events = this.events.filter(e => e.id === eventUri)
+		if (events.length > 0) {
+			return events[0]
+		} else {
+			return null
+		}
+	}
+
 	type: Module.Type.FACE_TO_FACE
 }
