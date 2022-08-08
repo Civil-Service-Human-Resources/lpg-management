@@ -83,6 +83,7 @@ export class JsonRestService {
 		headers['Content-Type'] = 'application/json-patch+json'
 		console.log(headers)
 		return (await this._http.request({
+			method: 'patch',
 			url: path,
 			data: resource,
 			headers: headers

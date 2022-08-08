@@ -56,7 +56,6 @@ export abstract class EventActionWorker {
         } catch (e) {
             this.logger.error(`Failed to apply action to the course record. UserID: ${userId}, ` +
             `CourseID: ${courseId}, ModuleID: ${moduleId}. Error: ${e}`)
-            throw e
         }
     }
 
