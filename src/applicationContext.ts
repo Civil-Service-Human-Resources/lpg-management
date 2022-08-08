@@ -279,6 +279,8 @@ export class ApplicationContext {
 
 		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord)
 
+		this.actionWorkerService.init()
+
 		this.eventController = new EventController(
 			this.learningCatalogue,
 			this.learnerRecord,
