@@ -53,7 +53,6 @@ export class LearnerRecord {
 		this.logger.debug(`Getting course record for course ID ${courseId} and user ID ${userId}`)
 		const data: CourseRecordResponse = await this._restService.get(`/course_records?courseId=${courseId}&userId=${userId}`)
 		const courseRecords = plainToInstance(CourseRecordResponse, data).courseRecords
-		console.log(courseRecords)
 		let courseRecord
 		if (courseRecords.length === 1) {
 			courseRecord = plainToInstance(CourseRecord, courseRecords[0])

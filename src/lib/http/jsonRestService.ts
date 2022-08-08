@@ -79,7 +79,9 @@ export class JsonRestService {
 	}
 
 	async patchWithJsonPatch(path: string, resource: any) {
-		return (await this._http.patch(path, resource, {'headers':{'Content-Type': 'application/json-patch+json'}})).data
+		let headers: any = this.getHeaders()
+		headers['Content-Type'] = 'application/json-patch+json'
+		return (await this._http.patch(path, resource, headers)).data
 	}
 
 	set http(value: AxiosInstance) {
