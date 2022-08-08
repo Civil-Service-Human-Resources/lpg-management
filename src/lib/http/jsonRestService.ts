@@ -1,8 +1,10 @@
 import * as url from 'url'
 import axios, {AxiosInstance, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
+import { getLogger } from '../../utils/logger'
 
 export class JsonRestService {
+	logger = getLogger('JsonRestService')
 	private _http: AxiosInstance
 	config: any
 	auth: Auth
@@ -12,6 +14,18 @@ export class JsonRestService {
 		this._http = axios.create({
 			baseURL: config.url,
 			timeout: config.timeout,
+		})
+
+		this._http.interceptors.response.use((conf: AxiosResponse) => {
+			return conf
+		}, (error) => {
+			let str = `${error.request.method} request to ${error.request.url} failed`
+			if (error.response) {
+				const data = JSON.stringify(error.response.data)
+				str = `${str} with a status ${error.response.status}. data: ${data}`
+				this.logger.error(str)
+			}
+			return Promise.reject(error)
 		})
 
 		this.config = config
