@@ -36,7 +36,7 @@ export class CancelBookingActionWorker extends EventActionWorker {
             clearField('paymentMethod'),
             clearField('paymentDetails'),
             setUpdatedAt(new Date()),
-            setBookingStatus(BookingStatus.Cancelled)
+            setBookingStatus(BookingStatus.CANCELLED)
         ]
         return await this.learnerRecordAPI.patchModuleRecord(patches, moduleRecord.id)
     }
