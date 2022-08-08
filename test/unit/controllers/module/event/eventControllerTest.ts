@@ -24,8 +24,8 @@ import {Course} from '../../../../../src/learning-catalogue/model/course'
 import {Module} from '../../../../../src/learning-catalogue/model/module'
 import { ActionWorkerService } from '../../../../../src/learner-record/workers/actionWorkerService'
 import { WorkerAction } from '../../../../../src/learner-record/workers/WorkerAction'
-import { ApproveBookingActionWorker } from '../../../../../src/learner-record/workers/ApproveBookingActionWorker'
-import { CancelBookingActionWorker } from '../../../../../src/learner-record/workers/CancelBookingActionWorker'
+import { ApproveBookingActionWorker } from '../../../../../src/learner-record/workers/approveBookingActionWorker'
+import { CancelBookingActionWorker } from '../../../../../src/learner-record/workers/cancelBookingActionWorker'
 
 chai.use(sinonChai)
 

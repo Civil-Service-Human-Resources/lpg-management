@@ -1,8 +1,8 @@
 import { LearnerRecord } from "..";
 import { CsrsService } from "../../csrs/service/csrsService";
 import { LearningCatalogue } from "../../learning-catalogue";
-import { ApproveBookingActionWorker } from "./ApproveBookingActionWorker";
-import { CancelBookingActionWorker } from "./CancelBookingActionWorker";
+import { ApproveBookingActionWorker } from "./approveBookingActionWorker";
+import { CancelBookingActionWorker } from "./cancelBookingActionWorker";
 import { EventActionWorker } from "./eventActionWorker";
 import { WorkerAction } from "./WorkerAction";
 
