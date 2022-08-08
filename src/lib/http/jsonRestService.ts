@@ -1,5 +1,5 @@
 import * as url from 'url'
-import axios, {AxiosInstance, AxiosResponse} from 'axios'
+import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
 import { getLogger } from '../../utils/logger'
 
@@ -19,7 +19,8 @@ export class JsonRestService {
 		this._http.interceptors.response.use((conf: AxiosResponse) => {
 			return conf
 		}, (error) => {
-			let str = `${error.request.method} request to ${error.request.url} failed`
+			const requestConf: AxiosRequestConfig = error.config
+			let str = `${requestConf.method} request to ${requestConf.baseURL}/${requestConf.url} failed`
 			if (error.response) {
 				const data = JSON.stringify(error.response.data)
 				str = `${str} with a status ${error.response.status}. data: ${data}`
