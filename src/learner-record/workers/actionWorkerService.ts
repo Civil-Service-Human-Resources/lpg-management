@@ -15,6 +15,7 @@ export class ActionWorkerService {
     private workers: Map<WorkerAction, EventActionWorker>
 
     init() {
+        this.workers = new Map<WorkerAction, EventActionWorker>()
         this.workers.set(WorkerAction.APPROVED_BOOKING, new ApproveBookingActionWorker(this.learningCatalogue,
             this.civilServantRegistry,
             this.learnerRecordAPI))
