@@ -7,7 +7,7 @@
 		"clean": "rm -rf dist",
 		"sass": "node-sass views/assets/styles/main.scss dist/views/assets/styles/main.css --output-style compressed",
 		"test": "npm run compile && find dist -name '*Test.js' | xargs ./node_modules/nyc/bin/nyc.js --reporter=text --reporter=html ./node_modules/mocha/bin/mocha",
-		"compile": "./node_modules/typescript/bin/tsc",
+		"compile": "node ./node_modules/typescript/bin/tsc",
 		"build": "npm run sass && npm run compile",
 		"watch-sass": "node-sass -w -r views/assets/styles/ -o dist/views/assets/styles/ --output-style compressed",
 		"start": "npm run clean && npm run build && node dist/build/src/server.js",

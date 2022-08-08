@@ -1,4 +1,5 @@
-import {ModuleRecordInput} from '../../moduleRecord/models/moduleRecordInput'
+import { ModuleRecordInput } from "../moduleRecord/moduleRecordInput";
+
 
 export class CourseRecordInput {
 	constructor(

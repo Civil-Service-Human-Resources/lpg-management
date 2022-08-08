@@ -1,5 +1,5 @@
 import * as url from 'url'
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
+import axios, {AxiosInstance, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
 
 export class JsonRestService {
