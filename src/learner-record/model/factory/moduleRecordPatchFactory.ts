@@ -43,5 +43,5 @@ export function setEventId(eventId: string) {
 }
 
 export function setEventDate(eventDate?: Date) {
-	return setDate('eventId', eventDate)
+	return setDate('eventDate', eventDate)
 }
