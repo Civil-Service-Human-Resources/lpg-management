@@ -41,6 +41,8 @@ const ctx = new ApplicationContext()
 const i18n = require('i18n-express')
 const fileUpload = require('express-fileupload')
 
+const { xss } = require('express-xss-sanitizer')
+
 app.use(
 	i18n({
 		translationsPath: appRoot + '/src/locale',
@@ -155,6 +157,8 @@ app.get('/log-out', asyncHandler(ctx.auth.logout()))
 app.get('/content-management', asyncHandler(ctx.homeController.index()))
 
 app.use(errorController.handleError)
+
+app.use(xss())
 
 const server = app.listen(PORT, () => logger.info(`LPG Management listening on port ${PORT}`))
 server.setTimeout(config.SERVER_TIMEOUT_MS)
