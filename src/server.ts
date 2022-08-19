@@ -41,6 +41,10 @@ const ctx = new ApplicationContext()
 const i18n = require('i18n-express')
 const fileUpload = require('express-fileupload')
 
+const { xss } = require('express-xss-sanitizer')
+
+app.use(xss())
+
 app.use(
 	i18n({
 		translationsPath: appRoot + '/src/locale',
