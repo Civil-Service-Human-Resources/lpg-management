@@ -7,6 +7,7 @@ import {YoutubeService} from '../../youtube/youtubeService'
 import * as asyncHandler from 'express-async-handler'
 import {CourseService} from 'lib/courseService'
 import moment = require('moment')
+const { xss } = require('express-xss-sanitizer')
 
 export class YoutubeModuleController {
 	learningCatalogue: LearningCatalogue
@@ -64,7 +65,7 @@ export class YoutubeModuleController {
 		)
 
 		this.router.get('/content-management/courses/:courseId/module-youtube/:moduleId?', asyncHandler(this.getModule()))
-		this.router.post('/content-management/courses/:courseId/module-youtube/', asyncHandler(this.setModule()))
+		this.router.post('/content-management/courses/:courseId/module-youtube/', xss(), asyncHandler(this.setModule()))
 		this.router.post('/content-management/courses/:courseId/module-youtube/:moduleId', asyncHandler(this.updateModule()))
 	}
 
