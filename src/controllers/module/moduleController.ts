@@ -2,6 +2,7 @@ import {NextFunction, Request, Response, Router} from 'express'
 import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactory'
 import {LearningCatalogue} from '../../learning-catalogue'
 import { getLogger } from '../../utils/logger'
+const { xss } = require('express-xss-sanitizer')
 
 export class ModuleController {
 	logger = getLogger('ModuleController')
@@ -28,7 +29,7 @@ export class ModuleController {
 			}
 		})
 		this.router.get('/content-management/courses/:courseId/add-module', this.addModule())
-		this.router.post('/content-management/courses/:courseId/add-module', this.setModule())
+		this.router.post('/content-management/courses/:courseId/add-module', xss(), this.setModule())
 		this.router.get('/content-management/courses/:courseId/:moduleId/delete', this.deleteModule())
 	}
 

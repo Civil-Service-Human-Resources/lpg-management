@@ -9,6 +9,7 @@ import * as config from '../../config'
 import * as fileType from '../../lib/fileType'
 import {OauthRestService} from 'lib/http/oauthRestService'
 import {CourseService} from 'lib/courseService'
+const { xss } = require('express-xss-sanitizer')
 
 export class FileController {
 	learningCatalogue: LearningCatalogue
@@ -69,7 +70,7 @@ export class FileController {
 		this.router.get('/content-management/courses/:courseId/module-elearning/:moduleId?', this.getFile('elearning'))
 		this.router.get('/content-management/courses/:courseId/module-mp4/:moduleId?', this.getFile('video'))
 		this.router.get('/content-management/courses/:courseId/module-video/:moduleId?', this.getFile('video'))
-		this.router.post('/content-management/courses/:courseId/module-file', this.setFile())
+		this.router.post('/content-management/courses/:courseId/module-file', xss(), this.setFile())
 		this.router.post('/content-management/courses/:courseId/module-file/:moduleId', this.editFile())
 	}
 

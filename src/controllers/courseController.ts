@@ -14,7 +14,7 @@ import {Validate} from './formValidator'
 import {FormController} from './formController'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
-
+const { xss } = require('express-xss-sanitizer')
 export class CourseController implements FormController {
 	logger = getLogger('CourseController')
 	learningCatalogue: LearningCatalogue
@@ -61,11 +61,11 @@ export class CourseController implements FormController {
 		this.router.get('/content-management/courses/visibility/:courseId?', this.getCourseVisibility())
 		this.router.post('/content-management/courses/visibility/:courseId?', this.setCourseVisibility())
 		this.router.get('/content-management/courses/title/:courseId?', this.getCourseTitle())
-		this.router.post('/content-management/courses/title/', this.createCourseTitle())
+		this.router.post('/content-management/courses/title/', xss(), this.createCourseTitle())
 		this.router.post('/content-management/courses/title/:courseId', this.updateCourseTitle())
 
 		this.router.get('/content-management/courses/details/:courseId?', this.getCourseDetails())
-		this.router.post('/content-management/courses/details/', this.createCourseDetails())
+		this.router.post('/content-management/courses/details/', xss(), this.createCourseDetails())
 		this.router.post('/content-management/courses/details/:courseId', this.updateCourseDetails())
 
 		this.router.get('/content-management/courses/:courseId/sort-modules', this.sortModules())
@@ -212,7 +212,9 @@ export class CourseController implements FormController {
 	})
 	createCourseDetails() {
 		return async (req: Request, res: Response, next: NextFunction) => {
-			const course = this.courseFactory.create(req.body)
+			const requestBody = req.body
+
+			const course = this.courseFactory.create(requestBody)
 
 			await this.learningCatalogue
 				.createCourse(course)
