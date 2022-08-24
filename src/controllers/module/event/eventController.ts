@@ -22,6 +22,8 @@ import {Course} from '../../../learning-catalogue/model/course'
 import {Module} from '../../../learning-catalogue/model/module'
 import { getLogger } from '../../../utils/logger'
 import * as EmailValidator from 'email-validator'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class EventController implements FormController {
 	logger = getLogger('EventController')
@@ -108,9 +110,9 @@ export class EventController implements FormController {
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', asyncHandler(this.checkForEventViewRole()), asyncHandler(this.editLocation()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', asyncHandler(this.checkForEventViewRole()), asyncHandler(this.setLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.setLocation()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', asyncHandler(this.checkForEventViewRole()), asyncHandler(this.updateLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.updateLocation()))
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', asyncHandler(this.checkForEventViewRole()), asyncHandler(this.getDatePreview()))
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-overview/:eventId', asyncHandler(this.checkForEventViewRole()), asyncHandler(this.getEventOverview()))
