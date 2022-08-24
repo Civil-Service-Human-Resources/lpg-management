@@ -66,7 +66,7 @@ export class YoutubeModuleController {
 
 		this.router.get('/content-management/courses/:courseId/module-youtube/:moduleId?', asyncHandler(this.getModule()))
 		this.router.post('/content-management/courses/:courseId/module-youtube/', xss(), asyncHandler(this.setModule()))
-		this.router.post('/content-management/courses/:courseId/module-youtube/:moduleId', asyncHandler(this.updateModule()))
+		this.router.post('/content-management/courses/:courseId/module-youtube/:moduleId', xss(), asyncHandler(this.updateModule()))
 	}
 
 	public getModule() {

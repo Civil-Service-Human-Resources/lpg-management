@@ -64,7 +64,7 @@ export class FaceToFaceModuleController {
 
 		this.router.get('/content-management/courses/:courseId/module-face-to-face/:moduleId?', asyncHandler(this.getModule()))
 		this.router.post('/content-management/courses/:courseId/module-face-to-face/', xss(), asyncHandler(this.setModule()))
-		this.router.post('/content-management/courses/:courseId/module-face-to-face/:moduleId', asyncHandler(this.editModule()))
+		this.router.post('/content-management/courses/:courseId/module-face-to-face/:moduleId', xss(), asyncHandler(this.editModule()))
 	}
 
 	public getModule() {
