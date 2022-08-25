@@ -12,6 +12,8 @@ import {Csrs} from '../../csrs'
 import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {DefaultPageResults} from '../../learning-catalogue/model/defaultPageResults'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class AudienceController {
 	learningCatalogue: LearningCatalogue
@@ -50,36 +52,36 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.post('/content-management/courses/:courseId/audiences/', this.setAudienceName())
+		this.router.post('/content-management/courses/:courseId/audiences/', xss(), this.setAudienceName())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/configure', this.getConfigureAudience())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/configure', xss(), this.getConfigureAudience())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation', this.getOrganisation())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/organisation', this.setOrganisation())
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation/delete/:organisationCode', this.deleteOrganisation())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation', xss(), this.getOrganisation())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/organisation', xss(), this.setOrganisation())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation/delete/:organisationCode', xss(), this.deleteOrganisation())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/delete', this.deleteAudienceConfirmation())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/delete', this.deleteAudience())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/delete', xss(), this.deleteAudienceConfirmation())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/delete', xss(), this.deleteAudience())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', this.getAreasOfWork())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', this.setAreasOfWork())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete', this.deleteAreasOfWork())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', xss(), this.getAreasOfWork())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', xss(), this.setAreasOfWork())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete', xss(), this.deleteAreasOfWork())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', this.getCoreLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', this.setCoreLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/core-learning/delete', this.deleteCoreLearning())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', xss(), this.getCoreLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', xss(), this.setCoreLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/core-learning/delete', xss(), this.deleteCoreLearning())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', this.getGrades())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', this.setGrades())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades/delete', this.deleteGrades())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), this.getGrades())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), this.setGrades())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades/delete', xss(), this.deleteGrades())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/event', this.getPrivateCourseEvent())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/event', this.setPrivateCourseEvent())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/event/delete', this.deletePrivateCourseEvent())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/event', xss(), this.getPrivateCourseEvent())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/event', xss(), this.setPrivateCourseEvent())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/event/delete', xss(), this.deletePrivateCourseEvent())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/required-learning', this.getRequiredLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning', this.setRequiredLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning/delete', this.deleteRequiredLearning())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), this.getRequiredLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), this.setRequiredLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning/delete', xss(), this.deleteRequiredLearning())
 	}
 
 	setAudienceName() {

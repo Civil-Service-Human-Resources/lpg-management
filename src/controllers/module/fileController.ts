@@ -66,10 +66,10 @@ export class FileController {
 				res.sendStatus(404)
 			}
 		})
-		this.router.get('/content-management/courses/:courseId/module-file/:moduleId?', this.getFile('file'))
-		this.router.get('/content-management/courses/:courseId/module-elearning/:moduleId?', this.getFile('elearning'))
-		this.router.get('/content-management/courses/:courseId/module-mp4/:moduleId?', this.getFile('video'))
-		this.router.get('/content-management/courses/:courseId/module-video/:moduleId?', this.getFile('video'))
+		this.router.get('/content-management/courses/:courseId/module-file/:moduleId?', xss(), this.getFile('file'))
+		this.router.get('/content-management/courses/:courseId/module-elearning/:moduleId?', xss(), this.getFile('elearning'))
+		this.router.get('/content-management/courses/:courseId/module-mp4/:moduleId?', xss(), this.getFile('video'))
+		this.router.get('/content-management/courses/:courseId/module-video/:moduleId?', xss(), this.getFile('video'))
 		this.router.post('/content-management/courses/:courseId/module-file', xss(), this.setFile())
 		this.router.post('/content-management/courses/:courseId/module-file/:moduleId', xss(), this.editFile())
 	}

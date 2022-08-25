@@ -10,6 +10,8 @@ import {Validate} from './formValidator'
 import {AgencyTokenFactory} from '../csrs/model/agencyTokenFactory'
 import {Csrs} from '../csrs'
 import { getLogger } from '../utils/logger'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class AgencyTokenController implements FormController {
 	logger = getLogger('AgencyTokenController')
@@ -56,13 +58,13 @@ export class AgencyTokenController implements FormController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token', asyncHandler(this.addEditAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token', asyncHandler(this.createAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/edit', asyncHandler(this.updateAgencyToken()))
-		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token/delete', asyncHandler(this.deleteAgencyTokenConfirmation()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/delete', asyncHandler(this.deleteAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain', asyncHandler(this.addDomainToAgencyTokenWithinSession()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain/delete', asyncHandler(this.deleteDomainFromAgencyTokenWithinSession()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.addEditAgencyToken()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.createAgencyToken()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/edit', xss(), asyncHandler(this.updateAgencyToken()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token/delete', xss(), asyncHandler(this.deleteAgencyTokenConfirmation()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/delete', xss(), asyncHandler(this.deleteAgencyToken()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain', xss(), asyncHandler(this.addDomainToAgencyTokenWithinSession()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain/delete', xss(), asyncHandler(this.deleteDomainFromAgencyTokenWithinSession()))
 	}
 
 	public addEditAgencyToken() {

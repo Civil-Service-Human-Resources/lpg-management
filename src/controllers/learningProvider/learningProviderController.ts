@@ -7,6 +7,8 @@ import {LearningProvider} from '../../learning-catalogue/model/learningProvider'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../../utils/logger'
+const { xss } = require('express-xss-sanitizer')
+
 
 
 export class LearningProviderController {
@@ -46,10 +48,10 @@ export class LearningProviderController {
 			}
 		})
 
-		this.router.get('/content-management/learning-providers', asyncHandler(this.index()))
-		this.router.get('/content-management/learning-providers/learning-provider', this.getLearningProvider())
-		this.router.post('/content-management/learning-providers/learning-provider', this.setLearningProvider())
-		this.router.get('/content-management/learning-providers/:learningProviderId', this.getLearningProviderOverview())
+		this.router.get('/content-management/learning-providers', xss(), asyncHandler(this.index()))
+		this.router.get('/content-management/learning-providers/learning-provider', xss(), this.getLearningProvider())
+		this.router.post('/content-management/learning-providers/learning-provider', xss(), this.setLearningProvider())
+		this.router.get('/content-management/learning-providers/:learningProviderId', xss(), this.getLearningProviderOverview())
 	}
 
 	public index() {

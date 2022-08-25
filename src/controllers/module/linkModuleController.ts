@@ -60,8 +60,8 @@ export class LinkModuleController {
 				res.sendStatus(404)
 			}
 		})
-		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.addLinkModule()))
-		this.router.get('/content-management/courses/:courseId/module-link', asyncHandler(this.addLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.addLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.addLinkModule()))
 		this.router.post('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.setLinkModule()))
 		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.updateLinkModule()))
 	}

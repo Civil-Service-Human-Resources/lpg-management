@@ -28,9 +28,9 @@ export class ModuleController {
 				res.sendStatus(404)
 			}
 		})
-		this.router.get('/content-management/courses/:courseId/add-module', this.addModule())
+		this.router.get('/content-management/courses/:courseId/add-module', xss(), this.addModule())
 		this.router.post('/content-management/courses/:courseId/add-module', xss(), this.setModule())
-		this.router.get('/content-management/courses/:courseId/:moduleId/delete', this.deleteModule())
+		this.router.get('/content-management/courses/:courseId/:moduleId/delete', xss(), this.deleteModule())
 	}
 
 	public addModule() {
