@@ -4,6 +4,8 @@ import {CancellationPolicyFactory} from '../../learning-catalogue/model/factory/
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {CancellationPolicy} from '../../learning-catalogue/model/cancellationPolicy'
 import { getLogger } from '../../utils/logger'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class CancellationPolicyController {
 	logger = getLogger('CancellationPolicyController')
@@ -57,16 +59,19 @@ export class CancellationPolicyController {
 
 		this.router.get(
 			'/content-management/learning-providers/:learningProviderId/cancellation-policies/:cancellationPolicyId?',
+			xss(),
 			this.getCancellationPolicy()
 		)
 
 		this.router.post(
 			'/content-management/learning-providers/:learningProviderId/cancellation-policies/:cancellationPolicyId?',
+			xss(),
 			this.setCancellationPolicy()
 		)
 
 		this.router.get(
 			'/content-management/learning-providers/:learningProviderId/cancellation-policies/:cancellationPolicyId/delete',
+			xss(),
 			this.deleteCancellationPolicy()
 		)
 	}

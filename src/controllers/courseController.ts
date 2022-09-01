@@ -14,6 +14,7 @@ import {Validate} from './formValidator'
 import {FormController} from './formController'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
+const { xss } = require('express-xss-sanitizer')
 
 export class CourseController implements FormController {
 	logger = getLogger('CourseController')
@@ -55,24 +56,24 @@ export class CourseController implements FormController {
 
 	/* istanbul ignore next */
 	private configureRouterPaths() {
-		this.router.get('/content-management/courses/:courseId/overview', asyncHandler(this.checkForEventViewRole()), asyncHandler(this.courseOverview()))
-		this.router.get('/content-management/courses/:courseId/preview', this.checkForEventViewRole(), this.coursePreview())
+		this.router.get('/content-management/courses/:courseId/overview', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.courseOverview()))
+		this.router.get('/content-management/courses/:courseId/preview', xss(), this.checkForEventViewRole(), this.coursePreview())
 
-		this.router.get('/content-management/courses/visibility/:courseId?', this.getCourseVisibility())
-		this.router.post('/content-management/courses/visibility/:courseId?', this.setCourseVisibility())
-		this.router.get('/content-management/courses/title/:courseId?', this.getCourseTitle())
-		this.router.post('/content-management/courses/title/', this.createCourseTitle())
-		this.router.post('/content-management/courses/title/:courseId', this.updateCourseTitle())
+		this.router.get('/content-management/courses/visibility/:courseId?', xss(), this.getCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId?', xss(), this.setCourseVisibility())
+		this.router.get('/content-management/courses/title/:courseId?', xss(), this.getCourseTitle())
+		this.router.post('/content-management/courses/title/', xss(), this.createCourseTitle())
+		this.router.post('/content-management/courses/title/:courseId', xss(), this.updateCourseTitle())
 
-		this.router.get('/content-management/courses/details/:courseId?', this.getCourseDetails())
-		this.router.post('/content-management/courses/details/', this.createCourseDetails())
-		this.router.post('/content-management/courses/details/:courseId', this.updateCourseDetails())
+		this.router.get('/content-management/courses/details/:courseId?', xss(), this.getCourseDetails())
+		this.router.post('/content-management/courses/details/', xss(), this.createCourseDetails())
+		this.router.post('/content-management/courses/details/:courseId', xss(), this.updateCourseDetails())
 
-		this.router.get('/content-management/courses/:courseId/sort-modules', this.sortModules())
-		this.router.get('/content-management/courses/:courseId/archive', this.getArchiveConfirmation())
-		this.router.post('/content-management/courses/:courseId/status/publish', this.publishCourse())
-		this.router.post('/content-management/courses/:courseId/status/archive', this.archiveCourse())
-		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules', this.sortModules())
+		this.router.get('/content-management/courses/:courseId/sort-modules', xss(), this.sortModules())
+		this.router.get('/content-management/courses/:courseId/archive', xss(), this.getArchiveConfirmation())
+		this.router.post('/content-management/courses/:courseId/status/publish', xss(), this.publishCourse())
+		this.router.post('/content-management/courses/:courseId/status/archive', xss(), this.archiveCourse())
+		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules', xss(), this.sortModules())
 	}
 
 	public checkForEventViewRole() {
@@ -212,7 +213,9 @@ export class CourseController implements FormController {
 	})
 	createCourseDetails() {
 		return async (req: Request, res: Response, next: NextFunction) => {
-			const course = this.courseFactory.create(req.body)
+			const requestBody = req.body
+
+			const course = this.courseFactory.create(requestBody)
 
 			await this.learningCatalogue
 				.createCourse(course)

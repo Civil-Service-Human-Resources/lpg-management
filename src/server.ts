@@ -40,6 +40,7 @@ const app = express()
 const ctx = new ApplicationContext()
 const i18n = require('i18n-express')
 const fileUpload = require('express-fileupload')
+const { xss } = require('express-xss-sanitizer')
 
 app.use(
 	i18n({
@@ -145,6 +146,7 @@ app.use(ctx.searchController.router)
 app.use(ctx.reportingController.router)
 app.use(ctx.skillsController.router)
 app.use(ctx.agencyTokenController.router)
+app.use(xss())
 
 app.get('/', function(req: any, res: any) {
 	res.redirect('/content-management')
