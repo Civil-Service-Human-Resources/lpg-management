@@ -33,8 +33,6 @@ export class CancelBookingActionWorker extends EventActionWorker {
             clearField('result'),
             clearField('score'),
             clearField('completionDate'),
-            clearField('paymentMethod'),
-            clearField('paymentDetails'),
             setUpdatedAt(new Date()),
             setBookingStatus(BookingStatus.CANCELLED)
         ]
