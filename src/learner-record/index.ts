@@ -37,7 +37,7 @@ export class LearnerRecord {
 		}
 	}
 	
-	async createModuleRecord(moduleRecord: ModuleRecordInput) {
+	async createModuleRecord(moduleRecord: ModuleRecordInput): Promise<ModuleRecord> {
 		try {
 			this.logger.debug(`Creating module record for module ID ${moduleRecord.moduleId} and user ID ${moduleRecord.userId}`)
 			const res: ModuleRecord = await this.restService.post('/module_records', moduleRecord)
