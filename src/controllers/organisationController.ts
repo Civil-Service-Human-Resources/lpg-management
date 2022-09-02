@@ -9,6 +9,8 @@ import {Validator} from '../learning-catalogue/validator/validator'
 import {Validate} from './formValidator'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
 import { getLogger } from '../utils/logger'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class OrganisationController implements FormController {
 	logger = getLogger('OrganisationController')
@@ -48,15 +50,15 @@ export class OrganisationController implements FormController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		this.router.get('/content-management/organisations/manage', asyncHandler(this.getOrganisationList()))
-		this.router.get('/content-management/organisations/:organisationalUnitId?', asyncHandler(this.addEditOrganisation()))
-		this.router.get('/content-management/organisations/:organisationalUnitId/overview', asyncHandler(this.organisationOverview()))
-		this.router.post('/content-management/organisations/', asyncHandler(this.createOrganisation()))
-		this.router.post('/content-management/organisations/:organisationalUnitId', asyncHandler(this.updateOrganisation()))
-		this.router.get('/content-management/organisations/:organisationalUnitId/confirm-delete', asyncHandler(this.confirmDelete()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/delete', asyncHandler(this.deleteOrganisation()))
-		this.router.get('/content-management/organisations/:organisationalUnitId/unlink-parent-confirm', asyncHandler(this.confirmParentOrganisationRemoval()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/unlink-parent', asyncHandler(this.unlinkParentOrganisation()))
+		this.router.get('/content-management/organisations/manage', xss(), asyncHandler(this.getOrganisationList()))
+		this.router.get('/content-management/organisations/:organisationalUnitId?', xss(), asyncHandler(this.addEditOrganisation()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/overview', xss(), asyncHandler(this.organisationOverview()))
+		this.router.post('/content-management/organisations/', xss(), asyncHandler(this.createOrganisation()))
+		this.router.post('/content-management/organisations/:organisationalUnitId', xss(), asyncHandler(this.updateOrganisation()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/confirm-delete', xss(), asyncHandler(this.confirmDelete()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/delete', xss(), asyncHandler(this.deleteOrganisation()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/unlink-parent-confirm', xss(), asyncHandler(this.confirmParentOrganisationRemoval()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/unlink-parent', xss(), asyncHandler(this.unlinkParentOrganisation()))
 		
 	}
 

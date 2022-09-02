@@ -7,6 +7,8 @@ import * as asyncHandler from 'express-async-handler'
 import * as moment from 'moment'
 import {Course} from '../../learning-catalogue/model/course'
 import {CourseService} from 'lib/courseService'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class FaceToFaceModuleController {
 	learningCatalogue: LearningCatalogue
@@ -60,9 +62,9 @@ export class FaceToFaceModuleController {
 			})
 		)
 
-		this.router.get('/content-management/courses/:courseId/module-face-to-face/:moduleId?', asyncHandler(this.getModule()))
-		this.router.post('/content-management/courses/:courseId/module-face-to-face/', asyncHandler(this.setModule()))
-		this.router.post('/content-management/courses/:courseId/module-face-to-face/:moduleId', asyncHandler(this.editModule()))
+		this.router.get('/content-management/courses/:courseId/module-face-to-face/:moduleId?', xss(), asyncHandler(this.getModule()))
+		this.router.post('/content-management/courses/:courseId/module-face-to-face/', xss(), asyncHandler(this.setModule()))
+		this.router.post('/content-management/courses/:courseId/module-face-to-face/:moduleId', xss(), asyncHandler(this.editModule()))
 	}
 
 	public getModule() {
