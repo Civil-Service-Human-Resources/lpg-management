@@ -22,6 +22,7 @@ steps:
   - script: |
       npm install
       npm test
+    displayName: 'Install, test NPM'
   
   - task: Docker@2
     inputs:
