@@ -121,7 +121,7 @@ describe('Leaner Record Tests', () => {
 		const eventId = 'eventId'
 		const invite: Invite = new Invite()
 
-		restService.post = sinon.stub().throws(new Error('404'))
+		restService.post = sinon.stub().throws(new Error('Email address not registered: 404'))
 
 		expect(learnerRecord.inviteLearner(eventId, invite)).to.be.rejectedWith(`Email address not registered: 404`)
 	})
