@@ -22,7 +22,7 @@ export class ApproveBookingActionWorker extends EventActionWorker {
 
     async updateCourseRecord(userId: string, courseRecord: CourseRecord): Promise<void> {
         const patches = [setLastUpdated(new Date())]
-        if (courseRecord.isNull() || courseRecord.isInProgress()) {
+        if (courseRecord.isNull() || !courseRecord.isInProgress()) {
             patches.push(setState(RecordState.Approved))
         }
         await this.learnerRecordAPI.patchCourseRecord(patches, userId, courseRecord.courseId)

@@ -1,4 +1,4 @@
-import { Module } from "../../../learning-catalogue/model/module"
+import { plainToClass } from 'class-transformer'
 import { ModuleRecord } from "../moduleRecord/moduleRecord"
 import { Record, RecordState } from "../record"
 
@@ -65,6 +65,9 @@ export class CourseRecord extends Record {
 	}
 
 	public getModuleRecord = (moduleId: string) => {
+		if (!this.modules) {
+			return undefined
+		}
 		const records = this.modules.filter(m => m.moduleId === moduleId)
 		if (records.length > 0) {
 			return records[0]
@@ -72,15 +75,9 @@ export class CourseRecord extends Record {
 			return undefined
 		}
 	}
-	
-	public areAllRequiredModulesComplete(modules: Module[]) {
-		const moduleIds = modules.map(m => m.id)
-        const remainingModules = this.modules.filter(m => !moduleIds.includes(m.moduleId) && !m.isCompleted() && !m.optional)
-        return remainingModules.length === 0
-	}
 
 	private fillRecords = (moduleRecords: ModuleRecord[]) => {
-		this.modules = moduleRecords.map(m => Object.assign(ModuleRecord, m))
+		this.modules = moduleRecords.map(m => plainToClass(ModuleRecord, m as ModuleRecord))
 	}
 
 }

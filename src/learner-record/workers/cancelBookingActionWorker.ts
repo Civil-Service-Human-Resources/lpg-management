@@ -11,25 +11,25 @@ import { EventActionWorker } from "./eventActionWorker";
 export class CancelBookingActionWorker extends EventActionWorker {
 
     async createCourseRecord(course: Course, module: Module, event: Event, userId: string): Promise<void> {
-        const modRecord = this.generateModuleRecordInput(userId, course.id, module, event, RecordState.Unregsitered)
-        await this.createNewCourseRecord(course, userId, [modRecord], RecordState.Unregsitered)
+        const modRecord = this.generateModuleRecordInput(userId, course.id, module, event, RecordState.Unregistered)
+        await this.createNewCourseRecord(course, userId, [modRecord], RecordState.Unregistered)
     }
 
     async createModuleRecord(userId: string, courseId: string, mod: Module, event: Event): Promise<ModuleRecord> {
-        return await this.createNewModuleRecord(userId, courseId, mod, event, RecordState.Unregsitered)
+        return await this.createNewModuleRecord(userId, courseId, mod, event, RecordState.Unregistered)
     }
 
     async updateCourseRecord(userId: string, courseRecord: CourseRecord): Promise<void> {
         const patches = [setLastUpdated(new Date())]
-        if (courseRecord.isNull() || courseRecord.isInProgress()) {
-            patches.push(setState(RecordState.Unregsitered))
+        if (courseRecord.isNull() || !courseRecord.isInProgress()) {
+            patches.push(setState(RecordState.Unregistered))
         }
         await this.learnerRecordAPI.patchCourseRecord(patches, userId, courseRecord.courseId)
     }
 
     async updateModuleRecord(moduleRecord: ModuleRecord, event: Event): Promise<ModuleRecord> {
         const patches = [
-            setState(RecordState.Unregsitered),
+            setState(RecordState.Unregistered),
             clearField('result'),
             clearField('score'),
             clearField('completionDate'),

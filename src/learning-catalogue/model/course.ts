@@ -145,12 +145,13 @@ export class Course {
 	}
 
 	isCourseRequiredForDepartments(departmentCodes: string[]) {
-		this.audiences.forEach(audience => {
+		for (let i = 0; i < this.audiences.length; i++) {
+			const audience = this.audiences[i]
 			if (audience.type === Audience.Type.REQUIRED_LEARNING) {
 				const audienceDeps = audience.departments ? audience.departments : []
 				if (audienceDeps.some(ad => departmentCodes.includes(ad))) return true
 			}
-		})
+		}
 		return false
 	}
 }

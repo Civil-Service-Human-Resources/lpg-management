@@ -56,6 +56,7 @@ export abstract class EventActionWorker {
         } catch (e) {
             this.logger.error(`Failed to apply action to the course record. UserID: ${userId}, ` +
             `CourseID: ${courseId}, ModuleID: ${moduleId}. Error: ${e}`)
+            throw e
         }
     }
 
@@ -83,12 +84,13 @@ export abstract class EventActionWorker {
             if (civilServant.organisationalUnit.code) {
                 const orgs = await this.civilServantRegistry.getOrganisation(civilServant.organisationalUnit.code)
                 const orgCodes = orgs.map(o => o.code)
+                console.log(orgCodes)
                 required = course.isCourseRequiredForDepartments(orgCodes)
             }
         }
+        console.log(required)
         return required;
     }
-
 
     abstract createCourseRecord(course: Course, module: Module, event: Event, userId: string): Promise<void>
     abstract createModuleRecord(userId: string, courseId: string, mod: Module, event: Event): Promise<ModuleRecord>
