@@ -6,7 +6,7 @@ import { Event } from "../../learning-catalogue/model/event";
 import { FaceToFaceModule } from "../../learning-catalogue/model/faceToFaceModule";
 import { Module } from "../../learning-catalogue/model/module";
 import { ModuleNotFoundError } from "../../lib/exception/moduleNotFound";
-import { EventNotFoundError } from "../../lib/exception/moduleNotFound copy";
+import { EventNotFoundError } from "../../lib/exception/eventNotFound";
 import { getLogger } from "../../utils/logger";
 import { CourseRecord } from "../model/courseRecord/courseRecord";
 import { CourseRecordInput } from "../model/courseRecord/courseRecordInput";
