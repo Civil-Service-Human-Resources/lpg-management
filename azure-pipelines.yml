@@ -19,10 +19,16 @@ steps:
       versionSpec: '16.3'
     displayName: 'Install Node.js'
 
-  - script: |
-      npm install
-      npm test
-    displayName: 'Install, test NPM'
+  - task: Npm@1
+    displayName: 'Install'
+    inputs:
+      command: 'install'
+
+  - task: Npm@1
+    displayName: 'Test'
+    inputs:
+      command: 'custom'
+      customCommand: 'run test:ts'
   
   - task: Docker@2
     inputs:
