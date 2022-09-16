@@ -7,6 +7,7 @@ import { clearField, setBookingStatus, setUpdatedAt } from "../model/factory/mod
 import { BookingStatus, ModuleRecord } from "../model/moduleRecord/moduleRecord";
 import { RecordState } from "../model/record";
 import { EventActionWorker } from "./eventActionWorker";
+import { WorkerAction } from "./WorkerAction";
 
 export class CancelBookingActionWorker extends EventActionWorker {
 
@@ -38,5 +39,9 @@ export class CancelBookingActionWorker extends EventActionWorker {
         ]
         return await this.learnerRecordAPI.patchModuleRecord(patches, moduleRecord.id)
     }
+
+    protected getType(): WorkerAction {
+		return WorkerAction.CANCEL_BOOKING
+	}
     
 }

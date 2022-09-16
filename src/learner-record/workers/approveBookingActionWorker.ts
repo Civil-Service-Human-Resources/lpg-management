@@ -8,6 +8,7 @@ import { clearField, setEventDate, setEventId, setUpdatedAt } from "../model/fac
 import { ModuleRecord } from "../model/moduleRecord/moduleRecord";
 import { RecordState } from "../model/record";
 import { EventActionWorker } from "./eventActionWorker";
+import { WorkerAction } from "./WorkerAction";
 
 export class ApproveBookingActionWorker extends EventActionWorker {
 
@@ -40,4 +41,8 @@ export class ApproveBookingActionWorker extends EventActionWorker {
         ]
         return await this.learnerRecordAPI.patchModuleRecord(patches, moduleRecord.id)
     }
+
+    protected getType(): WorkerAction {
+		return WorkerAction.APPROVED_BOOKING
+	}
 }

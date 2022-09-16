@@ -13,6 +13,7 @@ import { CourseRecordInput } from "../model/courseRecord/courseRecordInput";
 import { ModuleRecord } from "../model/moduleRecord/moduleRecord";
 import { ModuleRecordInput } from "../model/moduleRecord/moduleRecordInput";
 import { RecordState } from "../model/record";
+import { WorkerAction } from "./WorkerAction";
 
 
 export abstract class EventActionWorker {
@@ -26,6 +27,7 @@ export abstract class EventActionWorker {
 
     async applyActionToLearnerRecord(userId: string, courseId: string, moduleId: string, eventId: string) {
         try {
+            this.logger.debug(`Applying action to module ${moduleId} for course ${courseId} and user ${userId}`)
             const course: Course = await this.learningCatalogue.getCourse(courseId)
             const module = course.getModule(moduleId)
             if (!module) {
@@ -39,23 +41,23 @@ export abstract class EventActionWorker {
             
             const courseRecord = await this.learnerRecordAPI.getCourseRecord(courseId, userId)
             if (!courseRecord) {
-                this.logger.debug(`Creating course record ${courseId} for user ${userId}`)
+                this.logger.debug(`Creating course record`)
                 await this.createCourseRecord(course, module, event, userId)
             } else {
                 const moduleRecord = courseRecord.getModuleRecord(moduleId)
                 if (!moduleRecord) {
-                    this.logger.debug(`Creating module record ${moduleId} for course ${courseId} and user ${userId}`)
+                    this.logger.debug(`Creating module record`)
                     await this.createModuleRecord(userId, courseId, module, event)
                 } else {
-                    this.logger.debug(`Updating module record ${moduleId} for course ${courseId} and user ${userId}`)
+                    this.logger.debug(`Updating module record`)
                     await this.updateModuleRecord(moduleRecord, event)
                 }
-                this.logger.debug(`Updating course record for course ${courseId} and user ${userId}`)
+                this.logger.debug(`Updating course record`)
                 await this.updateCourseRecord(userId, courseRecord)
             }
         } catch (e) {
             this.logger.error(`Failed to apply action to the course record. UserID: ${userId}, ` +
-            `CourseID: ${courseId}, ModuleID: ${moduleId}. Error: ${e}`)
+            `CourseID: ${courseId}, ModuleID: ${moduleId}, type: ${this.getType()}. Error: ${e}`)
             throw e
         }
     }
@@ -96,4 +98,5 @@ export abstract class EventActionWorker {
     abstract createModuleRecord(userId: string, courseId: string, mod: Module, event: Event): Promise<ModuleRecord>
     abstract updateCourseRecord(userId: string, courseRecord: CourseRecord): Promise<void>
     abstract updateModuleRecord(moduleRecord: ModuleRecord, event: Event): Promise<ModuleRecord>
+    protected abstract getType(): WorkerAction
 }
