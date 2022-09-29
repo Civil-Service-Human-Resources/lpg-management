@@ -72,22 +72,20 @@ export class LearnerRecord {
 			this.logger.debug(`Getting course record for course ID ${courseId} and user ID ${userId}`)
 			const data: CourseRecordResponse = await this._restService.get(`/course_records?courseId=${courseId}&userId=${userId}`)
 			const courseRecords = plainToInstance(CourseRecordResponse, data).courseRecords
-			let courseRecord
-			if (courseRecords.length === 1) {
-				courseRecord = await this.buildCourseRecord(courseRecords[0])
-			} else if (courseRecords.length > 1) {
+			if (courseRecords.length > 1) {
 				this.logger.warn(`Course record for course ID ${courseId} and user ID ${userId} returned a result set greater than 1`)
-				courseRecord = await this.buildCourseRecord(courseRecords[0])
 			}
-			return courseRecord
+			return this.buildCourseRecord(courseRecords[0])
 		} catch (e) {
 			throw new Error(`An error occurred when trying to get the course record: ${e}`)
 		}
 	}
 
-	async buildCourseRecord(courseRecordData: CourseRecord) {
+	async buildCourseRecord(courseRecordData: CourseRecord|undefined) {
 		const courseRecord = plainToInstance(CourseRecord, courseRecordData)
-		courseRecord.modules = courseRecordData.modules = courseRecordData.modules.map(m => plainToInstance(ModuleRecord, m))
+		if (courseRecord !== undefined) {
+			courseRecord.modules = courseRecord.modules = courseRecord.modules.map(m => plainToInstance(ModuleRecord, m))
+		}
 		return courseRecord
 	}
 
