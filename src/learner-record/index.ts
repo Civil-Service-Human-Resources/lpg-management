@@ -84,7 +84,7 @@ export class LearnerRecord {
 	async buildCourseRecord(courseRecordData: CourseRecord|undefined) {
 		const courseRecord = plainToInstance(CourseRecord, courseRecordData)
 		if (courseRecord !== undefined) {
-			courseRecord.modules = courseRecord.modules = courseRecord.modules.map(m => plainToInstance(ModuleRecord, m))
+			courseRecord.modules = courseRecord.modules.map(m => plainToInstance(ModuleRecord, m))
 		}
 		return courseRecord
 	}
