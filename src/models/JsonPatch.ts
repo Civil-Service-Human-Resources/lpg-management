@@ -1,6 +1,6 @@
 export enum Ops {
-	replace = 'replace',
-	remove = 'remove',
+	Replace = 'replace',
+	Remove = 'remove',
 }
 
 export interface JsonPatchInterface {
@@ -12,11 +12,11 @@ export interface JsonPatchInterface {
 export class JsonPatch implements JsonPatchInterface {
 
 	static replacePatch(path: string, value?: string) {
-		return new this(Ops.replace, path, value)
+		return new this(Ops.Replace, path, value)
 	}
 
 	static removePatch(path: string) {
-		return new this(Ops.remove, path)
+		return new this(Ops.Remove, path)
 	}
 
 	op: Ops

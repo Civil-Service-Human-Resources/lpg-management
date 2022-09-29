@@ -136,12 +136,7 @@ export class Course {
 	}
 
 	getModule(moduleId: string) {
-		const mods = this.modules.filter(m => m.id === moduleId)
-		if (mods.length > 0) {
-			return mods[0]
-		} else {
-			return null
-		}
+		return this.modules.find(m => m.id === moduleId)
 	}
 
 	isCourseRequiredForDepartments(departmentCodes: string[]) {
