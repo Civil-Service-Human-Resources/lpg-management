@@ -74,15 +74,21 @@ export class LearnerRecord {
 			const courseRecords = plainToInstance(CourseRecordResponse, data).courseRecords
 			let courseRecord
 			if (courseRecords.length === 1) {
-				courseRecord = plainToInstance(CourseRecord, courseRecords[0])
+				courseRecord = await this.buildCourseRecord(courseRecords[0])
 			} else if (courseRecords.length > 1) {
 				this.logger.warn(`Course record for course ID ${courseId} and user ID ${userId} returned a result set greater than 1`)
-				courseRecord = plainToInstance(CourseRecord, courseRecords[0])
+				courseRecord = await this.buildCourseRecord(courseRecords[0])
 			}
 			return courseRecord
 		} catch (e) {
 			throw new Error(`An error occurred when trying to get the course record: ${e}`)
 		}
+	}
+
+	async buildCourseRecord(courseRecordData: CourseRecord) {
+		const courseRecord = plainToInstance(CourseRecord, courseRecordData)
+		courseRecord.modules = courseRecordData.modules = courseRecordData.modules.map(m => plainToInstance(ModuleRecord, m))
+		return courseRecord
 	}
 
 	async getEventBookings(eventId: string) {

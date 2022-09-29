@@ -18,7 +18,7 @@ export class CourseRecordResponse {
 
 export class CourseRecord extends Record {
 	courseTitle: string
-	modules: ModuleRecord[]
+	modules: ModuleRecord[] = []
 	preference?: CourseRecordPreference
 	lastUpdated?: Date
 	courseDisplayState?: string
@@ -61,15 +61,7 @@ export class CourseRecord extends Record {
 	}
 
 	public getModuleRecord = (moduleId: string) => {
-		if (!this.modules) {
-			return undefined
-		}
-		const records = this.modules.filter(m => m.moduleId === moduleId)
-		if (records.length > 0) {
-			return records[0]
-		} else {
-			return undefined
-		}
+		return this.modules.find(m => m.moduleId === moduleId)
 	}
 
 	private fillRecords = (moduleRecords: ModuleRecord[]) => {
