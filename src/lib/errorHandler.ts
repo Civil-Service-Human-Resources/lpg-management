@@ -5,7 +5,7 @@ const logger = getLogger('errorHandler')
 
 export async function handleError(error: any, request: Request, response: Response, next: NextFunction) {
 	try {
-		logger.error('Error handling request for', request.method, request.url, request.body, '\n', error.stack)
+		logger.error(`Error handling request for ${request.method} ${request.url} ${request.body}\n ${error.stack}`)
 
 		if (error.response && error.response.status == 401) {
 			return response.redirect('/log-out')

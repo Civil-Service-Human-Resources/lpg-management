@@ -134,4 +134,19 @@ export class Course {
 		}
 		return visibility
 	}
+
+	getModule(moduleId: string) {
+		return this.modules.find(m => m.id === moduleId)
+	}
+
+	isCourseRequiredForDepartments(departmentCodes: string[]) {
+		for (let i = 0; i < this.audiences.length; i++) {
+			const audience = this.audiences[i]
+			if (audience.type === Audience.Type.REQUIRED_LEARNING) {
+				const audienceDeps = audience.departments ? audience.departments : []
+				if (audienceDeps.some(ad => departmentCodes.includes(ad))) return true
+			}
+		}
+		return false
+	}
 }

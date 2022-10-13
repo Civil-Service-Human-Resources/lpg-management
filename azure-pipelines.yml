@@ -19,14 +19,20 @@ steps:
       versionSpec: '16.3'
     displayName: 'Install Node.js'
 
-  - script: |
-      npm install
-      npm run build
-      npm test
+  - task: Npm@1
+    displayName: 'Install'
+    inputs:
+      command: 'install'
+
+  - task: Npm@1
+    displayName: 'Test'
+    inputs:
+      command: 'custom'
+      customCommand: 'run test:ts'
   
   - task: Docker@2
     inputs:
-      containerRegistry: 'CSL azure container registry'
+      containerRegistry: 'lpgregistry ACR'
       ${{ if startsWith(variables['Build.SourceBranch'], 'refs/tags') }}:
         repository: 'lpg-management/prod'
       ${{ else }}:

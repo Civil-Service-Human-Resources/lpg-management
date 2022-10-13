@@ -1,18 +1,9 @@
-import * as fs from 'fs'
 import * as dotenv from 'dotenv'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
-	const envFile = '/keybase/team/lpg/dev/dotenv'
-	try {
-		if (!fs.statSync(envFile).isFile()) {
-			throw new Error(`File not found: ${envFile}`)
-		}
-		dotenv.config({path: envFile})
-	} catch (err) {
-		console.error(`!!! Unable to load the env file at ${envFile} !!!`)
-	}
+	dotenv.load()
 }
 
 function getEnv(obj: any, attr: string) {

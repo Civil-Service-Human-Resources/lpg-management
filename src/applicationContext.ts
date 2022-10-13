@@ -80,8 +80,10 @@ import {AgencyTokenService} from './lib/agencyTokenService'
 import {AgencyTokenController} from './controllers/agencyTokenController'
 import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
 import {AgencyTokenCapacityUsedFactory} from './identity/model/AgencyTokenCapacityUsedFactory'
+import { ActionWorkerService } from './learner-record/workers/actionWorkerService'
 
 export class ApplicationContext {
+	actionWorkerService: ActionWorkerService
 	identityService: IdentityService
 	auth: Auth
 	identityConfig: IdentityConfig
@@ -275,6 +277,10 @@ export class ApplicationContext {
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
+		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord)
+
+		this.actionWorkerService.init()
+
 		this.eventController = new EventController(
 			this.learningCatalogue,
 			this.learnerRecord,
@@ -285,7 +291,8 @@ export class ApplicationContext {
 			this.dateRangeCommandValidator,
 			this.dateRangeValidator,
 			this.dateRangeCommandFactory,
-			this.identityService
+			this.identityService,
+			this.actionWorkerService
 		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)

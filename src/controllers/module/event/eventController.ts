@@ -22,6 +22,9 @@ import {Course} from '../../../learning-catalogue/model/course'
 import {Module} from '../../../learning-catalogue/model/module'
 import { getLogger } from '../../../utils/logger'
 import * as EmailValidator from 'email-validator'
+import { ActionWorkerService } from '../../../learner-record/workers/actionWorkerService'
+import { WorkerAction } from '../../../learner-record/workers/WorkerAction'
+
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -38,6 +41,7 @@ export class EventController implements FormController {
 	dateRangeCommandFactory: DateRangeCommandFactory
 	identityService: IdentityService
 	router: Router
+	actionWorkerService: ActionWorkerService
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
@@ -49,7 +53,8 @@ export class EventController implements FormController {
 		dateRangeCommandValidator: Validator<DateRangeCommand>,
 		dateRangeValidator: Validator<DateRange>,
 		dateRangeCommandFactory: DateRangeCommandFactory,
-		identityService: IdentityService
+		identityService: IdentityService,
+		actionWorkerService: ActionWorkerService
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.learnerRecord = learnerRecord
@@ -61,6 +66,7 @@ export class EventController implements FormController {
 		this.dateRangeValidator = dateRangeValidator
 		this.dateRangeCommandFactory = dateRangeCommandFactory
 		this.identityService = identityService
+		this.actionWorkerService = actionWorkerService
 		this.router = Router()
 
 		this.setRouterPaths()
@@ -591,15 +597,20 @@ export class EventController implements FormController {
 
 	public updateBooking() {
 		return async (req: Request, res: Response) => {
-			const bookings = await this.learnerRecord.getEventBookings(req.params.eventId)
+			const courseId = req.params.courseId
+			const moduleId = req.params.moduleId
+			const eventId = req.params.eventId
+			const bookings = await this.learnerRecord.getEventBookings(eventId)
 			const bookingId = req.params.bookingId
 			// @ts-ignore
 			const booking = this.findBooking(bookings, bookingId)
 
-			booking.status = Booking.Status.CONFIRMED
-			await this.learnerRecord.updateBooking(req.params.eventId, booking)
+			this.actionWorkerService.getWorker(WorkerAction.APPROVED_BOOKING).applyActionToLearnerRecord(booking.learner, courseId, moduleId, eventId)
 
-			return res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${req.params.eventId}/attendee/${req.params.bookingId}`)
+			booking.status = Booking.Status.CONFIRMED
+			await this.learnerRecord.updateBooking(eventId, booking)
+
+			return res.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/attendee/${req.params.bookingId}`)
 		}
 	}
 
@@ -636,16 +647,22 @@ export class EventController implements FormController {
 				...req.body,
 			}
 
-			const bookings = await this.learnerRecord.getEventBookings(req.params.eventId)
+			const courseId = req.params.courseId
+			const moduleId = req.params.moduleId
+			const eventId = req.params.eventId
+
+			const bookings = await this.learnerRecord.getEventBookings(eventId)
 			const bookingId = req.params.bookingId
 			// @ts-ignore
 			const booking = this.findBooking(bookings, bookingId)
 
+			this.actionWorkerService.getWorker(WorkerAction.CANCEL_BOOKING).applyActionToLearnerRecord(booking.learner, courseId, moduleId, eventId)
+
 			booking.status = Booking.Status.CANCELLED
 			booking.cancellationReason = data.cancellationReason
-			await this.learnerRecord.updateBooking(req.params.eventId, booking)
+			await this.learnerRecord.updateBooking(eventId, booking)
 
-			return res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${req.params.eventId}`)
+			return res.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events-overview/${eventId}`)
 		}
 	}
 	private findBooking(bookings: any, bookingId: number): Booking {
