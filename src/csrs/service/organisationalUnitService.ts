@@ -67,6 +67,9 @@ export class OrganisationalUnitService {
 		if (includeParent && org.parentId !== null) {
 			org.parent = await this.getOrganisation(org.parentId)
 		}
+		if (org.agencyToken) {
+			org.agencyToken.capacityUsed = await this.organisationalUnitClient.getAgencyTokenCapacityUsed(org.agencyToken.uid)
+		}
 		return org
 	}
 

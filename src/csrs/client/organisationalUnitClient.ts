@@ -38,9 +38,9 @@ export class OrganisationalUnitClient {
         await this._http.delete(`${this.BASE_URL}/${organisationalUnitId}`)
     }
 
-    async getAgencyTokenCapacityUsed(agencyTokenUid: string): Promise<string> {
+    async getAgencyTokenCapacityUsed(agencyTokenUid: string): Promise<number> {
         const resp = await this._http.get(`${this.AGENCY_BASE_URL}/${agencyTokenUid}`)
-        return resp.data
+        return resp.data.toInteger()
     }
 
     async createAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<void> {
