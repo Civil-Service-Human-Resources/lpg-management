@@ -14,6 +14,8 @@ import { ModuleRecord } from "../model/moduleRecord/moduleRecord";
 import { ModuleRecordInput } from "../model/moduleRecord/moduleRecordInput";
 import { RecordState } from "../model/record";
 import { WorkerAction } from "./WorkerAction";
+import { CivilServant } from "../../csrs/model/civilServant";
+import { OrganisationalUnitService } from "../../csrs/service/organisationalUnitService";
 
 
 export abstract class EventActionWorker {
@@ -22,6 +24,7 @@ export abstract class EventActionWorker {
     
     constructor(protected learningCatalogue: LearningCatalogue,
         protected civilServantRegistry: CsrsService,
+        protected organisationalUnitService: OrganisationalUnitService,
         protected learnerRecordAPI: LearnerRecord
         ) {}
 
@@ -81,16 +84,13 @@ export abstract class EventActionWorker {
 
     private async isCourseRequired(course: Course, userId: string) {
         let required = false
-        const civilServant = await this.civilServantRegistry.getCivilServantWithUid(userId)
+        const civilServant: CivilServant = await this.civilServantRegistry.getCivilServantWithUid(userId)
         if (civilServant) {
             if (civilServant.organisationalUnit.code) {
-                const orgs = await this.civilServantRegistry.getOrganisation(civilServant.organisationalUnit.code)
-                const orgCodes = orgs.map(o => o.code)
-                console.log(orgCodes)
+                const orgCodes = await this.organisationalUnitService.getOrgHierarchy(civilServant.organisationalUnit.id)
                 required = course.isCourseRequiredForDepartments(orgCodes)
             }
         }
-        console.log(required)
         return required;
     }
 

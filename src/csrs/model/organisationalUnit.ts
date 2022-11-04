@@ -1,30 +1,41 @@
-import {IsNotEmpty} from 'class-validator'
+import { toInteger } from 'lodash'
 import {AgencyToken} from './agencyToken'
+import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 
 export class OrganisationalUnit {
-	id: string
+	id: number
 
-	@IsNotEmpty({
-		groups: ['all', 'name'],
-		message: 'organisations.validation.name.empty',
-	})
 	name: string
 
-	@IsNotEmpty({
-		groups: ['all', 'code'],
-		message: 'organisations.validation.code.empty',
-	})
 	code: string
 
-	abbreviation: string
+	abbreviation?: string
 
 	paymentMethods: string[]
 
+	parentId: number | null
+
 	children: OrganisationalUnit[]
 
-	parent: string
+	formattedName?: string
+
+	parent?: OrganisationalUnit
 
 	uri: string
 
-	agencyToken: AgencyToken
+	agencyToken?: AgencyToken
+
+	getFormattedName() {
+		let abbrev = (this.abbreviation === undefined ||
+			this.abbreviation.length === 0) ? "" :
+			`(${this.abbreviation})`
+		return `${name} + ${abbrev}`
+	}
+
+	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
+		this.abbreviation = pageModel.abbreviation
+		this.code = pageModel.code
+		this.name = pageModel.name
+		this.parentId = toInteger(pageModel.parent)
+	}
 }

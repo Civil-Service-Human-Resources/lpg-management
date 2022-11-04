@@ -7,6 +7,7 @@ import * as chaiAsPromised from 'chai-as-promised'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import {CacheService} from '../../../../src/lib/cacheService'
+import { OrganisationalUnitService } from '../../../../src/csrs/service/organisationalUnitService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -14,32 +15,12 @@ chai.use(sinonChai)
 describe('CsrsService tests', () => {
 	let csrsService: CsrsService
 	let restService: OauthRestService
+	let organisationalUnitService: OrganisationalUnitService
 
 	beforeEach(() => {
 		restService = <OauthRestService>{}
-		csrsService = new CsrsService(restService, new CacheService())
-	})
-
-	describe('#getOrganisations', () => {
-		it('should get organisation data', async () => {
-			const data = [
-				{
-					code: 'co',
-					name: 'Cabinet Office',
-				},
-				{
-					code: 'dh',
-					name: 'Department of Health & Social Care',
-				},
-			]
-
-			restService.get = sinon.stub().returns(data)
-
-			const result = await csrsService.getOrganisations()
-
-			expect(restService.get).to.have.been.calledOnceWith('/organisationalUnits/normalised')
-			expect(result).to.eql(data)
-		})
+		organisationalUnitService = <OrganisationalUnitService>{}
+		csrsService = new CsrsService(restService, new CacheService(), organisationalUnitService)
 	})
 
 	describe('areas of work', () => {
@@ -131,7 +112,7 @@ describe('CsrsService tests', () => {
 			const dwpName = 'Department for Work & Pensions'
 			const expectedNames = [{code: 'hmrc', name: hmrcName}, {code: 'dwp', name: dwpName}]
 
-			csrsService.getOrganisations = sinon.stub().returns(expectedNames)
+			organisationalUnitService.getOrgDropdown = sinon.stub().returns(expectedNames)
 
 			expect(await csrsService.getDepartmentCodeToNameMapping()).to.be.deep.equal({
 				hmrc: hmrcName,
@@ -162,7 +143,7 @@ describe('CsrsService tests', () => {
 			const hmrcAbbreviation = 'HMRC'
 			const dwpAbbreviation = 'DWP'
 			const expectedOrganisationalUnits = [{code: 'hmrc', abbreviation: hmrcAbbreviation}, {code: 'dwp', abbreviation: dwpAbbreviation}]
-			csrsService.getOrganisations = sinon.stub().returns(expectedOrganisationalUnits)
+			organisationalUnitService.getOrgDropdown = sinon.stub().returns(expectedOrganisationalUnits)
 			expect(await csrsService.getDepartmentCodeToAbbreviationMapping()).to.be.deep.equal({
 				hmrc: hmrcAbbreviation,
 				dwp: dwpAbbreviation,

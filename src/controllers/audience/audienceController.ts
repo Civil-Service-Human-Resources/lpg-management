@@ -8,10 +8,8 @@ import {CourseService} from '../../lib/courseService'
 import {AudienceService} from '../../lib/audienceService'
 import {CsrsService} from '../../csrs/service/csrsService'
 import {DateTime} from '../../lib/dateTime'
-import {Csrs} from '../../csrs'
 import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
-import {DefaultPageResults} from '../../learning-catalogue/model/defaultPageResults'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -21,7 +19,6 @@ export class AudienceController {
 	audienceFactory: AudienceFactory
 	courseService: CourseService
 	csrsService: CsrsService
-	csrs: Csrs
 	audienceService: AudienceService
 	router: Router
 
@@ -31,7 +28,6 @@ export class AudienceController {
 		audienceFactory: AudienceFactory,
 		courseService: CourseService,
 		csrsService: CsrsService,
-		csrs: Csrs,
 		audienceService: AudienceService
 	) {
 		this.learningCatalogue = learningCatalogue
@@ -39,7 +35,6 @@ export class AudienceController {
 		this.audienceFactory = audienceFactory
 		this.courseService = courseService
 		this.csrsService = csrsService
-		this.csrs = csrs
 		this.router = Router()
 		this.audienceService = audienceService
 		this.configurePathParametersProcessing()
@@ -119,7 +114,7 @@ export class AudienceController {
 		return async (req: Request, res: Response) => {
 			const selectedOrganisations = res.locals.audience.departments
 
-			let organisations: DefaultPageResults<OrganisationalUnit> = await this.csrs.listOrganisationalUnitsForTypehead()
+			let organisations: OrganisationalUnit[] = await this.csrsService.listOrganisationalUnitsForTypehead()
 
 			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations, selectedOrganisations: selectedOrganisations})
 		}

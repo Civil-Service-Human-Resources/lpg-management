@@ -9,7 +9,6 @@ import {AgencyToken} from '../../../src/csrs/model/agencyToken'
 import {AgencyTokenController} from '../../../src/controllers/agencyTokenController'
 import {AgencyTokenFactory} from '../../../src/csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from '../../../src/lib/agencyTokenService'
-import {Csrs} from '../../../src/csrs'
 import {OrganisationalUnit} from '../../../src/csrs/model/organisationalUnit'
 import {OrganisationalUnitService} from '../../../src/csrs/service/organisationalUnitService'
 import {Validator} from '../../../src/learning-catalogue/validator/validator'
@@ -24,9 +23,8 @@ describe('AgencyTokenController', () => {
 	let agencyTokenFactory: AgencyTokenFactory = <AgencyTokenFactory>{}
 	let agencyTokenService: AgencyTokenService = <AgencyTokenService>{}
 	let agencyTokenValidator: Validator<AgencyToken> = <Validator<AgencyToken>>{}
-	let csrs: Csrs = <Csrs>{}
 	let organisationalUnitService: OrganisationalUnitService = <OrganisationalUnitService>{}
-	let agencyTokenController: AgencyTokenController = new AgencyTokenController(agencyTokenValidator, agencyTokenService, organisationalUnitService, agencyTokenFactory, csrs)
+	let agencyTokenController: AgencyTokenController = new AgencyTokenController(agencyTokenValidator, agencyTokenService, organisationalUnitService, agencyTokenFactory)
 
 	const organisationId = 'organisation-id'
 	const tokenNumber = 'ABCDEFG123'
@@ -78,11 +76,11 @@ describe('AgencyTokenController', () => {
 
 			const agencyToken = new AgencyToken()
 			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
-			csrs.createAgencyToken = sinon.stub().returns(Promise.resolve())
+			organisationalUnitService.createAgencyToken = sinon.stub().returns(Promise.resolve())
 
 			await agencyTokenController.createAgencyToken()(req, res, next)
 
-			expect(csrs.createAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(organisationalUnitService.createAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/overview`)
 		})
 		it('should update agency token for organisation and redirect to the Organisation Overview page if data submitted is valid', async function() {
@@ -99,11 +97,11 @@ describe('AgencyTokenController', () => {
 			res.locals.organisationalUnit.agencyToken = agencyToken
 
 			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
-			csrs.updateAgencyToken = sinon.stub().returns(Promise.resolve())
+			organisationalUnitService.updateAgencyToken = sinon.stub().returns(Promise.resolve())
 
 			await agencyTokenController.updateAgencyToken()(req, res, next)
 
-			expect(csrs.updateAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(organisationalUnitService.updateAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/overview`)
 		})
 
@@ -119,10 +117,10 @@ describe('AgencyTokenController', () => {
 
 			const agencyToken = new AgencyToken()
 			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
-			csrs.createAgencyToken = sinon.stub().returns(Promise.reject(error))
+			organisationalUnitService.createAgencyToken = sinon.stub().returns(Promise.reject(error))
 
 			await agencyTokenController.createAgencyToken()(req, res, next)
-			expect(csrs.createAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(organisationalUnitService.createAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/agency-token`)
 		})
 
@@ -140,10 +138,10 @@ describe('AgencyTokenController', () => {
 			const error = {response: {status: 400, data: {capacity: "invalid"}}}
 
 			agencyTokenFactory.create = sinon.stub().returns(agencyToken)
-			csrs.updateAgencyToken = sinon.stub().returns(Promise.reject(error))
+			organisationalUnitService.updateAgencyToken = sinon.stub().returns(Promise.reject(error))
 
 			await agencyTokenController.updateAgencyToken()(req, res, next)
-			expect(csrs.updateAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
+			expect(organisationalUnitService.updateAgencyToken).to.have.been.calledOnceWith(organisationId, agencyToken)
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/organisations/${organisationId}/agency-token`)
 		})
 	})
