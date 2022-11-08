@@ -140,16 +140,16 @@ export class CsrsService {
 	}
 
 	async getDepartmentCodeToNameMapping() {
-		const organisations = await this.organisationalUnitService.getOrgDropdown()
-		return organisations.reduce((map: any, object: OrganisationalUnit) => {
+		const dropdown = await this.organisationalUnitService.getOrgDropdown()
+		return dropdown.typeahead.reduce((map: any, object: OrganisationalUnit) => {
 			map[object.code] = object.name
 			return map
 		}, {})
 	}
 
 	async getDepartmentCodeToAbbreviationMapping() {
-		const organisations = await this.organisationalUnitService.getOrgDropdown()
-		return organisations.reduce((map: any, object: OrganisationalUnit) => {
+		const dropdown = await this.organisationalUnitService.getOrgDropdown()
+		return dropdown.typeahead.reduce((map: any, object: OrganisationalUnit) => {
 			map[object.code] = object.abbreviation
 			return map
 		}, {})

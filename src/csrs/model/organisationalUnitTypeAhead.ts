@@ -1,15 +1,29 @@
 import { OrganisationalUnit } from "./organisationalUnit";
-import { OrganisationalUnitTypeAheadElement } from "./organisationalUnitTypeAheadElement";
 
 export class OrganisationalUnitTypeAhead {
 
-    constructor(public typeahead: OrganisationalUnitTypeAheadElement[]) { }
-    
+    constructor(public typeahead: OrganisationalUnit[]) { }
 
-    insertAndSort(typeaheadElement: OrganisationalUnitTypeAheadElement) {
-        this.typeahead.push(typeaheadElement)
+    upsertAndSort(typeaheadElement: OrganisationalUnit) {
+        const index = this.typeahead.findIndex(o => o.id === typeaheadElement.id)
+        if (index === -1) {
+            this.typeahead.push(typeaheadElement)
+        } else {
+            this.typeahead[index] = typeaheadElement
+        }
         this.sort()
     }
+    
+    // updateAndSort(typeaheadElement: OrganisationalUnit) {
+    //     const index = this.typeahead.findIndex(o => o.id === typeaheadElement.id)
+    //     this.typeahead[index] = typeaheadElement
+    //     this.sort()
+    // }
+
+    // insertAndSort(typeaheadElement: OrganisationalUnit) {
+    //     this.typeahead.push(typeaheadElement)
+    //     this.sort()
+    // }
 
     removeElement(organisationalUnitId: number) {
         const index = this.typeahead.findIndex(o => o.id === organisationalUnitId)
@@ -22,15 +36,12 @@ export class OrganisationalUnitTypeAhead {
     }
 
     getDomainFilteredList(domain: string) {
-        let filteredOrgs = this.typeahead.filter(o => o.agencyDomains.includes(domain))
+        let filteredOrgs = this.typeahead.filter(o => {
+            o.agencyToken ? o.agencyToken.agencyDomains.map(a => a.domain).includes(domain) : false
+        })
 		if (filteredOrgs.length > 0) {
 			return filteredOrgs
 		}
         return this.typeahead
-    }
-
-    static fromOrganisationalUnits(organisationalUnits: OrganisationalUnit[]) {
-        const convertedOrgUnits = organisationalUnits.map(OrganisationalUnitTypeAheadElement.fromOrgnaisationalUnit)
-        return new OrganisationalUnitTypeAhead(convertedOrgUnits)
     }
 }

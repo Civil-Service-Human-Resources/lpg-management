@@ -87,7 +87,8 @@ export abstract class EventActionWorker {
         const civilServant: CivilServant = await this.civilServantRegistry.getCivilServantWithUid(userId)
         if (civilServant) {
             if (civilServant.organisationalUnit.code) {
-                const orgCodes = await this.organisationalUnitService.getOrgHierarchy(civilServant.organisationalUnit.id)
+                const orgHierarchy = await this.organisationalUnitService.getOrgHierarchy(civilServant.organisationalUnit.id)
+                const orgCodes = orgHierarchy.map(o => o.code)
                 required = course.isCourseRequiredForDepartments(orgCodes)
             }
         }

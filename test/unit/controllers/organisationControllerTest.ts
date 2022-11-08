@@ -8,17 +8,17 @@ import * as sinon from 'sinon'
 import {OrganisationController} from '../../../src/controllers/organisationController'
 import {OrganisationalUnit} from '../../../src/csrs/model/organisationalUnit'
 import {PageResults} from '../../../src/learning-catalogue/model/pageResults'
-import {OrganisationalUnitFactory} from '../../../src/csrs/model/organisationalUnitFactory'
 import {Validator} from '../../../src/learning-catalogue/validator/validator'
 import {OrganisationalUnitService} from '../../../src/csrs/service/organisationalUnitService'
 import { OrganisationalUnitPageModel } from '../../../src/csrs/model/organisationalUnitPageModel'
+import { OrganisationalUnitPageModelFactory } from '../../../src/csrs/model/organisationalUnitPageModelFactory'
 
 chai.use(sinonChai)
 
 describe('Organisation Controller Tests', function() {
 	let organisationController: OrganisationController
-	let organisationalUnitFactory: OrganisationalUnitFactory
 	let validator: Validator<OrganisationalUnitPageModel>
+	let factory: OrganisationalUnitPageModelFactory
 	let organisationalService: OrganisationalUnitService
 
 	let req: Request
@@ -26,10 +26,10 @@ describe('Organisation Controller Tests', function() {
 	let next: NextFunction
 
 	beforeEach(() => {
-		organisationalUnitFactory = <OrganisationalUnitFactory>{}
 		validator = <Validator<OrganisationalUnitPageModel>>{}
+		factory = <OrganisationalUnitPageModelFactory>{}
 		organisationalService = <OrganisationalUnitService>{}
-		organisationController = new OrganisationController(organisationalUnitFactory, validator, organisationalService)
+		organisationController = new OrganisationController(validator, factory, organisationalService)
 
 		req = mockReq()
 		res = mockRes()
@@ -95,7 +95,6 @@ describe('Organisation Controller Tests', function() {
 		organisation.id = 123
 		organisation.name = 'New organisation'
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns({fields: [], size: 0})
 		organisationalService.createOrganisationalUnit = sinon.stub().returns(organisation)
 		organisationalService.getOrgDropdown = sinon.stub()
@@ -116,7 +115,6 @@ describe('Organisation Controller Tests', function() {
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns(errors)
 		organisationalService.createOrganisationalUnit = sinon.stub().returns('123')
 
@@ -135,7 +133,6 @@ describe('Organisation Controller Tests', function() {
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		organisationalService.createOrganisationalUnit = sinon.stub().throwsException(new Error())
 		validator.check = sinon.stub().returns(validationErrors)
 
@@ -155,7 +152,6 @@ describe('Organisation Controller Tests', function() {
 
 		res.locals.organisationalUnit = organisation
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns({fields: [], size: 0})
 		organisationalService.updateOrganisationalUnit = sinon.stub().returns(organisation)
 		organisationalService.getOrgDropdown = sinon.stub()
@@ -178,7 +174,6 @@ describe('Organisation Controller Tests', function() {
 		organisation.id = 123
 		req.params.organisationId = organisation.id.toString()
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns(errors)
 		organisationalService.updateOrganisationalUnit = sinon.stub().returns('123')
 
@@ -200,7 +195,6 @@ describe('Organisation Controller Tests', function() {
 		res.locals.organisationalUnit = organisation
 		req.params.organisationId = organisation.id.toString()
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		organisationalService.updateOrganisationalUnit = sinon.stub().throwsException(new Error())
 		validator.check = sinon.stub().returns(validationErrors)
 

@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response, Router} from 'express'
 import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 import * as asyncHandler from 'express-async-handler'
-import {OrganisationalUnitFactory} from '../csrs/model/organisationalUnitFactory'
 import {FormController} from './formController'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {Validate} from './formValidator'
@@ -9,21 +8,25 @@ import {OrganisationalUnitService} from '../csrs/service/organisationalUnitServi
 import { getLogger } from '../utils/logger'
 import { OrganisationalUnitPageModel } from '../csrs/model/organisationalUnitPageModel'
 import { OrganisationalUnitTypeAhead } from '../csrs/model/organisationalUnitTypeAhead'
+import { OrganisationalUnitPageModelFactory } from '../csrs/model/organisationalUnitPageModelFactory'
 const { xss } = require('express-xss-sanitizer')
 
 
 export class OrganisationController implements FormController {
 	logger = getLogger('OrganisationController')
 	router: Router
-	organisationalUnitFactory: OrganisationalUnitFactory
 	validator: Validator<OrganisationalUnitPageModel>
+	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
 	organisationalUnitService: OrganisationalUnitService
 
-	constructor(organisationalUnitFactory: OrganisationalUnitFactory, validator: Validator<OrganisationalUnitPageModel>, organisationalUnitService: OrganisationalUnitService) {
+	constructor(
+		validator: Validator<OrganisationalUnitPageModel>,
+		organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory,
+		organisationalUnitService: OrganisationalUnitService) {
 		this.router = Router()
 		this.organisationalUnitService = organisationalUnitService
-		this.organisationalUnitFactory = organisationalUnitFactory
 		this.validator = validator
+		this.organisationalUnitPageModelFactory = organisationalUnitPageModelFactory
 		this.organisationalUnitService = organisationalUnitService
 
 		this.getOrganisationFromRouterParamAndSetOnLocals()
@@ -38,6 +41,7 @@ export class OrganisationController implements FormController {
 				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisation(organisationalUnitId, true)
 
 				if (organisationalUnit) {
+					console.log(organisationalUnit)
 					res.locals.organisationalUnit = organisationalUnit
 					next()
 				} else {
@@ -95,7 +99,9 @@ export class OrganisationController implements FormController {
 	})
 	public createOrganisation() {
 		return async (request: Request, response: Response) => {
-			const organisationalUnit = request.body as OrganisationalUnitPageModel
+			console.log("About to create")
+			const organisationalUnit = this.organisationalUnitPageModelFactory.create(request.body)
+			console.log("Created")
 
 			this.logger.debug(`Creating new organisation: ${organisationalUnit.name}`)
 
@@ -125,16 +131,17 @@ export class OrganisationController implements FormController {
 
 			this.logger.debug(`Updating organisation: ${organisationalUnit.id}`)
 
-			const data: OrganisationalUnitPageModel = {
+			const data: OrganisationalUnitPageModel =  {
 				name: request.body.name || organisationalUnit.name,
 				abbreviation: request.body.abbreviation || organisationalUnit.abbreviation,
 				code: request.body.code || organisationalUnit.code,
-				parent: request.body.parent,
+				parentId: request.body.parentId,
 			}
 
 			try {
 				await this.organisationalUnitService.updateOrganisationalUnit(organisationalUnit.id, data)
 			} catch (e) {
+				console.log(e)
 				const errors = {fields: {fields: ['organisations.validation.organisation.alreadyExists'], size: 1}}
 
 				request.session!.sessionFlash = {errors: errors}
@@ -156,7 +163,7 @@ export class OrganisationController implements FormController {
 				name: organisationalUnit.name,
 				abbreviation: organisationalUnit.abbreviation,
 				code: organisationalUnit.code,
-				parent: null
+				parentId: null
 			}
 
 			this.logger.debug(`Unlinking parent organisation from organisation: ${organisationalUnit.id}`)

@@ -15,7 +15,6 @@ import {ModuleRecord} from '../../../../src/learner-record/model/moduleRecord/mo
 import {ModuleRecordInput} from '../../../../src/learner-record/model/moduleRecord/moduleRecordInput'
 import {RecordState} from '../../../../src/learner-record/model/record'
 import {ApproveBookingActionWorker} from '../../../../src/learner-record/workers/approveBookingActionWorker'
-import {CancelBookingActionWorker} from '../../../../src/learner-record/workers/cancelBookingActionWorker'
 import {LearningCatalogue} from '../../../../src/learning-catalogue'
 import {Audience} from '../../../../src/learning-catalogue/model/audience'
 import {Course} from '../../../../src/learning-catalogue/model/course'

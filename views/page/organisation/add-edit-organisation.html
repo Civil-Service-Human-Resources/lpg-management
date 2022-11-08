@@ -33,16 +33,16 @@
                     <p class="govuk-body custom-margin">If your new organisation has an existing parent, find them in the list below.</p>
                     <p for="organisationalUnit no-margin" class="govuk-body hint custom-margin">Start typing to find your organisation name</p>
                     <div class="autocomplete-wrapper">
-                        <select name="parent" id="parent">
+                        <select name="parentId" id="parent">
                             <option value=""></option>
-                            {% set parent = form.parent|default(organisationalUnit.parent.uri) %}
+                            {% set parent = form.parent|default(organisationalUnit.parent.id) %}
                             {% for key in organisationalUnits %}
-                                {% if parent === key.href %}
+                                {% if parent === key.id %}
                                     {% set selected='selected' %}
                                 {% else %}
                                     {% set selected='' %}
                                 {% endif %}
-                            <option value={{ key.href }} {{ selected }}>{{ key.formattedName }}</option>
+                            <option value={{ key.id }} {{ selected }}>{{ key.formattedName }}</option>
                             {% endfor %}
                         </select>
                     </div>

@@ -16,5 +16,8 @@ export class OrganisationalUnitPageModel {
 
 	abbreviation?: string
 
-	parent: string | null
+	/**
+	 * The resource UID of the parent organisation.
+	 */
+	parentId?: number | null
 }

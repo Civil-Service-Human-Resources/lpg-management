@@ -1,4 +1,3 @@
-import { toInteger } from 'lodash'
 import {AgencyToken} from './agencyToken'
 import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 
@@ -13,11 +12,11 @@ export class OrganisationalUnit {
 
 	paymentMethods: string[]
 
-	parentId: number | null
+	parentId?: number | null
 
 	children: OrganisationalUnit[]
 
-	formattedName?: string
+	formattedName: string
 
 	parent?: OrganisationalUnit
 
@@ -25,17 +24,16 @@ export class OrganisationalUnit {
 
 	agencyToken?: AgencyToken
 
-	getFormattedName() {
-		let abbrev = (this.abbreviation === undefined ||
-			this.abbreviation.length === 0) ? "" :
-			`(${this.abbreviation})`
-		return `${name} + ${abbrev}`
+	getNameAndAbbrev() {
+		let abbrev = (this.abbreviation === undefined) ? "" :
+			` (${this.abbreviation})`
+		return `${this.name}${abbrev}`
 	}
 
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
 		this.abbreviation = pageModel.abbreviation
 		this.code = pageModel.code
 		this.name = pageModel.name
-		this.parentId = toInteger(pageModel.parent)
+		this.parentId = pageModel.parentId
 	}
 }

@@ -8,6 +8,7 @@ import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {AgencyToken} from '../../../../src/csrs/model/agencyToken'
 import { OrganisationalUnitClient } from '../../../../src/csrs/client/organisationalUnitClient'
 import { OrganisationalUnitCache } from '../../../../src/csrs/organisationalUnitCache'
+import { AgencyTokenCapacityUsedHttpService } from '../../../../src/identity/agencyTokenCapacityUsedHttpService'
 
 chai.use(sinonChai)
 
@@ -15,11 +16,13 @@ describe('OrganisationalUnitService tests', () => {
 	let organisationalUnitClient: OrganisationalUnitClient
 	let organisationalUnitCache: OrganisationalUnitCache
 	let organisationalUnitService: OrganisationalUnitService
+	let agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService
 
 	beforeEach(() => {
 		organisationalUnitClient = <OrganisationalUnitClient>{}
 		organisationalUnitCache = <OrganisationalUnitCache>{}
-		organisationalUnitService = new OrganisationalUnitService(organisationalUnitCache, organisationalUnitClient)
+		agencyTokenCapacityUsedService = <AgencyTokenCapacityUsedHttpService>{}
+		organisationalUnitService = new OrganisationalUnitService(organisationalUnitCache, organisationalUnitClient, agencyTokenCapacityUsedService)
 	})
 
 	it('should get organisationalUnit data', async () => {
@@ -49,11 +52,8 @@ describe('OrganisationalUnitService tests', () => {
 		const agencyTokenStub = sinon
 			.stub()
 			.withArgs('uid')
-			.resolves(agencyToken)
-		agencyTokenCapacityUsedHttpService.getCapacityUsed = agencyTokenStub
-
-		const getOrganisationalUnit = sinon.stub().returns(organisationalUnit)
-		organisationalUnitFactory.create = getOrganisationalUnit
+			.resolves(1)
+		agencyTokenCapacityUsedService.getCapacityUsed = agencyTokenStub
 
 		const data = {
 			id: '1',
