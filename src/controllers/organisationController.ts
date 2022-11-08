@@ -41,7 +41,6 @@ export class OrganisationController implements FormController {
 				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisation(organisationalUnitId, true)
 
 				if (organisationalUnit) {
-					console.log(organisationalUnit)
 					res.locals.organisationalUnit = organisationalUnit
 					next()
 				} else {
@@ -99,9 +98,7 @@ export class OrganisationController implements FormController {
 	})
 	public createOrganisation() {
 		return async (request: Request, response: Response) => {
-			console.log("About to create")
 			const organisationalUnit = this.organisationalUnitPageModelFactory.create(request.body)
-			console.log("Created")
 
 			this.logger.debug(`Creating new organisation: ${organisationalUnit.name}`)
 
@@ -141,7 +138,6 @@ export class OrganisationController implements FormController {
 			try {
 				await this.organisationalUnitService.updateOrganisationalUnit(organisationalUnit.id, data)
 			} catch (e) {
-				console.log(e)
 				const errors = {fields: {fields: ['organisations.validation.organisation.alreadyExists'], size: 1}}
 
 				request.session!.sessionFlash = {errors: errors}

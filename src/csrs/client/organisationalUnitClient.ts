@@ -24,6 +24,7 @@ export class OrganisationalUnitClient {
                 params: options
             }
         )
+        console.log(resp)
         const responseData = plainToInstance(GetOrganisationsResponse, resp)
         return responseData.organisationalUnits
     }

@@ -13,6 +13,20 @@ export class OrganisationalUnitTypeAhead {
         }
         this.sort()
     }
+
+    upsertAndSortMultiple(typeaheadElements: OrganisationalUnit[]) {
+        for (let i = 0; i < typeaheadElements.length; i++) {
+            const element = typeaheadElements[i]
+            console.log(element)
+            const index = this.typeahead.findIndex(o => o.id === element.id)
+            if (index === -1) {
+                this.typeahead.push(element)
+            } else {
+                this.typeahead[index] = element
+            }
+        }
+        this.sort()
+    }
     
     // updateAndSort(typeaheadElement: OrganisationalUnit) {
     //     const index = this.typeahead.findIndex(o => o.id === typeaheadElement.id)
@@ -20,10 +34,15 @@ export class OrganisationalUnitTypeAhead {
     //     this.sort()
     // }
 
-    // insertAndSort(typeaheadElement: OrganisationalUnit) {
-    //     this.typeahead.push(typeaheadElement)
-    //     this.sort()
-    // }
+    insertAndSortMultiple(typeaheadElements: OrganisationalUnit[]) {
+        this.typeahead.push(...typeaheadElements)
+        this.sort()
+    }
+
+    insertAndSort(typeaheadElement: OrganisationalUnit) {
+        this.typeahead.push(typeaheadElement)
+        this.sort()
+    }
 
     removeElement(organisationalUnitId: number) {
         const index = this.typeahead.findIndex(o => o.id === organisationalUnitId)

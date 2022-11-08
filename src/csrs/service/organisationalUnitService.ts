@@ -15,46 +15,31 @@ export class OrganisationalUnitService {
 		private readonly organisationalUnitClient: OrganisationalUnitClient,
 		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService) { }
 
+	private async refreshSpecificOrgs(orgIdsToRefresh: number[]) {
+		const organisationalUnits = await this.organisationalUnitClient.get(
+			{
+				includeFormattedName: true,
+				ids: orgIdsToRefresh.join(",")
+			}
+		)
+		await Promise.all(organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o)))
+		const typeahead = await this.getOrgDropdown()
+		typeahead.upsertAndSortMultiple(organisationalUnits)
+		return organisationalUnits
+	}
+
 	private async refreshCache() {
 		this.logger.warn(`Refreshing cache`)
-		const flatOrgs = await this.organisationalUnitClient.get({includeFormattedName: true})
-        await Promise.all(flatOrgs.map(async o => await this.organisationalUnitCache.set(o.id, o)))
-        const typeahead = new OrganisationalUnitTypeAhead(flatOrgs)
+		const organisationalUnits = await this.organisationalUnitClient.get({includeFormattedName: true})
+        await Promise.all(organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o)))
+        const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
         await this.organisationalUnitCache.setTypeaheadList(typeahead)
-		return flatOrgs
+		return organisationalUnits
 	}
 
-	private async upsertOrganisationToTypeahead(organisationalUnit: OrganisationalUnit) {
-		const typeahead = await this.organisationalUnitCache.getTypeaheadList()
-		if (typeahead === undefined) {
-			await this.refreshCache()
-			await this.upsertOrganisationToTypeahead(organisationalUnit)
-		} else {
-			typeahead.upsertAndSort(organisationalUnit)
-			await this.organisationalUnitCache.setTypeaheadList(typeahead)
-		}
-	}
-
-	private async removeOrganisationFromTypeahead(organisationalUnitId: number) {
-		const typeahead = await this.organisationalUnitCache.getTypeaheadList()
-		if (typeahead === undefined) {
-			await this.refreshCache()
-			await this.removeOrganisationFromTypeahead(organisationalUnitId)
-		} else {
-			typeahead.removeElement(organisationalUnitId)
-			await this.organisationalUnitCache.setTypeaheadList(typeahead)
-		}
-	}
-
-	private async getFullFormattedName(organisationalUnit: OrganisationalUnit) {
-		const hierarchy = await this.getOrgHierarchy(organisationalUnit.id)
-		if (hierarchy.length > 1) {
-			const reverse = hierarchy.reverse()
-			const name = reverse.map(o => o.getNameAndAbbrev()).join(" | ")
-			return name
-		} else {
-			return organisationalUnit.getNameAndAbbrev()
-		}
+	async removeOrgFromTypeahead(organisationalUnitId: number) {
+		const typeahead = await this.getOrgDropdown()
+		typeahead.removeElement(organisationalUnitId)
 	}
 
 	async getOrgDropdown(): Promise<OrganisationalUnitTypeAhead> {
@@ -81,12 +66,6 @@ export class OrganisationalUnitService {
 		return await this.organisationalUnitClient.getOrgsTree()
 	}
 
-	private async formatAndSaveOrganisation(organisationalUnit: OrganisationalUnit) {
-		organisationalUnit.formattedName = await this.getFullFormattedName(organisationalUnit)
-		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
-		await this.upsertOrganisationToTypeahead(organisationalUnit)
-	}
-
 	async getOrganisation(organisartionalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
 		console.log(`Getting individual org ${organisartionalUnitId}`)
 		let org = await this.organisationalUnitCache.get(organisartionalUnitId)
@@ -94,6 +73,7 @@ export class OrganisationalUnitService {
 			org = (await this.organisationalUnitClient.get(
 				{includeFormattedName: true, ids: organisartionalUnitId.toString()}
 			))[0]
+			console.log(org)
 			await this.organisationalUnitCache.set(org.id, org)
 		}
 		console.log(org)
@@ -108,44 +88,33 @@ export class OrganisationalUnitService {
 
 	async createOrganisationalUnit(organisationalUnit: OrganisationalUnitPageModel) {
 		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnit)
-		await this.formatAndSaveOrganisation(newOrgWithId)
+		await this.refreshSpecificOrgs([newOrgWithId.id])
 		return newOrgWithId
 	}
 	
 	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel) {
 		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnit)
-		const org = await this.getOrganisation(organisationalUnitId)
-		org.updateWithPageModel(organisationalUnit)
-		await this.formatAndSaveOrganisation(org)
-		return org
+		await this.refreshSpecificOrgs([organisationalUnitId])
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		await this.organisationalUnitClient.delete(organisationalUnitId)
 		await this.organisationalUnitCache.delete(organisationalUnitId)
-		await this.removeOrganisationFromTypeahead(organisationalUnitId)
+		await this.removeOrgFromTypeahead(organisationalUnitId)
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
 		await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
-		const org = await this.getOrganisation(organisationalUnitId)
-		org.agencyToken = agencyToken
-		await this.organisationalUnitCache.set(organisationalUnitId, org)
-		await this.upsertOrganisationToTypeahead(org)
+		await this.refreshSpecificOrgs([organisationalUnitId])
 	}
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
 		await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
-		const org = await this.getOrganisation(organisationalUnitId)
-		org.agencyToken = agencyToken
-		await this.organisationalUnitCache.set(organisationalUnitId, org)
-		await this.upsertOrganisationToTypeahead(org)
+		await this.refreshSpecificOrgs([organisationalUnitId])
 	}
 
 	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
 		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnitId)
-		const org = await this.getOrganisation(organisationalUnitId)
-		org.agencyToken = undefined
-		await this.organisationalUnitCache.set(organisationalUnitId, org)
+		await this.refreshSpecificOrgs([organisationalUnitId])
 	}
 }
