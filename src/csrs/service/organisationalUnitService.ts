@@ -27,16 +27,21 @@ export class OrganisationalUnitService {
 		await Promise.all(organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o)))
 		const typeahead = await this.getOrgDropdown()
 		typeahead.upsertAndSortMultiple(organisationalUnits)
+		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return organisationalUnits
 	}
 
-	private async refreshCache() {
-		this.logger.warn(`Refreshing cache`)
+	private async refreshTypeahead() {
 		const organisationalUnits = await this.organisationalUnitClient.get({includeFormattedName: true})
-        await Promise.all(organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o)))
         const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
-        await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+        this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return organisationalUnits
+	}
+
+	private async removeFromTypeahead(organisationalUnitId: number) {
+		const typeahead = await this.getOrgDropdown()
+		typeahead.removeElement(organisationalUnitId)
+		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 	}
 
 	async removeOrgFromTypeahead(organisationalUnitId: number) {
@@ -48,7 +53,7 @@ export class OrganisationalUnitService {
 		console.log("Get org dropdown")
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
-			const flatOrgs = await this.refreshCache()
+			const flatOrgs = await this.refreshTypeahead()
 			typeahead = new OrganisationalUnitTypeAhead(flatOrgs)
 		}
 		return typeahead
@@ -104,7 +109,7 @@ export class OrganisationalUnitService {
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		await this.organisationalUnitClient.delete(organisationalUnitId)
 		await this.organisationalUnitCache.delete(organisationalUnitId)
-		await this.refreshCache()
+		await this.removeFromTypeahead(organisationalUnitId)
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {

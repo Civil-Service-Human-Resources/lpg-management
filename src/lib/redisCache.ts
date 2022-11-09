@@ -10,7 +10,6 @@ export abstract class Cache<T> {
 
 	async get(id: string|number): Promise<T | undefined> {
 		const response = await promisify(this.redisClient.get).bind(this.redisClient)(this.getFormattedKey(id))
-		console.log(`Cache response for key ${id}: ${response}`)
 		if (response === null) {
 			return undefined
 		}
@@ -19,7 +18,6 @@ export abstract class Cache<T> {
 
     async set(id: string|number, object: T, ttlOverride?: number) {
 		const ttl = ttlOverride ? ttlOverride : this.defaultTTL
-		console.log(`Setting cache ID ${id} with ttl: ${ttl}`)
 		await promisify(this.redisClient.setex).bind(this.redisClient)(
 			this.getFormattedKey(id),
 			ttl,
