@@ -54,6 +54,12 @@ export class JsonRestService {
 		return (await this._http.get(path, this.getHeaders())).data
 	}
 
+	async getWithAuthAndConfig(path: string, config: any) {
+		const headers: any = this.getHeaders()
+		config.headers = headers.headers
+		return await this.getWithConfig(path, config)
+	}
+
 	async getWithConfig(path: string, config: any) {
 		return (await this._http.get(path, config)).data
 	}

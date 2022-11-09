@@ -27,22 +27,6 @@ export class OrganisationalUnitTypeAhead {
         }
         this.sort()
     }
-    
-    // updateAndSort(typeaheadElement: OrganisationalUnit) {
-    //     const index = this.typeahead.findIndex(o => o.id === typeaheadElement.id)
-    //     this.typeahead[index] = typeaheadElement
-    //     this.sort()
-    // }
-
-    insertAndSortMultiple(typeaheadElements: OrganisationalUnit[]) {
-        this.typeahead.push(...typeaheadElements)
-        this.sort()
-    }
-
-    insertAndSort(typeaheadElement: OrganisationalUnit) {
-        this.typeahead.push(typeaheadElement)
-        this.sort()
-    }
 
     removeElement(organisationalUnitId: number) {
         const index = this.typeahead.findIndex(o => o.id === organisationalUnitId)

@@ -9,20 +9,26 @@ import {AgencyToken} from '../../../../src/csrs/model/agencyToken'
 import { OrganisationalUnitClient } from '../../../../src/csrs/client/organisationalUnitClient'
 import { OrganisationalUnitCache } from '../../../../src/csrs/organisationalUnitCache'
 import { AgencyTokenCapacityUsedHttpService } from '../../../../src/identity/agencyTokenCapacityUsedHttpService'
+import { OrganisationalUnitTypeaheadCache } from '../../../../src/csrs/organisationalUnitTypeaheadCache'
 
 chai.use(sinonChai)
 
 describe('OrganisationalUnitService tests', () => {
 	let organisationalUnitClient: OrganisationalUnitClient
 	let organisationalUnitCache: OrganisationalUnitCache
+	let organisationalUnitTypeaheadCache: OrganisationalUnitTypeaheadCache
 	let organisationalUnitService: OrganisationalUnitService
 	let agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService
 
 	beforeEach(() => {
 		organisationalUnitClient = <OrganisationalUnitClient>{}
 		organisationalUnitCache = <OrganisationalUnitCache>{}
+		organisationalUnitTypeaheadCache = <OrganisationalUnitTypeaheadCache>{}
 		agencyTokenCapacityUsedService = <AgencyTokenCapacityUsedHttpService>{}
-		organisationalUnitService = new OrganisationalUnitService(organisationalUnitCache, organisationalUnitClient, agencyTokenCapacityUsedService)
+		organisationalUnitService = new OrganisationalUnitService(
+			organisationalUnitCache, organisationalUnitTypeaheadCache,
+			organisationalUnitClient, agencyTokenCapacityUsedService
+		)
 	})
 
 	it('should get organisationalUnit data', async () => {

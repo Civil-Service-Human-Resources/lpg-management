@@ -82,6 +82,7 @@ import { OrganisationalUnitClient } from './csrs/client/organisationalUnitClient
 import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
 import { createClient } from 'redis'
 import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
+import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 
 export class ApplicationContext {
 	actionWorkerService: ActionWorkerService
@@ -142,6 +143,7 @@ export class ApplicationContext {
 	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
 	organisationalUnitPageModelValidator: Validator<OrganisationalUnitPageModel>
 	organisationalUnitCache: OrganisationalUnitCache
+	organisationalUnitTypeaheadCache: OrganisationalUnitTypeaheadCache
 	organisationalUnitClient: OrganisationalUnitClient
 	organisationController: OrganisationController
 	agencyTokenHttpService: AgencyTokenHttpService
@@ -307,17 +309,24 @@ export class ApplicationContext {
 		)
 		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
 		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)
+		const organisationalUnitCacheRedis = createClient({
+			auth_pass: config.ORG_REDIS.password,
+			host: config.ORG_REDIS.host,
+			no_ready_check: true,
+			port: config.ORG_REDIS.port,
+		})
 		this.organisationalUnitCache = new OrganisationalUnitCache(
-			createClient({
-					auth_pass: config.ORG_REDIS.password,
-					host: config.ORG_REDIS.host,
-					no_ready_check: true,
-					port: config.ORG_REDIS.port,
-				}),
-				config.ORG_REDIS.ttl_seconds
+			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+		)
+		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
+			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
 		)
 		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))
-		this.organisationalUnitService = new OrganisationalUnitService(this.organisationalUnitCache, this.organisationalUnitClient, this.agencyTokenCapacityUsedHttpService)
+		this.organisationalUnitService = new OrganisationalUnitService(
+			this.organisationalUnitCache,
+			this.organisationalUnitTypeaheadCache,
+			this.organisationalUnitClient,
+			this.agencyTokenCapacityUsedHttpService)
 
 		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
 		this.actionWorkerService.init()

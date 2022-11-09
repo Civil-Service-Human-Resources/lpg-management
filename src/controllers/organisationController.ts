@@ -128,11 +128,19 @@ export class OrganisationController implements FormController {
 
 			this.logger.debug(`Updating organisation: ${organisationalUnit.id}`)
 
-			const data: OrganisationalUnitPageModel =  {
+			const data: OrganisationalUnitPageModel = this.organisationalUnitPageModelFactory.create({
 				name: request.body.name || organisationalUnit.name,
 				abbreviation: request.body.abbreviation || organisationalUnit.abbreviation,
 				code: request.body.code || organisationalUnit.code,
 				parentId: request.body.parentId,
+			})
+
+			if (data.parentId != null && data.parentId === organisationalUnit.id) {
+				request.session!.sessionFlash = {errors: {fields: {fields: ['organisations.validation.organisation.selfReference'], size: 1}}}
+
+				return request.session!.save(() => {
+					response.redirect(`/content-management/organisations/${organisationalUnit.id}`)
+				})
 			}
 
 			try {

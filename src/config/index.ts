@@ -46,7 +46,7 @@ export const ORG_REDIS = set({
 	host: env.ORG_REDIS_HOST || 'localhost',
 	password: env.ORG_REDIS_PASSWORD || '',
 	port: +(env.ORG_REDIS_PORT || '6379'),
-	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '60')
+	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
 })
 
 export const REQUEST_TIMEOUT_MS = Number(env.REQUEST_TIMEOUT_MS)

@@ -37,12 +37,14 @@
                             <option value=""></option>
                             {% set parent = form.parent|default(organisationalUnit.parent.id) %}
                             {% for key in organisationalUnits %}
-                                {% if parent === key.id %}
-                                    {% set selected='selected' %}
-                                {% else %}
-                                    {% set selected='' %}
+                                {% if key.id !== organisationalUnit.id %}
+                                    {% if parent === key.id %}
+                                        {% set selected='selected' %}
+                                    {% else %}
+                                        {% set selected='' %}
+                                    {% endif %}
+                                    <option value={{ key.id }} {{ selected }}>{{ key.formattedName }}</option>
                                 {% endif %}
-                            <option value={{ key.id }} {{ selected }}>{{ key.formattedName }}</option>
                             {% endfor %}
                         </select>
                     </div>
