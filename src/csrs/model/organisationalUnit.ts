@@ -14,7 +14,7 @@ export class OrganisationalUnit {
 
 	parentId?: number | null
 
-	children: OrganisationalUnit[]
+	children: OrganisationalUnit[] = []
 
 	formattedName: string
 

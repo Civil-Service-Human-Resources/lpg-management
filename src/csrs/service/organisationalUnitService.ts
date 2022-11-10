@@ -1,6 +1,7 @@
 import { toInteger } from 'lodash';
 import { AgencyTokenCapacityUsedHttpService } from '../../identity/agencyTokenCapacityUsedHttpService';
 import { getLogger } from '../../utils/logger';
+import { OrderBy } from '../client/getOrganisationsRequestOptions';
 import { OrganisationalUnitClient } from '../client/organisationalUnitClient';
 import { AgencyToken } from '../model/agencyToken';
 import { OrganisationalUnit } from '../model/organisationalUnit';
@@ -18,7 +19,7 @@ export class OrganisationalUnitService {
 		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService) { }
 
 	private async refreshSpecificOrgs(orgIdsToRefresh: number[]) {
-		const organisationalUnits = await this.organisationalUnitClient.get(
+		const organisationalUnits = await this.organisationalUnitClient.getOrganisationalUnits(
 			{
 				includeFormattedName: true,
 				ids: orgIdsToRefresh.join(",")
@@ -32,7 +33,8 @@ export class OrganisationalUnitService {
 	}
 
 	private async refreshTypeahead() {
-		const organisationalUnits = await this.organisationalUnitClient.get({includeFormattedName: true})
+		const organisationalUnits = await this.organisationalUnitClient.getOrganisationalUnits(
+			{includeFormattedName: true, orderBy: OrderBy.FORMATTED_NAME})
         const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
         this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return organisationalUnits
@@ -59,29 +61,41 @@ export class OrganisationalUnitService {
 		return typeahead
 	}
 
-	async getOrgHierarchy(
-        organisationId: number,
-        hierarchy: OrganisationalUnit[] = []
-    ): Promise<OrganisationalUnit[]> {
-        const currentOrg = await this.getOrganisation(organisationId)
-		hierarchy.push(currentOrg)
-		if (currentOrg.parentId && currentOrg.parentId !== 0) {
-			return await this.getOrgHierarchy(currentOrg.parentId, hierarchy)
+	async getOrgHierarchy(organisationId: number, hierarchy: OrganisationalUnit[] = []): Promise<OrganisationalUnit[]> {
+        let org = await this.organisationalUnitCache.get(organisationId)
+		if (org == null) {
+			org = await this.organisationalUnitClient.getOrganisationalUnit(
+				organisationId,
+				{includeFormattedName: true, includeParents: true}
+			)
+			while (org) {
+				hierarchy.push(org)
+				this.organisationalUnitCache.set(org.id, org)
+				org = org.parent
+			}
+			return hierarchy
+		} else {
+			hierarchy.push(org)
+			if (org.parentId) {
+				return await this.getOrgHierarchy(org.parentId, hierarchy)
+			}
 		}
 		return hierarchy
     }
 
 	async getOrgTree(): Promise<OrganisationalUnit[]> {
-		return await this.organisationalUnitClient.getOrgsTree()
+		const dropdown = await this.getOrgDropdown()
+		return dropdown.getAsTree()
 	}
 
-	async getOrganisation(organisartionalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
-		console.log(`Getting individual org ${organisartionalUnitId}`)
-		let org = await this.organisationalUnitCache.get(organisartionalUnitId)
+	async getOrganisation(organisationalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
+		console.log(`Getting individual org ${organisationalUnitId}`)
+		let org = await this.organisationalUnitCache.get(organisationalUnitId)
 		if (org === undefined) {
-			org = (await this.organisationalUnitClient.get(
-				{includeFormattedName: true, ids: organisartionalUnitId.toString()}
-			))[0]
+			org = await this.organisationalUnitClient.getOrganisationalUnit(
+				organisationalUnitId,
+				{includeFormattedName: true}
+			)
 			console.log(org)
 			await this.organisationalUnitCache.set(org.id, org)
 		}

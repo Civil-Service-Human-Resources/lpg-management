@@ -1,10 +1,13 @@
-import { plainToInstance } from "class-transformer";
-import * as config from "../../config"
-import { OauthRestService } from "../../lib/http/oauthRestService";
-import { OrganisationalUnit } from "../model/organisationalUnit";
-import { OrganisationalUnitPageModel } from "../model/organisationalUnitPageModel";
-import { GetOrganisationsRequestOptions } from "./getOrganisationsRequestOptions";
-import { GetOrganisationsResponse } from "./getOrganisationsResponse";
+import { plainToInstance } from 'class-transformer';
+
+import * as config from '../../config';
+import { OauthRestService } from '../../lib/http/oauthRestService';
+import { OrganisationalUnit } from '../model/organisationalUnit';
+import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageModel';
+import {
+    GetOrganisationRequestOptions, GetOrganisationsRequestOptions
+} from './getOrganisationsRequestOptions';
+import { GetOrganisationsResponse } from './getOrganisationsResponse';
 
 export class OrganisationalUnitClient {
 
@@ -14,12 +17,7 @@ export class OrganisationalUnitClient {
     V2_BASE_URL = "/v2/organisationalUnits"
     CSRS_URL = config.REGISTRY_SERVICE.url
 
-    async getOrgsTree(): Promise<OrganisationalUnit[]> {
-        const respData: OrganisationalUnit[] = await this._http.get(`${this.BASE_URL}/tree`)
-        return plainToInstance(OrganisationalUnit, respData)
-    }
-
-    async get(options: GetOrganisationsRequestOptions): Promise<OrganisationalUnit[]> {
+    async getOrganisationalUnits(options: GetOrganisationsRequestOptions): Promise<OrganisationalUnit[]> {
         const resp: GetOrganisationsResponse = await this._http.getWithAuthAndConfig(
             this.V2_BASE_URL, {
                 params: options
@@ -27,6 +25,16 @@ export class OrganisationalUnitClient {
         )
         const responseData = plainToInstance(GetOrganisationsResponse, resp)
         return responseData.organisationalUnits
+    }
+
+    async getOrganisationalUnit(organisationalUnitId: number, options: GetOrganisationRequestOptions): Promise<OrganisationalUnit> {
+        const resp: OrganisationalUnit = await this._http.getWithAuthAndConfig(
+            `${this.V2_BASE_URL}/${organisationalUnitId}`, {
+                params: options
+            }
+        )
+        const responseData = plainToInstance(OrganisationalUnit, resp)
+        return responseData
     }
 
     async create(organisationalUnit: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {

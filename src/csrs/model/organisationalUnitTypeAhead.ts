@@ -4,6 +4,26 @@ export class OrganisationalUnitTypeAhead {
 
     constructor(public typeahead: OrganisationalUnit[]) { }
 
+    getAsTree(): OrganisationalUnit[] {
+		const map: Map<number, number> = new Map()
+		const roots: OrganisationalUnit[] = []
+
+		for (let i = 0; i < this.typeahead.length; i++) {
+			map.set(this.typeahead[i].id, i)
+			this.typeahead[i].children = []
+		}
+
+		for (const org of this.typeahead) {
+			if (org.parentId != null) {
+				this.typeahead[map.get(org.parentId)!].children.push(org)
+			} else {
+				roots.push(org)
+			}
+		}
+
+		return roots
+	}
+
     upsertAndSort(typeaheadElement: OrganisationalUnit) {
         const index = this.typeahead.findIndex(o => o.id === typeaheadElement.id)
         if (index === -1) {
