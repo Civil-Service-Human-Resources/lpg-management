@@ -15,6 +15,7 @@ import {ModuleRecord} from '../../../../src/learner-record/model/moduleRecord/mo
 import {ModuleRecordInput} from '../../../../src/learner-record/model/moduleRecord/moduleRecordInput'
 import {RecordState} from '../../../../src/learner-record/model/record'
 import {ApproveBookingActionWorker} from '../../../../src/learner-record/workers/approveBookingActionWorker'
+import { CancelBookingActionWorker } from '../../../../src/learner-record/workers/cancelBookingActionWorker'
 import {LearningCatalogue} from '../../../../src/learning-catalogue'
 import {Audience} from '../../../../src/learning-catalogue/model/audience'
 import {Course} from '../../../../src/learning-catalogue/model/course'
@@ -77,7 +78,7 @@ const civilServantRegistry = sinon.createStubInstance(CsrsService)
 civilServantRegistry.getCivilServantWithUid.resolves(civilServant)
 
 const organisationalUnitService = sinon.createStubInstance(OrganisationalUnitService)
-organisationalUnitService.getOrgHierarchy.resolves([testDepCode])
+organisationalUnitService.getOrgHierarchy.resolves([testOrg])
 
 // Mock Learner Record data
 
@@ -164,10 +165,16 @@ describe('Tests for the event action workers', () => {
 	})
 
 	describe('Tests for the approve booking action worker', () => {
+		let worker: ApproveBookingActionWorker
+
+		beforeEach(() => {
+			worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
+                organisationalUnitService as any, learnerRecordAPI as any)
+		})
+
 		it('Should correctly create a course record', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(undefined)
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
+
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateCourseRecord(true, RecordState.Approved, RecordState.Approved)
@@ -175,8 +182,6 @@ describe('Tests for the event action workers', () => {
 
 		it('Should correctly create a module record', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(genericCourseRecord(true, RecordState.InProgress))
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateModuleRecord(RecordState.Approved)
@@ -184,8 +189,6 @@ describe('Tests for the event action workers', () => {
 
 		it('Should correctly update the course record when the state is null', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(genericCourseRecord(true, RecordState.Null))
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchCourseRecord([
@@ -196,8 +199,6 @@ describe('Tests for the event action workers', () => {
 
 		it('Should NOT update the course record when the state is in progress', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(genericCourseRecord(true, RecordState.InProgress))
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			expect(learnerRecordAPI.createCourseRecord.notCalled).to.be.true
@@ -207,8 +208,6 @@ describe('Tests for the event action workers', () => {
 			const courseRecord = genericCourseRecord(true, RecordState.Null)
 			courseRecord.modules = [genericModuleRecord()]
 			learnerRecordAPI.getCourseRecord.resolves(courseRecord)
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchModuleRecord([
@@ -224,10 +223,14 @@ describe('Tests for the event action workers', () => {
 	})
 
 	describe('Tests for the cancel booking action worker', () => {
+		let worker: CancelBookingActionWorker
+
+		beforeEach(() => {
+			worker = new CancelBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
+                organisationalUnitService as any, learnerRecordAPI as any)
+		})
 		it('Should correctly create a course record', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(undefined)
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateCourseRecord(true, RecordState.Unregistered, RecordState.Unregistered)
@@ -235,8 +238,6 @@ describe('Tests for the event action workers', () => {
 
 		it('Should correctly create a module record', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(genericCourseRecord(true, RecordState.InProgress))
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateModuleRecord(RecordState.Unregistered)
@@ -244,8 +245,6 @@ describe('Tests for the event action workers', () => {
 
 		it('Should correctly update the course record when the state is null', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(genericCourseRecord(true, RecordState.Null))
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchCourseRecord([
@@ -256,8 +255,6 @@ describe('Tests for the event action workers', () => {
 
 		it('Should NOT update the course record when the state is in progress', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(genericCourseRecord(true, RecordState.InProgress))
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			expect(learnerRecordAPI.createCourseRecord.notCalled).to.be.true
@@ -267,8 +264,6 @@ describe('Tests for the event action workers', () => {
 			const courseRecord = genericCourseRecord(true, RecordState.Null)
 			courseRecord.modules = [genericModuleRecord()]
 			learnerRecordAPI.getCourseRecord.resolves(courseRecord)
-			const worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchModuleRecord([

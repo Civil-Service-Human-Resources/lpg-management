@@ -18,34 +18,6 @@ export class OrganisationalUnitService {
 		private readonly organisationalUnitClient: OrganisationalUnitClient,
 		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService) { }
 
-	private async refreshSpecificOrgs(orgIdsToRefresh: number[]) {
-		const organisationalUnits = await this.organisationalUnitClient.getOrganisationalUnits(
-			{
-				includeFormattedName: true,
-				ids: orgIdsToRefresh.join(",")
-			}
-		)
-		await Promise.all(organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o)))
-		const typeahead = await this.getOrgDropdown()
-		typeahead.upsertAndSortMultiple(organisationalUnits)
-		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-		return organisationalUnits
-	}
-
-	private async refreshTypeahead() {
-		const organisationalUnits = await this.organisationalUnitClient.getOrganisationalUnits(
-			{includeFormattedName: true, orderBy: OrderBy.FORMATTED_NAME})
-        const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
-        this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-		return organisationalUnits
-	}
-
-	private async removeFromTypeahead(organisationalUnitId: number) {
-		const typeahead = await this.getOrgDropdown()
-		typeahead.removeElement(organisationalUnitId)
-		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-	}
-
 	async removeOrgFromTypeahead(organisationalUnitId: number) {
 		const typeahead = await this.getOrgDropdown()
 		typeahead.removeElement(organisationalUnitId)
@@ -55,8 +27,7 @@ export class OrganisationalUnitService {
 		console.log("Get org dropdown")
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
-			const flatOrgs = await this.refreshTypeahead()
-			typeahead = new OrganisationalUnitTypeAhead(flatOrgs)
+			typeahead = await this.refreshTypeahead()
 		}
 		return typeahead
 	}
@@ -64,16 +35,8 @@ export class OrganisationalUnitService {
 	async getOrgHierarchy(organisationId: number, hierarchy: OrganisationalUnit[] = []): Promise<OrganisationalUnit[]> {
         let org = await this.organisationalUnitCache.get(organisationId)
 		if (org == null) {
-			org = await this.organisationalUnitClient.getOrganisationalUnit(
-				organisationId,
-				{includeFormattedName: true, includeParents: true}
-			)
-			while (org) {
-				hierarchy.push(org)
-				this.organisationalUnitCache.set(org.id, org)
-				org = org.parent
-			}
-			return hierarchy
+			let orgWithAllParents = await this.getOrganisationFromApi(organisationId, true)
+			return orgWithAllParents.getHierarchyAsArray()
 		} else {
 			hierarchy.push(org)
 			if (org.parentId) {
@@ -89,18 +52,11 @@ export class OrganisationalUnitService {
 	}
 
 	async getOrganisation(organisationalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
-		console.log(`Getting individual org ${organisationalUnitId}`)
 		let org = await this.organisationalUnitCache.get(organisationalUnitId)
 		if (org === undefined) {
-			org = await this.organisationalUnitClient.getOrganisationalUnit(
-				organisationalUnitId,
-				{includeFormattedName: true}
-			)
-			console.log(org)
-			await this.organisationalUnitCache.set(org.id, org)
+			org = await this.getOrganisationFromApi(organisationalUnitId, includeParent)
 		}
-		console.log(org)
-		if (includeParent && org.parentId != null) {
+		if (includeParent && org.parentId != null && org.parent == null) {
 			org.parent = await this.getOrganisation(org.parentId)
 		}
 		if (org.agencyToken) {
@@ -111,13 +67,13 @@ export class OrganisationalUnitService {
 
 	async createOrganisationalUnit(organisationalUnit: OrganisationalUnitPageModel) {
 		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnit)
-		await this.refreshSpecificOrgs([newOrgWithId.id])
+		await this.refreshSpecificOrg(newOrgWithId.id)
 		return newOrgWithId
 	}
 	
 	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel) {
 		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnit)
-		await this.refreshSpecificOrgs([organisationalUnitId])
+		await this.refreshSpecificOrg(organisationalUnitId)
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
@@ -128,16 +84,56 @@ export class OrganisationalUnitService {
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
 		await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
-		await this.refreshSpecificOrgs([organisationalUnitId])
+		await this.refreshSpecificOrg(organisationalUnitId)
 	}
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
 		await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
-		await this.refreshSpecificOrgs([organisationalUnitId])
+		await this.refreshSpecificOrg(organisationalUnitId)
 	}
 
 	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
 		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnitId)
-		await this.refreshSpecificOrgs([organisationalUnitId])
+		await this.refreshSpecificOrg(organisationalUnitId)
+	}
+
+	private async getOrganisationFromApi(organisationalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
+		let organisation: OrganisationalUnit = await this.organisationalUnitClient.getOrganisationalUnit(
+			organisationalUnitId,
+			{includeFormattedName: true, includeParents: includeParent}
+		)
+		let fetchedOrg: OrganisationalUnit | undefined = organisation
+		while (fetchedOrg != null) {
+			await this.organisationalUnitCache.set(fetchedOrg.id, fetchedOrg)
+			fetchedOrg = fetchedOrg.parent
+		}
+		return organisation
+	}
+
+	private async refreshSpecificOrg(organisationalUnitId: number) {
+		const organisationalUnit = await this.organisationalUnitClient.getOrganisationalUnit(
+			organisationalUnitId, {
+				includeFormattedName: true
+			}
+		)
+		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
+		const typeahead = await this.getOrgDropdown()
+		typeahead.upsertAndSort(organisationalUnit)
+		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+		return organisationalUnit
+	}
+
+	private async refreshTypeahead() {
+		const organisationalUnits = await this.organisationalUnitClient.getOrganisationalUnits(
+			{includeFormattedName: true, orderBy: OrderBy.FORMATTED_NAME})
+        const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
+        this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+		return typeahead
+	}
+
+	private async removeFromTypeahead(organisationalUnitId: number) {
+		const typeahead = await this.getOrgDropdown()
+		typeahead.removeElement(organisationalUnitId)
+		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 	}
 }

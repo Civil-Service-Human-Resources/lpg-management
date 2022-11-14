@@ -17,8 +17,8 @@ chai.use(sinonChai)
 
 describe('Organisation Controller Tests', function() {
 	let organisationController: OrganisationController
-	let validator: Validator<OrganisationalUnitPageModel>
 	let factory: OrganisationalUnitPageModelFactory
+	let validator: Validator<OrganisationalUnitPageModel>
 	let organisationalService: OrganisationalUnitService
 
 	let req: Request
@@ -26,8 +26,8 @@ describe('Organisation Controller Tests', function() {
 	let next: NextFunction
 
 	beforeEach(() => {
-		validator = <Validator<OrganisationalUnitPageModel>>{}
 		factory = <OrganisationalUnitPageModelFactory>{}
+		validator = <Validator<OrganisationalUnitPageModel>>{}
 		organisationalService = <OrganisationalUnitService>{}
 		organisationController = new OrganisationController(validator, factory, organisationalService)
 
@@ -95,6 +95,7 @@ describe('Organisation Controller Tests', function() {
 		organisation.id = 123
 		organisation.name = 'New organisation'
 
+		factory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns({fields: [], size: 0})
 		organisationalService.createOrganisationalUnit = sinon.stub().returns(organisation)
 		organisationalService.getOrgDropdown = sinon.stub()
@@ -133,6 +134,7 @@ describe('Organisation Controller Tests', function() {
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
 
+		factory.create = sinon.stub().returns(organisation)
 		organisationalService.createOrganisationalUnit = sinon.stub().throwsException(new Error())
 		validator.check = sinon.stub().returns(validationErrors)
 
@@ -152,6 +154,7 @@ describe('Organisation Controller Tests', function() {
 
 		res.locals.organisationalUnit = organisation
 
+		factory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns({fields: [], size: 0})
 		organisationalService.updateOrganisationalUnit = sinon.stub().returns(organisation)
 		organisationalService.getOrgDropdown = sinon.stub()
@@ -195,6 +198,7 @@ describe('Organisation Controller Tests', function() {
 		res.locals.organisationalUnit = organisation
 		req.params.organisationId = organisation.id.toString()
 
+		factory.create = sinon.stub().returns(organisation)
 		organisationalService.updateOrganisationalUnit = sinon.stub().throwsException(new Error())
 		validator.check = sinon.stub().returns(validationErrors)
 

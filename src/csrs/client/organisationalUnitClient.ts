@@ -13,9 +13,9 @@ export class OrganisationalUnitClient {
 
     constructor(private readonly _http: OauthRestService) { }
 
-    BASE_URL = "/organisationalUnits"
-    V2_BASE_URL = "/v2/organisationalUnits"
-    CSRS_URL = config.REGISTRY_SERVICE.url
+    private BASE_URL = "/organisationalUnits"
+    private V2_BASE_URL = "/v2/organisationalUnits"
+    private CSRS_URL = config.REGISTRY_SERVICE.url
 
     async getOrganisationalUnits(options: GetOrganisationsRequestOptions): Promise<OrganisationalUnit[]> {
         const resp: GetOrganisationsResponse = await this._http.getWithAuthAndConfig(

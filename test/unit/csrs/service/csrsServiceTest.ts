@@ -8,6 +8,8 @@ import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import {CacheService} from '../../../../src/lib/cacheService'
 import { OrganisationalUnitService } from '../../../../src/csrs/service/organisationalUnitService'
+import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
+import { OrganisationalUnit } from '../../../../src/csrs/model/organisationalUnit'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -110,9 +112,16 @@ describe('CsrsService tests', () => {
 		it('should return a map from department code to name', async () => {
 			const hmrcName = 'HM Revenue & Customs'
 			const dwpName = 'Department for Work & Pensions'
-			const expectedNames = [{code: 'hmrc', name: hmrcName}, {code: 'dwp', name: dwpName}]
+			const org1 = new OrganisationalUnit()
+			org1.code = 'hmrc'
+			org1.name = hmrcName
+			const org2 = new OrganisationalUnit()
+			org2.code = 'dwp'
+			org2.name = dwpName
+			const expectedNames = [org1, org2]
+			const typeahead = new OrganisationalUnitTypeAhead(expectedNames)
 
-			organisationalUnitService.getOrgDropdown = sinon.stub().returns(expectedNames)
+			organisationalUnitService.getOrgDropdown = sinon.stub().returns(typeahead)
 
 			expect(await csrsService.getDepartmentCodeToNameMapping()).to.be.deep.equal({
 				hmrc: hmrcName,
@@ -138,16 +147,20 @@ describe('CsrsService tests', () => {
 		})
 	})
 
-	describe('#getDepartmentCodeToAbbreviationMapping', () => {
+	describe('#getDepartmentAbbreviationsFromCodes', () => {
 		it('should return a map from department code to abbreviation', async () => {
 			const hmrcAbbreviation = 'HMRC'
 			const dwpAbbreviation = 'DWP'
-			const expectedOrganisationalUnits = [{code: 'hmrc', abbreviation: hmrcAbbreviation}, {code: 'dwp', abbreviation: dwpAbbreviation}]
-			organisationalUnitService.getOrgDropdown = sinon.stub().returns(expectedOrganisationalUnits)
-			expect(await csrsService.getDepartmentCodeToAbbreviationMapping()).to.be.deep.equal({
-				hmrc: hmrcAbbreviation,
-				dwp: dwpAbbreviation,
-			})
+			const org1 = new OrganisationalUnit()
+			org1.code = 'hmrc'
+			org1.abbreviation = hmrcAbbreviation
+			const org2 = new OrganisationalUnit()
+			org2.code = 'dwp'
+			org2.abbreviation = dwpAbbreviation
+			const expectedCodes = [org1, org2]
+			const typeahead = new OrganisationalUnitTypeAhead(expectedCodes)
+			organisationalUnitService.getOrgDropdown = sinon.stub().resolves(typeahead)
+			expect(await csrsService.getDepartmentAbbreviationsFromCodes(['hmrc', 'dwp'])).to.be.deep.equal([hmrcAbbreviation, dwpAbbreviation])
 		})
 	})
 })

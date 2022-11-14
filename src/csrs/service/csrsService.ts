@@ -147,12 +147,9 @@ export class CsrsService {
 		}, {})
 	}
 
-	async getDepartmentCodeToAbbreviationMapping() {
+	async getDepartmentAbbreviationsFromCodes(codes: string[]) {
 		const dropdown = await this.organisationalUnitService.getOrgDropdown()
-		return dropdown.typeahead.reduce((map: any, object: OrganisationalUnit) => {
-			map[object.code] = object.abbreviation
-			return map
-		}, {})
+		return dropdown.typeahead.filter(o => codes.includes(o.code) && o.abbreviation).map(o => o.abbreviation!)
 	}
 
 	async getGradeCodeToNameMapping() {

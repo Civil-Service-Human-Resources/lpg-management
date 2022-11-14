@@ -17,6 +17,7 @@ import * as moment from 'moment'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {AudienceService} from 'lib/audienceService'
+import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 
 chai.use(sinonChai)
 
@@ -111,11 +112,11 @@ describe('AudienceController', () => {
 			res.locals.audience = {
 				departments: departments,
 			}
-			const organisations: OrganisationalUnit[] = []
-			csrsService.listOrganisationalUnitsForTypehead = sinon.stub().returns(organisations)
+			const organisations = new OrganisationalUnitTypeAhead([])
+			csrsService.listOrganisationalUnitsForTypehead = sinon.stub().resolves(organisations)
 			await audienceController.getOrganisation()(req, res)
 
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {organisationalUnits: organisations, selectedOrganisations: departments})
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {organisationalUnits: [], selectedOrganisations: departments})
 		})
 	})
 

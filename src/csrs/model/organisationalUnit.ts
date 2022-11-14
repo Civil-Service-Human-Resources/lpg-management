@@ -24,10 +24,14 @@ export class OrganisationalUnit {
 
 	agencyToken?: AgencyToken
 
-	getNameAndAbbrev() {
-		let abbrev = (this.abbreviation === undefined) ? "" :
-			` (${this.abbreviation})`
-		return `${this.name}${abbrev}`
+	getHierarchyAsArray() {
+		let hierarchy: OrganisationalUnit[] = [this]
+		let currentParent = this.parent
+		while (currentParent) {
+			hierarchy.push(currentParent)
+			currentParent = currentParent.parent
+		}
+		return hierarchy
 	}
 
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
