@@ -34,6 +34,10 @@ export class OrganisationalUnit {
 		return hierarchy
 	}
 
+	formatNameWithAbbrev() {
+		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
+	}
+
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
 		this.abbreviation = pageModel.abbreviation
 		this.code = pageModel.code
