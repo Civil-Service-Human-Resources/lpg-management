@@ -1,7 +1,6 @@
 import { toInteger } from 'lodash';
 import { AgencyTokenCapacityUsedHttpService } from '../../identity/agencyTokenCapacityUsedHttpService';
 import { getLogger } from '../../utils/logger';
-import { OrderBy } from '../client/getOrganisationsRequestOptions';
 import { OrganisationalUnitClient } from '../client/organisationalUnitClient';
 import { AgencyToken } from '../model/agencyToken';
 import { OrganisationalUnit } from '../model/organisationalUnit';
@@ -100,7 +99,7 @@ export class OrganisationalUnitService {
 	private async getOrganisationFromApi(organisationalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
 		let organisation: OrganisationalUnit = await this.organisationalUnitClient.getOrganisationalUnit(
 			organisationalUnitId,
-			{includeFormattedName: true, includeParents: includeParent}
+			{includeParents: includeParent}
 		)
 		let fetchedOrg: OrganisationalUnit | undefined = organisation
 		while (fetchedOrg != null) {
@@ -111,11 +110,7 @@ export class OrganisationalUnitService {
 	}
 
 	private async refreshSpecificOrg(organisationalUnitId: number) {
-		const organisationalUnit = await this.organisationalUnitClient.getOrganisationalUnit(
-			organisationalUnitId, {
-				includeFormattedName: true
-			}
-		)
+		const organisationalUnit = await this.organisationalUnitClient.getOrganisationalUnit(organisationalUnitId)
 		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
 		const typeahead = await this.getOrgDropdown()
 		typeahead.upsertAndSort(organisationalUnit)
@@ -124,8 +119,7 @@ export class OrganisationalUnitService {
 	}
 
 	private async refreshTypeahead() {
-		const organisationalUnits = await this.organisationalUnitClient.getOrganisationalUnits(
-			{includeFormattedName: true, orderBy: OrderBy.FORMATTED_NAME})
+		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
         const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
         this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return typeahead

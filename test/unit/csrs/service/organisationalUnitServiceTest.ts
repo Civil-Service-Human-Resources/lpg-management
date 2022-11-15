@@ -82,7 +82,7 @@ describe('OrganisationalUnitService tests', () => {
 			const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
 			organisationalUnit.id = 1
 
-			organisationalUnitClient.getOrganisationalUnit.withArgs(1, {includeFormattedName: true, includeParents: false}).resolves(organisationalUnit)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(1, {includeParents: false}).resolves(organisationalUnit)
 
 			organisationalUnitCache.get.withArgs(1).resolves(undefined)
 			const result = await organisationalUnitService.getOrganisation(1)
@@ -101,7 +101,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnit.parentId = 2
 			organisationalUnit.parent = parentOrganisationalUnit
 
-			organisationalUnitClient.getOrganisationalUnit.withArgs(1, {includeFormattedName: true, includeParents: true}).resolves(organisationalUnit)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(1, {includeParents: true}).resolves(organisationalUnit)
 
 			organisationalUnitCache.get.withArgs(1).resolves(undefined)
 			const result = await organisationalUnitService.getOrganisation(1, true)
@@ -119,11 +119,7 @@ describe('OrganisationalUnitService tests', () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
 			organisationalUnitClient.create.withArgs(org).resolves(org)
-			organisationalUnitClient.getOrganisationalUnit.withArgs(
-				org.id, {
-					includeFormattedName: true
-				})
-				.resolves(org)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
 			const typeahead = new OrganisationalUnitTypeAhead([org])
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
 			const newOrg = await organisationalUnitService.createOrganisationalUnit(org)
@@ -136,11 +132,7 @@ describe('OrganisationalUnitService tests', () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
 			const pageModel = new OrganisationalUnitPageModel()
-			organisationalUnitClient.getOrganisationalUnit.withArgs(
-				org.id, {
-					includeFormattedName: true
-				})
-				.resolves(org)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
 			const typeahead = new OrganisationalUnitTypeAhead([org])
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
 			await organisationalUnitService.updateOrganisationalUnit(org.id, pageModel)
@@ -167,11 +159,7 @@ describe('OrganisationalUnitService tests', () => {
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
 			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitClient.getOrganisationalUnit.withArgs(
-				org.id, {
-					includeFormattedName: true
-				})
-				.resolves(org)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
 			await organisationalUnitService.updateAgencyToken(org.id, agencyToken)
 			expect(organisationalUnitClient.updateAgencyToken).to.be.calledWith(org.id, agencyToken)
@@ -185,11 +173,7 @@ describe('OrganisationalUnitService tests', () => {
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
 			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitClient.getOrganisationalUnit.withArgs(
-				org.id, {
-					includeFormattedName: true
-				})
-				.resolves(org)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
 			await organisationalUnitService.deleteAgencyToken(org.id)
 			expect(organisationalUnitClient.deleteAgencyToken).to.be.calledWith(org.id)
@@ -220,7 +204,7 @@ describe('OrganisationalUnitService tests', () => {
 
 			organisationalUnitCache.get.withArgs(3).resolves(undefined)
 			organisationalUnitClient.getOrganisationalUnit
-				.withArgs(3, {includeFormattedName: true, includeParents: true})
+				.withArgs(3, {includeParents: true})
 				.resolves(child)
 
 			const hierarchy = await organisationalUnitService.getOrgHierarchy(3)
@@ -234,7 +218,7 @@ describe('OrganisationalUnitService tests', () => {
 
 			organisationalUnitCache.get.withArgs(3).resolves(child)
 			organisationalUnitClient.getOrganisationalUnit
-				.withArgs(2, {includeFormattedName: true, includeParents: true})
+				.withArgs(2, {includeParents: true})
 				.resolves(child)
 
 			const hierarchy = await organisationalUnitService.getOrgHierarchy(3)

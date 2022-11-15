@@ -14,20 +14,34 @@ export class OrganisationalUnitClient {
     constructor(private readonly _http: OauthRestService) { }
 
     private BASE_URL = "/organisationalUnits"
-    private V2_BASE_URL = "/v2/organisationalUnits"
+    private V2_BASE_URL = `/v2${this.BASE_URL}`
     private CSRS_URL = config.REGISTRY_SERVICE.url
+    private MAX_PER_PAGE = 100
 
-    async getOrganisationalUnits(options: GetOrganisationsRequestOptions): Promise<OrganisationalUnit[]> {
+    async getAllOrganisationalUnits(fromPage: number = 0, orgs: OrganisationalUnit[] = []): Promise<OrganisationalUnit[]> {
+        const options: GetOrganisationsRequestOptions = {
+            size: this.MAX_PER_PAGE,
+            page: fromPage
+        }
+        const response = await this.getOrganisationalUnits(options)
+        orgs.push(...response.embedded.organisationalUnits)
+        if (fromPage<response.page.totalPages) {
+            this.getAllOrganisationalUnits(fromPage+1, orgs)
+        }
+        return orgs
+    }
+
+    async getOrganisationalUnits(options: GetOrganisationsRequestOptions): Promise<GetOrganisationsResponse> {
         const resp: GetOrganisationsResponse = await this._http.getWithAuthAndConfig(
-            this.V2_BASE_URL, {
+            this.BASE_URL, {
                 params: options
             }
         )
         const responseData = plainToInstance(GetOrganisationsResponse, resp)
-        return responseData.organisationalUnits
+        return responseData
     }
 
-    async getOrganisationalUnit(organisationalUnitId: number, options: GetOrganisationRequestOptions): Promise<OrganisationalUnit> {
+    async getOrganisationalUnit(organisationalUnitId: number, options?: GetOrganisationRequestOptions): Promise<OrganisationalUnit> {
         const resp: OrganisationalUnit = await this._http.getWithAuthAndConfig(
             `${this.V2_BASE_URL}/${organisationalUnitId}`, {
                 params: options
