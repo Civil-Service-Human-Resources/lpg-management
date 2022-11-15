@@ -17,11 +17,6 @@ export class OrganisationalUnitService {
 		private readonly organisationalUnitClient: OrganisationalUnitClient,
 		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService) { }
 
-	async removeOrgFromTypeahead(organisationalUnitId: number) {
-		const typeahead = await this.getOrgDropdown()
-		typeahead.removeElement(organisationalUnitId)
-	}
-
 	async getOrgDropdown(): Promise<OrganisationalUnitTypeAhead> {
 		console.log("Get org dropdown")
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
@@ -78,7 +73,7 @@ export class OrganisationalUnitService {
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		await this.organisationalUnitClient.delete(organisationalUnitId)
 		await this.organisationalUnitCache.delete(organisationalUnitId)
-		await this.removeFromTypeahead(organisationalUnitId)
+		await this.refreshTypeahead()
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
@@ -120,14 +115,8 @@ export class OrganisationalUnitService {
 
 	private async refreshTypeahead() {
 		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
-        const typeahead = new OrganisationalUnitTypeAhead(organisationalUnits)
+        const typeahead = OrganisationalUnitTypeAhead.createAndSort(organisationalUnits)
         this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return typeahead
-	}
-
-	private async removeFromTypeahead(organisationalUnitId: number) {
-		const typeahead = await this.getOrgDropdown()
-		typeahead.removeElement(organisationalUnitId)
-		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 	}
 }

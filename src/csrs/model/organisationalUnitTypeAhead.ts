@@ -68,12 +68,7 @@ export class OrganisationalUnitTypeAhead {
         } else {
             this.typeahead[index] = typeaheadElement
         }
-        this.sort()
-    }
-
-    removeElement(organisationalUnitId: number) {
-        const index = this.typeahead.findIndex(o => o.id === organisationalUnitId)
-        this.typeahead.splice(index, 1)
+        this.resetFormattedNameAndSort()
     }
 
     sort() {

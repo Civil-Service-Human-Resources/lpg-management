@@ -141,18 +141,6 @@ describe('OrganisationalUnitService tests', () => {
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.calledWith(typeahead)
 		})
 
-		it('Should delete an organisational unit and clear the cache', async () => {
-			const org = new OrganisationalUnit()
-			org.id = 1
-			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
-			await organisationalUnitService.deleteOrganisationalUnit(org.id)
-			expect(organisationalUnitClient.delete).to.be.calledWith(org.id)
-			expect(organisationalUnitCache.delete).to.be.calledWith(org.id)
-			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
-			organisationalUnitTypeaheadCache.setTypeahead.getCall(1).args[0].typeahead.length === 0
-		})
-
 		it('Should create an agency token set the cache', async () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
