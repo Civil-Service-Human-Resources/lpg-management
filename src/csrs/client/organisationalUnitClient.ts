@@ -24,9 +24,10 @@ export class OrganisationalUnitClient {
             size: 1,
             page: 0
         })
-        if (response.page.totalPages >= 1) {
+        if (response.page.totalElements >= 1) {
+            const totalPages = Math.ceil(response.page.totalElements / this.MAX_PER_PAGE)
             const requests: any[] = []
-            for (let page = 0; page < response.page.totalPages; page++) {
+            for (let page = 0; page < totalPages; page++) {
                 requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page})
                 .then((data) => {
                     orgs.push(...data.embedded.organisationalUnits)

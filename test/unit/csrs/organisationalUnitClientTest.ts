@@ -3,7 +3,7 @@ import Sinon = require("sinon")
 import { OrganisationalUnitClient } from "../../../src/csrs/client/organisationalUnitClient"
 import { OauthRestService } from "../../../src/lib/http/oauthRestService"
 
-function getMockGetOrganisationsResponse(totalPages: number, organisationalUnitId: number) {
+function getMockGetOrganisationsResponse(totalElements: number, organisationalUnitId: number) {
     return {
         "_embedded": {
             "organisationalUnits": [
@@ -13,7 +13,7 @@ function getMockGetOrganisationsResponse(totalPages: number, organisationalUnitI
             ]
         },
         "page": {
-            "totalPages": totalPages
+            "totalElements": totalElements
         }
     }
 }
@@ -29,11 +29,11 @@ describe('organisationalUnitClient tests', () => {
     describe('getAllOrganisationalUnits tests', () => {
         it('Should correctly paginate requests when fetching all organisations', async () => {
             restService.getWithAuthAndConfig.withArgs("/organisationalUnits", {
-                params: { size: 1, page: 0} }).resolves(getMockGetOrganisationsResponse(2, 1))
+                params: { size: 1, page: 0} }).resolves(getMockGetOrganisationsResponse(400, 1))
             restService.getWithAuthAndConfig.withArgs("/organisationalUnits", {
-                params: { size: 200, page: 0} }).resolves(getMockGetOrganisationsResponse(2, 2))
+                params: { size: 200, page: 0} }).resolves(getMockGetOrganisationsResponse(400, 2))
             restService.getWithAuthAndConfig.withArgs("/organisationalUnits", {
-                params: { size: 200, page: 1} }).resolves(getMockGetOrganisationsResponse(2, 3))
+                params: { size: 200, page: 1} }).resolves(getMockGetOrganisationsResponse(400, 3))
             const response = await organisationalUnitClient.getAllOrganisationalUnits()
             expect(response.map(o => o.id)).to.eql([2,3])
         })
