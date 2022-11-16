@@ -10,7 +10,6 @@ import {OrganisationalUnitClient} from '../../../../src/csrs/client/organisation
 import {OrganisationalUnitCache} from '../../../../src/csrs/organisationalUnitCache'
 import {AgencyTokenCapacityUsedHttpService} from '../../../../src/identity/agencyTokenCapacityUsedHttpService'
 import {OrganisationalUnitTypeaheadCache} from '../../../../src/csrs/organisationalUnitTypeaheadCache'
-import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 import { OrganisationalUnitPageModel } from '../../../../src/csrs/model/organisationalUnitPageModel'
 import { getOrg } from '../utils'
 
