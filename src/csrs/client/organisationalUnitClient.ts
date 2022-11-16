@@ -16,17 +16,24 @@ export class OrganisationalUnitClient {
     private BASE_URL = "/organisationalUnits"
     private V2_BASE_URL = `/v2${this.BASE_URL}`
     private CSRS_URL = config.REGISTRY_SERVICE.url
-    private MAX_PER_PAGE = 100
+    private MAX_PER_PAGE = 200
 
-    async getAllOrganisationalUnits(fromPage: number = 0, orgs: OrganisationalUnit[] = []): Promise<OrganisationalUnit[]> {
-        const options: GetOrganisationsRequestOptions = {
+    async getAllOrganisationalUnits(): Promise<OrganisationalUnit[]> {
+        const orgs: OrganisationalUnit[] = []
+        const response = await this.getOrganisationalUnits({
             size: this.MAX_PER_PAGE,
-            page: fromPage
-        }
-        const response = await this.getOrganisationalUnits(options)
+            page: 0
+        })
         orgs.push(...response.embedded.organisationalUnits)
-        if (fromPage<response.page.totalPages) {
-            this.getAllOrganisationalUnits(fromPage+1, orgs)
+        if (response.page.totalPages > 1) {
+            const requests: any[] = []
+            for (let page = 1; page < response.page.totalPages; page++) {
+                requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page})
+                .then((data) => {
+                    orgs.push(...data.embedded.organisationalUnits)
+                }))
+            }
+            await Promise.all(requests)
         }
         return orgs
     }
@@ -37,8 +44,7 @@ export class OrganisationalUnitClient {
                 params: options
             }
         )
-        const responseData = plainToInstance(GetOrganisationsResponse, resp)
-        return responseData
+        return plainToInstance(GetOrganisationsResponse, resp)
     }
 
     async getOrganisationalUnit(organisationalUnitId: number, options?: GetOrganisationRequestOptions): Promise<OrganisationalUnit> {
@@ -58,7 +64,6 @@ export class OrganisationalUnitClient {
 
     async update(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel): Promise<void> {
         const parent = organisationalUnit.parentId ? `${this.CSRS_URL}${this.BASE_URL}/${organisationalUnit.parentId}` : null
-        console.log(organisationalUnit.name)
         await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}`, {
             code: organisationalUnit.code,
             name: organisationalUnit.name,

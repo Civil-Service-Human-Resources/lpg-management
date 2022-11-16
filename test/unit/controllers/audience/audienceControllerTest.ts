@@ -15,7 +15,6 @@ import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {DateTime} from '../../../../src/lib/dateTime'
 import * as moment from 'moment'
 import {Course} from '../../../../src/learning-catalogue/model/course'
-import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {AudienceService} from 'lib/audienceService'
 import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 

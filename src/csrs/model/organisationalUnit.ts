@@ -1,5 +1,4 @@
 import {AgencyToken} from './agencyToken'
-import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 
 export class OrganisationalUnit {
 	id: number
@@ -38,10 +37,4 @@ export class OrganisationalUnit {
 		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
 	}
 
-	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
-		this.abbreviation = pageModel.abbreviation
-		this.code = pageModel.code
-		this.name = pageModel.name
-		this.parentId = pageModel.parentId
-	}
 }

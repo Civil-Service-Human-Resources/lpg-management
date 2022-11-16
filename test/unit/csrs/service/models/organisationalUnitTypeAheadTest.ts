@@ -20,37 +20,6 @@ describe('OrganisationalUnitTypeAhead tests', () => {
         })
     })
 
-    describe('upsertAndSort tests', () => {
-        it('Should insert and sort an organisation (by formattedName) if it is missing', async () => {
-            const orgs = [
-                getOrg("A", "A", 1),
-                getOrg("B", "A | B", 2, 1),
-                getOrg("C", "A | C", 3, 1),
-                getOrg("D", "A | C | D", 4, 3)
-            ]
-            const orgToInsert = getOrg("AA", "A | AA", 5, 1)
-            const typeahead = new OrganisationalUnitTypeAhead(orgs)
-            typeahead.upsertAndSort(orgToInsert)
-            
-            expect(typeahead.typeahead[1].name).to.eql("AA")
-        })
-
-        it('Should update and sort an organisation (by formattedName) if it already exists', async () => {
-            const orgs = [
-                getOrg("A", "A", 1),
-                getOrg("B", "A | B", 2, 1),
-                getOrg("C", "A | C", 3, 1),
-                getOrg("D", "A | C | D", 4, 3)
-            ]
-            const newUpdate = getOrg("CC", "CC", 2)
-            const typeahead = new OrganisationalUnitTypeAhead(orgs)
-            typeahead.upsertAndSort(newUpdate)
-            
-            expect(typeahead.typeahead[1].name).to.eql("C")
-            expect(typeahead.typeahead[3].name).to.eql("CC")
-        })
-    })
-
     describe('addFormattedNameAndSort tests', () => {
 		it('Should create a typeahead list sorted by formattedName', async () => {
 			const grandparentOrg = getOrg("E", '', 5, undefined)

@@ -18,7 +18,6 @@ export class OrganisationalUnitService {
 		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService) { }
 
 	async getOrgDropdown(): Promise<OrganisationalUnitTypeAhead> {
-		console.log("Get org dropdown")
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			typeahead = await this.refreshTypeahead()
@@ -105,11 +104,9 @@ export class OrganisationalUnitService {
 	}
 
 	private async refreshSpecificOrg(organisationalUnitId: number) {
-		const organisationalUnit = await this.organisationalUnitClient.getOrganisationalUnit(organisationalUnitId)
+		const updatedTypeAhead = await this.refreshTypeahead()
+		const organisationalUnit = updatedTypeAhead.typeahead.filter(o => o.id === organisationalUnitId)[0]
 		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
-		const typeahead = await this.getOrgDropdown()
-		typeahead.upsertAndSort(organisationalUnit)
-		this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return organisationalUnit
 	}
 

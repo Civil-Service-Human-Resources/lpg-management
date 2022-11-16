@@ -119,26 +119,22 @@ describe('OrganisationalUnitService tests', () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
 			organisationalUnitClient.create.withArgs(org).resolves(org)
-			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
-			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
+			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
 			const newOrg = await organisationalUnitService.createOrganisationalUnit(org)
 			expect(newOrg).to.eql(org)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
-			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.calledWith(typeahead)
+			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
 		it('Should update an organisational unit and set the cache', async () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
 			const pageModel = new OrganisationalUnitPageModel()
-			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
-			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
+			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
 			await organisationalUnitService.updateOrganisationalUnit(org.id, pageModel)
 			expect(organisationalUnitClient.update).to.be.calledWith(org.id, pageModel)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
-			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.calledWith(typeahead)
+			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
 		it('Should create an agency token set the cache', async () => {
@@ -146,13 +142,11 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
-			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
+			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
 			await organisationalUnitService.updateAgencyToken(org.id, agencyToken)
 			expect(organisationalUnitClient.updateAgencyToken).to.be.calledWith(org.id, agencyToken)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
-			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.calledWith(typeahead)
+			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
 		it('Should delete an agency token set the cache', async () => {
@@ -160,13 +154,11 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
-			const typeahead = new OrganisationalUnitTypeAhead([org])
-			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(typeahead)
+			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
 			await organisationalUnitService.deleteAgencyToken(org.id)
 			expect(organisationalUnitClient.deleteAgencyToken).to.be.calledWith(org.id)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
-			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.calledWith(typeahead)
+			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 	})
 

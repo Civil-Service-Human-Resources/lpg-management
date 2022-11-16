@@ -1,8 +1,14 @@
+import { Type } from "class-transformer";
 import { OrganisationalUnit } from "./organisationalUnit";
 
 export class OrganisationalUnitTypeAhead {
 
-    constructor(public typeahead: OrganisationalUnit[]) { }
+    @Type(() => OrganisationalUnit)
+    public typeahead: OrganisationalUnit[]
+
+    constructor(typeahead: OrganisationalUnit[]) {
+        this.typeahead = typeahead
+    }
 
     static createAndSort(typeahead: OrganisationalUnit[]) {
 		const typeaheadObject = new OrganisationalUnitTypeAhead(typeahead)
@@ -60,16 +66,6 @@ export class OrganisationalUnitTypeAhead {
 
 		return roots
 	}
-
-    async upsertAndSort(typeaheadElement: OrganisationalUnit) {
-        const index = this.typeahead.findIndex(o => o.id === typeaheadElement.id)
-        if (index === -1) {
-            this.typeahead.push(typeaheadElement)
-        } else {
-            this.typeahead[index] = typeaheadElement
-        }
-        this.resetFormattedNameAndSort()
-    }
 
     sort() {
         const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })

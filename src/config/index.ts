@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import * as dotenv from 'dotenv'
 
 export const ENV = process.env.NODE_ENV || 'development'
