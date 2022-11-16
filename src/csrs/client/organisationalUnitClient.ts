@@ -21,13 +21,12 @@ export class OrganisationalUnitClient {
     async getAllOrganisationalUnits(): Promise<OrganisationalUnit[]> {
         const orgs: OrganisationalUnit[] = []
         const response = await this.getOrganisationalUnits({
-            size: this.MAX_PER_PAGE,
+            size: 1,
             page: 0
         })
-        orgs.push(...response.embedded.organisationalUnits)
-        if (response.page.totalPages > 1) {
+        if (response.page.totalPages >= 1) {
             const requests: any[] = []
-            for (let page = 1; page < response.page.totalPages; page++) {
+            for (let page = 0; page < response.page.totalPages; page++) {
                 requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page})
                 .then((data) => {
                     orgs.push(...data.embedded.organisationalUnits)
