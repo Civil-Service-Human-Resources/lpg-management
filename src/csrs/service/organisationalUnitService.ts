@@ -65,9 +65,9 @@ export class OrganisationalUnitService {
 	}
 	
 	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
+		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnitModel)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.updateWithPageModel(organisationalUnitModel)
-		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnitModel)
 		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
@@ -78,23 +78,23 @@ export class OrganisationalUnitService {
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
+		const newTokenWithId = await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
-		organisationalUnit.agencyToken = agencyToken
-		await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
+		organisationalUnit.agencyToken = newTokenWithId
 		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
+		await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.agencyToken = agencyToken
-		await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
 		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
 	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
+		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnitId)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.agencyToken = undefined
-		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnitId)
 		await this.refreshSpecificOrg(organisationalUnit)
 	}
 

@@ -2,6 +2,7 @@ import { plainToInstance } from 'class-transformer';
 
 import * as config from '../../config';
 import { OauthRestService } from '../../lib/http/oauthRestService';
+import { AgencyToken } from '../model/agencyToken';
 import { OrganisationalUnit } from '../model/organisationalUnit';
 import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageModel';
 import {
@@ -76,8 +77,9 @@ export class OrganisationalUnitClient {
         await this._http.delete(`${this.BASE_URL}/${organisationalUnitId}`)
     }
 
-    async createAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<void> {
-        await this._http.post(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`, agencyToken)
+    async createAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<AgencyToken> {
+        const response = await this._http.post(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`, agencyToken)
+        return plainToInstance(AgencyToken, response)
     }
 
     async updateAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<void> {
