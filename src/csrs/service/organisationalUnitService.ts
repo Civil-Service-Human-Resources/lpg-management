@@ -60,13 +60,15 @@ export class OrganisationalUnitService {
 
 	async createOrganisationalUnit(organisationalUnit: OrganisationalUnitPageModel) {
 		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnit)
-		await this.refreshSpecificOrg(newOrgWithId.id)
+		await this.refreshSpecificOrg(newOrgWithId)
 		return newOrgWithId
 	}
 	
-	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel) {
-		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnit)
-		await this.refreshSpecificOrg(organisationalUnitId)
+	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
+		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
+		organisationalUnit.updateWithPageModel(organisationalUnitModel)
+		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnitModel)
+		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
@@ -76,18 +78,24 @@ export class OrganisationalUnitService {
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
+		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
+		organisationalUnit.agencyToken = agencyToken
 		await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
-		await this.refreshSpecificOrg(organisationalUnitId)
+		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
+		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
+		organisationalUnit.agencyToken = agencyToken
 		await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
-		await this.refreshSpecificOrg(organisationalUnitId)
+		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
 	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
+		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
+		organisationalUnit.agencyToken = undefined
 		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnitId)
-		await this.refreshSpecificOrg(organisationalUnitId)
+		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
 	private async getOrganisationFromApi(organisationalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
@@ -103,12 +111,23 @@ export class OrganisationalUnitService {
 		return organisation
 	}
 
-	private async refreshSpecificOrg(organisationalUnitId: number) {
-		const updatedTypeAhead = await this.refreshTypeahead()
-		const organisationalUnit = updatedTypeAhead.typeahead.filter(o => o.id === organisationalUnitId)[0]
-		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
-		return organisationalUnit
+	private async refreshSpecificOrg(organisationalUnit: OrganisationalUnit) {
+		this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
+		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.upsertAndSort(organisationalUnit)
+			this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+		}
 	}
+
+	// private async refreshSpecificOrg(organisationalUnitId: number) {
+	// 	const updatedTypeAhead = await this.refreshTypeahead()
+	// 	const organisationalUnit = updatedTypeAhead.typeahead.filter(o => o.id === organisationalUnitId)[0]
+	// 	await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
+	// 	return organisationalUnit
+	// }
 
 	private async refreshTypeahead() {
 		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()

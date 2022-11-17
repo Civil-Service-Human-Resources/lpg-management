@@ -51,6 +51,16 @@ export class OrganisationalUnitTypeAhead {
 	// 	return org.formattedName
 	// }
 
+	public upsertAndSort(organisationalUnit: OrganisationalUnit) {
+		const index = this.typeahead.findIndex(o => organisationalUnit.id === o.id)
+		if (index > -1) {
+			this.typeahead[index] = organisationalUnit
+		} else {
+			this.typeahead.push(organisationalUnit)
+		}
+		this.resetFormattedNameAndSort()
+	}
+
 	private applyFormattedNameToTreeAndFlatten(tree: OrganisationalUnit[] = [],
 		currentParent?: OrganisationalUnit, flattenedOrgs: OrganisationalUnit[] = []) {
 		for (const org of tree) {
@@ -90,7 +100,7 @@ export class OrganisationalUnitTypeAhead {
 
     sort() {
         const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
-        this.typeahead.sort((a, b) => { return collator.compare(a.formattedName, b.formattedName)})
+        this.typeahead.sort((a, b) => { return collator.compare(a.formattedName!, b.formattedName!)})
     }
 
 }

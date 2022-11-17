@@ -12,6 +12,7 @@ import {AgencyTokenCapacityUsedHttpService} from '../../../../src/identity/agenc
 import {OrganisationalUnitTypeaheadCache} from '../../../../src/csrs/organisationalUnitTypeaheadCache'
 import { OrganisationalUnitPageModel } from '../../../../src/csrs/model/organisationalUnitPageModel'
 import { getOrg } from '../utils'
+import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 
 chai.use(sinonChai)
 
@@ -24,7 +25,6 @@ describe('OrganisationalUnitService tests', () => {
 	let organisationalUnitService: OrganisationalUnitService
 
 	beforeEach(() => {
-		sinon.reset()
 		organisationalUnitService = new OrganisationalUnitService(
 			organisationalUnitCache as any,
 			organisationalUnitTypeaheadCache as any,
@@ -118,7 +118,7 @@ describe('OrganisationalUnitService tests', () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
 			organisationalUnitClient.create.withArgs(org).resolves(org)
-			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			const newOrg = await organisationalUnitService.createOrganisationalUnit(org)
 			expect(newOrg).to.eql(org)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
@@ -129,9 +129,11 @@ describe('OrganisationalUnitService tests', () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
 			const pageModel = new OrganisationalUnitPageModel()
-			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.updateOrganisationalUnit(org.id, pageModel)
 			expect(organisationalUnitClient.update).to.be.calledWith(org.id, pageModel)
+			org.updateWithPageModel(pageModel)
+			org.formattedName = undefined
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
@@ -141,9 +143,10 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
-			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
-			await organisationalUnitService.updateAgencyToken(org.id, agencyToken)
-			expect(organisationalUnitClient.updateAgencyToken).to.be.calledWith(org.id, agencyToken)
+			organisationalUnitCache.get.withArgs(1).resolves(org)
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			await organisationalUnitService.createAgencyToken(org.id, agencyToken)
+			expect(organisationalUnitClient.createAgencyToken).to.be.calledWith(org.id, agencyToken)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
@@ -153,7 +156,8 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
-			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
+			organisationalUnitCache.get.withArgs(1).resolves(org)
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.deleteAgencyToken(org.id)
 			expect(organisationalUnitClient.deleteAgencyToken).to.be.calledWith(org.id)
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)

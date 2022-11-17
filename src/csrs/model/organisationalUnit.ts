@@ -1,4 +1,5 @@
 import {AgencyToken} from './agencyToken'
+import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 
 export class OrganisationalUnit {
 	id: number
@@ -15,13 +16,20 @@ export class OrganisationalUnit {
 
 	children: OrganisationalUnit[] = []
 
-	formattedName: string
+	formattedName?: string
 
 	parent?: OrganisationalUnit
 
 	uri: string
 
 	agencyToken?: AgencyToken
+
+	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
+		this.abbreviation = pageModel.abbreviation
+		this.code = pageModel.code
+		this.name = pageModel.name
+		this.parentId = pageModel.parentId
+	}
 
 	getHierarchyAsArray() {
 		let hierarchy: OrganisationalUnit[] = [this]
