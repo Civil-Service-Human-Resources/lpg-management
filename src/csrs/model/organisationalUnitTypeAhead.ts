@@ -20,36 +20,17 @@ export class OrganisationalUnitTypeAhead {
 	 * Create the typeahead from an organisationalUnit list.
 	 * Calculate and append the formattedName, and sort by formattedName
 	 */
-	resetFormattedNameAndSort() {
-		const tree = this.getAsTree()
-		this.typeahead = this.applyFormattedNameToTreeAndFlatten(tree)
-
-
-		// const orgMap: Map<number, OrganisationalUnit> = new Map()
-		// this.typeahead.forEach(o => {
-		// 	o.formattedName = ''
-		// 	orgMap.set(o.id, o)
-		// })
-		// for (const org of this.typeahead) {
-		// 	org.formattedName = this.getFormattedName(orgMap, org.id)
-		// }
+	 resetFormattedNameAndSort() {
+		const orgMap: Map<number, OrganisationalUnit> = new Map()
+		this.typeahead.forEach(o => {
+			o.formattedName = ''
+			orgMap.set(o.id, o)
+		})
+		for (const org of this.typeahead) {
+			org.formattedName = this.getFormattedName(orgMap, org.id)
+		}
 		this.sort()
 	}
-
-	// private getFormattedName(
-	// 	orgMap: Map<number, OrganisationalUnit>, orgId: number) {
-	// 	const org = orgMap.get(orgId)!
-	// 	if (!org.formattedName) {
-	// 		let formattedName = org.formatNameWithAbbrev()
-	// 		if (org.parentId) {
-	// 			const parentFormattedName = this.getFormattedName(orgMap, org.parentId)
-	// 			formattedName = `${parentFormattedName} | ${formattedName}`
-	// 		}
-	// 		org.formattedName = formattedName
-	// 		orgMap.set(org.id, org)
-	// 	}
-	// 	return org.formattedName
-	// }
 
 	public upsertAndSort(organisationalUnit: OrganisationalUnit) {
 		const index = this.typeahead.findIndex(o => organisationalUnit.id === o.id)
@@ -61,21 +42,18 @@ export class OrganisationalUnitTypeAhead {
 		this.resetFormattedNameAndSort()
 	}
 
-	private applyFormattedNameToTreeAndFlatten(tree: OrganisationalUnit[] = [],
-		currentParent?: OrganisationalUnit, flattenedOrgs: OrganisationalUnit[] = []) {
-		for (const org of tree) {
-			const orgFullName = org.formatNameWithAbbrev()
-			if (currentParent) {
-				org.formattedName = `${currentParent.formattedName} | ${orgFullName}`
-			} else {
-				org.formattedName = orgFullName
+	private getFormattedName(orgMap: Map<number, OrganisationalUnit>, orgId: number) {
+		const org = orgMap.get(orgId)!
+		if (!org.formattedName) {
+			let formattedName = org.formatNameWithAbbrev()
+			if (org.parentId) {
+				const parentFormattedName = this.getFormattedName(orgMap, org.parentId)
+				formattedName = `${parentFormattedName} | ${formattedName}`
 			}
-			if (org.children.length > 0) {
-				this.applyFormattedNameToTreeAndFlatten(org.children, org, flattenedOrgs)
-			}
-			flattenedOrgs.push(org)
+			org.formattedName = formattedName
+			orgMap.set(org.id, org)
 		}
-		return flattenedOrgs
+		return org.formattedName
 	}
 
     getAsTree(): OrganisationalUnit[] {

@@ -122,13 +122,6 @@ export class OrganisationalUnitService {
 		}
 	}
 
-	// private async refreshSpecificOrg(organisationalUnitId: number) {
-	// 	const updatedTypeAhead = await this.refreshTypeahead()
-	// 	const organisationalUnit = updatedTypeAhead.typeahead.filter(o => o.id === organisationalUnitId)[0]
-	// 	await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
-	// 	return organisationalUnit
-	// }
-
 	private async refreshTypeahead() {
 		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
         const typeahead = OrganisationalUnitTypeAhead.createAndSort(organisationalUnits)
