@@ -45,11 +45,12 @@ export class OrganisationalUnitService {
 	}
 
 	async getOrganisation(organisationalUnitId: number, includeParent: boolean = false): Promise<OrganisationalUnit> {
+		this.logger.debug(`Getting Organisation ${organisationalUnitId}`)
 		let org = await this.organisationalUnitCache.get(organisationalUnitId)
 		if (org === undefined) {
 			org = await this.getOrganisationFromApi(organisationalUnitId, includeParent)
 		}
-		if (includeParent && org.parentId != null && org.parent == null) {
+		if (includeParent && org.parentId && org.parent == null) {
 			org.parent = await this.getOrganisation(org.parentId)
 		}
 		if (org.agencyToken) {
@@ -58,8 +59,9 @@ export class OrganisationalUnitService {
 		return org
 	}
 
-	async createOrganisationalUnit(organisationalUnit: OrganisationalUnitPageModel) {
-		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnit)
+	async createOrganisationalUnit(organisationalUnitModel: OrganisationalUnitPageModel) {
+		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnitModel)
+		newOrgWithId.updateWithPageModel(organisationalUnitModel)
 		await this.refreshSpecificOrg(newOrgWithId)
 		return newOrgWithId
 	}
@@ -72,6 +74,7 @@ export class OrganisationalUnitService {
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
+		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
 		await this.organisationalUnitClient.delete(organisationalUnitId)
 		await this.organisationalUnitCache.delete(organisationalUnitId)
 		await this.refreshTypeahead()

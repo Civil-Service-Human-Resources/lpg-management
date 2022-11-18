@@ -29,14 +29,19 @@ export class OrganisationalUnit {
 		this.code = pageModel.code
 		this.name = pageModel.name
 		this.parentId = pageModel.parentId
+		if (!this.parentId) {
+			this.parent = undefined
+		}
 	}
 
 	getHierarchyAsArray() {
-		let hierarchy: OrganisationalUnit[] = [this]
-		let currentParent = this.parent
-		while (currentParent) {
-			hierarchy.push(currentParent)
-			currentParent = currentParent.parent
+		let hierarchy: OrganisationalUnit[] = []
+		let currentOrg: OrganisationalUnit | undefined = this
+		while (currentOrg) {
+			const parent: OrganisationalUnit | undefined = currentOrg.parent
+			currentOrg.parent = undefined
+			hierarchy.push(currentOrg)
+			currentOrg = parent
 		}
 		return hierarchy
 	}
