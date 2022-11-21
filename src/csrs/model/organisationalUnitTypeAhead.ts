@@ -57,22 +57,22 @@ export class OrganisationalUnitTypeAhead {
 	}
 
     getAsTree(): OrganisationalUnit[] {
-		const map: Map<number, number> = new Map()
+		
+		const idMapping = this.typeahead.reduce((acc: {
+			[key: number]: number
+		}, el, i) => {
+			acc[el.id] = i
+			return acc
+		}, {})
 		const roots: OrganisationalUnit[] = []
 
-		for (let i = 0; i < this.typeahead.length; i++) {
-			map.set(this.typeahead[i].id, i)
-			this.typeahead[i].children = []
-		}
-
-		for (const org of this.typeahead) {
-			if (org.parentId != null) {
-				this.typeahead[map.get(org.parentId)!].children.push(org)
+		this.typeahead.map(o => {
+			if (o.parentId) {
+				this.typeahead[idMapping[o.parentId]].children.push(o)
 			} else {
-				roots.push(org)
+				roots.push(o)
 			}
-		}
-
+		})
 		return roots
 	}
 
