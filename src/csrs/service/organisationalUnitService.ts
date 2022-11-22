@@ -54,7 +54,7 @@ export class OrganisationalUnitService {
 			org.parent = await this.getOrganisation(org.parentId)
 		}
 		if (org.agencyToken) {
-			org.agencyToken.capacityUsed = toInteger(await this.agencyTokenCapacityUsedService.getCapacityUsed(org.agencyToken.uid))
+			org.agencyToken.capacityUsed = toInteger(await (await this.agencyTokenCapacityUsedService.getCapacityUsed(org.agencyToken.uid)).capacityUsed)
 		}
 		this.logger.debug(`Organisation: ${JSON.stringify(org)}`)
 		return org
