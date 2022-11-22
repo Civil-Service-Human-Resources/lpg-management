@@ -211,7 +211,28 @@ export class ApplicationContext {
 		this.reportServiceConfig = new ReportServiceConfig(config.REPORT_SERVICE.url, config.REPORT_SERVICE.timeout, config.REPORT_SERVICE.map)
 		this.reportService = new ReportService(this.reportServiceConfig, new OauthRestService(this.reportServiceConfig, this.auth))
 
+		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
+
+		const organisationalUnitCacheRedis = createClient({
+			auth_pass: config.ORG_REDIS.password,
+			host: config.ORG_REDIS.host,
+			no_ready_check: true,
+			port: config.ORG_REDIS.port,
+		})
+		this.organisationalUnitCache = new OrganisationalUnitCache(
+			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+		)
+		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
+			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+		)
 		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE.url, config.REGISTRY_SERVICE.timeout)
+		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))
+		this.organisationalUnitService = new OrganisationalUnitService(
+			this.organisationalUnitCache,
+			this.organisationalUnitTypeaheadCache,
+			this.organisationalUnitClient,
+			this.agencyTokenCapacityUsedHttpService)
+
 		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.organisationalUnitService)
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
@@ -296,7 +317,6 @@ export class ApplicationContext {
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
 		this.agencyTokenHttpService = new AgencyTokenHttpService(this.csrsConfig, this.auth)
-		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
 
 		this.audienceService = new AudienceService(this.csrsService)
 		this.audienceController = new AudienceController(
@@ -309,24 +329,6 @@ export class ApplicationContext {
 		)
 		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
 		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)
-		const organisationalUnitCacheRedis = createClient({
-			auth_pass: config.ORG_REDIS.password,
-			host: config.ORG_REDIS.host,
-			no_ready_check: true,
-			port: config.ORG_REDIS.port,
-		})
-		this.organisationalUnitCache = new OrganisationalUnitCache(
-			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
-		)
-		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
-			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
-		)
-		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))
-		this.organisationalUnitService = new OrganisationalUnitService(
-			this.organisationalUnitCache,
-			this.organisationalUnitTypeaheadCache,
-			this.organisationalUnitClient,
-			this.agencyTokenCapacityUsedHttpService)
 
 		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
 		this.actionWorkerService.init()
