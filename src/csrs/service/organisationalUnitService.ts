@@ -120,7 +120,7 @@ export class OrganisationalUnitService {
 		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
-			typeahead = await this.refreshTypeahead()
+			await this.refreshTypeahead()
 		} else {
 			typeahead.upsertAndSort(organisationalUnit)
 			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
