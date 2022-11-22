@@ -13,6 +13,7 @@ import {OrganisationalUnitTypeaheadCache} from '../../../../src/csrs/organisatio
 import { OrganisationalUnitPageModel } from '../../../../src/csrs/model/organisationalUnitPageModel'
 import { getOrg } from '../utils'
 import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
+import { AgencyTokenCapacityUsed } from '../../../../src/identity/model/AgencyTokenCapacityUsed'
 
 chai.use(sinonChai)
 
@@ -69,7 +70,9 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnit.agencyToken = agencyToken
 
 			organisationalUnitCache.get.withArgs(1).resolves(organisationalUnit)
-			agencyTokenCapacityUsedService.getCapacityUsed.withArgs(agencyToken.uid).resolves(10)
+			const capacityUsed = new AgencyTokenCapacityUsed()
+			capacityUsed.capacityUsed = '10'
+			agencyTokenCapacityUsedService.getCapacityUsed.withArgs(agencyToken.uid).resolves(capacityUsed)
 			const result = await organisationalUnitService.getOrganisation(1, true)
 
 			expect(result.id).to.eql(1)
@@ -143,6 +146,9 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
+			const capacityUsed = new AgencyTokenCapacityUsed()
+			capacityUsed.capacityUsed = '10'
+			agencyTokenCapacityUsedService.getCapacityUsed.withArgs(agencyToken.uid).resolves(capacityUsed)
 			organisationalUnitCache.get.withArgs(1).resolves(org)
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.createAgencyToken(org.id, agencyToken)
@@ -156,6 +162,9 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const agencyToken = new AgencyToken()
 			org.agencyToken = agencyToken
+			const capacityUsed = new AgencyTokenCapacityUsed()
+			capacityUsed.capacityUsed = '10'
+			agencyTokenCapacityUsedService.getCapacityUsed.withArgs(agencyToken.uid).resolves(capacityUsed)
 			organisationalUnitCache.get.withArgs(1).resolves(org)
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.deleteAgencyToken(org.id)
