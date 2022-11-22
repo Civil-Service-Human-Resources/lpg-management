@@ -23,6 +23,7 @@ export class OrganisationalUnitTypeAhead {
 	 resetFormattedNameAndSort() {
 		const orgMap: Map<number, OrganisationalUnit> = new Map()
 		this.typeahead.forEach(o => {
+			o.children = []
 			o.formattedName = ''
 			orgMap.set(o.id, o)
 		})

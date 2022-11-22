@@ -67,9 +67,11 @@ export class OrganisationalUnitService {
 	}
 	
 	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
+		this.logger.debug(`Updating organisational unit ${organisationalUnitId} with page model ${JSON.stringify(organisationalUnitModel)}`)
 		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnitModel)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.updateWithPageModel(organisationalUnitModel)
+		this.logger.debug(`Resulting organisationalUnit ${JSON.stringify(organisationalUnit)}`)
 		await this.refreshSpecificOrg(organisationalUnit)
 	}
 
@@ -115,10 +117,10 @@ export class OrganisationalUnitService {
 	}
 
 	private async refreshSpecificOrg(organisationalUnit: OrganisationalUnit) {
-		this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
+		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
-			await this.refreshTypeahead()
+			typeahead = await this.refreshTypeahead()
 		} else {
 			typeahead.upsertAndSort(organisationalUnit)
 			this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
