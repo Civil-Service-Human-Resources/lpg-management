@@ -123,7 +123,7 @@ export class OrganisationalUnitService {
 			typeahead = await this.refreshTypeahead()
 		} else {
 			typeahead.upsertAndSort(organisationalUnit)
-			this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		}
 	}
 
