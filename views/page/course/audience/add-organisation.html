@@ -54,7 +54,7 @@
                 <fieldset class="govuk-fieldset module-selector">
                     <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
                         <select class = "autocomplete__organisations" name="parent" id="parent">
-                            <option value=""></option>
+                            <option value="" selected></option>
                             {% for key in organisationalUnits %}
                                 <option value={{ key.code }}>{{ key.formattedName }}</option>
                             {% endfor %}
