@@ -110,8 +110,10 @@ export class OrganisationalUnitService {
 		)
 		let fetchedOrg: OrganisationalUnit | undefined = organisation
 		while (fetchedOrg != null) {
+			let parent: OrganisationalUnit | undefined = fetchedOrg.parent
+			fetchedOrg.parent = undefined
 			await this.organisationalUnitCache.set(fetchedOrg.id, fetchedOrg)
-			fetchedOrg = fetchedOrg.parent
+			fetchedOrg = parent
 		}
 		return organisation
 	}
