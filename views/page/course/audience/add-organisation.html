@@ -55,13 +55,7 @@
                     <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
                         <select class = "autocomplete__organisations" name="parent" id="parent">
                             <option value=""></option>
-                            {% set parent = form.parent|default(organisationalUnit.parent.uri) %}
                             {% for key in organisationalUnits %}
-                                {% if parent === key.href %}
-                                    {% set selected='selected' %}
-                                {% else %}
-                                    {% set selected='' %}
-                                {% endif %}
                                 <option value={{ key.code }} {{ selected }}>{{ key.formattedName }}</option>
                             {% endfor %}
                         </select>
