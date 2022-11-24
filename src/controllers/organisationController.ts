@@ -130,7 +130,7 @@ export class OrganisationController implements FormController {
 
 			const data: OrganisationalUnitPageModel = this.organisationalUnitPageModelFactory.create({
 				name: request.body.name || organisationalUnit.name,
-				abbreviation: request.body.abbreviation || organisationalUnit.abbreviation,
+				abbreviation: request.body.abbreviation,
 				code: request.body.code || organisationalUnit.code,
 				parentId: request.body.parentId,
 			})
