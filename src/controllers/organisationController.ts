@@ -1,30 +1,32 @@
 import {NextFunction, Request, Response, Router} from 'express'
 import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
-import {Csrs} from '../csrs/index'
-import {DefaultPageResults} from '../learning-catalogue/model/defaultPageResults'
 import * as asyncHandler from 'express-async-handler'
-import {OrganisationalUnitFactory} from '../csrs/model/organisationalUnitFactory'
 import {FormController} from './formController'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {Validate} from './formValidator'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
 import { getLogger } from '../utils/logger'
+import { OrganisationalUnitPageModel } from '../csrs/model/organisationalUnitPageModel'
+import { OrganisationalUnitTypeAhead } from '../csrs/model/organisationalUnitTypeAhead'
+import { OrganisationalUnitPageModelFactory } from '../csrs/model/organisationalUnitPageModelFactory'
 const { xss } = require('express-xss-sanitizer')
 
 
 export class OrganisationController implements FormController {
 	logger = getLogger('OrganisationController')
 	router: Router
-	csrs: Csrs
-	organisationalUnitFactory: OrganisationalUnitFactory
-	validator: Validator<OrganisationalUnit>
+	validator: Validator<OrganisationalUnitPageModel>
+	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
 	organisationalUnitService: OrganisationalUnitService
 
-	constructor(csrs: Csrs, organisationalUnitFactory: OrganisationalUnitFactory, validator: Validator<OrganisationalUnit>, organisationalUnitService: OrganisationalUnitService) {
+	constructor(
+		validator: Validator<OrganisationalUnitPageModel>,
+		organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory,
+		organisationalUnitService: OrganisationalUnitService) {
 		this.router = Router()
-		this.csrs = csrs
-		this.organisationalUnitFactory = organisationalUnitFactory
+		this.organisationalUnitService = organisationalUnitService
 		this.validator = validator
+		this.organisationalUnitPageModelFactory = organisationalUnitPageModelFactory
 		this.organisationalUnitService = organisationalUnitService
 
 		this.getOrganisationFromRouterParamAndSetOnLocals()
@@ -35,8 +37,8 @@ export class OrganisationController implements FormController {
 	/* istanbul ignore next */
 	// prettier-ignore
 	private getOrganisationFromRouterParamAndSetOnLocals() {
-		this.router.param('organisationalUnitId', asyncHandler(async (req: Request, res: Response, next: NextFunction, organisationalUnitId: string) => {
-				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisationalUnit(organisationalUnitId)
+		this.router.param('organisationalUnitId', asyncHandler(async (req: Request, res: Response, next: NextFunction, organisationalUnitId: number) => {
+				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisation(organisationalUnitId, true)
 
 				if (organisationalUnit) {
 					res.locals.organisationalUnit = organisationalUnit
@@ -64,8 +66,8 @@ export class OrganisationController implements FormController {
 
 	public getOrganisationList() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			await this.csrs
-				.listOrganisationalUnits()
+			await this.organisationalUnitService
+				.getOrgTree()
 				.then(organisationalUnits => {
 					response.render('page/organisation/manage-organisations', {organisationalUnits: organisationalUnits})
 				})
@@ -85,9 +87,8 @@ export class OrganisationController implements FormController {
 
 	public addEditOrganisation() {
 		return async (request: Request, response: Response) => {
-			const organisationalUnits: DefaultPageResults<OrganisationalUnit> = await this.csrs.listOrganisationalUnitsForTypehead()
-
-			response.render('page/organisation/add-edit-organisation', {organisationalUnits: organisationalUnits})
+			const typeahead: OrganisationalUnitTypeAhead = await this.organisationalUnitService.getOrgDropdown()
+			response.render('page/organisation/add-edit-organisation', {organisationalUnits: typeahead.typeahead})
 		}
 	}
 
@@ -97,15 +98,13 @@ export class OrganisationController implements FormController {
 	})
 	public createOrganisation() {
 		return async (request: Request, response: Response) => {
-			const organisationalUnit = this.organisationalUnitFactory.create(request.body)
+			const organisationalUnit = this.organisationalUnitPageModelFactory.create(request.body)
 
 			this.logger.debug(`Creating new organisation: ${organisationalUnit.name}`)
 
 			try {
-				const newOrganisationalUnit: OrganisationalUnit = await this.csrs.createOrganisationalUnit(organisationalUnit)
+				const newOrganisationalUnit: OrganisationalUnit = await this.organisationalUnitService.createOrganisationalUnit(organisationalUnit)
 				request.session!.sessionFlash = {organisationAddedSuccessMessage: 'organisationAddedSuccessMessage'}
-				this.csrs.listOrganisationalUnits()
-				this.csrs.listOrganisationalUnitsForTypehead()
 				response.redirect(`/content-management/organisations/${newOrganisationalUnit.id}/overview`)
 			} catch (e) {
 				const errors = {fields: {fields: ['organisations.validation.organisation.alreadyExists'], size: 1}}
@@ -129,18 +128,23 @@ export class OrganisationController implements FormController {
 
 			this.logger.debug(`Updating organisation: ${organisationalUnit.id}`)
 
-			const data = {
+			const data: OrganisationalUnitPageModel = this.organisationalUnitPageModelFactory.create({
 				name: request.body.name || organisationalUnit.name,
-				abbreviation: request.body.abbreviation || organisationalUnit.abbreviation,
+				abbreviation: request.body.abbreviation,
 				code: request.body.code || organisationalUnit.code,
-				parent: request.body.parent,
-				agencyToken: organisationalUnit.agencyToken,
+				parentId: request.body.parentId,
+			})
+
+			if (data.parentId != null && data.parentId === organisationalUnit.id) {
+				request.session!.sessionFlash = {errors: {fields: {fields: ['organisations.validation.organisation.selfReference'], size: 1}}}
+
+				return request.session!.save(() => {
+					response.redirect(`/content-management/organisations/${organisationalUnit.id}`)
+				})
 			}
 
 			try {
-				await this.csrs.updateOrganisationalUnit(organisationalUnit.id, data)
-				this.csrs.listOrganisationalUnits()
-				this.csrs.listOrganisationalUnitsForTypehead()
+				await this.organisationalUnitService.updateOrganisationalUnit(organisationalUnit.id, data)
 			} catch (e) {
 				const errors = {fields: {fields: ['organisations.validation.organisation.alreadyExists'], size: 1}}
 
@@ -159,17 +163,16 @@ export class OrganisationController implements FormController {
 		return async(request: Request, response: Response) => {
 			let organisationalUnit = response.locals.organisationalUnit
 
-			const data = {
+			const data: OrganisationalUnitPageModel = {
 				name: organisationalUnit.name,
 				abbreviation: organisationalUnit.abbreviation,
 				code: organisationalUnit.code,
-				parent: null,
-				agencyToken: organisationalUnit.agencyToken,
+				parentId: null
 			}
 
 			this.logger.debug(`Unlinking parent organisation from organisation: ${organisationalUnit.id}`)
 
-			await this.csrs.updateOrganisationalUnit(organisationalUnit.id, data)
+			await this.organisationalUnitService.updateOrganisationalUnit(organisationalUnit.id, data)
 		
 			response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 		}
@@ -191,7 +194,7 @@ export class OrganisationController implements FormController {
 		return async (request: Request, response: Response) => {
 			const organisationalUnit = response.locals.organisationalUnit
 
-			await this.csrs.deleteOrganisationalUnit(organisationalUnit.id)
+			await this.organisationalUnitService.deleteOrganisationalUnit(organisationalUnit.id)
 
 			request.session!.sessionFlash = {organisationRemovedMessage: 'organisationRemovedMessage', organisationalUnit: organisationalUnit}
 

@@ -35,9 +35,7 @@ export class AudienceService {
 		let sortFunction = (itemOne: string, itemTwo: string) => (itemOne.toLowerCase() > itemTwo.toLowerCase() ? 1 : -1)
 
 		if (Array.isArray(audience.departments) && audience.departments.length) {
-			let departmentCodeToAbbreviationMapping: any = await this.csrsService.getDepartmentCodeToAbbreviationMapping()
-			let departmentCodeToAbbreviationFunction = (element: string) => departmentCodeToAbbreviationMapping[element]
-			let departmentAbbreviations: string[] = audience.departments.map(departmentCodeToAbbreviationFunction)
+			let departmentAbbreviations: string[] = await this.csrsService.getDepartmentAbbreviationsFromCodes(audience.departments)
 			let departmentAbbreviationsString = departmentAbbreviations.sort(sortFunction).join(', ')
 			audienceNameComponents.push(departmentAbbreviationsString)
 		}
