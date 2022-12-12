@@ -149,24 +149,10 @@ describe('OrganisationalUnitService tests', () => {
 		it('Should delete an organisational unit and set the cache', async () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
 			await organisationalUnitService.deleteOrganisationalUnit(1)
 			expect(organisationalUnitCache.delete).to.be.calledWith(1)
 			expect(organisationalUnitClient.delete).to.be.calledWith(1)
-			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
-		})
-
-		it(`Should delete an organisational unit and clear any child org's parentIds`, async () => {
-			const parentOrg = new OrganisationalUnit()
-			parentOrg.id = 2
-			const org = new OrganisationalUnit()
-			org.id = 1
-			org.parentId = 2
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org, parentOrg]))
-			await organisationalUnitService.deleteOrganisationalUnit(2)
-			expect(organisationalUnitCache.delete).to.be.calledWith(2)
-			expect(organisationalUnitClient.delete).to.be.calledWith(2)
-			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
