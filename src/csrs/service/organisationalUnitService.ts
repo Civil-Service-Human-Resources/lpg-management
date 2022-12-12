@@ -93,7 +93,19 @@ export class OrganisationalUnitService {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
 		await this.organisationalUnitClient.delete(organisationalUnitId)
 		await this.organisationalUnitCache.delete(organisationalUnitId)
-		await this.refreshTypeahead(true)
+		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.typeahead
+				.filter(o => o.parentId && o.parentId === organisationalUnitId)
+				.map(async c => {
+					c.parentId = null
+					await this.organisationalUnitCache.set(c.id, c)
+				})
+			typeahead.removeAndSort(organisationalUnitId)
+			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+		}
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
@@ -128,11 +140,8 @@ export class OrganisationalUnitService {
 		}
 	}
 
-	private async refreshTypeahead(refreshIndividuals: boolean = false) {
+	private async refreshTypeahead() {
 		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
-		if (refreshIndividuals) {
-			organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o))
-		}
         const typeahead = OrganisationalUnitTypeAhead.createAndSort(organisationalUnits)
         await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return typeahead

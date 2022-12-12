@@ -33,6 +33,23 @@ export class OrganisationalUnitTypeAhead {
 		this.sort()
 	}
 
+	public removeAndSort(organisationalUnitId: number) {
+		let index = -1
+		for (let i = 0; i < this.typeahead.length; i++) {
+			const org = this.typeahead[i]
+			if (org.parentId && org.parentId === organisationalUnitId) {
+				org.parentId = null
+			}
+			if (org.id === organisationalUnitId) {
+				index = i
+			}
+		}
+		if (index > -1) {
+			this.typeahead.splice(index, 1)
+		}
+		this.resetFormattedNameAndSort()
+	}
+
 	public upsertAndSort(organisationalUnit: OrganisationalUnit) {
 		const index = this.typeahead.findIndex(o => organisationalUnit.id === o.id)
 		if (index > -1) {

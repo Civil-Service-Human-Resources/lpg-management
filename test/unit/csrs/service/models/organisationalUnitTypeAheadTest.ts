@@ -57,4 +57,20 @@ describe('OrganisationalUnitTypeAhead tests', () => {
 			])
 		})
 	})
+
+	describe('removeAndSort tests', () => {
+		it('Should delete an organisation and format/sort the remaining organisations', async () => {
+			const parentOrg = getOrg("Parent", '', 1, undefined, "PARENT")
+			const childOrg = getOrg("Child", '', 2, 1, "CHILD")
+			const siblingOrg = getOrg("Sibling", '', 3, 1, "SIBLING")
+			const orgs = [parentOrg, childOrg, siblingOrg]
+			const typeahead = OrganisationalUnitTypeAhead.createAndSort(orgs)
+			typeahead.removeAndSort(1)
+			expect(typeahead.typeahead.length).to.eql(2)
+			expect(typeahead.typeahead[0].formattedName).to.eql('Child (CHILD)')
+			expect(typeahead.typeahead[0].parentId).to.eql(null)
+			expect(typeahead.typeahead[1].formattedName).to.eql('Sibling (SIBLING)')
+			expect(typeahead.typeahead[1].parentId).to.eql(null)
+		})
+	})
 })
