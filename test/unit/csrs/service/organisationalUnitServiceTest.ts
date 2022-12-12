@@ -19,13 +19,17 @@ chai.use(sinonChai)
 
 
 describe('OrganisationalUnitService tests', () => {
-	const organisationalUnitClient = sinon.createStubInstance(OrganisationalUnitClient)
-	const organisationalUnitCache = sinon.createStubInstance(OrganisationalUnitCache)
-	const organisationalUnitTypeaheadCache = sinon.createStubInstance(OrganisationalUnitTypeaheadCache)
-	const agencyTokenCapacityUsedService = sinon.createStubInstance(AgencyTokenCapacityUsedHttpService)
+	let organisationalUnitClient: sinon.SinonStubbedInstance<OrganisationalUnitClient>
+	let organisationalUnitCache: sinon.SinonStubbedInstance<OrganisationalUnitCache>
+	let organisationalUnitTypeaheadCache: sinon.SinonStubbedInstance<OrganisationalUnitTypeaheadCache>
+	let agencyTokenCapacityUsedService: sinon.SinonStubbedInstance<AgencyTokenCapacityUsedHttpService>
 	let organisationalUnitService: OrganisationalUnitService
 
 	beforeEach(() => {
+		organisationalUnitClient = sinon.createStubInstance(OrganisationalUnitClient)
+		organisationalUnitCache = sinon.createStubInstance(OrganisationalUnitCache)
+		organisationalUnitTypeaheadCache = sinon.createStubInstance(OrganisationalUnitTypeaheadCache)
+		agencyTokenCapacityUsedService = sinon.createStubInstance(AgencyTokenCapacityUsedHttpService)
 		organisationalUnitService = new OrganisationalUnitService(
 			organisationalUnitCache as any,
 			organisationalUnitTypeaheadCache as any,
@@ -133,6 +137,7 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const pageModel = new OrganisationalUnitPageModel()
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			organisationalUnitClient.getOrganisationalUnit.withArgs(1).resolves(org)
 			await organisationalUnitService.updateOrganisationalUnit(org.id, pageModel)
 			expect(organisationalUnitClient.update).to.be.calledWith(org.id, pageModel)
 			org.updateWithPageModel(pageModel)
@@ -211,7 +216,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitCache.get.withArgs(3).resolves(child)
 			organisationalUnitClient.getOrganisationalUnit
 				.withArgs(2, {includeParents: true})
-				.resolves(child)
+				.resolves(parent)
 
 			const hierarchy = await organisationalUnitService.getOrgHierarchy(3)
 			expect(hierarchy.map((o) => o.name)).to.eql(['Child', 'Parent', 'Grandparent'])

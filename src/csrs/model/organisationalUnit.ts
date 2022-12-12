@@ -35,13 +35,11 @@ export class OrganisationalUnit {
 	}
 
 	getHierarchyAsArray() {
-		let hierarchy: OrganisationalUnit[] = []
-		let currentOrg: OrganisationalUnit | undefined = this
-		while (currentOrg) {
-			const parent: OrganisationalUnit | undefined = currentOrg.parent
-			currentOrg.parent = undefined
-			hierarchy.push(currentOrg)
-			currentOrg = parent
+		const hierarchy: OrganisationalUnit[] = [this]
+		let currentParent = this.parent
+		while (currentParent) {
+			hierarchy.push(currentParent)
+			currentParent = currentParent.parent
 		}
 		return hierarchy
 	}

@@ -2,6 +2,7 @@ import * as url from 'url'
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
 import { getLogger } from '../../utils/logger'
+import { ResourceNotFoundError } from '../exception/resourceNotFoundError'
 
 export class JsonRestService {
 	logger = getLogger('JsonRestService')
@@ -42,6 +43,9 @@ export class JsonRestService {
 				logMsg += ` Params: ${stringedParams}`
 			}
 			this.logger.debug(logMsg)
+			if (response.status === 404) {
+				throw new ResourceNotFoundError(response.config.url!)
+			}
 			return response
 		})
 
