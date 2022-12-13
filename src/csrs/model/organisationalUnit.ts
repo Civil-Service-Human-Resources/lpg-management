@@ -28,7 +28,7 @@ export class OrganisationalUnit {
 		this.abbreviation = pageModel.abbreviation
 		this.code = pageModel.code
 		this.name = pageModel.name
-		this.parentId = pageModel.parentId
+		this.parentId = pageModel.parentId || null
 		if (!this.parentId) {
 			this.parent = undefined
 		}
