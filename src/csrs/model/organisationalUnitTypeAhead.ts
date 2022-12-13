@@ -35,22 +35,25 @@ export class OrganisationalUnitTypeAhead {
 
 	public getOrgWithChildren(organisationalUnitId: number) {
 		const tree = this.getAsTree()
-		return this.fetchOrgWithChildren(organisationalUnitId, tree)
+		const orgWithChildren = this.fetchOrgWithChildren(organisationalUnitId, tree)
+		return orgWithChildren
 	}
 
 	public removeOrganisation(organisationalUnitId: number) {
+		let deletedIds: number[] = []
 		const org = this.getOrgWithChildren(organisationalUnitId)
 		if (org) {
-			const idsToRemove = org.getOrgAndChildren().map(o => o.id)
-			this.typeahead = this.typeahead.filter(o => !idsToRemove.includes(o.id))
+			const flattened = org.getOrgAndChildren()
+			deletedIds = flattened.map(o => o.id)
+			this.typeahead = this.typeahead.filter(o => !deletedIds.includes(o.id))
 		}
+		return deletedIds
 	}
 
 	private fetchOrgWithChildren(organisationalUnitId: number, tree: OrganisationalUnit[] = []): OrganisationalUnit | undefined {
 		let foundOrg
 		for (let i = 0; i < tree.length; i++) {
 			const org = tree[i]
-			console.log(JSON.stringify(org))
 			if (org.id === organisationalUnitId) {
 				return org
 			}
@@ -88,10 +91,10 @@ export class OrganisationalUnitTypeAhead {
 	}
 
     getAsTree(): OrganisationalUnit[] {
-		
 		const idMapping = this.typeahead.reduce((acc: {
 			[key: number]: number
 		}, el, i) => {
+			el.children = []
 			acc[el.id] = i
 			return acc
 		}, {})

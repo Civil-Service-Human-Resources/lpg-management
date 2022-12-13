@@ -96,12 +96,8 @@ export class OrganisationalUnitService {
 		if (typeahead === undefined) {
 			await this.refreshTypeahead(true)
 		} else {
-			const org = typeahead.getOrgWithChildren(organisationalUnitId)
-			if (org) {
-				const flattenedIds = org.getOrgAndChildren().map(o => o.id)
-				flattenedIds.map(async id => await this.organisationalUnitCache.delete(id))
-				typeahead.removeOrganisation(organisationalUnitId)
-			}
+			const deletedIds = typeahead.removeOrganisation(organisationalUnitId)
+			await Promise.all(deletedIds.map(id => this.organisationalUnitCache.delete(id)))
 			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		}
 	}
