@@ -44,6 +44,14 @@ export class OrganisationalUnit {
 		return hierarchy
 	}
 
+	getOrgAndChildren() {
+		const hierarchy: OrganisationalUnit[] = [this]
+		for (const org of this.children) {
+			hierarchy.push(...org.getOrgAndChildren())
+		}
+		return hierarchy
+	}
+
 	formatNameWithAbbrev() {
 		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
 	}

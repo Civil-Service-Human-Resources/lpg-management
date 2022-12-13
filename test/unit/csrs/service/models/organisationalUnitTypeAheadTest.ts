@@ -20,6 +20,63 @@ describe('OrganisationalUnitTypeAhead tests', () => {
         })
     })
 
+	describe('getOrgWithChildren tests', () => {
+		it('Should fetch an organisation with an ID', async () => {
+            const orgs = [
+				getOrg("C", "C", 3),
+                getOrg("B", "B", 2),
+                getOrg("D", "D", 4),
+                getOrg("A", "A", 1)
+            ]
+            const typeahead = OrganisationalUnitTypeAhead.createAndSort(orgs)
+			const result = typeahead.getOrgWithChildren(2)
+			expect(result!.name).to.eql("B")
+		})
+		it('Should fetch a nested organisation with an ID, as well as children', async () => {
+            const orgs = [
+                getOrg("A", "A", 1),
+                getOrg("B", "A | B", 2, 1),
+				getOrg("E", "A | B | E", 5, 2),
+                getOrg("C", "A | C", 3, 1),
+                getOrg("D", "A | C | D", 4, 3)
+            ]
+            const typeahead = OrganisationalUnitTypeAhead.createAndSort(orgs)
+			const result = typeahead.getOrgWithChildren(2)
+			expect(result!.name).to.eql("B")
+			expect(result!.children[0].name).to.eql("E")
+		})
+	})
+	
+	describe('removeOrganisation tests', () => {
+		it('Should remove an organisation with an ID', async () => {
+            const orgs = [
+				getOrg("C", "C", 3),
+                getOrg("B", "B", 2),
+                getOrg("D", "D", 4),
+                getOrg("A", "A", 1)
+            ]
+            const typeahead = OrganisationalUnitTypeAhead.createAndSort(orgs)
+			typeahead.removeOrganisation(2)
+			expect(typeahead.typeahead[0].name).to.eql("A")
+			expect(typeahead.typeahead[1].name).to.eql("C")
+			expect(typeahead.typeahead[2].name).to.eql("D")
+		})
+		it('Should remove an organisation with an ID, including children', async () => {
+            const orgs = [
+                getOrg("A", "A", 1),
+                getOrg("B", "A | B", 2, 1),
+				getOrg("E", "A | B | E", 5, 2),
+                getOrg("C", "A | C", 3, 1),
+                getOrg("D", "A | C | D", 4, 3)
+            ]
+            const typeahead = OrganisationalUnitTypeAhead.createAndSort(orgs)
+			typeahead.removeOrganisation(2)
+			expect(typeahead.typeahead[0].name).to.eql("A")
+			expect(typeahead.typeahead[1].name).to.eql("C")
+			expect(typeahead.typeahead[2].name).to.eql("D")
+		})
+	})
+
     describe('addFormattedNameAndSort tests', () => {
 		it('Should create a typeahead list sorted by formattedName', async () => {
 			const grandparentOrg = getOrg("E", '', 5, undefined)

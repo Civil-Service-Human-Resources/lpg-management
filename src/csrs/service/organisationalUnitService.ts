@@ -92,8 +92,18 @@ export class OrganisationalUnitService {
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
 		await this.organisationalUnitClient.delete(organisationalUnitId)
-		await this.organisationalUnitCache.delete(organisationalUnitId)
-		await this.refreshTypeahead(true)
+		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead(true)
+		} else {
+			const org = typeahead.getOrgWithChildren(organisationalUnitId)
+			if (org) {
+				const flattenedIds = org.getOrgAndChildren().map(o => o.id)
+				flattenedIds.map(async id => await this.organisationalUnitCache.delete(id))
+				typeahead.removeOrganisation(organisationalUnitId)
+			}
+			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
+		}
 	}
 
 	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {

@@ -149,11 +149,36 @@ describe('OrganisationalUnitService tests', () => {
 		it('Should delete an organisational unit and set the cache', async () => {
 			const org = new OrganisationalUnit()
 			org.id = 1
-			organisationalUnitClient.getAllOrganisationalUnits.resolves([org])
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.deleteOrganisationalUnit(1)
 			expect(organisationalUnitCache.delete).to.be.calledWith(1)
 			expect(organisationalUnitClient.delete).to.be.calledWith(1)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
+		})
+
+		it('Should delete an organisational unit (as well as children) and set the cache', async () => {
+			const parent = new OrganisationalUnit()
+			parent.id = 1
+			const child = new OrganisationalUnit()
+			child.id = 2
+			child.parentId = 1
+			const sibling = new OrganisationalUnit()
+			sibling.id = 3
+			sibling.parentId = 1
+			const parent2 = new OrganisationalUnit()
+			parent2.name = "parent2"
+			parent2.id = 4
+			const typeahead = [parent, child, sibling, parent2]
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead(typeahead))
+			await organisationalUnitService.deleteOrganisationalUnit(1)
+			expect(organisationalUnitCache.delete).to.be.calledWith(1)
+			expect(organisationalUnitCache.delete).to.be.calledWith(2)
+			expect(organisationalUnitCache.delete).to.be.calledWith(3)
+			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			const call = organisationalUnitTypeaheadCache.setTypeahead.firstCall
+			const calledTypeahead: OrganisationalUnitTypeAhead = call.args[0]
+			expect(calledTypeahead.typeahead.length).to.eql(1)
+			expect(calledTypeahead.typeahead[0].name).to.eql("parent2")
 		})
 
 		it('Should create an agency token set the cache', async () => {

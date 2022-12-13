@@ -33,21 +33,34 @@ export class OrganisationalUnitTypeAhead {
 		this.sort()
 	}
 
-	public removeAndSort(organisationalUnitId: number) {
-		let index = -1
-		for (let i = 0; i < this.typeahead.length; i++) {
-			const org = this.typeahead[i]
-			if (org.parentId && org.parentId === organisationalUnitId) {
-				org.parentId = null
-			}
+	public getOrgWithChildren(organisationalUnitId: number) {
+		const tree = this.getAsTree()
+		return this.fetchOrgWithChildren(organisationalUnitId, tree)
+	}
+
+	public removeOrganisation(organisationalUnitId: number) {
+		const org = this.getOrgWithChildren(organisationalUnitId)
+		if (org) {
+			const idsToRemove = org.getOrgAndChildren().map(o => o.id)
+			this.typeahead = this.typeahead.filter(o => !idsToRemove.includes(o.id))
+		}
+	}
+
+	private fetchOrgWithChildren(organisationalUnitId: number, tree: OrganisationalUnit[] = []): OrganisationalUnit | undefined {
+		let foundOrg
+		for (let i = 0; i < tree.length; i++) {
+			const org = tree[i]
+			console.log(JSON.stringify(org))
 			if (org.id === organisationalUnitId) {
-				index = i
+				return org
+			}
+			if (org.children) {
+				foundOrg = this.fetchOrgWithChildren(organisationalUnitId, org.children)
+				if (foundOrg) {
+					return foundOrg
+				}
 			}
 		}
-		if (index > -1) {
-			this.typeahead.splice(index, 1)
-		}
-		this.resetFormattedNameAndSort()
 	}
 
 	public upsertAndSort(organisationalUnit: OrganisationalUnit) {
