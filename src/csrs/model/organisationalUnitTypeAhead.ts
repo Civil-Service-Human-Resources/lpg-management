@@ -47,6 +47,7 @@ export class OrganisationalUnitTypeAhead {
 			deletedIds = flattened.map(o => o.id)
 			this.typeahead = this.typeahead.filter(o => !deletedIds.includes(o.id))
 		}
+		this.typeahead.map(o => o.children = [])
 		return deletedIds
 	}
 
@@ -94,7 +95,6 @@ export class OrganisationalUnitTypeAhead {
 		const idMapping = this.typeahead.reduce((acc: {
 			[key: number]: number
 		}, el, i) => {
-			el.children = []
 			acc[el.id] = i
 			return acc
 		}, {})
