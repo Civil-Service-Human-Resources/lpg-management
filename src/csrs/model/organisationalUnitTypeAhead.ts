@@ -33,6 +33,40 @@ export class OrganisationalUnitTypeAhead {
 		this.sort()
 	}
 
+	public getOrgWithChildren(organisationalUnitId: number) {
+		const tree = this.getAsTree()
+		const orgWithChildren = this.fetchOrgWithChildren(organisationalUnitId, tree)
+		return orgWithChildren
+	}
+
+	public removeOrganisation(organisationalUnitId: number) {
+		let deletedIds: number[] = []
+		const org = this.getOrgWithChildren(organisationalUnitId)
+		if (org) {
+			const flattened = org.getOrgAndChildren()
+			deletedIds = flattened.map(o => o.id)
+			this.typeahead = this.typeahead.filter(o => !deletedIds.includes(o.id))
+		}
+		this.typeahead.map(o => o.children = [])
+		return deletedIds
+	}
+
+	private fetchOrgWithChildren(organisationalUnitId: number, tree: OrganisationalUnit[] = []): OrganisationalUnit | undefined {
+		let foundOrg
+		for (let i = 0; i < tree.length; i++) {
+			const org = tree[i]
+			if (org.id === organisationalUnitId) {
+				return org
+			}
+			if (org.children) {
+				foundOrg = this.fetchOrgWithChildren(organisationalUnitId, org.children)
+				if (foundOrg) {
+					return foundOrg
+				}
+			}
+		}
+	}
+
 	public upsertAndSort(organisationalUnit: OrganisationalUnit) {
 		const index = this.typeahead.findIndex(o => organisationalUnit.id === o.id)
 		if (index > -1) {
@@ -58,7 +92,6 @@ export class OrganisationalUnitTypeAhead {
 	}
 
     getAsTree(): OrganisationalUnit[] {
-		
 		const idMapping = this.typeahead.reduce((acc: {
 			[key: number]: number
 		}, el, i) => {

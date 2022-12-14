@@ -19,13 +19,17 @@ chai.use(sinonChai)
 
 
 describe('OrganisationalUnitService tests', () => {
-	const organisationalUnitClient = sinon.createStubInstance(OrganisationalUnitClient)
-	const organisationalUnitCache = sinon.createStubInstance(OrganisationalUnitCache)
-	const organisationalUnitTypeaheadCache = sinon.createStubInstance(OrganisationalUnitTypeaheadCache)
-	const agencyTokenCapacityUsedService = sinon.createStubInstance(AgencyTokenCapacityUsedHttpService)
+	let organisationalUnitClient: sinon.SinonStubbedInstance<OrganisationalUnitClient>
+	let organisationalUnitCache: sinon.SinonStubbedInstance<OrganisationalUnitCache>
+	let organisationalUnitTypeaheadCache: sinon.SinonStubbedInstance<OrganisationalUnitTypeaheadCache>
+	let agencyTokenCapacityUsedService: sinon.SinonStubbedInstance<AgencyTokenCapacityUsedHttpService>
 	let organisationalUnitService: OrganisationalUnitService
 
 	beforeEach(() => {
+		organisationalUnitClient = sinon.createStubInstance(OrganisationalUnitClient)
+		organisationalUnitCache = sinon.createStubInstance(OrganisationalUnitCache)
+		organisationalUnitTypeaheadCache = sinon.createStubInstance(OrganisationalUnitTypeaheadCache)
+		agencyTokenCapacityUsedService = sinon.createStubInstance(AgencyTokenCapacityUsedHttpService)
 		organisationalUnitService = new OrganisationalUnitService(
 			organisationalUnitCache as any,
 			organisationalUnitTypeaheadCache as any,
@@ -133,12 +137,48 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const pageModel = new OrganisationalUnitPageModel()
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			organisationalUnitClient.getOrganisationalUnit.withArgs(1).resolves(org)
 			await organisationalUnitService.updateOrganisationalUnit(org.id, pageModel)
 			expect(organisationalUnitClient.update).to.be.calledWith(org.id, pageModel)
 			org.updateWithPageModel(pageModel)
 			org.formattedName = undefined
 			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
+		})
+
+		it('Should delete an organisational unit and set the cache', async () => {
+			const org = new OrganisationalUnit()
+			org.id = 1
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			await organisationalUnitService.deleteOrganisationalUnit(1)
+			expect(organisationalUnitCache.delete).to.be.calledWith(1)
+			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
+		})
+
+		it('Should delete an organisational unit (as well as children) and set the cache', async () => {
+			const parent = new OrganisationalUnit()
+			parent.id = 1
+			const child = new OrganisationalUnit()
+			child.id = 2
+			child.parentId = 1
+			const sibling = new OrganisationalUnit()
+			sibling.id = 3
+			sibling.parentId = 1
+			const parent2 = new OrganisationalUnit()
+			parent2.name = "parent2"
+			parent2.id = 4
+			const typeahead = [parent, child, sibling, parent2]
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead(typeahead))
+			await organisationalUnitService.deleteOrganisationalUnit(1)
+			expect(organisationalUnitCache.delete).to.be.calledWith(1)
+			expect(organisationalUnitCache.delete).to.be.calledWith(2)
+			expect(organisationalUnitCache.delete).to.be.calledWith(3)
+			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			const call = organisationalUnitTypeaheadCache.setTypeahead.firstCall
+			const calledTypeahead: OrganisationalUnitTypeAhead = call.args[0]
+			expect(calledTypeahead.typeahead.length).to.eql(1)
+			expect(calledTypeahead.typeahead[0].name).to.eql("parent2")
 		})
 
 		it('Should create an agency token set the cache', async () => {
@@ -211,7 +251,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitCache.get.withArgs(3).resolves(child)
 			organisationalUnitClient.getOrganisationalUnit
 				.withArgs(2, {includeParents: true})
-				.resolves(child)
+				.resolves(parent)
 
 			const hierarchy = await organisationalUnitService.getOrgHierarchy(3)
 			expect(hierarchy.map((o) => o.name)).to.eql(['Child', 'Parent', 'Grandparent'])

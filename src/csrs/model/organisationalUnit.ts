@@ -28,20 +28,26 @@ export class OrganisationalUnit {
 		this.abbreviation = pageModel.abbreviation
 		this.code = pageModel.code
 		this.name = pageModel.name
-		this.parentId = pageModel.parentId
+		this.parentId = pageModel.parentId || null
 		if (!this.parentId) {
 			this.parent = undefined
 		}
 	}
 
 	getHierarchyAsArray() {
-		let hierarchy: OrganisationalUnit[] = []
-		let currentOrg: OrganisationalUnit | undefined = this
-		while (currentOrg) {
-			const parent: OrganisationalUnit | undefined = currentOrg.parent
-			currentOrg.parent = undefined
-			hierarchy.push(currentOrg)
-			currentOrg = parent
+		const hierarchy: OrganisationalUnit[] = [this]
+		let currentParent = this.parent
+		while (currentParent) {
+			hierarchy.push(currentParent)
+			currentParent = currentParent.parent
+		}
+		return hierarchy
+	}
+
+	getOrgAndChildren() {
+		const hierarchy: OrganisationalUnit[] = [this]
+		for (const org of this.children) {
+			hierarchy.push(...org.getOrgAndChildren())
 		}
 		return hierarchy
 	}
