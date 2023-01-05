@@ -301,6 +301,9 @@ export class ApplicationContext {
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
+		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
+		this.actionWorkerService.init()
+
 		this.eventController = new EventController(
 			this.learningCatalogue,
 			this.learnerRecord,
@@ -329,9 +332,6 @@ export class ApplicationContext {
 		)
 		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
 		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)
-
-		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
-		this.actionWorkerService.init()
 
 		this.organisationController = new OrganisationController(
 			this.organisationalUnitPageModelValidator,
