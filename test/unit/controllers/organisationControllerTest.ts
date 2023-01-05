@@ -6,20 +6,19 @@ import * as sinonChai from 'sinon-chai'
 import {NextFunction, Request, Response} from 'express'
 import * as sinon from 'sinon'
 import {OrganisationController} from '../../../src/controllers/organisationController'
-import {Csrs} from '../../../src/csrs/index'
 import {OrganisationalUnit} from '../../../src/csrs/model/organisationalUnit'
 import {PageResults} from '../../../src/learning-catalogue/model/pageResults'
-import {OrganisationalUnitFactory} from '../../../src/csrs/model/organisationalUnitFactory'
 import {Validator} from '../../../src/learning-catalogue/validator/validator'
 import {OrganisationalUnitService} from '../../../src/csrs/service/organisationalUnitService'
+import { OrganisationalUnitPageModel } from '../../../src/csrs/model/organisationalUnitPageModel'
+import { OrganisationalUnitPageModelFactory } from '../../../src/csrs/model/organisationalUnitPageModelFactory'
 
 chai.use(sinonChai)
 
 describe('Organisation Controller Tests', function() {
 	let organisationController: OrganisationController
-	let csrs: Csrs
-	let organisationalUnitFactory: OrganisationalUnitFactory
-	let validator: Validator<OrganisationalUnit>
+	let factory: OrganisationalUnitPageModelFactory
+	let validator: Validator<OrganisationalUnitPageModel>
 	let organisationalService: OrganisationalUnitService
 
 	let req: Request
@@ -27,11 +26,10 @@ describe('Organisation Controller Tests', function() {
 	let next: NextFunction
 
 	beforeEach(() => {
-		csrs = <Csrs>{}
-		organisationalUnitFactory = <OrganisationalUnitFactory>{}
-		validator = <Validator<OrganisationalUnit>>{}
+		factory = <OrganisationalUnitPageModelFactory>{}
+		validator = <Validator<OrganisationalUnitPageModel>>{}
 		organisationalService = <OrganisationalUnitService>{}
-		organisationController = new OrganisationController(csrs, organisationalUnitFactory, validator, organisationalService)
+		organisationController = new OrganisationController(validator, factory, organisationalService)
 
 		req = mockReq()
 		res = mockRes()
@@ -45,31 +43,26 @@ describe('Organisation Controller Tests', function() {
 	it('should call manage organisations page with organisations list', async function() {
 		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
 
-		const pageResults: PageResults<OrganisationalUnit> = {
-			page: 0,
-			size: 10,
-			totalResults: 10,
-			results: [organisationalUnit],
-		} as PageResults<OrganisationalUnit>
+		const orgUnits: OrganisationalUnit[] = [organisationalUnit]
 
 		const getOrganisations: (request: Request, response: Response, next: NextFunction) => void = organisationController.getOrganisationList()
 
-		let listOrganisationalUnits = sinon.stub().returns(Promise.resolve(pageResults))
-		csrs.listOrganisationalUnits = listOrganisationalUnits
+		let listOrganisationalUnits = sinon.stub().returns(Promise.resolve(orgUnits))
+		organisationalService.getOrgTree = listOrganisationalUnits
 
 		await getOrganisations(req, res, next)
 
-		expect(res.render).to.have.been.calledOnceWith('page/organisation/manage-organisations', {organisationalUnits: pageResults})
+		expect(res.render).to.have.been.calledOnceWith('page/organisation/manage-organisations', {organisationalUnits: orgUnits})
 	})
 
 	it('should call organisation overview page with organisation', async function() {
 		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
-		organisationalUnit.id == ''
+		organisationalUnit.id == 1
 
 		const getOrganisation: (request: Request, response: Response) => void = organisationController.organisationOverview()
 
 		let getOrganisationalUnit = sinon.stub().returns(Promise.resolve(organisationalUnit))
-		organisationalService.getOrganisationalUnit = getOrganisationalUnit
+		organisationalService.getOrganisation = getOrganisationalUnit
 
 		await getOrganisation(req, res)
 
@@ -89,7 +82,7 @@ describe('Organisation Controller Tests', function() {
 		const addOrganisation: (request: Request, response: Response) => void = organisationController.addEditOrganisation()
 
 		let listOrganisationalUnitsForTypehead = sinon.stub().returns(Promise.resolve(pageResults))
-		csrs.listOrganisationalUnitsForTypehead = listOrganisationalUnitsForTypehead
+		organisationalService.getOrgDropdown = listOrganisationalUnitsForTypehead
 
 		await addOrganisation(req, res)
 
@@ -99,14 +92,13 @@ describe('Organisation Controller Tests', function() {
 	it('should check for organisation errors and redirect to manage organisation page if no errors', async function() {
 		const errors = {fields: [], size: 0}
 		const organisation = new OrganisationalUnit()
-		organisation.id = 'id-123'
+		organisation.id = 123
 		organisation.name = 'New organisation'
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
+		factory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns({fields: [], size: 0})
-		csrs.createOrganisationalUnit = sinon.stub().returns(organisation)
-		csrs.listOrganisationalUnits = sinon.stub()
-		csrs.listOrganisationalUnitsForTypehead = sinon.stub()
+		organisationalService.createOrganisationalUnit = sinon.stub().returns(organisation)
+		organisationalService.getOrgDropdown = sinon.stub()
 
 		const createOrganisation = organisationController.createOrganisation()
 		await createOrganisation(req, res)
@@ -124,9 +116,8 @@ describe('Organisation Controller Tests', function() {
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns(errors)
-		csrs.createOrganisationalUnit = sinon.stub().returns('123')
+		organisationalService.createOrganisationalUnit = sinon.stub().returns('123')
 
 		const createOrganisation = organisationController.createOrganisation()
 		await createOrganisation(req, res)
@@ -143,8 +134,8 @@ describe('Organisation Controller Tests', function() {
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
-		csrs.createOrganisationalUnit = sinon.stub().throwsException(new Error())
+		factory.create = sinon.stub().returns(organisation)
+		organisationalService.createOrganisationalUnit = sinon.stub().throwsException(new Error())
 		validator.check = sinon.stub().returns(validationErrors)
 
 		const createOrganisation = organisationController.createOrganisation()
@@ -158,16 +149,15 @@ describe('Organisation Controller Tests', function() {
 	it('should check for organisation errors when updating and redirect to manage organisation page if no errors', async function() {
 		const errors = {fields: [], size: 0}
 		const organisation = new OrganisationalUnit()
-		organisation.id = 'id-123'
+		organisation.id = 123
 		organisation.name = 'New organisation'
 
 		res.locals.organisationalUnit = organisation
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
+		factory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns({fields: [], size: 0})
-		csrs.updateOrganisationalUnit = sinon.stub().returns(organisation)
-		csrs.listOrganisationalUnits = sinon.stub()
-		csrs.listOrganisationalUnitsForTypehead = sinon.stub()
+		organisationalService.updateOrganisationalUnit = sinon.stub().returns(organisation)
+		organisationalService.getOrgDropdown = sinon.stub()
 
 		const updateOrganisation = organisationController.updateOrganisation()
 		await updateOrganisation(req, res)
@@ -184,12 +174,11 @@ describe('Organisation Controller Tests', function() {
 		}
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
-		organisation.id = 'id-123'
-		req.params.organisationId = organisation.id
+		organisation.id = 123
+		req.params.organisationId = organisation.id.toString()
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
 		validator.check = sinon.stub().returns(errors)
-		csrs.updateOrganisationalUnit = sinon.stub().returns('123')
+		organisationalService.updateOrganisationalUnit = sinon.stub().returns('123')
 
 		const updateOrganisation = organisationController.updateOrganisation()
 		await updateOrganisation(req, res)
@@ -205,12 +194,12 @@ describe('Organisation Controller Tests', function() {
 
 		const organisation = new OrganisationalUnit()
 		organisation.name = 'New organisation'
-		organisation.id = 'id-123'
+		organisation.id = 123
 		res.locals.organisationalUnit = organisation
-		req.params.organisationId = organisation.id
+		req.params.organisationId = organisation.id.toString()
 
-		organisationalUnitFactory.create = sinon.stub().returns(organisation)
-		csrs.updateOrganisationalUnit = sinon.stub().throwsException(new Error())
+		factory.create = sinon.stub().returns(organisation)
+		organisationalService.updateOrganisationalUnit = sinon.stub().throwsException(new Error())
 		validator.check = sinon.stub().returns(validationErrors)
 
 		const updateOrganisation = organisationController.updateOrganisation()
@@ -224,7 +213,7 @@ describe('Organisation Controller Tests', function() {
 		const confirmDelete: (request: Request, response: Response) => void = organisationController.confirmDelete()
 
 		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
-		organisationalUnit.id = '1'
+		organisationalUnit.id = 1
 		res.locals.organisationalUnit = organisationalUnit
 
 		await confirmDelete(req, res)
@@ -236,14 +225,14 @@ describe('Organisation Controller Tests', function() {
 		const deleteOrganisation: (request: Request, response: Response) => void = organisationController.deleteOrganisation()
 
 		const organisationalUnit: OrganisationalUnit = new OrganisationalUnit()
-		organisationalUnit.id = '1'
+		organisationalUnit.id = 1
 		res.locals.organisationalUnit = organisationalUnit
 
-		csrs.deleteOrganisationalUnit = sinon.stub()
+		organisationalService.deleteOrganisationalUnit = sinon.stub()
 
 		await deleteOrganisation(req, res)
 
-		expect(csrs.deleteOrganisationalUnit).to.have.been.calledOnceWith(organisationalUnit.id)
+		expect(organisationalService.deleteOrganisationalUnit).to.have.been.calledOnceWith(organisationalUnit.id)
 		expect(res.redirect).to.have.been.calledOnceWith('/content-management/organisations/manage')
 	})
 })

@@ -1,10 +1,11 @@
-import {OauthRestService} from '../../lib/http/oauthRestService'
-import {JsonpathService} from '../../lib/jsonpathService'
-import {CacheService} from '../../lib/cacheService'
+import { CacheService } from '../../lib/cacheService';
+import { OauthRestService } from '../../lib/http/oauthRestService';
+import { JsonpathService } from '../../lib/jsonpathService';
+import { CivilServant } from '../model/civilServant';
+import { OrganisationalUnit } from '../model/organisationalUnit';
+import { OrganisationalUnitService } from './organisationalUnitService';
 
 export class CsrsService {
-	restService: OauthRestService
-	cacheService: CacheService
 
 	static readonly DEPARTMENT_CODE_TO_NAME_MAPPING = 'CsrsService.departmentCodeToNameMapping'
 	static readonly AREAS_OF_WORK = 'CsrsService.areasOfWork'
@@ -13,10 +14,10 @@ export class CsrsService {
 	static readonly INTERESTS = 'CsrsService.interests'
 	static readonly DEPARTMENT_CODE_TO_ABBREVIATION_MAPPING = 'CsrsService.departmentCodeToAbbreviationMapping'
 
-	constructor(restService: OauthRestService, cacheService: CacheService) {
-		this.restService = restService
-		this.cacheService = cacheService
-	}
+	constructor(
+		private readonly restService: OauthRestService,
+		private readonly cacheService: CacheService,
+		private readonly organisationalUnitService: OrganisationalUnitService) {}
 
 	async editDescription(data: any, user: any) {
 		return await this.restService.postWithoutFollowingWithConfig('api/quiz/update',
@@ -28,12 +29,12 @@ export class CsrsService {
 		return await this.restService.postWithoutFollowingWithConfig('api/questions/update', question, this.getAuthorizationHeader(user))
 	}
 
-	async getOrganisations() {
-		return await this.restService.get('/organisationalUnits/normalised')
-	}
-
 	async getCivilServant() {
 		return await this.restService.get('/civilServants/me')
+	}
+
+	async getCivilServantWithUid(userId: string): Promise<CivilServant> {
+		return await this.restService.get(`/civilServants/resource/${userId}`)
 	}
 
 	async createQuizByProfessionID(data: any, user: any) {
@@ -58,7 +59,7 @@ export class CsrsService {
 		)
 	}
 
-	async  getQuestionbyID(questionID: any, user: any) {
+	async getQuestionbyID(questionID: any, user: any) {
 		return await this.restService.getWithConfig(`/api/questions/${questionID}/preview`, this.getAuthorizationHeader(user))
 	}
 
@@ -134,8 +135,21 @@ export class CsrsService {
 		return interests
 	}
 
+	async listOrganisationalUnitsForTypehead() {
+		return await this.organisationalUnitService.getOrgDropdown()
+	}
+
 	async getDepartmentCodeToNameMapping() {
-		return this.getCodeToNameMapping(this.getOrganisations, '$.*', CsrsService.DEPARTMENT_CODE_TO_NAME_MAPPING)
+		const dropdown = await this.organisationalUnitService.getOrgDropdown()
+		return dropdown.typeahead.reduce((map: any, object: OrganisationalUnit) => {
+			map[object.code] = object.name
+			return map
+		}, {})
+	}
+
+	async getDepartmentAbbreviationsFromCodes(codes: string[]) {
+		const dropdown = await this.organisationalUnitService.getOrgDropdown()
+		return dropdown.typeahead.filter(o => codes.includes(o.code) && o.abbreviation).map(o => o.abbreviation!)
 	}
 
 	async getGradeCodeToNameMapping() {
@@ -161,27 +175,6 @@ export class CsrsService {
 
 	async findByName(name: string) {
 		return await this.restService.get(`/professions/search/findByName?name=${name}`)
-	}
-
-	async getDepartmentCodeToAbbreviationMapping() {
-		return this.getCodeToAbbreviationMapping(this.getOrganisations, '$.*', CsrsService.DEPARTMENT_CODE_TO_ABBREVIATION_MAPPING)
-	}
-
-	private async getCodeToAbbreviationMapping(functionToRetrieveMappingFromBackend: () => Promise<any>, pathForMapObjects: string, cacheKey: string) {
-		let mapping = this.cacheService.cache.get(cacheKey)
-
-		if (!mapping) {
-			const codeAbbreviationObjectArray = JsonpathService.query(await functionToRetrieveMappingFromBackend.call(this), pathForMapObjects)
-
-			mapping = codeAbbreviationObjectArray.reduce((map: any, object: any) => {
-				map[object.code] = object.abbreviation
-				return map
-			}, {})
-
-			this.cacheService.cache.set(cacheKey, mapping)
-		}
-
-		return mapping
 	}
 
 	async getReportForSuperAdmin(startDate: any, endDate: any, professionID: any, user:any) {

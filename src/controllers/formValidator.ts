@@ -1,5 +1,8 @@
 import {NextFunction, Request, Response} from 'express'
+import { getLogger } from '../utils/logger';
 import {FormController} from './formController'
+
+const logger = getLogger('formValidator')
 
 export function Validate(validationArgs: {fields: string[]; redirect: string}) {
 	const substituteParams = (redirect: string, params: any) => {
@@ -18,6 +21,7 @@ export function Validate(validationArgs: {fields: string[]; redirect: string}) {
 			const validator = this.validator
 
 			return async (request: Request, response: Response, next: NextFunction) => {
+				logger.debug(`validating ${JSON.stringify(request.body)}`)
 				const errors = await validator.check(request.body, validationArgs.fields)
 
 				if (errors.size) {
@@ -33,6 +37,7 @@ export function Validate(validationArgs: {fields: string[]; redirect: string}) {
 					try {
 						return await callback(request, response, next)
 					} catch (e) {
+						logger.error(`Error validating ${JSON.stringify(request.body)}: ${e}`)
 						return next(e)
 					}
 				}

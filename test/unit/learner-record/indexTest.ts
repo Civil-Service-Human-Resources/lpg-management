@@ -51,7 +51,7 @@ describe('Leaner Record Tests', () => {
 
 		restService.get = sinon.stub().throws(new Error(`An error occurred when GETTING`))
 
-		expect(learnerRecord.getEventBookings(eventId)).to.be.rejectedWith(`An error occurred when trying to get event bookings: An error occurred when GETTING`)
+		expect(learnerRecord.getEventBookings(eventId)).to.be.rejectedWith(`An error occurred when trying to get event bookings: Error: An error occurred when GETTING`)
 	})
 
 	it('should update booking', async () => {
@@ -75,7 +75,7 @@ describe('Leaner Record Tests', () => {
 
 		restService.patch = sinon.stub().throws(new Error(`An error occurred when PATCHING`))
 
-		expect(learnerRecord.updateBooking(eventId, booking)).to.be.rejectedWith('An error occurred when trying to update booking: An error occurred when PATCHING')
+		expect(learnerRecord.updateBooking(eventId, booking)).to.be.rejectedWith('An error occurred when trying to update booking: Error: An error occurred when PATCHING')
 	})
 
 	it('should call rest service when getting invitees', async () => {
@@ -94,7 +94,7 @@ describe('Leaner Record Tests', () => {
 
 		restService.get = sinon.stub().throws(new Error('Test Error'))
 
-		expect(learnerRecord.getEventInvitees(eventId)).to.be.rejectedWith(`An error occurred when trying to get event invitees: Test Error`)
+		expect(learnerRecord.getEventInvitees(eventId)).to.be.rejectedWith(`An error occurred when trying to get event invitees: Error: Test Error`)
 	})
 
 	it('should call rest service when posting invitee', async () => {
@@ -112,7 +112,7 @@ describe('Leaner Record Tests', () => {
 		const eventId = 'eventId'
 		const invite: Invite = new Invite()
 
-		restService.post = sinon.stub().throws(new Error('409'))
+		restService.post = sinon.stub().throws(new Error('Learner has already been invite to course: 409'))
 
 		expect(learnerRecord.inviteLearner(eventId, invite)).to.be.rejectedWith(`Learner has already been invite to course: 409`)
 	})
@@ -121,7 +121,7 @@ describe('Leaner Record Tests', () => {
 		const eventId = 'eventId'
 		const invite: Invite = new Invite()
 
-		restService.post = sinon.stub().throws(new Error('404'))
+		restService.post = sinon.stub().throws(new Error('Email address not registered: 404'))
 
 		expect(learnerRecord.inviteLearner(eventId, invite)).to.be.rejectedWith(`Email address not registered: 404`)
 	})

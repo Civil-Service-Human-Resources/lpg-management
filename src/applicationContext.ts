@@ -52,14 +52,12 @@ import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFact
 import {LinkModule} from './learning-catalogue/model/linkModule'
 import {SearchController} from './controllers/searchController'
 import {OrganisationController} from './controllers/organisationController'
-import {Csrs} from './csrs'
-import {OrganisationalUnitFactory} from './csrs/model/organisationalUnitFactory'
+import {OrganisationalUnitPageModelFactory} from './csrs/model/organisationalUnitPageModelFactory'
 import {LearnerRecord} from './learner-record'
 import {LearnerRecordConfig} from './learner-record/learnerRecordConfig'
 import {InviteFactory} from './learner-record/model/factory/inviteFactory'
 import {BookingFactory} from './learner-record/model/factory/bookingFactory'
 import {Booking} from './learner-record/model/booking'
-import {OrganisationalUnit} from './csrs/model/organisationalUnit'
 import {ReportingController} from './controllers/reportingController'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
 import {ReportServiceConfig} from './report-service/reportServiceConfig'
@@ -73,15 +71,21 @@ import {AudienceService} from './lib/audienceService'
 import {QuestionFactory} from './controllers/skills/questionFactory'
 import {QuizFactory} from './controllers/skills/quizFactory'
 import {Question} from "./controllers/skills/question"
-import {AgencyTokenHttpService} from './csrs/agencyTokenHttpService'
 import {AgencyToken} from './csrs/model/agencyToken'
 import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
 import {AgencyTokenController} from './controllers/agencyTokenController'
 import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
-import {AgencyTokenCapacityUsedFactory} from './identity/model/AgencyTokenCapacityUsedFactory'
+import { ActionWorkerService } from './learner-record/workers/actionWorkerService'
+import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
+import { OrganisationalUnitClient } from './csrs/client/organisationalUnitClient'
+import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
+import { createClient } from 'redis'
+import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
+import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 
 export class ApplicationContext {
+	actionWorkerService: ActionWorkerService
 	identityService: IdentityService
 	auth: Auth
 	identityConfig: IdentityConfig
@@ -136,12 +140,14 @@ export class ApplicationContext {
 	inviteFactory: InviteFactory
 	bookingFactory: BookingFactory
 	bookingValidator: Validator<Booking>
+	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
+	organisationalUnitPageModelValidator: Validator<OrganisationalUnitPageModel>
+	organisationalUnitCache: OrganisationalUnitCache
+	organisationalUnitTypeaheadCache: OrganisationalUnitTypeaheadCache
+	organisationalUnitClient: OrganisationalUnitClient
 	organisationController: OrganisationController
-	csrs: Csrs
 	agencyTokenHttpService: AgencyTokenHttpService
 	agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
-	organisationalUnitFactory: OrganisationalUnitFactory
-	organisationalUnitValidator: Validator<OrganisationalUnit>
 	searchController: SearchController
 	reportingController: ReportingController
 	organisationalUnitService: OrganisationalUnitService
@@ -153,7 +159,6 @@ export class ApplicationContext {
 	agencyTokenValidator: Validator<AgencyToken>
 	agencyTokenService: AgencyTokenService
 	agencyTokenController: AgencyTokenController
-	agencyTokenCapacityUsedFactory: AgencyTokenCapacityUsedFactory
 	questionFactory: QuestionFactory
 	quizFactory: QuizFactory
 	questionValidator: Validator<Question>
@@ -206,8 +211,29 @@ export class ApplicationContext {
 		this.reportServiceConfig = new ReportServiceConfig(config.REPORT_SERVICE.url, config.REPORT_SERVICE.timeout, config.REPORT_SERVICE.map)
 		this.reportService = new ReportService(this.reportServiceConfig, new OauthRestService(this.reportServiceConfig, this.auth))
 
+		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
+
+		const organisationalUnitCacheRedis = createClient({
+			auth_pass: config.ORG_REDIS.password,
+			host: config.ORG_REDIS.host,
+			no_ready_check: true,
+			port: config.ORG_REDIS.port,
+		})
+		this.organisationalUnitCache = new OrganisationalUnitCache(
+			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+		)
+		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
+			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+		)
 		this.csrsConfig = new CsrsConfig(config.REGISTRY_SERVICE.url, config.REGISTRY_SERVICE.timeout)
-		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService)
+		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))
+		this.organisationalUnitService = new OrganisationalUnitService(
+			this.organisationalUnitCache,
+			this.organisationalUnitTypeaheadCache,
+			this.organisationalUnitClient,
+			this.agencyTokenCapacityUsedHttpService)
+
+		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.organisationalUnitService)
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
@@ -285,13 +311,12 @@ export class ApplicationContext {
 			this.dateRangeCommandValidator,
 			this.dateRangeValidator,
 			this.dateRangeCommandFactory,
-			this.identityService
+			this.identityService,
+			this.actionWorkerService
 		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
-		this.csrs = new Csrs(this.csrsConfig, this.auth)
 		this.agencyTokenHttpService = new AgencyTokenHttpService(this.csrsConfig, this.auth)
-		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
 
 		this.audienceService = new AudienceService(this.csrsService)
 		this.audienceController = new AudienceController(
@@ -300,14 +325,19 @@ export class ApplicationContext {
 			this.audienceFactory,
 			this.courseService,
 			this.csrsService,
-			this.csrs,
 			this.audienceService
 		)
-		this.organisationalUnitFactory = new OrganisationalUnitFactory()
-		this.organisationalUnitValidator = new Validator<OrganisationalUnit>(this.organisationalUnitFactory)
-		this.organisationalUnitService = new OrganisationalUnitService(this.csrs, this.organisationalUnitFactory, this.agencyTokenCapacityUsedHttpService)
+		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
+		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)
 
-		this.organisationController = new OrganisationController(this.csrs, this.organisationalUnitFactory, this.organisationalUnitValidator, this.organisationalUnitService)
+		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
+		this.actionWorkerService.init()
+
+		this.organisationController = new OrganisationController(
+			this.organisationalUnitPageModelValidator,
+			this.organisationalUnitPageModelFactory,
+			this.organisationalUnitService
+		)
 
 		this.agencyTokenFactory = new AgencyTokenFactory()
 		this.agencyTokenValidator = new Validator<AgencyToken>(this.agencyTokenFactory)
@@ -317,10 +347,7 @@ export class ApplicationContext {
 			this.agencyTokenService,
 			this.organisationalUnitService,
 			this.agencyTokenFactory,
-			this.csrs
 		)
-
-		this.agencyTokenCapacityUsedFactory = new AgencyTokenCapacityUsedFactory()
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 

@@ -1,18 +1,10 @@
-import * as fs from 'fs'
+import 'reflect-metadata'
 import * as dotenv from 'dotenv'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
-	const envFile = '/volumes/keybase/team/lpg/dev/dotenv'
-	try {
-		if (!fs.statSync(envFile).isFile()) {
-			throw new Error(`File not found: ${envFile}`)
-		}
-		dotenv.config({path: envFile})
-	} catch (err) {
-		console.error(`!!! Unable to load the env file at ${envFile} !!!`)
-	}
+	dotenv.load()
 }
 
 function getEnv(obj: any, attr: string) {
@@ -49,6 +41,13 @@ export const REDIS = set({
 	host: env.REDIS_HOST || 'localhost',
 	password: env.REDIS_PASSWORD || '',
 	port: +(env.REDIS_PORT || '6379'),
+})
+
+export const ORG_REDIS = set({
+	host: env.ORG_REDIS_HOST || 'localhost',
+	password: env.ORG_REDIS_PASSWORD || '',
+	port: +(env.ORG_REDIS_PORT || '6379'),
+	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
 })
 
 export const REQUEST_TIMEOUT_MS = Number(env.REQUEST_TIMEOUT_MS)

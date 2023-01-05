@@ -1,0 +1,27 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.organisations.title.removeAnOrganisation }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations/" + organisationalUnit.id + "/overview" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.organisations.title.removeParentOrganisation }}</h1>
+        <p class="govuk-body">Are you sure you want to remove the parent organisation of {{ organisationalUnit.name }}{{ " (" + organisationalUnit.abbreviation + ")" if organisationalUnit.abbreviation else "" }}?</p>
+        <p class="govuk-body">This action is irreversible.</p>
+        <form action="/content-management/organisations/{{ organisationalUnit.id }}/unlink-parent" method="post">
+            <fieldset class="govuk-fieldset">
+                {{ govukButton({
+                    text: "Remove parent organisation",
+                    classes: "button-red"
+                }) }}
+            </fieldset>
+        </form>
+        <a class="cancel-button govuk-link" href="/content-management/organisations/{{ organisationalUnit.id }}/overview">Cancel</a>
+    </div>
+</div>
+{% endblock %}

@@ -5,6 +5,8 @@ import {DefaultPageResults} from '../learning-catalogue/model/defaultPageResults
 
 import * as striptags from 'striptags'
 import {Pagination} from 'lib/pagination'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class SearchController {
 	router: Router
@@ -19,7 +21,7 @@ export class SearchController {
 	}
 
 	private configureRouterPaths() {
-		this.router.get('/content-management/search', this.searchCourses())
+		this.router.get('/content-management/search', xss(), this.searchCourses())
 	}
 
 	searchCourses() {

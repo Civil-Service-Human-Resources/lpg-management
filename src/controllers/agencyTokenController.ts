@@ -8,8 +8,9 @@ import {OrganisationalUnitService} from '../csrs/service/organisationalUnitServi
 import {Validator} from '../learning-catalogue/validator/validator'
 import {Validate} from './formValidator'
 import {AgencyTokenFactory} from '../csrs/model/agencyTokenFactory'
-import {Csrs} from '../csrs'
 import { getLogger } from '../utils/logger'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class AgencyTokenController implements FormController {
 	logger = getLogger('AgencyTokenController')
@@ -18,21 +19,18 @@ export class AgencyTokenController implements FormController {
 	agencyTokenService: AgencyTokenService
 	organisationalUnitService: OrganisationalUnitService
 	agencyTokenFactory: AgencyTokenFactory
-	csrs: Csrs
 
 	constructor(
 		validator: Validator<AgencyToken>,
 		agencyTokenService: AgencyTokenService,
 		organisationalUnitService: OrganisationalUnitService,
 		agencyTokenFactory: AgencyTokenFactory,
-		csrs: Csrs
 	) {
 		this.router = Router()
 		this.validator = validator
 		this.agencyTokenService = agencyTokenService
 		this.organisationalUnitService = organisationalUnitService
 		this.agencyTokenFactory = agencyTokenFactory
-		this.csrs = csrs
 
 		this.getOrganisationFromRouterParamAndSetOnLocals()
 		this.setRouterPaths()
@@ -41,8 +39,8 @@ export class AgencyTokenController implements FormController {
 	/* istanbul ignore next */
 	// prettier-ignore
 	private getOrganisationFromRouterParamAndSetOnLocals() {
-		this.router.param('organisationalUnitId', asyncHandler(async (req: Request, res: Response, next: NextFunction, organisationalUnitId: string) => {
-				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisationalUnit(organisationalUnitId)
+		this.router.param('organisationalUnitId', asyncHandler(async (req: Request, res: Response, next: NextFunction, organisationalUnitId: number) => {
+				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisation(organisationalUnitId)
 
 				if (organisationalUnit) {
 					res.locals.organisationalUnit = organisationalUnit
@@ -56,13 +54,13 @@ export class AgencyTokenController implements FormController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token', asyncHandler(this.addEditAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token', asyncHandler(this.createAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/edit', asyncHandler(this.updateAgencyToken()))
-		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token/delete', asyncHandler(this.deleteAgencyTokenConfirmation()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/delete', asyncHandler(this.deleteAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain', asyncHandler(this.addDomainToAgencyTokenWithinSession()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain/delete', asyncHandler(this.deleteDomainFromAgencyTokenWithinSession()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.addEditAgencyToken()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.createAgencyToken()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/edit', xss(), asyncHandler(this.updateAgencyToken()))
+		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token/delete', xss(), asyncHandler(this.deleteAgencyTokenConfirmation()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/delete', xss(), asyncHandler(this.deleteAgencyToken()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain', xss(), asyncHandler(this.addDomainToAgencyTokenWithinSession()))
+		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain/delete', xss(), asyncHandler(this.deleteDomainFromAgencyTokenWithinSession()))
 	}
 
 	public addEditAgencyToken() {
@@ -145,7 +143,7 @@ export class AgencyTokenController implements FormController {
 			}
 			const agencyToken: AgencyToken = this.agencyTokenFactory.create(data)
 
-			await this.csrs
+			await this.organisationalUnitService
 				.createAgencyToken(organisationalUnit.id, agencyToken)
 				.then(() => {
 					this.deleteAgencyTokenDataStoredInSession(request)
@@ -178,7 +176,7 @@ export class AgencyTokenController implements FormController {
 				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
 			}
 
-			if (request.body.capacity < organisationalUnit.agencyToken.capacityUsed) {
+			if (request.body.capacity < organisationalUnit.agencyToken!.capacityUsed) {
 				const error = {fields: {capacity: ['agencyToken.validation.capacity.lessThanCurrentUsage']}, size: 1}
 				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
 			}
@@ -207,7 +205,7 @@ export class AgencyTokenController implements FormController {
 			}
 			const agencyToken: AgencyToken = this.agencyTokenFactory.create(data)
 
-			await this.csrs
+			await this.organisationalUnitService
 				.updateAgencyToken(organisationalUnit.id, agencyToken)
 				.then(() => {
 					this.deleteAgencyTokenDataStoredInSession(request)
@@ -236,7 +234,7 @@ export class AgencyTokenController implements FormController {
 
 			this.logger.debug(`Deleting agency token from organisation: ${organisationalUnit.name}`)
 
-			await this.csrs
+			await this.organisationalUnitService
 				.deleteAgencyToken(organisationalUnit.id)
 				.then(() => {
 					request.session!.sessionFlash = {displayAgencyTokenRemovedMessage: true, organisationalUnit: organisationalUnit}
