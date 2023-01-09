@@ -5,6 +5,8 @@ import {Validator} from '../../learning-catalogue/validator/validator'
 import {TermsAndConditions} from '../../learning-catalogue/model/termsAndConditions'
 import {FormController} from '../formController'
 import {Validate} from '../formValidator'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class TermsAndConditionsController implements FormController {
 	learningCatalogue: LearningCatalogue
@@ -48,12 +50,12 @@ export class TermsAndConditionsController implements FormController {
 			}
 		})
 
-		this.router.get('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?', this.getTermsAndConditions())
+		this.router.get('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?', xss(), this.getTermsAndConditions())
 
-		this.router.post('/content-management/learning-providers/:learningProviderId/terms-and-conditions/', this.createTermsAndConditions())
-		this.router.post('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId', this.updateTermsAndConditions())
+		this.router.post('/content-management/learning-providers/:learningProviderId/terms-and-conditions/', xss(), this.createTermsAndConditions())
+		this.router.post('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId', xss(), this.updateTermsAndConditions())
 
-		this.router.get('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?/delete', this.deleteTermsAndConditions())
+		this.router.get('/content-management/learning-providers/:learningProviderId/terms-and-conditions/:termsAndConditionsId?/delete', xss(), this.deleteTermsAndConditions())
 	}
 
 	public getTermsAndConditions() {

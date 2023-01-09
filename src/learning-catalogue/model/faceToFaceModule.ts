@@ -14,5 +14,9 @@ export class FaceToFaceModule extends Module {
 	})
 	events: Event[]
 
+	getEvent(eventUri: string) {
+		return this.events.find(e => e.id === eventUri)
+	}
+
 	type: Module.Type.FACE_TO_FACE
 }

@@ -12,12 +12,11 @@ import {mockReq, mockRes} from 'sinon-express-mock'
 import {NextFunction, Request, Response} from 'express'
 import {CourseService} from '../../../../src/lib/courseService'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
-import {Csrs} from '../../../../src/csrs'
 import {DateTime} from '../../../../src/lib/dateTime'
 import * as moment from 'moment'
 import {Course} from '../../../../src/learning-catalogue/model/course'
-import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {AudienceService} from 'lib/audienceService'
+import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 
 chai.use(sinonChai)
 
@@ -28,7 +27,6 @@ describe('AudienceController', () => {
 	let csrsService: CsrsService
 	let learningCatalogue: LearningCatalogue
 	let courseService: CourseService
-	let csrs: Csrs
 	let audienceService: AudienceService
 	let req: Request
 	let res: Response
@@ -44,9 +42,8 @@ describe('AudienceController', () => {
 		courseService = new CourseService(learningCatalogue)
 		audienceFactory = new AudienceFactory()
 		audienceValidator = new Validator(audienceFactory)
-		csrs = <Csrs>{}
 		audienceService = <AudienceService>{}
-		audienceController = new AudienceController(learningCatalogue, audienceValidator, audienceFactory, courseService, csrsService, csrs, audienceService)
+		audienceController = new AudienceController(learningCatalogue, audienceValidator, audienceFactory, courseService, csrsService, audienceService)
 
 		req = mockReq()
 		req.session!.save = callback => {
@@ -64,7 +61,6 @@ describe('AudienceController', () => {
 			req.params.audienceId = audienceId
 			res.locals.audience = {departments: []}
 
-			csrsService.getOrganisations = sinon.stub()
 			csrsService.getDepartmentCodeToNameMapping = sinon.stub()
 			csrsService.getGradeCodeToNameMapping = sinon.stub()
 			courseService.getAudienceIdToEventMapping = sinon.stub()
@@ -115,11 +111,11 @@ describe('AudienceController', () => {
 			res.locals.audience = {
 				departments: departments,
 			}
-			const organisations: OrganisationalUnit[] = []
-			csrs.listOrganisationalUnitsForTypehead = sinon.stub().returns(organisations)
+			const organisations = new OrganisationalUnitTypeAhead([])
+			csrsService.listOrganisationalUnitsForTypehead = sinon.stub().resolves(organisations)
 			await audienceController.getOrganisation()(req, res)
 
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {organisationalUnits: organisations, selectedOrganisations: departments})
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {organisationalUnits: [], selectedOrganisations: departments})
 		})
 	})
 
@@ -180,7 +176,7 @@ describe('AudienceController', () => {
 
 			const hmrcCode = 'hmrc'
 			const dwpCode = 'dwp'
-			csrsService.getOrganisations = sinon.stub().returns({
+			csrsService.listOrganisationalUnitsForTypehead = sinon.stub().returns({
 				_embedded: {
 					organisationalUnits: [{code: hmrcCode, name: 'HM Revenue & Customs'}, {code: dwpCode, name: 'Department for Work and Pensions'}],
 				},

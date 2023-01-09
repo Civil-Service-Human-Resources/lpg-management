@@ -6,6 +6,8 @@ import {DateStartEndCommand} from './command/dateStartEndCommand'
 import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {PlaceholderDate} from '../learning-catalogue/model/placeholderDate'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class ReportingController {
 	router: Router
@@ -29,9 +31,9 @@ export class ReportingController {
 	}
 
 	private configureRouterPaths() {
-		this.router.get('/reporting', this.getReports())
-		this.router.post('/reporting/booking-information', this.generateReportBookingInformation())
-		this.router.post('/reporting/learner-record', this.generateReportLearnerRecord())
+		this.router.get('/reporting', xss(), this.getReports())
+		this.router.post('/reporting/booking-information', xss(), this.generateReportBookingInformation())
+		this.router.post('/reporting/learner-record', xss(), this.generateReportLearnerRecord())
 	}
 
 	getReports() {

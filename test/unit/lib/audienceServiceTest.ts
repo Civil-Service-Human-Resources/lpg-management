@@ -19,14 +19,14 @@ describe('AudienceService', () => {
 		const areasOfWork = ['Finance', 'Commercial']
 		const interests = ['Parliament and the constitution', 'EU and international', 'Leadership']
 
-		const departmentCodeToAbbreviationMapping = {'co-123': 'CO', 'hmrc-5': 'HMRC'}
-		csrsService.getDepartmentCodeToAbbreviationMapping = sinon.stub().returns(departmentCodeToAbbreviationMapping)
-
+		
 		const departmentsString: string = 'CO, HMRC'
 		const areasOfWorkString: string = 'Commercial, Finance'
 		const interestsString: string = 'EU and international, Leadership, Parliament and the constitution'
-
+		
 		beforeEach(() => {
+			const departmentAbbrevs = ['CO', 'HMRC']
+			csrsService.getDepartmentAbbreviationsFromCodes = sinon.stub().withArgs(departments).resolves(departmentAbbrevs)
 			audience.departments = departments
 			audience.areasOfWork = areasOfWork
 			audience.interests = interests

@@ -152,6 +152,7 @@
 			"addANewOrganisation": "Add a new organisation",
 			"editAnOrganisation": "Edit an organisation",
 			"removeAnOrganisation": "Remove an organisation",
+			"removeParentOrganisation": "Remove parent organisation",
 			"organisationOverview": "Organisation overview"
 		},
 		"validation": {
@@ -162,7 +163,8 @@
 				"empty": "Organisation code is required"
 			},
 			"organisation": {
-				"alreadyExists": "An organisation with this name or code already exists"
+				"alreadyExists": "An organisation with this name or code already exists",
+				"selfReference": "An organisation cannot be its own parent"
 			}
 		}
 	},

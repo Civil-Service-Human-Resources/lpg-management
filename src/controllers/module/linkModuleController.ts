@@ -8,6 +8,8 @@ import {CourseService} from 'lib/courseService'
 import {LinkModule} from '../../learning-catalogue/model/linkModule'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../../utils/logger'
+const { xss } = require('express-xss-sanitizer')
+
 
 export class LinkModuleController {
 	logger = getLogger('LinkModuleController')
@@ -58,10 +60,10 @@ export class LinkModuleController {
 				res.sendStatus(404)
 			}
 		})
-		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.addLinkModule()))
-		this.router.get('/content-management/courses/:courseId/module-link', asyncHandler(this.addLinkModule()))
-		this.router.post('/content-management/courses/:courseId/module-link', asyncHandler(this.setLinkModule()))
-		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.updateLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.addLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.addLinkModule()))
+		this.router.post('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.setLinkModule()))
+		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.updateLinkModule()))
 	}
 
 	public addLinkModule() {

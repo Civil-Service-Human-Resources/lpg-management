@@ -1,18 +1,10 @@
-import * as fs from 'fs'
+import 'reflect-metadata'
 import * as dotenv from 'dotenv'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
-	const envFile = '/keybase/team/lpg/dev/dotenv'
-	try {
-		if (!fs.statSync(envFile).isFile()) {
-			throw new Error(`File not found: ${envFile}`)
-		}
-		dotenv.config({path: envFile})
-	} catch (err) {
-		console.error(`!!! Unable to load the env file at ${envFile} !!!`)
-	}
+	dotenv.load()
 }
 
 function getEnv(obj: any, attr: string) {
@@ -41,7 +33,7 @@ export const AUTHENTICATION = set({
 	clientId: env.OAUTH_CLIENT_ID || 'a5881544-6159-4d2f-9b51-8c47ce97454d',
 	clientSecret: env.OAUTH_CLIENT_SECRET || 'test',
 	authenticationServiceUrl: env.AUTHENTICATION_SERVICE_URL || 'http://localhost:8080',
-	callbackUrl: env.CALLBACK_URL || 'http://management.local.learn.civilservice.gov.uk:3005',
+	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
 	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS)
 })
 
@@ -49,6 +41,13 @@ export const REDIS = set({
 	host: env.REDIS_HOST || 'localhost',
 	password: env.REDIS_PASSWORD || '',
 	port: +(env.REDIS_PORT || '6379'),
+})
+
+export const ORG_REDIS = set({
+	host: env.ORG_REDIS_HOST || 'localhost',
+	password: env.ORG_REDIS_PASSWORD || '',
+	port: +(env.ORG_REDIS_PORT || '6379'),
+	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
 })
 
 export const REQUEST_TIMEOUT_MS = Number(env.REQUEST_TIMEOUT_MS)
