@@ -1,3 +1,4 @@
 {
-  "LPG_UI_URL": "http://localhost:3001"
+  "LPG_UI_URL": "http://localhost:3001",
+  "FEEDBACK_URL": "https://civilserviceinsight.qualtrics.com/jfe/form/SV_cHYL88D3Goop5CS"
 }
