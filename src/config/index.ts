@@ -30,7 +30,7 @@ export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 export const LOGGING_LEVEL = env.LOGGING_LEVEL
 
 export const AUTHENTICATION = set({
-	clientId: env.OAUTH_CLIENT_ID || 'a5881544-6159-4d2f-9b51-8c47ce97454d',
+	clientId: env.OAUTH_CLIENT_ID || '89e1b5f4-01e6-470a-b2dc-78969140052a',
 	clientSecret: env.OAUTH_CLIENT_SECRET || 'test',
 	authenticationServiceUrl: env.AUTHENTICATION_SERVICE_URL || 'http://localhost:8080',
 	callbackUrl: env.CALLBACK_URL || 'http://management.develop.learn.civilservice.gov.uk:3005',

@@ -42,7 +42,7 @@ function MockIdentityService(host, port) {
 				path: '/oauth/token',
 				"body" : {
 					"type" : "STRING",
-					"string" : "grant_type=authorization_code&redirect_uri=http%3A%2F%2Fdevelop.learn.civilservice.gov.uk%3A3005%2Fauthenticate&client_id=a5881544-6159-4d2f-9b51-8c47ce97454d&client_secret=test&code=secqBt",
+					"string" : "grant_type=authorization_code&redirect_uri=http%3A%2F%2Fdevelop.learn.civilservice.gov.uk%3A3005%2Fauthenticate&client_id=89e1b5f4-01e6-470a-b2dc-78969140052a&client_secret=test&code=secqBt",
 					"contentType" : "text/plain; charset=utf-8"
 				}
 			},
