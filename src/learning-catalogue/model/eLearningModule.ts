@@ -10,6 +10,8 @@ export class ELearningModule extends Module {
 
 	type: Module.Type.E_LEARNING
 
+	mediaId: string
+
 	url: string
 
 	associatedLearning: boolean
