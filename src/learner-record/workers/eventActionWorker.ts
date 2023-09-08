@@ -1,23 +1,22 @@
-import {LearnerRecord} from '..'
-import {CsrsService} from '../../csrs/service/csrsService'
-import {LearningCatalogue} from '../../learning-catalogue'
-import {Course} from '../../learning-catalogue/model/course'
-import {Event} from '../../learning-catalogue/model/event'
-import {FaceToFaceModule} from '../../learning-catalogue/model/faceToFaceModule'
-import {Module} from '../../learning-catalogue/model/module'
-import {ModuleNotFoundError} from 'lib/exception/moduleNotFound'
-import {EventNotFoundError} from 'lib/exception/eventNotFound'
-import {getLogger} from '../../utils/logger'
-import {CourseRecord} from '../model/courseRecord/courseRecord'
-import {CourseRecordInput} from '../model/courseRecord/courseRecordInput'
-import {ModuleRecord} from '../model/moduleRecord/moduleRecord'
-import {ModuleRecordInput} from '../model/moduleRecord/moduleRecordInput'
-import {RecordState} from '../model/record'
-import {WorkerAction} from './WorkerAction'
-import {CivilServant} from '../../csrs/model/civilServant'
-import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
-import {CslServiceClient} from '../../csl-service/client'
-
+import { LearnerRecord } from "..";
+import { CsrsService } from "../../csrs/service/csrsService";
+import { LearningCatalogue } from "../../learning-catalogue";
+import { Course } from "../../learning-catalogue/model/course";
+import { Event } from "../../learning-catalogue/model/event";
+import { FaceToFaceModule } from "../../learning-catalogue/model/faceToFaceModule";
+import { Module } from "../../learning-catalogue/model/module";
+import { ModuleNotFoundError } from "../../lib/exception/moduleNotFound";
+import { EventNotFoundError } from "../../lib/exception/eventNotFound";
+import { getLogger } from "../../utils/logger";
+import { CourseRecord } from "../model/courseRecord/courseRecord";
+import { CourseRecordInput } from "../model/courseRecord/courseRecordInput";
+import { ModuleRecord } from "../model/moduleRecord/moduleRecord";
+import { ModuleRecordInput } from "../model/moduleRecord/moduleRecordInput";
+import { RecordState } from "../model/record";
+import { WorkerAction } from "./WorkerAction";
+import { CivilServant } from "../../csrs/model/civilServant";
+import { OrganisationalUnitService } from "../../csrs/service/organisationalUnitService";
+import {CslServiceClient} from '../../csl-service/client';
 
 export abstract class EventActionWorker {
 
