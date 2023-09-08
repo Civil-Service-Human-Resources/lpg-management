@@ -198,9 +198,12 @@ export class ApplicationContext {
 
 		this.identityConfig = new IdentityConfig(config.AUTHENTICATION.authenticationServiceUrl, config.AUTHENTICATION.timeout)
 
+		this.cslServiceConfig = new CslServiceConfig(config.CSL_SERVICE.url, config.CSL_SERVICE.timeout)
+		this.cslService = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+
 		this.learningCatalogueConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url, config.COURSE_CATALOGUE.timeout)
 
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslService)
 
 		this.courseFactory = new CourseFactory()
 
@@ -302,9 +305,6 @@ export class ApplicationContext {
 
 		this.bookingFactory = new BookingFactory()
 		this.inviteFactory = new InviteFactory()
-
-		this.cslServiceConfig = new CslServiceConfig(config.CSL_SERVICE.url, config.CSL_SERVICE.timeout)
-		this.cslService = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
 
 		this.learnerRecordConfig = new LearnerRecordConfig(config.LEARNER_RECORD.url, config.LEARNER_RECORD.timeout)
 		this.learnerRecord = new LearnerRecord(this.learnerRecordConfig, this.auth, this.bookingFactory, this.inviteFactory)
