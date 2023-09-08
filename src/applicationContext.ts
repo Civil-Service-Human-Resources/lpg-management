@@ -83,6 +83,8 @@ import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
 import { createClient } from 'redis'
 import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
+import {CslServiceConfig} from './csl-service/cslServiceConfig'
+import {CslServiceClient} from './csl-service/client'
 
 export class ApplicationContext {
 	actionWorkerService: ActionWorkerService
@@ -135,6 +137,8 @@ export class ApplicationContext {
 	dateRangeFactory: DateRangeFactory
 	dateStartEndFactory: DateStartEndFactory
 	dateRangeValidator: Validator<DateRange>
+	cslServiceConfig: CslServiceConfig
+	cslService: CslServiceClient
 	learnerRecord: LearnerRecord
 	learnerRecordConfig: LearnerRecordConfig
 	inviteFactory: InviteFactory
@@ -299,12 +303,15 @@ export class ApplicationContext {
 		this.bookingFactory = new BookingFactory()
 		this.inviteFactory = new InviteFactory()
 
+		this.cslServiceConfig = new CslServiceConfig(config.CSL_SERVICE.url, config.CSL_SERVICE.timeout)
+		this.cslService = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+
 		this.learnerRecordConfig = new LearnerRecordConfig(config.LEARNER_RECORD.url, config.LEARNER_RECORD.timeout)
 		this.learnerRecord = new LearnerRecord(this.learnerRecordConfig, this.auth, this.bookingFactory, this.inviteFactory)
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
-		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
+		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService, this.cslService)
 		this.actionWorkerService.init()
 
 		this.eventController = new EventController(
