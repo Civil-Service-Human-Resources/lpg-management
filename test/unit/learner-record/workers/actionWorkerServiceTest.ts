@@ -3,14 +3,16 @@ import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as sinonChai from 'sinon-chai'
 
-import {CsrsService} from '../../../../src/csrs/service/csrsService'
-import {OrganisationalUnitService} from '../../../../src/csrs/service/organisationalUnitService'
-import {LearnerRecord} from '../../../../src/learner-record'
-import {ActionWorkerService} from '../../../../src/learner-record/workers/actionWorkerService'
-import {CancelBookingActionWorker} from '../../../../src/learner-record/workers/cancelBookingActionWorker'
-import {WorkerAction} from '../../../../src/learner-record/workers/WorkerAction'
-import {LearningCatalogue} from '../../../../src/learning-catalogue'
-import {CslServiceClient} from '../../../../src/csl-service/client'
+import { CsrsService } from '../../../../src/csrs/service/csrsService';
+import { OrganisationalUnitService } from '../../../../src/csrs/service/organisationalUnitService';
+import { LearnerRecord } from '../../../../src/learner-record';
+import { ActionWorkerService } from '../../../../src/learner-record/workers/actionWorkerService';
+import {
+    CancelBookingActionWorker
+} from '../../../../src/learner-record/workers/cancelBookingActionWorker';
+import { WorkerAction } from '../../../../src/learner-record/workers/WorkerAction';
+import { LearningCatalogue } from '../../../../src/learning-catalogue';
+import {CslServiceClient} from '../../../../src/csl-service/client';
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
