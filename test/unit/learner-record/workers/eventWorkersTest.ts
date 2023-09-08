@@ -199,7 +199,6 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchCourseRecord([
-				{op: 'replace', path: '/lastUpdated', value: testDateAsStr},
 				{op: 'replace', path: '/state', value: 'APPROVED'},
 			])
 			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
@@ -226,7 +225,6 @@ describe('Tests for the event action workers', () => {
 				{op: 'remove', path: '/completionDate', value: undefined},
 				{op: 'replace', path: '/eventId', value: testEventID},
 				{op: 'replace', path: '/eventDate', value: testDateAsStr},
-				{op: 'replace', path: '/updatedAt', value: testDateAsStr},
 			])
 			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
@@ -260,7 +258,6 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchCourseRecord([
-				{op: 'replace', path: '/lastUpdated', value: testDateAsStr},
 				{op: 'replace', path: '/state', value: 'UNREGISTERED'},
 			])
 			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
@@ -285,7 +282,6 @@ describe('Tests for the event action workers', () => {
 				{op: 'remove', path: '/result', value: undefined},
 				{op: 'remove', path: '/score', value: undefined},
 				{op: 'remove', path: '/completionDate', value: undefined},
-				{op: 'replace', path: '/updatedAt', value: testDateAsStr},
 				{op: 'replace', path: '/bookingStatus', value: 'CANCELLED'},
 			])
 			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
