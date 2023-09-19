@@ -17,6 +17,7 @@ import {Event} from './model/event'
 import {Audience} from './model/audience'
 import {Auth} from '../identity/auth'
 import {OauthRestService} from '../lib/http/oauthRestService'
+import {CslServiceClient} from '../csl-service/client'
 
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
@@ -27,8 +28,9 @@ export class LearningCatalogue {
 	private _cancellationPolicyService: EntityService<CancellationPolicy>
 	private _termsAndConditionsService: EntityService<TermsAndConditions>
 	private _restService: OauthRestService
+	private _cslService: CslServiceClient
 
-	constructor(config: LearningCatalogueConfig, auth: Auth) {
+	constructor(config: LearningCatalogueConfig, auth: Auth, cslService: CslServiceClient) {
 		this._restService = new OauthRestService(config, auth)
 
 		this._eventService = new EntityService<Event>(this._restService, new EventFactory())
@@ -44,6 +46,8 @@ export class LearningCatalogue {
 		this._cancellationPolicyService = new EntityService<CancellationPolicy>(this._restService, new CancellationPolicyFactory())
 
 		this._termsAndConditionsService = new EntityService<TermsAndConditions>(this._restService, new TermsAndConditionsFactory())
+
+		this._cslService = cslService
 	}
 
 	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
@@ -61,14 +65,17 @@ export class LearningCatalogue {
 	}
 
 	async updateCourse(course: Course): Promise<Course> {
+		await this._cslService.clearCourseCache(course.id)
 		return this._courseService.update(`/courses/${course.id}`, course)
 	}
 
 	async publishCourse(course: Course): Promise<Course> {
+		await this._cslService.clearCourseCache(course.id)
 		return this._courseService.update(`/courses/${course.id}/publish`, course)
 	}
 
 	async archiveCourse(course: Course): Promise<Course> {
+		await this._cslService.clearCourseCache(course.id)
 		return this._courseService.update(`/courses/${course.id}/archive`, course)
 	}
 
@@ -77,6 +84,7 @@ export class LearningCatalogue {
 	}
 
 	async createModule(courseId: string, module: Module): Promise<Module> {
+		await this._cslService.clearCourseCache(courseId)
 		return this._moduleService.create(`/courses/${courseId}/modules/`, module)
 	}
 
@@ -85,14 +93,17 @@ export class LearningCatalogue {
 	}
 
 	async updateModule(courseId: string, module: Module): Promise<Module> {
+		await this._cslService.clearCourseCache(courseId)
 		return this._moduleService.update(`/courses/${courseId}/modules/${module.id}`, module)
 	}
 
 	async deleteModule(courseId: string, moduleId: string) {
+		await this._cslService.clearCourseCache(courseId)
 		return this._moduleService.delete(`/courses/${courseId}/modules/${moduleId}`)
 	}
 
 	async createEvent(courseId: string, moduleId: string, event: Event): Promise<Event> {
+		await this._cslService.clearCourseCache(courseId)
 		return this._eventService.create(`/courses/${courseId}/modules/${moduleId}/events`, event)
 	}
 
@@ -101,10 +112,12 @@ export class LearningCatalogue {
 	}
 
 	async updateEvent(courseId: string, moduleId: string, eventId: string, event: Event): Promise<Event> {
+		await this._cslService.clearCourseCache(courseId)
 		return this._eventService.update(`/courses/${courseId}/modules/${moduleId}/events/${eventId}`, event)
 	}
 
 	async createAudience(courseId: string, audience: Audience) {
+		await this._cslService.clearCourseCache(courseId)
 		return this._audienceService.create(`/courses/${courseId}/audiences`, audience)
 	}
 
@@ -113,10 +126,12 @@ export class LearningCatalogue {
 	}
 
 	async updateAudience(courseId: string, audience: Audience): Promise<Audience> {
+		await this._cslService.clearCourseCache(courseId)
 		return this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
 	}
 
 	async deleteAudience(courseId: string, audienceId: string) {
+		await this._cslService.clearCourseCache(courseId)
 		return this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
 	}
 

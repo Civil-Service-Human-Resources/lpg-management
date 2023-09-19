@@ -16,16 +16,17 @@ import { RecordState } from "../model/record";
 import { WorkerAction } from "./WorkerAction";
 import { CivilServant } from "../../csrs/model/civilServant";
 import { OrganisationalUnitService } from "../../csrs/service/organisationalUnitService";
-
+import {CslServiceClient} from '../../csl-service/client';
 
 export abstract class EventActionWorker {
 
     private logger = getLogger('EventActionWorker')
-    
+
     constructor(protected learningCatalogue: LearningCatalogue,
         protected civilServantRegistry: CsrsService,
         protected organisationalUnitService: OrganisationalUnitService,
-        protected learnerRecordAPI: LearnerRecord
+        protected learnerRecordAPI: LearnerRecord,
+                protected cslService: CslServiceClient
         ) {}
 
     async applyActionToLearnerRecord(userId: string, courseId: string, moduleId: string, eventId: string) {
@@ -41,7 +42,7 @@ export abstract class EventActionWorker {
             if (!event) {
                 throw new EventNotFoundError(courseId, moduleId, eventId)
             }
-            
+
             const courseRecord = await this.learnerRecordAPI.getCourseRecord(courseId, userId)
             if (!courseRecord) {
                 this.logger.debug(`Creating course record`)
@@ -58,6 +59,7 @@ export abstract class EventActionWorker {
                 this.logger.debug(`Updating course record`)
                 await this.updateCourseRecord(userId, courseRecord)
             }
+            await this.cslService.clearCourseRecordCache(userId, courseId);
         } catch (e) {
             this.logger.error(`Failed to apply action to the course record. UserID: ${userId}, ` +
             `CourseID: ${courseId}, ModuleID: ${moduleId}, type: ${this.getType()}. Error: ${e}`)
