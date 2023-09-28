@@ -85,6 +85,9 @@ import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceConfig} from './csl-service/cslServiceConfig'
 import {CslServiceClient} from './csl-service/client'
+import {OrganisationalUnitDomainsController} from './controllers/organisationalUnitDomainsController'
+import {Domain} from 'domain'
+import {DomainFactory} from './csrs/model/domainFactory'
 
 export class ApplicationContext {
 	actionWorkerService: ActionWorkerService
@@ -163,6 +166,9 @@ export class ApplicationContext {
 	agencyTokenValidator: Validator<AgencyToken>
 	agencyTokenService: AgencyTokenService
 	agencyTokenController: AgencyTokenController
+	organisationalUnitDomainsController: OrganisationalUnitDomainsController
+	domainValidator: Validator<Domain>
+	domainFactory: DomainFactory
 	questionFactory: QuestionFactory
 	quizFactory: QuizFactory
 	questionValidator: Validator<Question>
@@ -357,6 +363,13 @@ export class ApplicationContext {
 			this.agencyTokenService,
 			this.organisationalUnitService,
 			this.agencyTokenFactory,
+		)
+
+		this.domainFactory = new DomainFactory()
+		this.domainValidator = new Validator<Domain>(this.domainFactory)
+		this.organisationalUnitDomainsController = new OrganisationalUnitDomainsController(
+			this.domainValidator,
+			this.organisationalUnitService
 		)
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)

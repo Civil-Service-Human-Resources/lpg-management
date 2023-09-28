@@ -1,5 +1,6 @@
 import {AgencyToken} from './agencyToken'
 import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
+import {Domain} from './domain'
 
 export class OrganisationalUnit {
 	id: number
@@ -23,6 +24,8 @@ export class OrganisationalUnit {
 	uri: string
 
 	agencyToken?: AgencyToken
+
+	domains: Domain[] = []
 
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
 		this.abbreviation = pageModel.abbreviation
