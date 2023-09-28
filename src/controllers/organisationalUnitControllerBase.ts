@@ -3,7 +3,7 @@ import {getLogger} from '../utils/logger'
 import {NextFunction, Request, Response, Router} from 'express'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
-import asyncHandler from 'express-async-handler'
+import * as asyncHandler from 'express-async-handler'
 import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 import * as winston from 'winston'
 

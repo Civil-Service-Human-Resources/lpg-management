@@ -21,7 +21,7 @@ export class AgencyTokenController extends OrganisationalUnitControllerBase<Agen
 		super(validator, organisationalUnitService)
 	}
     protected getControllerName(): string {
-        throw new Error('AgencyTokenController')
+        return 'AgencyTokenController'
     }
 
 	/* istanbul ignore next */
