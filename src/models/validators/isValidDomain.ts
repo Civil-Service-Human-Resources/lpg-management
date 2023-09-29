@@ -1,4 +1,4 @@
-import {registerDecorator, ValidationArguments, ValidationOptions} from 'class-validator'
+import {registerDecorator, ValidationOptions} from 'class-validator'
 const isValidDomain = require('is-valid-domain')
 
 export function IsValidDomain(validationOptions?: ValidationOptions) {
@@ -10,10 +10,8 @@ export function IsValidDomain(validationOptions?: ValidationOptions) {
 			constraints: [],
 			options: validationOptions,
 			validator: {
-				validate(value: any, args: ValidationArguments) {
-					const [relatedPropertyName] = args.constraints;
-					const relatedValue = (args.object as any)[relatedPropertyName];
-					return typeof value === 'string' && typeof relatedValue === 'string' && isValidDomain(value)
+				validate(value: any) {
+					return typeof value === 'string' && isValidDomain(value)
 				},
 			},
 		});
