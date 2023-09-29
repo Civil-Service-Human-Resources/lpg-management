@@ -3,7 +3,7 @@ import {Domain} from 'domain'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
-import asyncHandler from 'express-async-handler'
+import * as asyncHandler from 'express-async-handler'
 import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 const { xss } = require('express-xss-sanitizer')
 
