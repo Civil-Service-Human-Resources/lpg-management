@@ -56,7 +56,7 @@
             {% if organisationalUnit.domains | length == 0 %}
                 <p class="govuk-body">There are no email domains associated to this organisation</p>
             {% else %}
-                <ul class="list">
+                <ul class="govuk-list govuk-!-margin-bottom-8">
                     {% for domain in organisationalUnit.domains %}
                         <li>{{ domain.domain }}</li>
                     {% endfor %}
