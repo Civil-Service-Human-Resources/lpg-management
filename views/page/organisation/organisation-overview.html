@@ -54,7 +54,7 @@
             <a href="/content-management/organisations/{{ organisationalUnit.id }}/domains" class="govuk-link">Edit domains</a>
         </div>
             {% if organisationalUnit.domains | length == 0 %}
-                <p class="govuk-body no-margin">There are no email domains associated to this organisation</p>
+                <p class="govuk-body">There are no email domains associated to this organisation</p>
             {% else %}
                 <ul class="list">
                     {% for domain in organisationalUnit.domains %}
