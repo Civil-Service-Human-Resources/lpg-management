@@ -102,13 +102,6 @@
             }
 		}
 	},
-	"domain": {
-		"validation": {
-			"domain": {
-				"invalid": "Invalid domain provided"
-			}
-		}
-	},
 	"event": {
 		"title": {
 			"cancel": "Cancel event"
