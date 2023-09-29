@@ -9,7 +9,7 @@ import * as winston from 'winston'
 
 export abstract class OrganisationalUnitControllerBase<T> implements FormController {
 	protected logger: winston.Logger
-	protected router: Router
+	public router: Router
 
 	protected constructor (
 		public validator: Validator<T>,
