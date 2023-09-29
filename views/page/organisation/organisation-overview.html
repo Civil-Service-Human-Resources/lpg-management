@@ -53,15 +53,17 @@
             <h3 class="govuk-heading-m">Organisation email domains</h3>
             <a href="/content-management/organisations/{{ organisationalUnit.id }}/domains" class="govuk-link">Edit domains</a>
         </div>
+        <div class="section">
             {% if organisationalUnit.domains | length == 0 %}
                 <p class="govuk-body">There are no email domains associated to this organisation</p>
             {% else %}
-                <ul class="govuk-list govuk-!-margin-bottom-8">
+                <ul class="govuk-list">
                     {% for domain in organisationalUnit.domains %}
                         <li>{{ domain.domain }}</li>
                     {% endfor %}
                 </ul>
             {% endif %}
+        </div>
         <div class="title-container">
             <h3 class="govuk-heading-m">Organisation token</h3>
             {% if organisationalUnit.agencyToken %}
