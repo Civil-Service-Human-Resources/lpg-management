@@ -83,6 +83,8 @@ import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
 import { createClient } from 'redis'
 import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
+import {CslServiceConfig} from './csl-service/cslServiceConfig'
+import {CslServiceClient} from './csl-service/client'
 
 export class ApplicationContext {
 	actionWorkerService: ActionWorkerService
@@ -135,6 +137,8 @@ export class ApplicationContext {
 	dateRangeFactory: DateRangeFactory
 	dateStartEndFactory: DateStartEndFactory
 	dateRangeValidator: Validator<DateRange>
+	cslServiceConfig: CslServiceConfig
+	cslService: CslServiceClient
 	learnerRecord: LearnerRecord
 	learnerRecordConfig: LearnerRecordConfig
 	inviteFactory: InviteFactory
@@ -194,9 +198,12 @@ export class ApplicationContext {
 
 		this.identityConfig = new IdentityConfig(config.AUTHENTICATION.authenticationServiceUrl, config.AUTHENTICATION.timeout)
 
+		this.cslServiceConfig = new CslServiceConfig(config.CSL_SERVICE.url, config.CSL_SERVICE.timeout)
+		this.cslService = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+
 		this.learningCatalogueConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url, config.COURSE_CATALOGUE.timeout)
 
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslService)
 
 		this.courseFactory = new CourseFactory()
 
@@ -304,7 +311,7 @@ export class ApplicationContext {
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
-		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
+		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService, this.cslService)
 		this.actionWorkerService.init()
 
 		this.eventController = new EventController(

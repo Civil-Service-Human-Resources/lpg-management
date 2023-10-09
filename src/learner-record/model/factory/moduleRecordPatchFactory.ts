@@ -26,10 +26,6 @@ function setDate(key: string, date?: Date) {
 	return JsonPatch.replacePatch(key, convertedDate)
 }
 
-export function setUpdatedAt(updatedAt: Date) {
-	return setDate('updatedAt', updatedAt)
-}
-
 export function setBookingStatus(status: BookingStatus) {
 	return JsonPatch.replacePatch('bookingStatus', status.toString())
 }
