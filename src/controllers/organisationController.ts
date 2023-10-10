@@ -1,57 +1,30 @@
-import {NextFunction, Request, Response, Router} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 import * as asyncHandler from 'express-async-handler'
-import {FormController} from './formController'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {Validate} from './formValidator'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
-import { getLogger } from '../utils/logger'
 import { OrganisationalUnitPageModel } from '../csrs/model/organisationalUnitPageModel'
 import { OrganisationalUnitTypeAhead } from '../csrs/model/organisationalUnitTypeAhead'
 import { OrganisationalUnitPageModelFactory } from '../csrs/model/organisationalUnitPageModelFactory'
+import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
 const { xss } = require('express-xss-sanitizer')
 
 
-export class OrganisationController implements FormController {
-	logger = getLogger('OrganisationController')
-	router: Router
-	validator: Validator<OrganisationalUnitPageModel>
-	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
-	organisationalUnitService: OrganisationalUnitService
-
+export class OrganisationController extends OrganisationalUnitControllerBase<OrganisationalUnitPageModel> {
 	constructor(
 		validator: Validator<OrganisationalUnitPageModel>,
-		organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory,
+		private organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory,
 		organisationalUnitService: OrganisationalUnitService) {
-		this.router = Router()
-		this.organisationalUnitService = organisationalUnitService
-		this.validator = validator
-		this.organisationalUnitPageModelFactory = organisationalUnitPageModelFactory
-		this.organisationalUnitService = organisationalUnitService
+		super(validator, organisationalUnitService)
+	}
 
-		this.getOrganisationFromRouterParamAndSetOnLocals()
-
-		this.setRouterPaths()
+	protected getControllerName(): string {
+		return 'OrganisationController'
 	}
 
 	/* istanbul ignore next */
-	// prettier-ignore
-	private getOrganisationFromRouterParamAndSetOnLocals() {
-		this.router.param('organisationalUnitId', asyncHandler(async (req: Request, res: Response, next: NextFunction, organisationalUnitId: number) => {
-				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisation(organisationalUnitId, true)
-
-				if (organisationalUnit) {
-					res.locals.organisationalUnit = organisationalUnit
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			})
-		)
-	}
-
-	/* istanbul ignore next */
-	private setRouterPaths() {
+	protected setRouterPaths() {
 		this.router.get('/content-management/organisations/manage', xss(), asyncHandler(this.getOrganisationList()))
 		this.router.get('/content-management/organisations/:organisationalUnitId?', xss(), asyncHandler(this.addEditOrganisation()))
 		this.router.get('/content-management/organisations/:organisationalUnitId/overview', xss(), asyncHandler(this.organisationOverview()))
@@ -61,7 +34,7 @@ export class OrganisationController implements FormController {
 		this.router.post('/content-management/organisations/:organisationalUnitId/delete', xss(), asyncHandler(this.deleteOrganisation()))
 		this.router.get('/content-management/organisations/:organisationalUnitId/unlink-parent-confirm', xss(), asyncHandler(this.confirmParentOrganisationRemoval()))
 		this.router.post('/content-management/organisations/:organisationalUnitId/unlink-parent', xss(), asyncHandler(this.unlinkParentOrganisation()))
-		
+
 	}
 
 	public getOrganisationList() {
@@ -173,7 +146,7 @@ export class OrganisationController implements FormController {
 			this.logger.debug(`Unlinking parent organisation from organisation: ${organisationalUnit.id}`)
 
 			await this.organisationalUnitService.updateOrganisationalUnit(organisationalUnit.id, data)
-		
+
 			response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 		}
 	}
