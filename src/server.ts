@@ -28,6 +28,7 @@ import * as asyncHandler from 'express-async-handler'
 import * as errorController from './lib/errorHandler'
 import {Duration} from 'moment'
 import {OrganisationalUnit} from './csrs/model/organisationalUnit'
+import {ENV} from './config'
 
 Properties.initialize()
 
@@ -55,6 +56,7 @@ app.use(fileUpload())
 nunjucks
 	.configure([appRoot + '/views', appRoot + '/node_modules/govuk-frontend/govuk/', appRoot + '/node_modules/govuk-frontend/govuk/components'], {
 		autoescape: true,
+		noCache: ENV ! == 'development',
 		express: app,
 	})
 	.addFilter('jsonpath', function(path: string | string[], map: any) {
@@ -146,6 +148,11 @@ app.use(ctx.searchController.router)
 app.use(ctx.reportingController.router)
 app.use(ctx.skillsController.router)
 app.use(ctx.agencyTokenController.router)
+logger.debug(`Registering ${ctx.controllers.length} controllers`)
+ctx.controllers.forEach(c => {
+	app.use(c.path, c.buildRouter())
+})
+
 app.use(xss())
 
 app.get('/', function(req: any, res: any) {

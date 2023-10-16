@@ -15,6 +15,10 @@ export class OrganisationalUnitCache extends Cache<OrganisationalUnit> {
         super.set(id, organisationalUnit, ttlOverride)
     }
 
+	setMultiple(organisationalUnits: OrganisationalUnit[], ttlOverride?: number) {
+		return organisationalUnits.map(o => this.set(o.id, o, ttlOverride))
+	}
+
 	protected convert(cacheHit: string): OrganisationalUnit {
 		return plainToClass(OrganisationalUnit, cacheHit)
 	}

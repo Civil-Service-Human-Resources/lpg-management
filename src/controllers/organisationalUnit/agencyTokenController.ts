@@ -1,28 +1,28 @@
 import {NextFunction, Request, Response} from 'express'
 import * as asyncHandler from 'express-async-handler'
-import {AgencyToken} from '../csrs/model/agencyToken'
-import {AgencyTokenService} from '../lib/agencyTokenService'
-import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
-import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
-import {Validator} from '../learning-catalogue/validator/validator'
-import {Validate} from './formValidator'
-import {AgencyTokenFactory} from '../csrs/model/agencyTokenFactory'
+import {AgencyToken} from '../../csrs/model/agencyToken'
+import {AgencyTokenService} from '../../lib/agencyTokenService'
+import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
+import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
+import {Validator} from '../../learning-catalogue/validator/validator'
+import {Validate} from '../formValidator'
+import {AgencyTokenFactory} from '../../csrs/model/agencyTokenFactory'
 import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
-const { xss } = require('express-xss-sanitizer')
+import {FormController} from '../formController'
+
+const {xss} = require('express-xss-sanitizer')
 
 
-export class AgencyTokenController extends OrganisationalUnitControllerBase<AgencyToken> {
+export class AgencyTokenController extends OrganisationalUnitControllerBase implements FormController {
 	constructor(
-		validator: Validator<AgencyToken>,
+		public validator: Validator<AgencyToken>,
 		private agencyTokenService: AgencyTokenService,
 		organisationalUnitService: OrganisationalUnitService,
 		private agencyTokenFactory: AgencyTokenFactory,
 	) {
-		super(validator, organisationalUnitService)
+		super('AgencyTokenController', organisationalUnitService)
+		this.setRouterPaths()
 	}
-    protected getControllerName(): string {
-        return 'AgencyTokenController'
-    }
 
 	/* istanbul ignore next */
 	protected setRouterPaths() {

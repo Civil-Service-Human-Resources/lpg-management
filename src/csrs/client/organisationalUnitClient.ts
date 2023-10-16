@@ -9,6 +9,7 @@ import {
     GetOrganisationRequestOptions, GetOrganisationsRequestOptions
 } from './getOrganisationsRequestOptions';
 import { GetOrganisationsResponse } from './getOrganisationsResponse';
+import {AddDomainToOrgResponse} from './addDomainToOrgResponse'
 
 export class OrganisationalUnitClient {
 
@@ -25,13 +26,13 @@ export class OrganisationalUnitClient {
             size: 1,
             page: 0
         })
-        if (response.page.totalElements >= 1) {
-            const totalPages = Math.ceil(response.page.totalElements / this.MAX_PER_PAGE)
+        if (response.totalElements >= 1) {
+            const totalPages = Math.ceil(response.totalElements / this.MAX_PER_PAGE)
             const requests: any[] = []
             for (let page = 0; page < totalPages; page++) {
                 requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page})
                 .then((data) => {
-                    orgs.push(...data.embedded.organisationalUnits)
+                    orgs.push(...data.content)
                 }))
             }
             await Promise.all(requests)
@@ -39,9 +40,23 @@ export class OrganisationalUnitClient {
         return orgs
     }
 
+    async getSpecificOrganisationalUnits(ids: number[]): Promise<OrganisationalUnit[]> {
+        const orgs: OrganisationalUnit[] = []
+        const totalPages = Math.ceil(ids.length / this.MAX_PER_PAGE)
+        const requests: any[] = []
+        for (let page = 0; page < totalPages; page++) {
+            requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page, ids: ids.join(",")})
+                .then((data) => {
+                    orgs.push(...data.content)
+                }))
+        }
+        await Promise.all(requests)
+        return orgs
+    }
+
     async getOrganisationalUnits(options: GetOrganisationsRequestOptions): Promise<GetOrganisationsResponse> {
         const resp: GetOrganisationsResponse = await this._http.getWithAuthAndConfig(
-            this.BASE_URL, {
+            this.V2_BASE_URL, {
                 params: options
             }
         )
@@ -88,12 +103,17 @@ export class OrganisationalUnitClient {
         return plainToInstance(AgencyToken, response)
     }
 
-    async updateAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<void> {
-		await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`, agencyToken)
+    async updateAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<AgencyToken> {
+		const resp = await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`, agencyToken)
+        return plainToInstance(AgencyToken, resp)
 	}
 
 	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
 		await this._http.delete(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`)
 	}
 
+	async addDomain(organisationalUnitId: number, domain: string): Promise<AddDomainToOrgResponse> {
+        const response = await this._http.postWithoutFollowing(`${this.BASE_URL}/${organisationalUnitId}/domains`, {domain})
+        return  plainToInstance(AddDomainToOrgResponse, response.data)
+	}
 }

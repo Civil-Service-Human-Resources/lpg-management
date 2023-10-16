@@ -8,6 +8,7 @@ import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageMode
 import { OrganisationalUnitTypeAhead } from '../model/organisationalUnitTypeAhead';
 import { OrganisationalUnitCache } from '../organisationalUnitCache';
 import { OrganisationalUnitTypeaheadCache } from '../organisationalUnitTypeaheadCache';
+import {Domain} from '../model/domain'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
@@ -36,7 +37,7 @@ export class OrganisationalUnitService {
 				{includeParents: true}
 			)
 			const orgArray = orgWithAllParents.getHierarchyAsArray()
-			orgArray.map(async o => await this.organisationalUnitCache.set(o.id, o))
+			await Promise.all(this.organisationalUnitCache.setMultiple(orgArray))
 			hierarchy.push(...orgArray)
 		} else {
 			hierarchy.push(org)
@@ -62,7 +63,7 @@ export class OrganisationalUnitService {
 				organisationalUnitId,
 				{includeParents: includeParent}
 			)
-			org.getHierarchyAsArray().map(async o => await this.organisationalUnitCache.set(o.id, o))
+			await Promise.all(this.organisationalUnitCache.setMultiple(org.getHierarchyAsArray()))
 		}
 		if (includeParent && org.parentId != null && org.parent == null) {
 			org.parent = await this.getOrganisation(org.parentId)
@@ -79,7 +80,7 @@ export class OrganisationalUnitService {
 		await this.refreshSpecificOrg(newOrgWithId)
 		return newOrgWithId
 	}
-	
+
 	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
 		this.logger.debug(`Updating organisational unit ${organisationalUnitId} with page model ${JSON.stringify(organisationalUnitModel)}`)
 		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnitModel)
@@ -110,7 +111,7 @@ export class OrganisationalUnitService {
 	}
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
-		await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
+		agencyToken = await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.agencyToken = agencyToken
 		await this.refreshSpecificOrg(organisationalUnit)
@@ -124,12 +125,17 @@ export class OrganisationalUnitService {
 	}
 
 	private async refreshSpecificOrg(organisationalUnit: OrganisationalUnit) {
-		await this.organisationalUnitCache.set(organisationalUnit.id, organisationalUnit)
+		await this.refreshOrgs([organisationalUnit])
+	}
+
+	private async refreshOrgs(organisationalUnits: OrganisationalUnit[]) {
+		this.logger.info(`Refreshing ${organisationalUnits.length} organisational units`)
+		await Promise.all(this.organisationalUnitCache.setMultiple(organisationalUnits))
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead()
 		} else {
-			typeahead.upsertAndSort(organisationalUnit)
+			typeahead.upsertAndSort(organisationalUnits)
 			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		}
 	}
@@ -137,10 +143,53 @@ export class OrganisationalUnitService {
 	private async refreshTypeahead(refreshIndividuals: boolean = false) {
 		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
 		if (refreshIndividuals) {
-			organisationalUnits.map(async o => await this.organisationalUnitCache.set(o.id, o))
+			await Promise.all(this.organisationalUnitCache.setMultiple(organisationalUnits))
 		}
         const typeahead = OrganisationalUnitTypeAhead.createAndSort(organisationalUnits)
         await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
 		return typeahead
+	}
+
+	private async fetchMultipleOrgs(ids: number[]) {
+		this.logger.info(`Fetching ${ids.length} organisations from CSRS for refresh`)
+		await Promise.all(this.organisationalUnitCache.setMultiple(
+			await this.organisationalUnitClient.getSpecificOrganisationalUnits(ids))
+		)
+	}
+
+	public appendDomainToMultipleOrgs(orgIds: number[], domain: Domain) {
+		this.logger.info(`Adding ${domain.domain} to ${orgIds.length} orgs`)
+		const orgsToFetch: number[] = []
+		const updateBatch: OrganisationalUnit[] = []
+		Promise.all(orgIds.map(
+			async id => {
+				let org = await this.organisationalUnitCache.get(id)
+				if (org === undefined) {
+					orgsToFetch.push(id)
+				} else {
+					org.insertAndSortDomain(domain)
+					updateBatch.push(org)
+				}
+			}
+		)).then(() => {
+			if (orgsToFetch.length > 0) {
+				this.fetchMultipleOrgs(orgsToFetch).then()
+			}
+			if (updateBatch.length > 0) {
+				this.refreshOrgs(updateBatch).then()
+			}
+		})
+	}
+
+	async addDomain(organisationalUnitId: number, domainString: string): Promise<OrganisationalUnit> {
+		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
+		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
+		let parentOrg = await this.getOrganisation(organisationalUnitId)
+		parentOrg.insertAndSortDomain(response.domain)
+		await this.refreshOrgs([parentOrg])
+		if (response.updatedChildOrganisationIds.length > 0) {
+			this.appendDomainToMultipleOrgs(response.updatedChildOrganisationIds, response.domain)
+		}
+		return parentOrg
 	}
 }

@@ -36,6 +36,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitClient as any,
 			agencyTokenCapacityUsedService as any
 		)
+		organisationalUnitCache.setMultiple.returns([])
 	})
 
 	describe('getOrganisation tests', () => {
@@ -93,7 +94,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitCache.get.withArgs(1).resolves(undefined)
 			const result = await organisationalUnitService.getOrganisation(1)
 
-			expect(organisationalUnitCache.set).to.be.calledOnceWith(1, organisationalUnit)
+			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
 			expect(result.id).to.eql(1)
 		})
 
@@ -112,8 +113,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitCache.get.withArgs(1).resolves(undefined)
 			const result = await organisationalUnitService.getOrganisation(1, true)
 
-			expect(organisationalUnitCache.set).to.be.calledWith(1, organisationalUnit)
-			expect(organisationalUnitCache.set).to.be.calledWith(2, parentOrganisationalUnit)
+			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
 			expect(result.id).to.eql(1)
 			expect(result.parent!.id).to.eql(2)
 			expect(result.parent).to.eql(parentOrganisationalUnit)
@@ -128,7 +128,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			const newOrg = await organisationalUnitService.createOrganisationalUnit(org)
 			expect(newOrg).to.eql(org)
-			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
+			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
@@ -137,12 +137,12 @@ describe('OrganisationalUnitService tests', () => {
 			org.id = 1
 			const pageModel = new OrganisationalUnitPageModel()
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
-			organisationalUnitClient.getOrganisationalUnit.withArgs(1).resolves(org)
+			organisationalUnitClient.getOrganisationalUnit.withArgs(org.id).resolves(org)
 			await organisationalUnitService.updateOrganisationalUnit(org.id, pageModel)
 			expect(organisationalUnitClient.update).to.be.calledWith(org.id, pageModel)
 			org.updateWithPageModel(pageModel)
 			org.formattedName = undefined
-			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
+			expect(organisationalUnitCache.setMultiple).to.be.calledTwice
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
@@ -193,7 +193,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.createAgencyToken(org.id, agencyToken)
 			expect(organisationalUnitClient.createAgencyToken).to.be.calledWith(org.id, agencyToken)
-			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
+			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
@@ -209,7 +209,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.deleteAgencyToken(org.id)
 			expect(organisationalUnitClient.deleteAgencyToken).to.be.calledWith(org.id)
-			expect(organisationalUnitCache.set).to.be.calledWith(1, org)
+			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 	})
@@ -255,6 +255,47 @@ describe('OrganisationalUnitService tests', () => {
 
 			const hierarchy = await organisationalUnitService.getOrgHierarchy(3)
 			expect(hierarchy.map((o) => o.name)).to.eql(['Child', 'Parent', 'Grandparent'])
+		})
+	})
+
+	describe('addDomain tests', () => {
+		it('Add the domain to the organisation', async () => {
+			const org = getOrg('Grandparent', 'Grandparent', 1)
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			organisationalUnitCache.get.withArgs(1).resolves(org)
+			organisationalUnitClient.addDomain
+				.withArgs(1, "domain.com")
+				.resolves({
+					primaryOrganisationId: 1,
+					domain: {
+						domain: "domain.com",
+						id: 1
+					},
+					updatedChildOrganisationIds: [],
+					skippedChildOrganisationIds: []
+				})
+			const result = await organisationalUnitService.addDomain(1, "domain.com")
+			expect(result.doesDomainExist("domain.com")).to.be.true
+		})
+
+		it('Add the domain to the organisation and child organisations', async () => {
+			const org = getOrg('Grandparent', 'Grandparent', 1)
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
+			organisationalUnitCache.get.withArgs(1).resolves(org)
+			organisationalUnitClient.addDomain
+				.withArgs(1, "domain.com")
+				.resolves({
+					primaryOrganisationId: 1,
+					domain: {
+						domain: "domain.com",
+						id: 1
+					},
+					updatedChildOrganisationIds: [],
+					skippedChildOrganisationIds: []
+				})
+			const result = await organisationalUnitService.addDomain(1, "domain.com")
+			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
+			expect(result.doesDomainExist("domain.com")).to.be.true
 		})
 	})
 })

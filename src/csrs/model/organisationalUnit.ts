@@ -59,4 +59,17 @@ export class OrganisationalUnit {
 		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
 	}
 
+	insertAndSortDomain(domain: Domain) {
+		if (this.domains.find(d => d.domain === domain.domain) === undefined) {
+			this.domains.push(domain)
+			this.domains.sort((a, b) => {
+				return (a.domain < b.domain) ? -1 : 1
+			})
+		}
+	}
+
+	doesDomainExist(domain: string) {
+		return Array.from(this.domains).find(d => d.domain === domain) !== undefined
+	}
+
 }

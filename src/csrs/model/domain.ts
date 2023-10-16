@@ -1,4 +1,3 @@
 export class Domain {
-	id: number
-	domain: string
+	constructor(public id: number, public domain: string) { }
 }
