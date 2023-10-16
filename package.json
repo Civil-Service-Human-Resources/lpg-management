@@ -4,7 +4,7 @@
 	"description": "lpg admin application",
 	"main": "server",
 	"scripts": {
-		"clean": "rm -rf dist",
+		"clean": "rimraf dist",
 		"sass": "node-sass views/assets/styles/main.scss dist/views/assets/styles/main.css --output-style compressed",
 		"test": "npm run compile && find dist -name '*Test.js' | xargs ./node_modules/nyc/bin/nyc.js --reporter=text --reporter=html ./node_modules/mocha/bin/mocha",
 		"test:ts": "nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
