@@ -152,9 +152,8 @@ export class OrganisationalUnitService {
 
 	private async fetchMultipleOrgs(ids: number[]) {
 		this.logger.info(`Fetching ${ids.length} organisations from CSRS for refresh`)
-		await Promise.all(this.organisationalUnitCache.setMultiple(
-			await this.organisationalUnitClient.getSpecificOrganisationalUnits(ids))
-		)
+		const orgs = await this.organisationalUnitClient.getSpecificOrganisationalUnits(ids)
+		await this.refreshOrgs(orgs)
 	}
 
 	public async appendDomainToMultipleOrgs(orgIds: number[], domain: Domain) {
