@@ -150,12 +150,6 @@ export class OrganisationalUnitService {
 		return typeahead
 	}
 
-	private async fetchMultipleOrgs(ids: number[]) {
-		this.logger.info(`Fetching ${ids.length} organisations from CSRS for refresh`)
-		const orgs = await this.organisationalUnitClient.getSpecificOrganisationalUnits(ids)
-		await this.refreshOrgs(orgs)
-	}
-
 	public async appendDomainToMultipleOrgs(orgIds: number[], domain: Domain) {
 		this.logger.info(`Adding ${domain.domain} to ${orgIds.length} orgs`)
 		const orgsToFetch: number[] = []
@@ -172,7 +166,7 @@ export class OrganisationalUnitService {
 			}
 		))
 		if (orgsToFetch.length > 0) {
-			await this.fetchMultipleOrgs(orgsToFetch)
+			updateBatch.push(...await this.organisationalUnitClient.getSpecificOrganisationalUnits(orgsToFetch))
 		}
 		if (updateBatch.length > 0) {
 			await this.refreshOrgs(updateBatch)
