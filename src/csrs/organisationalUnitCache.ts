@@ -1,9 +1,9 @@
 import { plainToClass } from 'class-transformer';
 
-import { Cache } from '../lib/redisCache';
 import { OrganisationalUnit } from './model/organisationalUnit';
+import {CacheableObjectCache} from 'lib/cacheableObjectCache'
 
-export class OrganisationalUnitCache extends Cache<OrganisationalUnit> {
+export class OrganisationalUnitCache extends CacheableObjectCache<OrganisationalUnit> {
 
     getBaseKey(): string {
         return "organisationalUnits"
@@ -14,10 +14,6 @@ export class OrganisationalUnitCache extends Cache<OrganisationalUnit> {
         organisationalUnit.children = []
         super.set(id, organisationalUnit, ttlOverride)
     }
-
-	setMultiple(organisationalUnits: OrganisationalUnit[], ttlOverride?: number) {
-		return organisationalUnits.map(o => this.set(o.id, o, ttlOverride))
-	}
 
 	protected convert(cacheHit: string): OrganisationalUnit {
 		return plainToClass(OrganisationalUnit, cacheHit)

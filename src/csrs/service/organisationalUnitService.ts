@@ -37,7 +37,7 @@ export class OrganisationalUnitService {
 				{includeParents: true}
 			)
 			const orgArray = orgWithAllParents.getHierarchyAsArray()
-			await Promise.all(this.organisationalUnitCache.setMultiple(orgArray))
+			await this.organisationalUnitCache.setMultiple(orgArray)
 			hierarchy.push(...orgArray)
 		} else {
 			hierarchy.push(org)
@@ -63,7 +63,7 @@ export class OrganisationalUnitService {
 				organisationalUnitId,
 				{includeParents: includeParent}
 			)
-			await Promise.all(this.organisationalUnitCache.setMultiple(org.getHierarchyAsArray()))
+			await this.organisationalUnitCache.setMultiple(org.getHierarchyAsArray())
 		}
 		if (includeParent && org.parentId != null && org.parent == null) {
 			org.parent = await this.getOrganisation(org.parentId)
@@ -130,7 +130,7 @@ export class OrganisationalUnitService {
 
 	private async refreshOrgs(organisationalUnits: OrganisationalUnit[]) {
 		this.logger.info(`Refreshing ${organisationalUnits.length} organisational units`)
-		await Promise.all(this.organisationalUnitCache.setMultiple(organisationalUnits))
+		await this.organisationalUnitCache.setMultiple(organisationalUnits)
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead()
@@ -143,7 +143,7 @@ export class OrganisationalUnitService {
 	private async refreshTypeahead(refreshIndividuals: boolean = false) {
 		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
 		if (refreshIndividuals) {
-			await Promise.all(this.organisationalUnitCache.setMultiple(organisationalUnits))
+			await this.organisationalUnitCache.setMultiple(organisationalUnits)
 		}
         const typeahead = OrganisationalUnitTypeAhead.createAndSort(organisationalUnits)
         await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)

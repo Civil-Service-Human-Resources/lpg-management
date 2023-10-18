@@ -1,8 +1,13 @@
 import {AgencyToken} from './agencyToken'
 import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 import {Domain} from './domain'
+import {CacheableObject} from 'lib/cacheableObject'
 
-export class OrganisationalUnit {
+export class OrganisationalUnit implements CacheableObject {
+    getId(): string {
+        throw this.id.toString()
+    }
+
 	id: number
 
 	name: string
