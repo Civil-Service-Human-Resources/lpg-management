@@ -157,11 +157,11 @@ export class OrganisationalUnitService {
 		)
 	}
 
-	public appendDomainToMultipleOrgs(orgIds: number[], domain: Domain) {
+	public async appendDomainToMultipleOrgs(orgIds: number[], domain: Domain) {
 		this.logger.info(`Adding ${domain.domain} to ${orgIds.length} orgs`)
 		const orgsToFetch: number[] = []
 		const updateBatch: OrganisationalUnit[] = []
-		Promise.all(orgIds.map(
+		await Promise.all(orgIds.map(
 			async id => {
 				let org = await this.organisationalUnitCache.get(id)
 				if (org === undefined) {
@@ -171,14 +171,13 @@ export class OrganisationalUnitService {
 					updateBatch.push(org)
 				}
 			}
-		)).then(() => {
-			if (orgsToFetch.length > 0) {
-				this.fetchMultipleOrgs(orgsToFetch).then()
-			}
-			if (updateBatch.length > 0) {
-				this.refreshOrgs(updateBatch).then()
-			}
-		})
+		))
+		if (orgsToFetch.length > 0) {
+			await this.fetchMultipleOrgs(orgsToFetch)
+		}
+		if (updateBatch.length > 0) {
+			await this.refreshOrgs(updateBatch)
+		}
 	}
 
 	async addDomain(organisationalUnitId: number, domainString: string): Promise<OrganisationalUnit> {
@@ -189,6 +188,9 @@ export class OrganisationalUnitService {
 		await this.refreshOrgs([parentOrg])
 		if (response.updatedChildOrganisationIds.length > 0) {
 			this.appendDomainToMultipleOrgs(response.updatedChildOrganisationIds, response.domain)
+				.then(() => {
+					this.logger.info(`Successfully added domain to ${response.updatedChildOrganisationIds.length} child organisations`)
+				})
 		}
 		return parentOrg
 	}
