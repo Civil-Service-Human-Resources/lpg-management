@@ -1,7 +1,8 @@
 import { plainToClass } from 'class-transformer';
 
 import { OrganisationalUnit } from './model/organisationalUnit';
-import {CacheableObjectCache} from 'lib/cacheableObjectCache'
+import {CacheableObjectCache} from '../lib/cacheableObjectCache'
+
 
 export class OrganisationalUnitCache extends CacheableObjectCache<OrganisationalUnit> {
 
