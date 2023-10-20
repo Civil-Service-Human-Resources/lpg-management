@@ -20,10 +20,11 @@ export enum BehaviourOnError {
 }
 
 export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
-	return function (req: Request, res: Response, next: NextFunction) {
+	return async function (req: Request, res: Response, next: NextFunction) {
 		logger.debug(`Validating request body ${JSON.stringify(req.body)} against class ${opts.dtoClass.name}`)
 		const output: any = plainToInstance(opts.dtoClass, req.body)
-		validate(output, { skipMissingProperties: true }).then(validationErrors => {
+		if (req.body !== undefined) {
+			const validationErrors = await validate(output, { skipMissingProperties: true })
 			if (validationErrors.length > 0) {
 				logger.debug(validationErrors)
 				const errors = ValidationErrorMapper.map(validationErrors)
@@ -38,8 +39,9 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 					let redirect = req.originalUrl
 					if (opts.onError.path !== undefined) {
 						for (const param in req.params) {
-							redirect = redirect.replace(`:${param}`, req.params[param])
+							opts.onError.path = opts.onError.path.replace(`:${param}`, req.params[param])
 						}
+						redirect = opts.onError.path
 					}
 					req.session!.sessionFlash = {
 						errors,
@@ -56,10 +58,12 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 					res.render(opts.onError.path, {errors, form: req.body})
 				}
 			} else {
-				console.log("No errors")
 				res.locals.input = output;
 				next();
 			}
-		});
+		} else {
+			logger.warn('Request body was null, skpping validation')
+			next()
+		}
 	};
 };

@@ -1,6 +1,6 @@
 import {validate} from 'class-validator'
 import {expect} from 'chai'
-import {IsValidDomain} from '../../../../src/validators/isValidDomain'
+import {IsValidDomain} from '../../../src/validators/isValidDomain'
 
 class TestClass {
 	@IsValidDomain({

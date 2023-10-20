@@ -56,7 +56,7 @@ app.use(fileUpload())
 nunjucks
 	.configure([appRoot + '/views', appRoot + '/node_modules/govuk-frontend/govuk/', appRoot + '/node_modules/govuk-frontend/govuk/components'], {
 		autoescape: true,
-		noCache: ENV ! == 'development',
+		noCache: ENV === 'development',
 		express: app,
 	})
 	.addFilter('jsonpath', function(path: string | string[], map: any) {

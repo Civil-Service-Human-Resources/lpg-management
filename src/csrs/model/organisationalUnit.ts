@@ -5,7 +5,7 @@ import {CacheableObject} from 'lib/cacheableObject'
 
 export class OrganisationalUnit implements CacheableObject {
     getId(): string {
-        throw this.id.toString()
+        return this.id.toString()
     }
 
 	id: number

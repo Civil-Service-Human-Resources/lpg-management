@@ -20,7 +20,7 @@
 {% set banner = true %}
 {% set form = sessionFlash.form %}
 {% set errors = sessionFlash.errors %}
-{{ errorSummary(errors.fields) }}
+{{ errorSummary(errors.fields, true) }}
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
@@ -31,6 +31,15 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+        {% if domainAddedSuccess %}
+            <div class="panel panel-blue">
+                <div class="govuk-panel__body custom-panel panel-blue">
+                    <p class="govuk-body">
+                        The domain <strong>{{ domainAddedSuccess.domain }}</strong> has been successfully added to this organisation{% if domainAddedSuccess.childOrgsUpdatedCount > 0 %} and {{ domainAddedSuccess.childOrgsUpdatedCount }} child organisations{% endif %}.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
         <h3 class="govuk-heading-s">List of permitted domains</h3>
         {% if organisationalUnit.domains.length > 0 %}
             <ul class="list modules" id="domains">

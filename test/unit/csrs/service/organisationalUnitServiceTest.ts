@@ -275,13 +275,17 @@ describe('OrganisationalUnitService tests', () => {
 					skippedChildOrganisationIds: []
 				})
 			const result = await organisationalUnitService.addDomain(1, "domain.com")
-			expect(result.doesDomainExist("domain.com")).to.be.true
+			expect(result.organisationalUnit.doesDomainExist("domain.com")).to.be.true
+			expect(result.childOrgsUpdatedCount).to.eql(0)
+			expect(result.domain).to.eql("domain.com")
 		})
 
 		it('Add the domain to the organisation and child organisations', async () => {
-			const org = getOrg('Grandparent', 'Grandparent', 1)
-			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
-			organisationalUnitCache.get.withArgs(1).resolves(org)
+			const grandParent = getOrg('Grandparent', 'Grandparent', 1)
+			const parent = getOrg('Parent', 'Grandparent | Parent', 2, 1)
+			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([grandParent]))
+			organisationalUnitCache.get.withArgs(1).resolves(grandParent)
+			organisationalUnitCache.get.withArgs(2).resolves(parent)
 			organisationalUnitClient.addDomain
 				.withArgs(1, "domain.com")
 				.resolves({
@@ -290,12 +294,14 @@ describe('OrganisationalUnitService tests', () => {
 						domain: "domain.com",
 						id: 1
 					},
-					updatedChildOrganisationIds: [],
+					updatedChildOrganisationIds: [2],
 					skippedChildOrganisationIds: []
 				})
 			const result = await organisationalUnitService.addDomain(1, "domain.com")
 			expect(organisationalUnitCache.setMultiple).to.be.calledOnce
-			expect(result.doesDomainExist("domain.com")).to.be.true
+			expect(result.organisationalUnit.doesDomainExist("domain.com")).to.be.true
+			expect(result.childOrgsUpdatedCount).to.eql(1)
+			expect(result.domain).to.eql("domain.com")
 		})
 	})
 })

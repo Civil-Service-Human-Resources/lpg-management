@@ -41,15 +41,13 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 			let organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
 			if (organisationalUnit.doesDomainExist(request.body.domainToAdd)) {
 				const error = {fields: {domainToAdd: ['domains.validation.domains.alreadyExists']}, size: 1}
-				response.render('page/organisation/view-domains', {
+				return response.render('page/organisation/view-domains', {
 					organisationalUnit, errors: error
 				})
 			}
 			const domainStr: string = response.locals.input.domainToAdd
-			organisationalUnit = await this.organisationalUnitService.addDomain(organisationalUnit.id, domainStr)
-			response.render('page/organisation/view-domains', {
-				organisationalUnit
-			})
+			const domainAddedSuccess = await this.organisationalUnitService.addDomain(organisationalUnit.id, domainStr)
+			return response.render('page/organisation/view-domains', { domainAddedSuccess, organisationalUnit: domainAddedSuccess.organisationalUnit })
 		}
 	}
 

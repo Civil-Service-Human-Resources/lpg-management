@@ -9,6 +9,7 @@ import { OrganisationalUnitTypeAhead } from '../model/organisationalUnitTypeAhea
 import { OrganisationalUnitCache } from '../organisationalUnitCache';
 import { OrganisationalUnitTypeaheadCache } from '../organisationalUnitTypeaheadCache';
 import {Domain} from '../model/domain'
+import {DomainAddedSuccess} from '../model/page/domainAddedSuccess'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
@@ -173,7 +174,7 @@ export class OrganisationalUnitService {
 		}
 	}
 
-	async addDomain(organisationalUnitId: number, domainString: string): Promise<OrganisationalUnit> {
+	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainAddedSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
 		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
 		let parentOrg = await this.getOrganisation(organisationalUnitId)
@@ -185,6 +186,10 @@ export class OrganisationalUnitService {
 					this.logger.info(`Successfully added domain to ${response.updatedChildOrganisationIds.length} child organisations`)
 				})
 		}
-		return parentOrg
+		return {
+			organisationalUnit: parentOrg,
+			domain: domainString,
+			childOrgsUpdatedCount: response.updatedChildOrganisationIds.length
+		}
 	}
 }

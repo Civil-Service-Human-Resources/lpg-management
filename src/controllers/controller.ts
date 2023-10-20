@@ -29,8 +29,10 @@ export abstract class Controller {
 	public buildRouter = (): Router => {
 		this.logger.debug(`Registering controller '${this.controllerName}'`)
 		const controllerMiddleware = this.getControllerMiddleware()
-		this.logger.debug(`Registering ${controllerMiddleware.length} controller middleware`)
-		this.router.use(controllerMiddleware)
+		if (controllerMiddleware.length > 0) {
+			this.logger.debug(`Registering ${controllerMiddleware.length} controller middleware`)
+			this.router.use(controllerMiddleware)
+		}
 		const controllerRoutes = this.getRoutes()
 		this.logger.debug(`Registering ${controllerRoutes.length} controller routes`)
 		for (const route of controllerRoutes) {

@@ -48,7 +48,7 @@ export const postRequest = <T> (path: string,
 									  isAsync: boolean = true): Route => {
 	return basicRequest(path, Method.POST, handler,
 		[
-			validateEndpoint(validationOptions),
+			asyncHandler(validateEndpoint(validationOptions)),
 			...additionalMiddleware
 		], isAsync)
 }
