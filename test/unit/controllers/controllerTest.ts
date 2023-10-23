@@ -1,6 +1,6 @@
 import {Controller} from '../../../src/controllers/controller'
 import {NextFunction, Request, Response} from 'express'
-import {getRequest, postRequest, Route} from '../../../src/controllers/route'
+import {getRequest, postRequestWithBody, Route} from '../../../src/controllers/route'
 import {BehaviourOnError} from '../../../src/validators/validatorMiddleware'
 import {expect} from 'chai'
 import * as express from 'express'
@@ -19,7 +19,7 @@ class TestController extends Controller {
 	protected getRoutes(): Route[] {
 		return [
 			getRequest("/get",() => {}),
-			postRequest("/post", (req, res, next) => {
+			postRequestWithBody("/post", (req, res, next) => {
 				console.log("POST")
 				res.send(200)
 			},{

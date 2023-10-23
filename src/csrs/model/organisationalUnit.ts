@@ -64,17 +64,25 @@ export class OrganisationalUnit implements CacheableObject {
 		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
 	}
 
+	sortDomainsByName() {
+		this.domains.sort((a, b) => {
+			return (a.domain < b.domain) ? -1 : 1
+		})
+	}
+
 	insertAndSortDomain(domain: Domain) {
-		if (this.domains.find(d => d.domain === domain.domain) === undefined) {
+		if (!this.doesDomainExist(domain.domain)) {
 			this.domains.push(domain)
-			this.domains.sort((a, b) => {
-				return (a.domain < b.domain) ? -1 : 1
-			})
+			this.sortDomainsByName()
 		}
 	}
 
 	doesDomainExist(domain: string) {
-		return Array.from(this.domains).find(d => d.domain === domain) !== undefined
+		return this.domains.find(d => d.domain === domain) !== undefined
 	}
 
+	removeAndSortDomain(domainId: number) {
+		this.domains = this.domains.filter(d => d.id !== domainId )
+		this.sortDomainsByName()
+	}
 }

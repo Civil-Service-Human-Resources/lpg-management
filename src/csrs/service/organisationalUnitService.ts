@@ -8,8 +8,7 @@ import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageMode
 import { OrganisationalUnitTypeAhead } from '../model/organisationalUnitTypeAhead';
 import { OrganisationalUnitCache } from '../organisationalUnitCache';
 import { OrganisationalUnitTypeaheadCache } from '../organisationalUnitTypeaheadCache';
-import {Domain} from '../model/domain'
-import {DomainAddedSuccess} from '../model/page/domainAddedSuccess'
+import {DomainUpdate, DomainUpdateSuccess} from '../model/page/domainUpdateSuccess'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
@@ -151,8 +150,7 @@ export class OrganisationalUnitService {
 		return typeahead
 	}
 
-	public async appendDomainToMultipleOrgs(orgIds: number[], domain: Domain) {
-		this.logger.info(`Adding ${domain.domain} to ${orgIds.length} orgs`)
+	private async alterMultipleOrgsInCache(orgIds: number[], update: (org: OrganisationalUnit) => void) {
 		const orgsToFetch: number[] = []
 		const updateBatch: OrganisationalUnit[] = []
 		await Promise.all(orgIds.map(
@@ -161,7 +159,7 @@ export class OrganisationalUnitService {
 				if (org === undefined) {
 					orgsToFetch.push(id)
 				} else {
-					org.insertAndSortDomain(domain)
+					update(org)
 					updateBatch.push(org)
 				}
 			}
@@ -174,22 +172,46 @@ export class OrganisationalUnitService {
 		}
 	}
 
-	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainAddedSuccess> {
+	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
 		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
 		let parentOrg = await this.getOrganisation(organisationalUnitId)
 		parentOrg.insertAndSortDomain(response.domain)
 		await this.refreshOrgs([parentOrg])
 		if (response.updatedChildOrganisationIds.length > 0) {
-			this.appendDomainToMultipleOrgs(response.updatedChildOrganisationIds, response.domain)
-				.then(() => {
-					this.logger.info(`Successfully added domain to ${response.updatedChildOrganisationIds.length} child organisations`)
-				})
+			this.alterMultipleOrgsInCache(response.updatedChildOrganisationIds, (org: OrganisationalUnit) => {
+				org.insertAndSortDomain(response.domain)
+			})
+			.then(() => {
+				this.logger.info(`Successfully added domain to ${response.updatedChildOrganisationIds.length} child organisations`)
+			})
 		}
 		return {
 			organisationalUnit: parentOrg,
 			domain: domainString,
-			childOrgsUpdatedCount: response.updatedChildOrganisationIds.length
+			childOrgsUpdatedCount: response.updatedChildOrganisationIds.length,
+			update: DomainUpdate.ADDED
+		}
+	}
+
+	async removeDomain(organisationalUnitId: number, domainId: number): Promise<DomainUpdateSuccess> {
+		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}`)
+		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId)
+		let parentOrg = await this.getOrganisation(organisationalUnitId)
+		parentOrg.removeAndSortDomain(domainId)
+		await this.refreshOrgs([parentOrg])
+		if (response.updatedChildOrganisationIds.length > 0) {
+			this.alterMultipleOrgsInCache(response.updatedChildOrganisationIds, (org: OrganisationalUnit) => {
+				org.removeAndSortDomain(domainId)
+			}).then(() => {
+				this.logger.info(`Successfully removed domain from ${response.updatedChildOrganisationIds.length} child organisations`)
+			})
+		}
+		return {
+			organisationalUnit: parentOrg,
+			domain: response.domain.domain,
+			childOrgsUpdatedCount: response.updatedChildOrganisationIds.length,
+			update: DomainUpdate.REMOVED
 		}
 	}
 }

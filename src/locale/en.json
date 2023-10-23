@@ -29,7 +29,8 @@
 	},
 	"domains": {
 		"title": {
-			"addDomain": "Edit email domains"
+			"addDomain": "Edit email domains",
+			"removeDomain": "Remove an email domain"
 		},
 		"text": {
 			"domains": "Domains"

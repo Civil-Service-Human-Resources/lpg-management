@@ -36,7 +36,7 @@ export abstract class Controller {
 		const controllerRoutes = this.getRoutes()
 		this.logger.debug(`Registering ${controllerRoutes.length} controller routes`)
 		for (const route of controllerRoutes) {
-			this.logger.debug(`Registering endpoint ${this.path}${route.path}`)
+			this.logger.debug(`Registering endpoint ${route.method} ${this.path}${route.path}`)
 			switch (route.method) {
 				case 'GET':
 					this.router.get(route.path, route.localMiddleware, route.handler);

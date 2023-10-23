@@ -1,0 +1,26 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.organisations.title.removeAnOrganisation }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations/" + organisationalUnit.id + "/domains" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.domains.title.removeDomain }}</h1>
+            <p class="govuk-body">Are you sure you want to remove the domain <strong>{{ domain.domain }}</strong> from the organisation <strong>{{ organisationalUnit.name }}</strong>?</p>
+            <p class="govuk-body">By deleting this domain, you will delete it from any associated sub-organisations.</p>
+            <p class="govuk-body">Users who have a {{ domain.domain }} email address will be prevented from selecting these organisations.</p>
+            <form action="/content-management/organisations/{{ organisationalUnit.id }}/domains/{{ domain.id }}/delete" method="post">
+                {{ govukButton({
+                    text: "Remove organisation",
+                    classes: "button-red"
+                }) }}
+            </form>
+            <a class="cancel-button govuk-link" href="/content-management/organisations/{{ organisationalUnit.id }}/domains">Cancel</a>
+        </div>
+    </div>
+{% endblock %}
