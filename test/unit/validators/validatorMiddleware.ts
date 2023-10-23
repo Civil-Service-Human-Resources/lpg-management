@@ -1,8 +1,12 @@
 import {IsNotEmpty} from 'class-validator'
 import {BehaviourOnError, validateEndpoint} from '../../../src/validators/validatorMiddleware'
-import {NextFunction} from 'express'
+import {NextFunction, Request, Response} from 'express'
+import {mockReq, mockRes} from 'sinon-express-mock'
 import {expect} from 'chai'
-// import {expect} from 'chai'
+import * as sinon from 'sinon'
+import * as chai from 'chai'
+import * as sinonChai from 'sinon-chai'
+import {beforeEach} from 'mocha'
 
 class TestObject {
 	@IsNotEmpty({
@@ -11,33 +15,26 @@ class TestObject {
 	public value: String
 }
 
+chai.use(sinonChai)
+
 describe('Validation middleware tests', () => {
-	let redirectVal = ""
-	let renderVal = ""
-	let statusVal = 0
-	let req = {
-		originalUrl: '/request',
-		session: {
-			sessionFlash: {
-				errors: {}
-			},
-			save: (cb: () => {}) => {cb()}
-		},
-		body: {},
-		params: {}
-	}
-	let res = {
-		locals: {
-			input: {}
-		},
-		redirect: (redirect: string) => {redirectVal = redirect},
-		render: (template: string) => {renderVal = template},
-		status: (status: number) => {statusVal = status}
-	}
-	let next: NextFunction = () => {}
+	let request: Request
+	let response: Response
+	let next: NextFunction
+
+	beforeEach(() => {
+		request = mockReq()
+		response = mockRes()
+		request.session!.save = callback => {
+			callback(undefined)
+		}
+		request.session!.sessionFlash = {}
+		next = sinon.stub()
+	})
+
 	it('Should validate an object and redirect', async () => {
-		req.body = {value: ""}
-		req.params = {
+		request.body = {value: ""}
+		request.params = {
 			paramOne: 'paramOneVal'
 		}
 		const func = validateEndpoint({
@@ -47,31 +44,32 @@ describe('Validation middleware tests', () => {
 				path: '/:paramOne'
 			}
 		})
-		await func(req as any, res as any, next)
-		const errors: any = req.session!.sessionFlash.errors
+		await func(request, response, next)
+		const errors: any = request.session!.sessionFlash.errors
 		expect(errors.fields.value[0]).to.eql('notEmpty')
-		expect(redirectVal).to.eql('/paramOneVal')
+		expect(response.redirect).to.have.been.calledOnceWith('/paramOneVal')
 	})
 
 	it('Should validate an object and redirect to the original request URL', async () => {
-		req.body = {value: ""}
-		req.params = {
+		request.body = {value: ""}
+		request.params = {
 			paramOne: 'paramOneVal'
 		}
+		request.originalUrl = '/request'
 		const func = validateEndpoint({
 			dtoClass: TestObject,
 			onError: {
 				behaviour: BehaviourOnError.REDIRECT
 			}
 		})
-		await func(req as any, res as any, next)
-		const errors: any = req.session!.sessionFlash.errors
+		await func(request, response, next)
+		const errors: any = request.session!.sessionFlash.errors
 		expect(errors.fields.value[0]).to.eql('notEmpty')
-		expect(redirectVal).to.eql('/request')
+		expect(response.redirect).to.have.been.calledOnceWith('/request')
 	})
 
 	it('Should validate an object and render a template', async () => {
-		req.body = {value: ""}
+		request.body = {value: ""}
 		const func = validateEndpoint({
 			dtoClass: TestObject,
 			onError: {
@@ -79,15 +77,13 @@ describe('Validation middleware tests', () => {
 				path: 'path'
 			}
 		})
-		await func(req as any, res as any, next)
-		const errors: any = req.session!.sessionFlash.errors
-		expect(errors.fields.value[0]).to.eql('notEmpty')
-		expect(renderVal).to.eql('path')
-		expect(statusVal).to.eql(400)
+		await func(request, response, next)
+		expect(response.render).to.have.been.calledOnceWith('path')
+		expect(response.status).to.have.been.calledOnceWith(400)
 	})
 
 	it('Should pass the request on when the object is valid', async () => {
-		req.body = {value: "stringValue"}
+		request.body = {value: "stringValue"}
 		const func = validateEndpoint({
 			dtoClass: TestObject,
 			onError: {
@@ -95,8 +91,8 @@ describe('Validation middleware tests', () => {
 				path: 'path'
 			}
 		})
-		await func(req as any, res as any, next)
-		const input: any = res.locals.input
+		await func(request, response, next)
+		const input: any = response.locals.input
 		expect(input.value).to.eql("stringValue")
 	})
 })
