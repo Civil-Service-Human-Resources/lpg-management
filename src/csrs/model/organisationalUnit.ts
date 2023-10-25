@@ -2,6 +2,7 @@ import {AgencyToken} from './agencyToken'
 import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 import {Domain} from './domain'
 import {CacheableObject} from 'lib/cacheableObject'
+import {Type} from 'class-transformer'
 
 export class OrganisationalUnit implements CacheableObject {
     getId(): string {
@@ -24,12 +25,15 @@ export class OrganisationalUnit implements CacheableObject {
 
 	formattedName?: string
 
+	@Type(() => OrganisationalUnit)
 	parent?: OrganisationalUnit
 
 	uri: string
 
+	@Type(() => AgencyToken)
 	agencyToken?: AgencyToken
 
+	@Type(() => Domain)
 	domains: Domain[] = []
 
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
