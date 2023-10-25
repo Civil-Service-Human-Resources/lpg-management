@@ -65,7 +65,7 @@ export class OrganisationalUnit implements CacheableObject {
 	}
 
 	insertAndSortDomain(domain: Domain) {
-		if (this.domains.find(d => d.domain === domain.domain) === undefined) {
+		if (!this.doesDomainExist(domain.domain)) {
 			this.domains.push(domain)
 			this.domains.sort((a, b) => {
 				return (a.domain < b.domain) ? -1 : 1
@@ -74,7 +74,7 @@ export class OrganisationalUnit implements CacheableObject {
 	}
 
 	doesDomainExist(domain: string) {
-		return Array.from(this.domains).find(d => d.domain === domain) !== undefined
+		return this.domains.find(d => d.domain === domain) !== undefined
 	}
 
 }
