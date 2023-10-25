@@ -1,4 +1,5 @@
 {% from "button/macro.njk" import govukButton %}
+{% from "radios/macro.njk" import govukRadios %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -12,11 +13,34 @@
         <div class="govuk-grid-column-full">
             <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.domains.title.removeDomain }}</h1>
             <p class="govuk-body">Are you sure you want to remove the domain <strong>{{ domain.domain }}</strong> from the organisation <strong>{{ organisationalUnit.name }}</strong>?</p>
-            <p class="govuk-body">By deleting this domain, you will delete it from any associated sub-organisations.</p>
-            <p class="govuk-body">Users who have a {{ domain.domain }} email address will be prevented from selecting these organisations.</p>
+            <p class="govuk-body">Users who have a {{ domain.domain }} email address will be prevented from selecting affected organisations.</p>
+            {% for child in organisationalUnit.children %}
+                Hello
+            {% endfor %}
             <form action="/content-management/organisations/{{ organisationalUnit.id }}/domains/{{ domain.id }}/delete" method="post">
+                {{ govukRadios({
+                    idPrefix: "removeFromSubOrgs",
+                    name: "removeFromSubOrgs",
+                    fieldset: {
+                        legend: {
+                            text: "Remove domain from child organisations?",
+                            classes: "govuk-fieldset__legend--s "
+                        }
+                    },
+                    items: [
+                        {
+                            value: "false",
+                            text: "No, remove from just this organisation",
+                            checked: true
+                        },
+                        {
+                            value: "true",
+                            text: "Yes, remove from this organisation and all child organisations"
+                        }
+                    ]
+                }) }}
                 {{ govukButton({
-                    text: "Remove organisation",
+                    text: "Remove domain",
                     classes: "button-red"
                 }) }}
             </form>

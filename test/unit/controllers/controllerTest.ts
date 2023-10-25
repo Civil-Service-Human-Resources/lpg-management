@@ -15,7 +15,6 @@ class TestController extends Controller {
 		return []
 	}
 
-
 	protected getRoutes(): Route[] {
 		return [
 			getRequest("/get",() => {}),

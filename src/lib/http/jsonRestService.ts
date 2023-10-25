@@ -98,6 +98,12 @@ export class JsonRestService {
 		return await this._http.delete(path, config)
 	}
 
+	async deleteWithAuthAndConfig(path: string, config: any) {
+		const headers: any = this.getHeaders()
+		config.headers = headers.headers
+		return await this._http.delete(path, config)
+	}
+
 	async delete(path: string) {
 		return await this._http.delete(path, this.getHeaders())
 	}

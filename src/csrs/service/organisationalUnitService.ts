@@ -194,9 +194,10 @@ export class OrganisationalUnitService {
 		}
 	}
 
-	async removeDomain(organisationalUnitId: number, domainId: number): Promise<DomainUpdateSuccess> {
+	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}`)
-		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId)
+		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId,
+			{ includeSubOrgs })
 		let parentOrg = await this.getOrganisation(organisationalUnitId)
 		parentOrg.removeAndSortDomain(domainId)
 		await this.refreshOrgs([parentOrg])
