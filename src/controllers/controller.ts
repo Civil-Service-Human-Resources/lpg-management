@@ -22,7 +22,9 @@ export abstract class Controller {
 		return this._path
 	}
 
-	protected abstract getRoutes(): Route[]
+	protected getRoutes(): Route[] {
+		return []
+	}
 
 	protected getRequiredRoles(): Role[] {
 		return []
