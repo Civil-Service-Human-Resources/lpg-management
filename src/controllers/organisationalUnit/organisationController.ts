@@ -1,26 +1,24 @@
 import {NextFunction, Request, Response} from 'express'
-import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
+import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import * as asyncHandler from 'express-async-handler'
-import {Validator} from '../learning-catalogue/validator/validator'
-import {Validate} from './formValidator'
-import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
-import { OrganisationalUnitPageModel } from '../csrs/model/organisationalUnitPageModel'
-import { OrganisationalUnitTypeAhead } from '../csrs/model/organisationalUnitTypeAhead'
-import { OrganisationalUnitPageModelFactory } from '../csrs/model/organisationalUnitPageModelFactory'
+import {Validator} from '../../learning-catalogue/validator/validator'
+import {Validate} from '../formValidator'
+import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
+import { OrganisationalUnitPageModel } from '../../csrs/model/organisationalUnitPageModel'
+import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
+import { OrganisationalUnitPageModelFactory } from '../../csrs/model/organisationalUnitPageModelFactory'
 import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
+import {FormController} from '../formController'
 const { xss } = require('express-xss-sanitizer')
 
 
-export class OrganisationController extends OrganisationalUnitControllerBase<OrganisationalUnitPageModel> {
+export class OrganisationController extends OrganisationalUnitControllerBase implements FormController {
 	constructor(
-		validator: Validator<OrganisationalUnitPageModel>,
+		public validator: Validator<OrganisationalUnitPageModel>,
 		private organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory,
 		organisationalUnitService: OrganisationalUnitService) {
-		super(validator, organisationalUnitService)
-	}
-
-	protected getControllerName(): string {
-		return 'OrganisationController'
+		super('OrganisationController', organisationalUnitService)
+		this.setRouterPaths()
 	}
 
 	/* istanbul ignore next */

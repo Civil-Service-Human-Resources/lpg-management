@@ -5,7 +5,7 @@ import { Logger } from 'winston'
 import { getLogger } from '../utils/logger'
 
 export abstract class Cache<T> {
-	private logger: Logger
+	protected logger: Logger
 	constructor(protected readonly redisClient: RedisClient, protected readonly defaultTTL: number) {
 		this.logger = getLogger('Cache')
 	}

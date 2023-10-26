@@ -27,6 +27,23 @@
 			}
 		}
 	},
+	"domains": {
+		"title": {
+			"addDomain": "Edit email domains"
+		},
+		"text": {
+			"domains": "Domains"
+		},
+		"validation": {
+			"domains": {
+				"alreadyExists": "Domain already listed",
+				"empty": "Domain is required",
+				"invalidFormat": "Enter domain in the correct format, for example: 'example.gov.uk'",
+				"invalid": "Invalid domain",
+				"hint":"For example: 'example.gov.uk'"
+			}
+		}
+	},
 	"audience": {
 		"pageTitle": {
 			"addName": "Add audience name",

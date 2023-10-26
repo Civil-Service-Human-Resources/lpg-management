@@ -67,13 +67,16 @@ export class OrganisationalUnitTypeAhead {
 		}
 	}
 
-	public upsertAndSort(organisationalUnit: OrganisationalUnit) {
-		const index = this.typeahead.findIndex(o => organisationalUnit.id === o.id)
-		if (index > -1) {
-			this.typeahead[index] = organisationalUnit
-		} else {
-			this.typeahead.push(organisationalUnit)
-		}
+	public upsertAndSort(organisationalUnits: OrganisationalUnit[]) {
+		 const indexMap: Map<number, OrganisationalUnit> = new Map(organisationalUnits.map(o =>
+		 [this.typeahead.findIndex(typeaheadOrg => o.id === typeaheadOrg.id), o]))
+		indexMap.forEach((organisationalUnit, index) => {
+			if (index > -1) {
+				this.typeahead[index] = organisationalUnit
+			} else {
+				this.typeahead.push(organisationalUnit)
+			}
+		})
 		this.resetFormattedNameAndSort()
 	}
 

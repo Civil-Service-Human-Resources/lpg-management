@@ -1,8 +1,13 @@
 import {AgencyToken} from './agencyToken'
 import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 import {Domain} from './domain'
+import {CacheableObject} from 'lib/cacheableObject'
 
-export class OrganisationalUnit {
+export class OrganisationalUnit implements CacheableObject {
+    getId(): string {
+        return this.id.toString()
+    }
+
 	id: number
 
 	name: string
@@ -57,6 +62,19 @@ export class OrganisationalUnit {
 
 	formatNameWithAbbrev() {
 		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
+	}
+
+	insertAndSortDomain(domain: Domain) {
+		if (!this.doesDomainExist(domain.domain)) {
+			this.domains.push(domain)
+			this.domains.sort((a, b) => {
+				return (a.domain < b.domain) ? -1 : 1
+			})
+		}
+	}
+
+	doesDomainExist(domain: string) {
+		return this.domains.find(d => d.domain === domain) !== undefined
 	}
 
 }
