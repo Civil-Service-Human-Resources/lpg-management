@@ -28,9 +28,6 @@ middleware.forEach(m => {
 	m.applyMiddleware(app)
 })
 
-
-// Default identity
-
 export const getApp = () => {
 	return app
 }
