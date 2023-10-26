@@ -36,11 +36,11 @@ export class LearnerRecord {
 			throw new Error(`An error occurred when trying to patch the module record: ${e}`)
 		}
 	}
-	
+
 	async createModuleRecord(moduleRecord: ModuleRecordInput): Promise<ModuleRecord> {
 		try {
 			this.logger.debug(`Creating module record for module ID ${moduleRecord.moduleId} and user ID ${moduleRecord.userId}`)
-			const res: ModuleRecord = await this.restService.post('/module_records', moduleRecord)
+			const res: ModuleRecord = await this._restService.post('/module_records', moduleRecord)
 			return plainToInstance(ModuleRecord, res)
 		} catch (e) {
 			throw new Error(`An error occurred when trying to create the module record: ${e}`)
@@ -56,21 +56,21 @@ export class LearnerRecord {
 			throw new Error(`An error occurred when trying to patch the course record: ${e}`)
 		}
 	}
-	
+
 	async createCourseRecord(courseRecord: CourseRecordInput) {
 		try {
 			this.logger.debug(`Creating course record for course ID ${courseRecord.courseId}`)
-			const res: CourseRecord = await this.restService.post('/course_records', courseRecord)
+			const res: CourseRecord = await this._restService.post('/course_records', courseRecord)
 			return plainToInstance(CourseRecord, res)
 		} catch (e) {
 			throw new Error(`An error occurred when trying to create the course record: ${e}`)
 		}
 	}
-	
+
 	async getCourseRecord(courseId: string, userId: string): Promise<CourseRecord|undefined> {
 		try {
 			this.logger.debug(`Getting course record for course ID ${courseId} and user ID ${userId}`)
-			const data: CourseRecordResponse = await this._restService.get(`/course_records?courseId=${courseId}&userId=${userId}`)
+			const data: CourseRecordResponse = await this._restService.get(`/course_records?courseIds=${courseId}&userId=${userId}`)
 			const courseRecords = plainToInstance(CourseRecordResponse, data).courseRecords
 			if (courseRecords.length > 1) {
 				this.logger.warn(`Course record for course ID ${courseId} and user ID ${userId} returned a result set greater than 1`)
