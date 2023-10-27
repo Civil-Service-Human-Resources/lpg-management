@@ -85,8 +85,7 @@ export class OrganisationalUnit implements CacheableObject {
 		return this.domains.find(d => d.domain === domain) !== undefined
 	}
 
-	removeAndSortDomain(domainId: number) {
+	removeDomain(domainId: number) {
 		this.domains = this.domains.filter(d => d.id !== domainId )
-		this.sortDomainsByName()
 	}
 }

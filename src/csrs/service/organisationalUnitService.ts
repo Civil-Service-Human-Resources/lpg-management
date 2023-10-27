@@ -199,11 +199,11 @@ export class OrganisationalUnitService {
 		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId,
 			{ includeSubOrgs })
 		let parentOrg = await this.getOrganisation(organisationalUnitId)
-		parentOrg.removeAndSortDomain(domainId)
+		parentOrg.removeDomain(domainId)
 		await this.refreshOrgs([parentOrg])
 		if (response.updatedChildOrganisationIds.length > 0) {
 			this.alterMultipleOrgsInCache(response.updatedChildOrganisationIds, (org: OrganisationalUnit) => {
-				org.removeAndSortDomain(domainId)
+				org.removeDomain(domainId)
 			}).then(() => {
 				this.logger.info(`Successfully removed domain from ${response.updatedChildOrganisationIds.length} child organisations`)
 			})
