@@ -1,9 +1,10 @@
 import { plainToClass } from 'class-transformer';
 
-import { Cache } from '../lib/redisCache';
 import { OrganisationalUnit } from './model/organisationalUnit';
+import {CacheableObjectCache} from '../lib/cacheableObjectCache'
 
-export class OrganisationalUnitCache extends Cache<OrganisationalUnit> {
+
+export class OrganisationalUnitCache extends CacheableObjectCache<OrganisationalUnit> {
 
     getBaseKey(): string {
         return "organisationalUnits"

@@ -99,6 +99,7 @@ export class ModuleFactory {
 		elearning: (data: any) => {
 			const module = <ELearningModule>ModuleFactory.defaultCreate(new ELearningModule(), data)
 			module.startPage = data.startPage
+			module.mediaId = data.mediaId
 			module.url = data.url
 			module.associatedLearning = data.associatedLearning
 			return module

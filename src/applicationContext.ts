@@ -51,7 +51,7 @@ import {DateRange} from './learning-catalogue/model/dateRange'
 import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFactory'
 import {LinkModule} from './learning-catalogue/model/linkModule'
 import {SearchController} from './controllers/searchController'
-import {OrganisationController} from './controllers/organisationController'
+import {OrganisationController} from './controllers/organisationalUnit/organisationController'
 import {OrganisationalUnitPageModelFactory} from './csrs/model/organisationalUnitPageModelFactory'
 import {LearnerRecord} from './learner-record'
 import {LearnerRecordConfig} from './learner-record/learnerRecordConfig'
@@ -74,7 +74,7 @@ import {Question} from "./controllers/skills/question"
 import {AgencyToken} from './csrs/model/agencyToken'
 import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
-import {AgencyTokenController} from './controllers/agencyTokenController'
+import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenController'
 import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
 import { ActionWorkerService } from './learner-record/workers/actionWorkerService'
 import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
@@ -83,8 +83,15 @@ import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
 import { createClient } from 'redis'
 import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
+import {CslServiceConfig} from './csl-service/cslServiceConfig'
+import {CslServiceClient} from './csl-service/client'
+import {OrganisationalUnitDomainsController} from './controllers/organisationalUnit/organisationalUnitDomainsController'
+import {Controller} from './controllers/controller'
 
 export class ApplicationContext {
+
+	controllers: Controller[] = []
+
 	actionWorkerService: ActionWorkerService
 	identityService: IdentityService
 	auth: Auth
@@ -135,6 +142,8 @@ export class ApplicationContext {
 	dateRangeFactory: DateRangeFactory
 	dateStartEndFactory: DateStartEndFactory
 	dateRangeValidator: Validator<DateRange>
+	cslServiceConfig: CslServiceConfig
+	cslService: CslServiceClient
 	learnerRecord: LearnerRecord
 	learnerRecordConfig: LearnerRecordConfig
 	inviteFactory: InviteFactory
@@ -167,6 +176,9 @@ export class ApplicationContext {
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
+	@EnvValue('FEEDBACK_URL')
+	public feedbackUrl: String
+
 	constructor() {
 		this.axiosInstance = axios.create({
 			headers: {
@@ -191,9 +203,12 @@ export class ApplicationContext {
 
 		this.identityConfig = new IdentityConfig(config.AUTHENTICATION.authenticationServiceUrl, config.AUTHENTICATION.timeout)
 
+		this.cslServiceConfig = new CslServiceConfig(config.CSL_SERVICE.url, config.CSL_SERVICE.timeout)
+		this.cslService = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+
 		this.learningCatalogueConfig = new LearningCatalogueConfig(config.COURSE_CATALOGUE.url, config.COURSE_CATALOGUE.timeout)
 
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslService)
 
 		this.courseFactory = new CourseFactory()
 
@@ -301,7 +316,7 @@ export class ApplicationContext {
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
-		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService)
+		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService, this.cslService)
 		this.actionWorkerService.init()
 
 		this.eventController = new EventController(
@@ -349,6 +364,10 @@ export class ApplicationContext {
 			this.agencyTokenFactory,
 		)
 
+		this.controllers.push(new OrganisationalUnitDomainsController(
+			this.organisationalUnitService
+		))
+
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
 		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator)
@@ -361,6 +380,7 @@ export class ApplicationContext {
 		return (req: Request, res: Response, next: NextFunction) => {
 			res.locals.originalUrl = req.originalUrl
 			res.locals.lpgUiUrl = this.lpgUiUrl
+			res.locals.feedbackUrl = this.feedbackUrl
 			res.locals.sessionFlash = req.session!.sessionFlash
 
 			delete req.session!.sessionFlash

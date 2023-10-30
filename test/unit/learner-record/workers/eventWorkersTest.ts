@@ -23,6 +23,7 @@ import {DateRange} from '../../../../src/learning-catalogue/model/dateRange'
 import {Event} from '../../../../src/learning-catalogue/model/event'
 import {FaceToFaceModule} from '../../../../src/learning-catalogue/model/faceToFaceModule'
 import {JsonPatchInterface} from '../../../../src/models/JsonPatch'
+import {CslServiceClient} from '../../../../src/csl-service/client'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -87,6 +88,9 @@ learnerRecordAPI.createCourseRecord.resolves()
 learnerRecordAPI.createModuleRecord.resolves()
 learnerRecordAPI.patchCourseRecord.resolves()
 learnerRecordAPI.patchModuleRecord.resolves()
+
+const cslService = sinon.createStubInstance(CslServiceClient)
+cslService.clearCourseRecordCache.resolves()
 
 const genericCourseRecord = (required: boolean, recordState?: RecordState) => {
 	return new CourseRecord(testCourseID, testUserID, recordState, [], testCourseTitle, required)
@@ -162,6 +166,7 @@ describe('Tests for the event action workers', () => {
 		learnerRecordAPI.createModuleRecord.reset()
 		learnerRecordAPI.patchCourseRecord.reset()
 		learnerRecordAPI.patchModuleRecord.reset()
+		cslService.clearCourseRecordCache.reset()
 	})
 
 	describe('Tests for the approve booking action worker', () => {
@@ -169,7 +174,7 @@ describe('Tests for the event action workers', () => {
 
 		beforeEach(() => {
 			worker = new ApproveBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
+                organisationalUnitService as any, learnerRecordAPI as any, cslService as any)
 		})
 
 		it('Should correctly create a course record', async () => {
@@ -178,6 +183,7 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateCourseRecord(true, RecordState.Approved, RecordState.Approved)
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should correctly create a module record', async () => {
@@ -185,6 +191,7 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateModuleRecord(RecordState.Approved)
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should correctly update the course record when the state is null', async () => {
@@ -192,9 +199,9 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchCourseRecord([
-				{op: 'replace', path: '/lastUpdated', value: testDateAsStr},
 				{op: 'replace', path: '/state', value: 'APPROVED'},
 			])
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should NOT update the course record when the state is in progress', async () => {
@@ -202,6 +209,7 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			expect(learnerRecordAPI.createCourseRecord.notCalled).to.be.true
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should correctly update the module record when the state is null', async () => {
@@ -217,8 +225,8 @@ describe('Tests for the event action workers', () => {
 				{op: 'remove', path: '/completionDate', value: undefined},
 				{op: 'replace', path: '/eventId', value: testEventID},
 				{op: 'replace', path: '/eventDate', value: testDateAsStr},
-				{op: 'replace', path: '/updatedAt', value: testDateAsStr},
 			])
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 	})
 
@@ -227,13 +235,14 @@ describe('Tests for the event action workers', () => {
 
 		beforeEach(() => {
 			worker = new CancelBookingActionWorker(learningCatalogue as any, civilServantRegistry as any,
-                organisationalUnitService as any, learnerRecordAPI as any)
+                organisationalUnitService as any, learnerRecordAPI as any, cslService as any)
 		})
 		it('Should correctly create a course record', async () => {
 			learnerRecordAPI.getCourseRecord.resolves(undefined)
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateCourseRecord(true, RecordState.Unregistered, RecordState.Unregistered)
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should correctly create a module record', async () => {
@@ -241,6 +250,7 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertCreateModuleRecord(RecordState.Unregistered)
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should correctly update the course record when the state is null', async () => {
@@ -248,9 +258,9 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			assertPatchCourseRecord([
-				{op: 'replace', path: '/lastUpdated', value: testDateAsStr},
 				{op: 'replace', path: '/state', value: 'UNREGISTERED'},
 			])
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should NOT update the course record when the state is in progress', async () => {
@@ -258,6 +268,7 @@ describe('Tests for the event action workers', () => {
 			await worker.applyActionToLearnerRecord(testUserID, testCourseID, testModuleID, testEventID)
 
 			expect(learnerRecordAPI.createCourseRecord.notCalled).to.be.true
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 
 		it('Should correctly update the module record when the state is null', async () => {
@@ -271,9 +282,9 @@ describe('Tests for the event action workers', () => {
 				{op: 'remove', path: '/result', value: undefined},
 				{op: 'remove', path: '/score', value: undefined},
 				{op: 'remove', path: '/completionDate', value: undefined},
-				{op: 'replace', path: '/updatedAt', value: testDateAsStr},
 				{op: 'replace', path: '/bookingStatus', value: 'CANCELLED'},
 			])
+			assertOneCallAndGetArgs(cslService.clearCourseRecordCache)
 		})
 	})
 })

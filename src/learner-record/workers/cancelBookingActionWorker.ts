@@ -2,8 +2,8 @@ import { Course } from "../../learning-catalogue/model/course";
 import { Event } from "../../learning-catalogue/model/event";
 import { Module } from "../../learning-catalogue/model/module";
 import { CourseRecord } from "../model/courseRecord/courseRecord";
-import { setLastUpdated, setState } from "../model/factory/courseRecordPatchFactory";
-import { clearField, setBookingStatus, setUpdatedAt } from "../model/factory/moduleRecordPatchFactory";
+import { setState } from "../model/factory/courseRecordPatchFactory";
+import { clearField, setBookingStatus } from "../model/factory/moduleRecordPatchFactory";
 import { BookingStatus, ModuleRecord } from "../model/moduleRecord/moduleRecord";
 import { RecordState } from "../model/record";
 import { EventActionWorker } from "./eventActionWorker";
@@ -21,11 +21,9 @@ export class CancelBookingActionWorker extends EventActionWorker {
     }
 
     async updateCourseRecord(userId: string, courseRecord: CourseRecord): Promise<void> {
-        const patches = [setLastUpdated(new Date())]
         if (courseRecord.isNull() || !courseRecord.isInProgress()) {
-            patches.push(setState(RecordState.Unregistered))
+            await this.learnerRecordAPI.patchCourseRecord([setState(RecordState.Unregistered)], userId, courseRecord.courseId)
         }
-        await this.learnerRecordAPI.patchCourseRecord(patches, userId, courseRecord.courseId)
     }
 
     async updateModuleRecord(moduleRecord: ModuleRecord, event: Event): Promise<ModuleRecord> {
@@ -34,7 +32,6 @@ export class CancelBookingActionWorker extends EventActionWorker {
             clearField('result'),
             clearField('score'),
             clearField('completionDate'),
-            setUpdatedAt(new Date()),
             setBookingStatus(BookingStatus.CANCELLED)
         ]
         return await this.learnerRecordAPI.patchModuleRecord(patches, moduleRecord.id)
@@ -43,5 +40,5 @@ export class CancelBookingActionWorker extends EventActionWorker {
     protected getType(): WorkerAction {
 		return WorkerAction.CANCEL_BOOKING
 	}
-    
+
 }

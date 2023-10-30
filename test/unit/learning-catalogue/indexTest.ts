@@ -15,6 +15,7 @@ import {EntityService} from '../../../src/learning-catalogue/service/entityServi
 import {Auth} from '../../../src/identity/auth'
 import {Event} from '../../../src/learning-catalogue/model/event'
 import {Audience} from '../../../src/learning-catalogue/model/audience'
+import {CslServiceClient} from '../../../src/csl-service/client'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -27,6 +28,7 @@ describe('Learning Catalogue tests', () => {
 	let cancellationPolicyService: EntityService<CancellationPolicy>
 	let termsAndConditionsService: EntityService<TermsAndConditions>
 	let eventService: EntityService<Event>
+	let cslService: CslServiceClient
 
 	const config = new LearningCatalogueConfig('http://example.org', 60000)
 
@@ -40,8 +42,10 @@ describe('Learning Catalogue tests', () => {
 		learningProviderService = <EntityService<LearningProvider>>{}
 		cancellationPolicyService = <EntityService<CancellationPolicy>>{}
 		termsAndConditionsService = <EntityService<TermsAndConditions>>{}
+		cslService = <CslServiceClient>{}
+		cslService.clearCourseCache = sinon.stub()
 
-		learningCatalogue = new LearningCatalogue(config, {} as Auth)
+		learningCatalogue = new LearningCatalogue(config, {} as Auth, cslService)
 		learningCatalogue.courseService = courseService
 		learningCatalogue.moduleService = moduleService
 		learningCatalogue.eventService = eventService

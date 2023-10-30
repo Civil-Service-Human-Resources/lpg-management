@@ -6,12 +6,14 @@ import { ApproveBookingActionWorker } from "./approveBookingActionWorker";
 import { CancelBookingActionWorker } from "./cancelBookingActionWorker";
 import { EventActionWorker } from "./eventActionWorker";
 import { WorkerAction } from "./WorkerAction";
+import {CslServiceClient} from '../../csl-service/client'
 
 export class ActionWorkerService {
     constructor(private learningCatalogue: LearningCatalogue,
         private civilServantRegistry: CsrsService,
         private learnerRecordAPI: LearnerRecord,
-        private organisationalUnitService: OrganisationalUnitService
+        private organisationalUnitService: OrganisationalUnitService,
+        private cslService: CslServiceClient
         ) {}
 
     private workers: Map<WorkerAction, EventActionWorker>
@@ -21,12 +23,14 @@ export class ActionWorkerService {
         this.workers.set(WorkerAction.APPROVED_BOOKING, new ApproveBookingActionWorker(this.learningCatalogue,
             this.civilServantRegistry,
             this.organisationalUnitService,
-            this.learnerRecordAPI))
+            this.learnerRecordAPI,
+            this.cslService))
 
         this.workers.set(WorkerAction.CANCEL_BOOKING, new CancelBookingActionWorker(this.learningCatalogue,
             this.civilServantRegistry,
             this.organisationalUnitService,
-            this.learnerRecordAPI))
+            this.learnerRecordAPI,
+            this.cslService))
     }
 
     getWorker(action: WorkerAction) {
