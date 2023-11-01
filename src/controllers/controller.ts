@@ -43,7 +43,7 @@ export abstract class Controller {
 	}
 
 	public buildRouter = (): Router => {
-		this.logger.debug(`Regisering controller '${this.controllerName}'`)
+		this.logger.debug(`Registering controller '${this.controllerName}'`)
 		this.applyRoleRestrictions()
 		const controllerMiddleware = this.getControllerMiddleware()
 		if (controllerMiddleware.length > 0) {
