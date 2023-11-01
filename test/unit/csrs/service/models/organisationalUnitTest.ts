@@ -91,4 +91,18 @@ describe('OrganisationalUnit tests', () => {
 			expect(org.doesDomainExist("z-domain.com")).to.be.true
 		})
 	})
+
+	describe('deleteDomain tests', () => {
+		it('Should delete a domain', () => {
+			const org = getOrg("ORG", "ORG", 1)
+			org.domains = [new Domain(1, "domain.com"),
+				new Domain(2, "z-domain.com"),
+				new Domain(3, "a-domain.com")]
+			org.removeDomain(2)
+			const arr = Array.from(org.domains)
+			expect(arr.length).eql(2)
+			expect(arr[0].domain).eql("domain.com")
+			expect(arr[1].domain).eql("a-domain.com")
+		})
+	})
 })

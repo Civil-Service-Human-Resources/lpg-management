@@ -12,3 +12,7 @@ export class DomainPageModel {
 	@Transform(({value}) => { return value.toLowerCase() })
 	domainToAdd: string
 }
+
+export class DeleteDomainPageModel {
+	removeFromSubOrgs: boolean = false
+}

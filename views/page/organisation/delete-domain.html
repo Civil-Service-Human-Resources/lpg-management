@@ -1,0 +1,50 @@
+{% from "button/macro.njk" import govukButton %}
+{% from "radios/macro.njk" import govukRadios %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.organisations.title.removeAnOrganisation }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations/" + organisationalUnit.id + "/domains" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.domains.title.removeDomain }}</h1>
+            <p class="govuk-body">Are you sure you want to remove the domain <strong>{{ domain.domain }}</strong> from the organisation <strong>{{ organisationalUnit.name }}</strong>?</p>
+            <p class="govuk-body">Users who have a {{ domain.domain }} email address will be prevented from selecting affected organisations.</p>
+            {% for child in organisationalUnit.children %}
+                Hello
+            {% endfor %}
+            <form action="/content-management/organisations/{{ organisationalUnit.id }}/domains/{{ domain.id }}/delete" method="post">
+                {{ govukRadios({
+                    idPrefix: "removeFromSubOrgs",
+                    name: "removeFromSubOrgs",
+                    fieldset: {
+                        legend: {
+                            text: "Remove domain from child organisations?",
+                            classes: "govuk-fieldset__legend--s "
+                        }
+                    },
+                    items: [
+                        {
+                            value: "false",
+                            text: "No, remove from just this organisation",
+                            checked: true
+                        },
+                        {
+                            value: "true",
+                            text: "Yes, remove from this organisation and all child organisations"
+                        }
+                    ]
+                }) }}
+                {{ govukButton({
+                    text: "Remove domain",
+                    classes: "button-red"
+                }) }}
+            </form>
+            <a class="cancel-button govuk-link" href="/content-management/organisations/{{ organisationalUnit.id }}/domains">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

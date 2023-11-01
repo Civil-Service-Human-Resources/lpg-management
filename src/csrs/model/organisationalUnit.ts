@@ -2,6 +2,7 @@ import {AgencyToken} from './agencyToken'
 import { OrganisationalUnitPageModel } from './organisationalUnitPageModel'
 import {Domain} from './domain'
 import {CacheableObject} from 'lib/cacheableObject'
+import {Type} from 'class-transformer'
 
 export class OrganisationalUnit implements CacheableObject {
     getId(): string {
@@ -24,12 +25,15 @@ export class OrganisationalUnit implements CacheableObject {
 
 	formattedName?: string
 
+	@Type(() => OrganisationalUnit)
 	parent?: OrganisationalUnit
 
 	uri: string
 
+	@Type(() => AgencyToken)
 	agencyToken?: AgencyToken
 
+	@Type(() => Domain)
 	domains: Domain[] = []
 
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
@@ -64,12 +68,16 @@ export class OrganisationalUnit implements CacheableObject {
 		return (this.abbreviation && this.abbreviation !== '') ? `${this.name} (${this.abbreviation})` : this.name
 	}
 
+	sortDomainsByName() {
+		this.domains.sort((a, b) => {
+			return (a.domain < b.domain) ? -1 : 1
+		})
+	}
+
 	insertAndSortDomain(domain: Domain) {
 		if (!this.doesDomainExist(domain.domain)) {
 			this.domains.push(domain)
-			this.domains.sort((a, b) => {
-				return (a.domain < b.domain) ? -1 : 1
-			})
+			this.sortDomainsByName()
 		}
 	}
 
@@ -77,4 +85,7 @@ export class OrganisationalUnit implements CacheableObject {
 		return this.domains.find(d => d.domain === domain) !== undefined
 	}
 
+	removeDomain(domainId: number) {
+		this.domains = this.domains.filter(d => d.id !== domainId )
+	}
 }
