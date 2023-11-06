@@ -42,13 +42,19 @@ export const getRequest = (path: string,
 }
 
 export const postRequest = <T> (path: string,
+									handler: (req: Request, res: Response, next: NextFunction) => void,
+									additionalMiddleware: ((req: Request, res: Response, next: NextFunction) => void)[] = [],
+									isAsync: boolean = true): Route => {
+	return basicRequest(path, Method.POST, handler, additionalMiddleware, isAsync)
+}
+
+export const postRequestWithBody = <T> (path: string,
 									  handler: (req: Request, res: Response, next: NextFunction) => void,
 									  validationOptions: ValidationOptions<T>,
 									  additionalMiddleware: ((req: Request, res: Response, next: NextFunction) => void)[] = [],
 									  isAsync: boolean = true): Route => {
-	return basicRequest(path, Method.POST, handler,
-		[
-			asyncHandler(validateEndpoint(validationOptions)),
-			...additionalMiddleware
-		], isAsync)
+	return postRequest(path, handler, [
+		asyncHandler(validateEndpoint(validationOptions)),
+		...additionalMiddleware
+	], isAsync)
 }

@@ -1,30 +1,33 @@
+export enum Role {
+	LEARNER = 'LEARNER',
+	ORGANISATION_MANAGER = 'ORGANISATION_MANAGER',
+	CSL_AUTHOR = 'CSL_AUTHOR',
+	LEARNING_MANAGER = 'LEARNING_MANAGER',
+	LEARNING_CREATE = 'LEARNING_CREATE',
+	LEARNING_EDIT = 'LEARNING_EDIT',
+	LEARNING_DELETE = 'LEARNING_DELETE',
+	ORGANISATION_AUTHOR = 'ORGANISATION_AUTHOR',
+	PROFESSION_AUTHOR = 'PROFESSION_AUTHOR',
+	LEARNING_PUBLISH = 'LEARNING_PUBLISH',
+	LEARNING_ARCHIVE = 'LEARNING_ARCHIVE',
+	KPMG_SUPPLIER_AUTHOR = 'KPMG_SUPPLIER_AUTHOR',
+	KORNFERRY_SUPPLIER_AUTHOR = 'KORNFERRY_SUPPLIER_AUTHOR',
+	KNOWLEDGEPOOL_SUPPLIER_AUTHOR = 'KNOWLEDGEPOOL_SUPPLIER_AUTHOR',
+	LEARNING_PROVIDER_MANAGER = 'LEARNING_PROVIDER_MANAGER',
+	SKILLS_MANAGER = 'SKILLS_MANAGER',
+	CSHR_REPORTER = 'CSHR_REPORTER',
+	DOWNLOAD_BOOKING_FEED = 'DOWNLOAD_BOOKING_FEED',
+	IDENTITY_DELETE = 'IDENTITY_DELETE',
+	IDENTITY_MANAGER = 'IDENTITY_MANAGER',
+	KORNFERRY_SUPPLIER_REPORTER = 'KORNFERRY_SUPPLIER_REPORTER',
+	KPMG_SUPPLIER_REPORTER = 'KPMG_SUPPLIER_REPORTER',
+	MANAGE_CALL_OFF_PO = 'MANAGE_CALL_OFF_PO',
+	ORGANISATION_REPORTER = 'ORGANISATION_REPORTER',
+	PROFESSION_MANAGER = 'PROFESSION_MANAGER',
+	PROFESSION_REPORTER = 'PROFESSION_REPORTER'
+}
+
 export class Identity {
-	public static readonly LEARNER = 'LEARNER'
-	public static readonly ORGANISATION_MANAGER = 'ORGANISATION_MANAGER'
-	public static readonly CSL_AUTHOR = 'CSL_AUTHOR'
-	public static readonly LEARNING_MANAGER = 'LEARNING_MANAGER'
-	public static readonly LEARNING_CREATE = 'LEARNING_CREATE'
-	public static readonly LEARNING_EDIT = 'LEARNING_EDIT'
-	public static readonly LEARNING_DELETE = 'LEARNING_DELETE'
-	public static readonly ORGANISATION_AUTHOR = 'ORGANISATION_AUTHOR'
-	public static readonly PROFESSION_AUTHOR = 'PROFESSION_AUTHOR'
-	public static readonly LEARNING_PUBLISH = 'LEARNING_PUBLISH'
-	public static readonly LEARNING_ARCHIVE = 'LEARNING_ARCHIVE'
-	public static readonly KPMG_SUPPLIER_AUTHOR = 'KPMG_SUPPLIER_AUTHOR'
-	public static readonly KORNFERRY_SUPPLIER_AUTHOR = 'KORNFERRY_SUPPLIER_AUTHOR'
-	public static readonly KNOWLEDGEPOOL_SUPPLIER_AUTHOR = 'KNOWLEDGEPOOL_SUPPLIER_AUTHOR'
-	public static readonly LEARNING_PROVIDER_MANAGER = 'LEARNING_PROVIDER_MANAGER'
-	public static readonly SKILLS_MANAGER = 'SKILLS_MANAGER'
-	public static readonly CSHR_REPORTER = 'CSHR_REPORTER'
-	public static readonly DOWNLOAD_BOOKING_FEED = 'DOWNLOAD_BOOKING_FEED'
-	public static readonly IDENTITY_DELETE = 'IDENTITY_DELETE'
-	public static readonly IDENTITY_MANAGER = 'IDENTITY_MANAGER'
-	public static readonly KORNFERRY_SUPPLIER_REPORTER = 'KORNFERRY_SUPPLIER_REPORTER'
-	public static readonly KPMG_SUPPLIER_REPORTER = 'KPMG_SUPPLIER_REPORTER'
-	public static readonly MANAGE_CALL_OFF_PO = 'MANAGE_CALL_OFF_PO'
-	public static readonly ORGANISATION_REPORTER = 'ORGANISATION_REPORTER'
-	public static readonly PROFESSION_MANAGER = 'PROFESSION_MANAGER'
-	public static readonly PROFESSION_REPORTER = 'PROFESSION_REPORTER'
 
 	readonly uid: string
 	readonly roles: string[]
@@ -46,51 +49,52 @@ export class Identity {
 
 	hasAnyAdminRole() {
 		// i.e. isn't just a LEARNER who navigated to the admin app by modifying the URL
-		return this.hasAnyRole([Identity.CSHR_REPORTER,
-			Identity.CSL_AUTHOR,
-			Identity.DOWNLOAD_BOOKING_FEED,
-			Identity.IDENTITY_DELETE,
-			Identity.IDENTITY_MANAGER,
-			Identity.KNOWLEDGEPOOL_SUPPLIER_AUTHOR,
-			Identity.KORNFERRY_SUPPLIER_AUTHOR,
-			Identity.KORNFERRY_SUPPLIER_REPORTER,
-			Identity.KPMG_SUPPLIER_AUTHOR,
-			Identity.KPMG_SUPPLIER_REPORTER,
-			Identity.LEARNING_ARCHIVE,
-			Identity.LEARNING_CREATE,
-			Identity.LEARNING_DELETE,
-			Identity.LEARNING_EDIT,
-			Identity.LEARNING_MANAGER,
-			Identity.LEARNING_PUBLISH,
-			Identity.MANAGE_CALL_OFF_PO,
-			Identity.ORGANISATION_AUTHOR,
-			Identity.ORGANISATION_MANAGER,
-			Identity.ORGANISATION_REPORTER,
-			Identity.PROFESSION_AUTHOR,
-			Identity.PROFESSION_MANAGER,
-			Identity.PROFESSION_REPORTER
+		return this.hasAnyRole([
+			Role.CSHR_REPORTER,
+			Role.CSL_AUTHOR,
+			Role.DOWNLOAD_BOOKING_FEED,
+			Role.IDENTITY_DELETE,
+			Role.IDENTITY_MANAGER,
+			Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR,
+			Role.KORNFERRY_SUPPLIER_AUTHOR,
+			Role.KORNFERRY_SUPPLIER_REPORTER,
+			Role.KPMG_SUPPLIER_AUTHOR,
+			Role.KPMG_SUPPLIER_REPORTER,
+			Role.LEARNING_ARCHIVE,
+			Role.LEARNING_CREATE,
+			Role.LEARNING_DELETE,
+			Role.LEARNING_EDIT,
+			Role.LEARNING_MANAGER,
+			Role.LEARNING_PUBLISH,
+			Role.MANAGE_CALL_OFF_PO,
+			Role.ORGANISATION_AUTHOR,
+			Role.ORGANISATION_MANAGER,
+			Role.ORGANISATION_REPORTER,
+			Role.PROFESSION_AUTHOR,
+			Role.PROFESSION_MANAGER,
+			Role.PROFESSION_REPORTER
 		])
 	}
 
 	hasEventViewingRole() {
 		// coarse-grained check for general permission to view events
-		return this.hasAnyRole([Identity.CSL_AUTHOR, Identity.LEARNING_MANAGER]) || this.isSupplierAuthor()
+		return this.hasAnyRole([Role.CSL_AUTHOR, Role.LEARNING_MANAGER]) || this.isSupplierAuthor()
 	}
 
 	isOrganisationManager() {
-		return this.hasRole(Identity.ORGANISATION_MANAGER)
+		return this.hasRole(Role.ORGANISATION_MANAGER)
 	}
 
 	isOrganisationManagerOrSuperUser() {
-		return this.hasRole(Identity.ORGANISATION_MANAGER) || this.isSuperUser()
+		return this.hasRole(Role.ORGANISATION_MANAGER) || this.isSuperUser()
 	}
 
 	isLearningManager() {
-		return this.hasRole(Identity.LEARNING_MANAGER)
+		return this.hasRole(Role.LEARNING_MANAGER)
 	}
 
 	isCslAuthor() {
-		return this.hasRole(Identity.CSL_AUTHOR)
+		return this.hasRole(Role.CSL_AUTHOR)
 	}
 
 	isSuperUser() {
@@ -98,51 +102,51 @@ export class Identity {
 	}
 
 	isOrganisationAuthorOrSuperUser() {
-		return this.hasRole(Identity.ORGANISATION_AUTHOR) || this.isSuperUser()
+		return this.hasRole(Role.ORGANISATION_AUTHOR) || this.isSuperUser()
 	}
 
 	isOrganisationAuthor() {
-		return this.hasRole(Identity.ORGANISATION_AUTHOR)
+		return this.hasRole(Role.ORGANISATION_AUTHOR)
 	}
 
 	isProfessionAuthorOrSuperUser() {
-		return this.hasRole(Identity.PROFESSION_AUTHOR) || this.isSuperUser()
+		return this.hasRole(Role.PROFESSION_AUTHOR) || this.isSuperUser()
 	}
 
 	isProfessionAuthor() {
-		return this.hasRole(Identity.PROFESSION_AUTHOR)
+		return this.hasRole(Role.PROFESSION_AUTHOR)
 	}
 
 	isSupplierAuthor() {
-		return this.hasRole(Identity.KPMG_SUPPLIER_AUTHOR) || this.hasRole(Identity.KNOWLEDGEPOOL_SUPPLIER_AUTHOR) || this.hasRole(Identity.KORNFERRY_SUPPLIER_AUTHOR)
+		return this.hasRole(Role.KPMG_SUPPLIER_AUTHOR) || this.hasRole(Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR) || this.hasRole(Role.KORNFERRY_SUPPLIER_AUTHOR)
 	}
 
 	isLearningProviderManager() {
-		return this.hasRole(Identity.LEARNING_PROVIDER_MANAGER)
+		return this.hasRole(Role.LEARNING_PROVIDER_MANAGER)
 	}
 
 	hasLearningCreate() {
-		return this.hasRole(Identity.LEARNING_CREATE) || this.isSuperUser()
+		return this.hasRole(Role.LEARNING_CREATE) || this.isSuperUser()
 	}
 
 	hasLearningEdit() {
-		return this.hasRole(Identity.LEARNING_EDIT) || this.isSuperUser()
+		return this.hasRole(Role.LEARNING_EDIT) || this.isSuperUser()
 	}
 
 	hasLearningDelete() {
-		return this.hasRole(Identity.LEARNING_DELETE) || this.isSuperUser()
+		return this.hasRole(Role.LEARNING_DELETE) || this.isSuperUser()
 	}
 
 	hasLearningPublish() {
-		return this.hasRole(Identity.LEARNING_PUBLISH) || this.isSuperUser()
+		return this.hasRole(Role.LEARNING_PUBLISH) || this.isSuperUser()
 	}
 
 	hasLearningArchive() {
-		return this.hasRole(Identity.LEARNING_ARCHIVE) || this.isSuperUser()
+		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
 	}
 
 	isLearner() {
-		return this.hasRole(Identity.LEARNER)
+		return this.hasRole(Role.LEARNER)
 	}
 
 	isCshrReporter() {
@@ -166,6 +170,6 @@ export class Identity {
 	}
 
 	isSkillsManagerOrSuperUser() {
-		return this.hasRole(Identity.SKILLS_MANAGER) || this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter() || this.isProfessionReporter()
+		return this.hasRole(Role.SKILLS_MANAGER) || this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter() || this.isProfessionReporter()
 	}
 }

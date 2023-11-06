@@ -19,6 +19,7 @@
 
 {% set banner = true %}
 {% set form = sessionFlash.form %}
+{% set domainUpdateSuccess = sessionFlash.domainUpdateSuccess if sessionFlash.domainUpdateSuccess else domainUpdateSuccess %}
 {% set errors = sessionFlash.errors %}
 {{ errorSummary(errors.fields, true) }}
 
@@ -31,21 +32,27 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-        {% if domainAddedSuccess %}
+        {% if domainUpdateSuccess %}
+            {% set addRemove = "added to" if domainUpdateSuccess.update == 'ADDED' else "removed from" %}
             <div class="panel panel-blue">
                 <div class="govuk-panel__body custom-panel panel-blue">
                     <p class="govuk-body">
-                        The domain <strong>{{ domainAddedSuccess.domain }}</strong> has been successfully added to this organisation{% if domainAddedSuccess.childOrgsUpdatedCount > 0 %} and {{ domainAddedSuccess.childOrgsUpdatedCount }} child organisations{% endif %}.
+                        The domain <strong>{{ domainUpdateSuccess.domain }}</strong> has been successfully {{ addRemove }} this organisation{% if domainUpdateSuccess.childOrgsUpdatedCount > 0 %} and {{ domainUpdateSuccess.childOrgsUpdatedCount }} child organisations{% endif %}.
                     </p>
                 </div>
             </div>
         {% endif %}
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
         <h3 class="govuk-heading-s">List of permitted domains</h3>
         {% if organisationalUnit.domains.length > 0 %}
             <ul class="list modules" id="domains">
                 {% for domain in organisationalUnit.domains %}
                     <li class="list-details list-domain">
                         <p class="govuk-body title">{{ domain.domain }}</p>
+                        <a href='/content-management/organisations/{{ organisationalUnit.id }}/domains/{{ domain.id }}/delete'>Remove</a>
                     </li>
                 {% endfor %}
             </ul>

@@ -10,6 +10,8 @@ import {
 } from './getOrganisationsRequestOptions';
 import { GetOrganisationsResponse } from './getOrganisationsResponse';
 import {AddDomainToOrgResponse} from './addDomainToOrgResponse'
+import {RemoveDomainFromOrgResponse} from './removeDomainFromOrgResponse'
+import {DeleteDomainFromOrgRequestOptions} from './deleteDomainFromOrgRequestOptions'
 
 export class OrganisationalUnitClient {
 
@@ -115,5 +117,13 @@ export class OrganisationalUnitClient {
 	async addDomain(organisationalUnitId: number, domain: string): Promise<AddDomainToOrgResponse> {
         const response = await this._http.postWithoutFollowing(`${this.BASE_URL}/${organisationalUnitId}/domains`, {domain})
         return  plainToInstance(AddDomainToOrgResponse, response.data)
+	}
+
+	async removeDomain(organisationalUnitId: number, domainId: number, options: DeleteDomainFromOrgRequestOptions) {
+        const response = await this._http.deleteWithAuthAndConfig(`${this.BASE_URL}/${organisationalUnitId}/domains/${domainId}`,
+            {
+                params: options
+            })
+        return  plainToInstance(RemoveDomainFromOrgResponse, response.data)
 	}
 }

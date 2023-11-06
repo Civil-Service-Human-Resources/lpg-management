@@ -2,6 +2,8 @@ import {NextFunction, Request, Response, Router} from 'express'
 import {Route} from './route'
 import * as winston from 'winston'
 import {getLogger} from '../utils/logger'
+import {Role} from '../identity/identity'
+import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
 
 export abstract class Controller {
 
@@ -24,10 +26,25 @@ export abstract class Controller {
 		return []
 	}
 
-	protected abstract getControllerMiddleware(): ((req: Request, res: Response, next: NextFunction) => void)[]
+	protected getRequiredRoles(): Role[] {
+		return []
+	}
+
+	protected getControllerMiddleware(): ((req: Request, res: Response, next: NextFunction) => void)[] {
+		return []
+	}
+
+	private applyRoleRestrictions() {
+		const requiredRoles = this.getRequiredRoles()
+		if (requiredRoles.length > 0) {
+			this.logger.debug(`Restricting controller to roles: [${requiredRoles}]`)
+			this.router.use(roleCheckMiddleware(requiredRoles))
+		}
+	}
 
 	public buildRouter = (): Router => {
 		this.logger.debug(`Registering controller '${this.controllerName}'`)
+		this.applyRoleRestrictions()
 		const controllerMiddleware = this.getControllerMiddleware()
 		if (controllerMiddleware.length > 0) {
 			this.logger.debug(`Registering ${controllerMiddleware.length} controller middleware`)
@@ -36,7 +53,7 @@ export abstract class Controller {
 		const controllerRoutes = this.getRoutes()
 		this.logger.debug(`Registering ${controllerRoutes.length} controller routes`)
 		for (const route of controllerRoutes) {
-			this.logger.debug(`Registering endpoint ${this.path}${route.path}`)
+			this.logger.debug(`Registering endpoint ${route.method} ${this.path}${route.path}`)
 			switch (route.method) {
 				case 'GET':
 					this.router.get(route.path, route.localMiddleware, route.handler);
@@ -53,6 +70,7 @@ export abstract class Controller {
 				default:
 			}
 		}
+
 		return this.router;
 	};
 }

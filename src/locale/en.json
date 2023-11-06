@@ -29,7 +29,10 @@
 	},
 	"domains": {
 		"title": {
-			"addDomain": "Edit email domains"
+			"addDomain": "Edit email domains",
+			"removeDomain": "Remove an email domain",
+			"removeFromAll": "Remove from this organisation and all child organisations",
+			"removeFromOne": "Remove from just this organisation"
 		},
 		"text": {
 			"domains": "Domains"
