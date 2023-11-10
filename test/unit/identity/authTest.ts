@@ -24,9 +24,11 @@ describe('Auth tests', function() {
 	const authenticationServiceUrl = 'localhost:8080'
 	const callbackUrl = 'http://localhost:3030'
 	const authenticationPath = 'authentication-path'
+	const authorizationPath = 'authorization-path'
+	const authTokenPath = 'authToken-path'
 
 	beforeEach(() => {
-		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath)
+		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath)
 
 		auth = new Auth(config, passportStatic, identityService)
 	})
