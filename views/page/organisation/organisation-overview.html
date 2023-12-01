@@ -50,11 +50,26 @@
             <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Organisation abbreviation</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.abbreviation | default("Unspecified", true) }}</p></li>
         </ul>
         <div class="title-container">
+            <h3 class="govuk-heading-m">Organisation email domains</h3>
+            <a href="/content-management/organisations/{{ organisationalUnit.id }}/domains" class="govuk-link">Edit domains</a>
+        </div>
+        <div class="section">
+            {% if organisationalUnit.domains | length == 0 %}
+                <p class="govuk-body">There are no email domains associated with this organisation</p>
+            {% else %}
+                <ul class="govuk-list">
+                    {% for domain in organisationalUnit.domains %}
+                        <li>{{ domain.domain }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="title-container">
             <h3 class="govuk-heading-m">Organisation token</h3>
             {% if organisationalUnit.agencyToken %}
                 <a href="/content-management/organisations/{{ organisationalUnit.id }}/agency-token" class="govuk-link">Edit token</a>
             {% else %}
-                <a href="/content-management/organisations/{{ organisationalUnit.id }}/agency-token" class="govuk-link">Add token</a>                
+                <a href="/content-management/organisations/{{ organisationalUnit.id }}/agency-token" class="govuk-link">Add token</a>
             {% endif %}
         </div>
         <ul class="list module-list">
@@ -87,7 +102,7 @@
                     }
                 ] %}
 
-                {% if organisationalUnit.parent.name !== undefined %} 
+                {% if organisationalUnit.parent.name !== undefined %}
                     {% set unlinkParentAction = {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/unlink-parent-confirm",
                         text: "Unlink parent organisation"

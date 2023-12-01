@@ -27,6 +27,26 @@
 			}
 		}
 	},
+	"domains": {
+		"title": {
+			"addDomain": "Edit email domains",
+			"removeDomain": "Remove an email domain",
+			"removeFromAll": "Remove from this organisation and all child organisations",
+			"removeFromOne": "Remove from just this organisation"
+		},
+		"text": {
+			"domains": "Domains"
+		},
+		"validation": {
+			"domains": {
+				"alreadyExists": "Domain already listed",
+				"empty": "Domain is required",
+				"invalidFormat": "Enter domain in the correct format, for example: 'example.gov.uk'",
+				"invalid": "Invalid domain",
+				"hint":"For example: 'example.gov.uk'"
+			}
+		}
+	},
 	"audience": {
 		"pageTitle": {
 			"addName": "Add audience name",
@@ -265,7 +285,6 @@
 	},
 	"administration_pages_title": "Reporting",
 	"blended": "Blended",
-	"error": "There is a problem with the service",
 	"errors": {
 		"actionNotAuthorised": "You are not authorised to perform this operation"
 	},
@@ -301,7 +320,6 @@
   "could_not_invite_learner": " could not be invited due to an unexpected error",
   "cancellation_reason_unavailable": "the event is no longer available",
   "cancellation_reason_venue": "of short notice unavailability of the venue",
-	"could_not_invite_learner": " could not be invited due to an unexpected error",
 	"validation.learningProvider.name.empty": "Name is required",
 	"validation.cancellationPolicy.name.empty": "Name is required",
 	"validation.cancellationPolicy.shortVersion.empty": "Short version is required",

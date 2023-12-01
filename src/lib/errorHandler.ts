@@ -1,10 +1,12 @@
 import {NextFunction, Request, Response} from 'express'
 import { getLogger } from '../utils/logger'
+import {appInsights} from '../server'
 
 const logger = getLogger('errorHandler')
 
 export async function handleError(error: any, request: Request, response: Response, next: NextFunction) {
 	try {
+		appInsights.defaultClient.trackException({exception: error})
 		let msg = `Error handling request for ${request.method} ${request.url}`
 		if (request.body) {
 			msg += ` body: ${JSON.stringify(request.body)}`

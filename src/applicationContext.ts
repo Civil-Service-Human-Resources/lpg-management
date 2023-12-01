@@ -51,7 +51,7 @@ import {DateRange} from './learning-catalogue/model/dateRange'
 import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFactory'
 import {LinkModule} from './learning-catalogue/model/linkModule'
 import {SearchController} from './controllers/searchController'
-import {OrganisationController} from './controllers/organisationController'
+import {OrganisationController} from './controllers/organisationalUnit/organisationController'
 import {OrganisationalUnitPageModelFactory} from './csrs/model/organisationalUnitPageModelFactory'
 import {LearnerRecord} from './learner-record'
 import {LearnerRecordConfig} from './learner-record/learnerRecordConfig'
@@ -74,7 +74,7 @@ import {Question} from "./controllers/skills/question"
 import {AgencyToken} from './csrs/model/agencyToken'
 import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
-import {AgencyTokenController} from './controllers/agencyTokenController'
+import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenController'
 import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
 import { ActionWorkerService } from './learner-record/workers/actionWorkerService'
 import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
@@ -85,8 +85,13 @@ import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceConfig} from './csl-service/cslServiceConfig'
 import {CslServiceClient} from './csl-service/client'
+import {OrganisationalUnitDomainsController} from './controllers/organisationalUnit/organisationalUnitDomainsController'
+import {Controller} from './controllers/controller'
 
 export class ApplicationContext {
+
+	controllers: Controller[] = []
+
 	actionWorkerService: ActionWorkerService
 	identityService: IdentityService
 	auth: Auth
@@ -358,6 +363,10 @@ export class ApplicationContext {
 			this.organisationalUnitService,
 			this.agencyTokenFactory,
 		)
+
+		this.controllers.push(new OrganisationalUnitDomainsController(
+			this.organisationalUnitService
+		))
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 

@@ -1,59 +1,31 @@
-import {NextFunction, Request, Response, Router} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import * as asyncHandler from 'express-async-handler'
-import {AgencyToken} from '../csrs/model/agencyToken'
-import {AgencyTokenService} from '../lib/agencyTokenService'
-import {FormController} from './formController'
-import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
-import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
-import {Validator} from '../learning-catalogue/validator/validator'
-import {Validate} from './formValidator'
-import {AgencyTokenFactory} from '../csrs/model/agencyTokenFactory'
-import { getLogger } from '../utils/logger'
-const { xss } = require('express-xss-sanitizer')
+import {AgencyToken} from '../../csrs/model/agencyToken'
+import {AgencyTokenService} from '../../lib/agencyTokenService'
+import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
+import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
+import {Validator} from '../../learning-catalogue/validator/validator'
+import {Validate} from '../formValidator'
+import {AgencyTokenFactory} from '../../csrs/model/agencyTokenFactory'
+import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
+import {FormController} from '../formController'
+
+const {xss} = require('express-xss-sanitizer')
 
 
-export class AgencyTokenController implements FormController {
-	logger = getLogger('AgencyTokenController')
-	router: Router
-	validator: Validator<AgencyToken>
-	agencyTokenService: AgencyTokenService
-	organisationalUnitService: OrganisationalUnitService
-	agencyTokenFactory: AgencyTokenFactory
-
+export class AgencyTokenController extends OrganisationalUnitControllerBase implements FormController {
 	constructor(
-		validator: Validator<AgencyToken>,
-		agencyTokenService: AgencyTokenService,
+		public validator: Validator<AgencyToken>,
+		private agencyTokenService: AgencyTokenService,
 		organisationalUnitService: OrganisationalUnitService,
-		agencyTokenFactory: AgencyTokenFactory,
+		private agencyTokenFactory: AgencyTokenFactory,
 	) {
-		this.router = Router()
-		this.validator = validator
-		this.agencyTokenService = agencyTokenService
-		this.organisationalUnitService = organisationalUnitService
-		this.agencyTokenFactory = agencyTokenFactory
-
-		this.getOrganisationFromRouterParamAndSetOnLocals()
+		super('AgencyTokenController', organisationalUnitService)
 		this.setRouterPaths()
 	}
 
 	/* istanbul ignore next */
-	// prettier-ignore
-	private getOrganisationFromRouterParamAndSetOnLocals() {
-		this.router.param('organisationalUnitId', asyncHandler(async (req: Request, res: Response, next: NextFunction, organisationalUnitId: number) => {
-				const organisationalUnit: OrganisationalUnit = await this.organisationalUnitService.getOrganisation(organisationalUnitId)
-
-				if (organisationalUnit) {
-					res.locals.organisationalUnit = organisationalUnit
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			})
-		)
-	}
-
-	/* istanbul ignore next */
-	private setRouterPaths() {
+	protected setRouterPaths() {
 		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.addEditAgencyToken()))
 		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.createAgencyToken()))
 		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/edit', xss(), asyncHandler(this.updateAgencyToken()))

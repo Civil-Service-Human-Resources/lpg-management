@@ -1,0 +1,122 @@
+{% extends "../../component/Page.njk" %}
+
+{% from "input/macro.njk" import govukInput with context%}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% from "../../component/list/macro.njk" import list %}
+{% from "../../component/menu/macro.njk" import menu %}
+{% from "../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
+{% from "../../component/courseDetails/macro.njk" import courseDetails with context %}
+{% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
+{% from "../../component/audiences/macro.njk" import audiences with context %}
+
+{% block pageTitle %}{{ i18n.domains.title.addDomain }}{% endblock %}
+
+{% set backButton = "/content-management/organisations/" + organisationalUnit.id + "/overview" %}
+
+{% block content %}
+
+{% set banner = true %}
+{% set form = sessionFlash.form %}
+{% set domainUpdateSuccess = sessionFlash.domainUpdateSuccess if sessionFlash.domainUpdateSuccess else domainUpdateSuccess %}
+{% set errors = sessionFlash.errors %}
+{{ errorSummary(errors.fields, true) }}
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{ organisationalUnit.name }}</h1>
+        <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.domains.title.addDomain }}</h2>
+    </div>
+</div>
+
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        {% if domainUpdateSuccess %}
+            {% set addRemove = "added to" if domainUpdateSuccess.update == 'ADDED' else "removed from" %}
+            <div class="panel panel-blue">
+                <div class="govuk-panel__body custom-panel panel-blue">
+                    <p class="govuk-body">
+                        The domain <strong>{{ domainUpdateSuccess.domain }}</strong> has been successfully {{ addRemove }} this organisation{% if domainUpdateSuccess.childOrgsUpdatedCount > 0 %} and {{ domainUpdateSuccess.childOrgsUpdatedCount }} child organisations{% endif %}.
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h3 class="govuk-heading-s">List of permitted domains</h3>
+        {% if organisationalUnit.domains.length > 0 %}
+            <ul class="list modules" id="domains">
+                {% for domain in organisationalUnit.domains %}
+                    <li class="list-details list-domain">
+                        <p class="govuk-body title">{{ domain.domain }}</p>
+                        <a href='/content-management/organisations/{{ organisationalUnit.id }}/domains/{{ domain.id }}/delete'>Remove</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="govuk-body">No domains have been added yet</p>
+        {% endif %}
+        <form id="add-domain-form" action="/content-management/organisations/{{ organisationalUnit.id }}/domains" method="post">
+            {% if errors.fields %}
+                {% if errors.fields.domainToAdd == 'domains.validation.domains.invalid' %}
+                    {{ govukInput ({
+                        label: { text: "Add domain" },
+                        classes: "govuk-input--width-10",
+                        id: "domainToAdd",
+                        name: "domainToAdd",
+                        errorMessage: { text: i18n.domains.validation.domains.invalid }
+                    }) }}
+                {% elif errors.fields.domainToAdd == 'domains.validation.domains.invalidFormat' %}
+                    {{ govukInput ({
+                        label: { text: "Add domain" },
+                        classes: "govuk-input--width-10",
+                        id: "domainToAdd",
+                        name: "domainToAdd",
+                        errorMessage: { text: i18n.domains.validation.domains.invalidFormat }
+                    }) }}
+                {% elif errors.fields.domainToAdd == 'domains.validation.domains.empty' %}
+                    {{ govukInput ({
+                        label: { text: "Add domain" },
+                        classes: "govuk-input--width-10",
+                        id: "domainToAdd",
+                        name: "domainToAdd",
+                        errorMessage: { text: i18n.domains.validation.domains.empty }
+                    }) }}
+                {% elif errors.fields.domainToAdd == 'domains.validation.domains.alreadyExists' %}
+                    {{ govukInput ({
+                        label: { text: "Add domain" },
+                        classes: "govuk-input--width-10",
+                        id: "domainToAdd",
+                        name: "domainToAdd",
+                        errorMessage: { text: i18n.domains.validation.domains.alreadyExists }
+                    }) }}
+                {% endif %}
+            {% else %}
+                {{ govukInput ({
+                    label: { text: "Add domain" },
+                    classes: "govuk-input--width-10",
+                    id: "domainToAdd",
+                    name: "domainToAdd",
+                    hint: { text: i18n.domains.validation.domains.hint }
+                }) }}
+            {% endif %}
+
+            {{ govukButton ({
+                text: "Add domain",
+                classes: "button-blue button-blue-organisations",
+                type: "submit"
+            }) }}
+        </form>
+        <a href="/content-management/organisations/{{organisationalUnit.id}}/overview" class="govuk-link">Cancel</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+{% endblock %}
