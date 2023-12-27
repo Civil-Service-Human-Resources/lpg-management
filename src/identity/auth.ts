@@ -20,6 +20,12 @@ export class Auth {
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
+	@EnvValue('OAUTH_AUTHORISE_ENDPOINT', '/oauth/authorize')
+	public oauthAuthorizeEndpoint: String
+
+	@EnvValue('OAUTH_TOKEN_ENDPOINT', '/oauth/token')
+	public oauthTokenEndpoint: String
+
 	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService) {
 		this.config = config
 		this.passportStatic = passportStatic
@@ -51,11 +57,11 @@ export class Auth {
 		let strategy: oauth2.Strategy
 		strategy = new oauth2.Strategy(
 			{
-				authorizationURL: `${this.config.authenticationServiceUrl}/oauth/authorize`,
+				authorizationURL: `${this.config.authenticationServiceUrl}` + this.oauthAuthorizeEndpoint,
 				callbackURL: `${this.config.callbackUrl}/authenticate`,
 				clientID: this.config.clientId,
 				clientSecret: this.config.clientSecret,
-				tokenURL: `${this.config.authenticationServiceUrl}/oauth/token`,
+				tokenURL: `${this.config.authenticationServiceUrl}` + this.oauthTokenEndpoint,
 			},
 			this.verify()
 		)
