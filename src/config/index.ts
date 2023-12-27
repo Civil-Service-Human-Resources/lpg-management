@@ -35,10 +35,10 @@ export const AUTHENTICATION = set({
 	authenticationServiceUrl: env.AUTHENTICATION_SERVICE_URL || 'http://localhost:8080',
 	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
 	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS),
-	identityResolveEndPoint: env.IDENTITY_RESOLVE_ENDPOINT || '/oauth/resolve',
-	logoutEndPoint: env.LOGOUT_ENDPOINT || '/oauth/logout',
+	oauthTokenEndpoint: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token',
 	oauthAuthorizeEndpoint: env.OAUTH_AUTHORISE_ENDPOINT || '/oauth/authorize',
-	oauthTokenEndpoint: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token'
+	identityResolveEndPoint: env.IDENTITY_RESOLVE_ENDPOINT || '/oauth/resolve',
+	logoutEndPoint: env.LOGOUT_ENDPOINT || '/oauth/logout'
 })
 
 export const REDIS = set({
