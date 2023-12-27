@@ -36,9 +36,9 @@ export const AUTHENTICATION = set({
 	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
 	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS),
 	oauthTokenEndpoint: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token',
-	oauthAuthorizeEndpoint: env.OAUTH_AUTHORISE_ENDPOINT || '/oauth/authorize',
-	identityResolveEndPoint: env.IDENTITY_RESOLVE_ENDPOINT || '/oauth/resolve',
-	logoutEndPoint: env.LOGOUT_ENDPOINT || '/oauth/logout'
+	oauthAuthorizeEndpoint: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth/authorize',
+	identityResolveEndPoint: env.AUTHENTICATION_SERVICE_RESOLVE_ENDPOINT || '/oauth/resolve',
+	logoutEndPoint: env.AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT || '/oauth/logout'
 })
 
 export const REDIS = set({
