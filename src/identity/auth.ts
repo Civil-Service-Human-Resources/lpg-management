@@ -6,6 +6,7 @@ import {Identity} from './identity'
 import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
+import * as config from '../config'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -19,12 +20,6 @@ export class Auth {
 
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
-
-	@EnvValue('OAUTH_AUTHORISE_ENDPOINT', '/oauth/authorize')
-	public oauthAuthorizeEndpoint: String
-
-	@EnvValue('OAUTH_TOKEN_ENDPOINT', '/oauth/token')
-	public oauthTokenEndpoint: String
 
 	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService) {
 		this.config = config
@@ -57,11 +52,11 @@ export class Auth {
 		let strategy: oauth2.Strategy
 		strategy = new oauth2.Strategy(
 			{
-				authorizationURL: `${this.config.authenticationServiceUrl}` + this.oauthAuthorizeEndpoint,
+				authorizationURL: `${this.config.authenticationServiceUrl}` + config.AUTHENTICATION.oauthAuthorizeEndpoint,
 				callbackURL: `${this.config.callbackUrl}/authenticate`,
 				clientID: this.config.clientId,
 				clientSecret: this.config.clientSecret,
-				tokenURL: `${this.config.authenticationServiceUrl}` + this.oauthTokenEndpoint,
+				tokenURL: `${this.config.authenticationServiceUrl}` + config.AUTHENTICATION.oauthTokenEndpoint,
 			},
 			this.verify()
 		)
