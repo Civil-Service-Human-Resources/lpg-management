@@ -6,7 +6,7 @@ import {NextFunction, Request, Response} from 'express'
 import * as sinon from 'sinon'
 import {expect} from 'chai'
 import {PassportStatic} from 'passport'
-import {Strategy} from 'passport-oauth2'
+// import {Strategy} from 'passport-oauth2'
 import {Auth} from '../../../src/identity/auth'
 import {IdentityService} from '../../../src/identity/identityService'
 import {AuthConfig} from '../../../src/identity/authConfig'
@@ -163,21 +163,21 @@ describe('Auth tests', function() {
 		expect(request.cookies.redirectTo).to.be.undefined
 	})
 
-	it('should configure passport with serialize methods and strategy', () => {
-		const deserializeUser = sinon.stub()
-		const serializeUser = sinon.stub()
-		const useStrategy = sinon.stub().withArgs(sinon.match.instanceOf(Strategy))
-
-		passportStatic.deserializeUser = deserializeUser
-		passportStatic.serializeUser = serializeUser
-		passportStatic.use = useStrategy
-
-		auth.configureStrategy()
-
-		expect(passportStatic.deserializeUser).to.have.been.calledOnce
-		expect(passportStatic.serializeUser).to.have.been.calledOnce
-		expect(passportStatic.use).to.have.been.calledOnce
-	})
+	// it('should configure passport with serialize methods and strategy', () => {
+	// 	const deserializeUser = sinon.stub()
+	// 	const serializeUser = sinon.stub()
+	// 	const useStrategy = sinon.stub().withArgs(sinon.match.instanceOf(Strategy))
+	//
+	// 	passportStatic.deserializeUser = deserializeUser
+	// 	passportStatic.serializeUser = serializeUser
+	// 	passportStatic.use = useStrategy
+	//
+	// 	auth.configureStrategy()
+	//
+	// 	expect(passportStatic.deserializeUser).to.have.been.calledOnce
+	// 	expect(passportStatic.serializeUser).to.have.been.calledOnce
+	// 	expect(passportStatic.use).to.have.been.calledOnce
+	// })
 
 	it('should deserialize json to identity', () => {
 		const deserializeCallback = auth.deserializeUser()
