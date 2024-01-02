@@ -36,8 +36,8 @@ export const AUTHENTICATION = set({
 	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
 	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS),
 	endpoints: set({
-		authorization: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth/authorize',
 		token: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token',
+		authorization: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth/authorize',
 		resolve: env.AUTHENTICATION_SERVICE_RESOLVE_ENDPOINT || '/oauth/resolve',
 		logout: env.AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT || '/oauth/logout',
 	}),
