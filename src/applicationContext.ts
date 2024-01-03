@@ -195,7 +195,9 @@ export class ApplicationContext {
 				config.AUTHENTICATION.clientSecret,
 				config.AUTHENTICATION.authenticationServiceUrl,
 				config.AUTHENTICATION.callbackUrl,
-				config.AUTHENTICATION_PATH
+				config.AUTHENTICATION_PATH,
+				config.AUTHENTICATION.endpoints.authorization,
+				config.AUTHENTICATION.endpoints.token
 			),
 			passport,
 			this.identityService

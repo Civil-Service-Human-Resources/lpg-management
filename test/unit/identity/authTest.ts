@@ -24,9 +24,11 @@ describe('Auth tests', function() {
 	const authenticationServiceUrl = 'localhost:8080'
 	const callbackUrl = 'http://localhost:3030'
 	const authenticationPath = 'authentication-path'
+	const authorizationPath = 'authorization-path'
+	const authTokenPath = 'authToken-path'
 
 	beforeEach(() => {
-		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath)
+		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath)
 
 		auth = new Auth(config, passportStatic, identityService)
 	})
@@ -34,13 +36,13 @@ describe('Auth tests', function() {
 	it('should return next function if user is authenticated', function() {
 		const authenticate: (request: Request, response: Response, next: NextFunction) => void = auth.checkAuthenticatedAndAssignCurrentUser()
 
-		const reponse: Response = mockRes()
+		const response: Response = mockRes()
 		const request: Request = <Request>{}
 		request.isAuthenticated = sinon.stub().returns(true)
 
 		const next: NextFunction = sinon.stub()
 
-		authenticate(request, reponse, next)
+		authenticate(request, response, next)
 
 		expect(next).to.have.been.calledOnce
 	})
@@ -143,23 +145,23 @@ describe('Auth tests', function() {
 	it('should call redirect to / if redirectTo value is not present', function() {
 		const redirect: (request: Request, response: Response) => void = auth.redirect()
 
-		const reponse: Response = mockRes()
+		const response: Response = mockRes()
 		const request: Request = <Request>{cookies: {}}
 
-		redirect(request, reponse)
+		redirect(request, response)
 
-		expect(reponse.redirect).calledOnceWith('/')
+		expect(response.redirect).calledOnceWith('/')
 	})
 
 	it('should call redirect if redirectTo value is present in cookie', function() {
 		const redirect: (request: Request, response: Response) => void = auth.redirect()
 
-		const reponse: Response = mockRes()
+		const response: Response = mockRes()
 		const request: Request = <Request>{cookies: {redirectTo: '/'}}
 
-		redirect(request, reponse)
+		redirect(request, response)
 
-		expect(reponse.redirect).calledOnceWith('/')
+		expect(response.redirect).calledOnceWith('/')
 		expect(request.cookies.redirectTo).to.be.undefined
 	})
 
