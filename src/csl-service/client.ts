@@ -12,14 +12,14 @@ export class CslServiceClient {
 	}
 
 	async cancelBooking(courseId: string, moduleId: string, eventId: string, bookingId: string, dto: CancelBookingDto) {
-		const response = await this._http.postWithoutFollowing(
+		const response = await this._http.postWithoutFollowing<EventResponse>(
 			`/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/cancel_booking`,
 			dto)
 		return plainToInstance(EventResponse, response.data)
 	}
 
 	async approveBooking(courseId: string, moduleId: string, eventId: string, bookingId: string) {
-		const response = await this._http.postWithoutFollowing(
+		const response = await this._http.postWithoutFollowing<EventResponse>(
 			`/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/approve_booking`,
 			null)
 		return plainToInstance(EventResponse, response.data)
