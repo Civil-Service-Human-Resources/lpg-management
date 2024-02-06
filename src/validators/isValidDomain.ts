@@ -11,7 +11,6 @@ export function IsValidDomain(validationOptions?: ValidationOptions) {
 			options: validationOptions,
 			validator: {
 				validate(value: any) {
-					console.log("Validating domain")
 					return typeof value === 'string' && isValidDomain(value)
 				},
 			},

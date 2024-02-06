@@ -11,6 +11,7 @@ export class JsonRestService {
 	auth: Auth
 
 	constructor(config: any, auth: Auth) {
+		this.logger.debug(`Constructing JsonRestService with config: ${JSON.stringify(config)}`)
 		this.auth = auth
 		this._http = axios.create({
 			baseURL: config.url,
@@ -58,8 +59,8 @@ export class JsonRestService {
 		return {}
 	}
 
-	async postWithoutFollowing(path: string, resource: any) {
-		return await this._http.post(path, resource, this.getHeaders())
+	async postWithoutFollowing<ResponseType>(path: string, resource: any) {
+		return await this._http.post<ResponseType>(path, resource, this.getHeaders())
 	}
 
 	async postWithoutFollowingWithConfig(path: string, resource: any, config: any) {

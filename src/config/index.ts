@@ -1,10 +1,14 @@
 import 'reflect-metadata'
 import * as dotenv from 'dotenv'
+import * as path from 'path'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
-	dotenv.load()
+	console.log('Development environment detected, loading .env')
+	dotenv.load({
+		path: path.resolve(__dirname + '/.env')
+	})
 }
 
 function getEnv(obj: any, attr: string) {
