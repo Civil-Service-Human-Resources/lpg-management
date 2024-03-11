@@ -51,11 +51,12 @@ export class Auth {
 		let strategy: oauth2.Strategy
 		strategy = new oauth2.Strategy(
 			{
-				authorizationURL: `${this.config.authenticationServiceUrl}/oauth/authorize`,
+				authorizationURL: `${this.config.authenticationServiceUrl}${this.config.authorizationPath}`,
 				callbackURL: `${this.config.callbackUrl}/authenticate`,
 				clientID: this.config.clientId,
 				clientSecret: this.config.clientSecret,
-				tokenURL: `${this.config.authenticationServiceUrl}/oauth/token`,
+				tokenURL: `${this.config.authenticationServiceUrl}${this.config.authTokenPath}`
+
 			},
 			this.verify()
 		)

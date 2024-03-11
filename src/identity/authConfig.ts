@@ -4,19 +4,25 @@ export class AuthConfig {
 	private _authenticationServiceUrl: string
 	private _callbackUrl: string
 	private _authenticationPath: string
+	private _authorizationPath: string
+	private _authTokenPath: string
 
 	constructor(
 		clientId: string,
 		clientSecret: string,
 		authenticationServiceUrl: string,
 		callbackUrl: string,
-		authenticationPath: string
+		authenticationPath: string,
+		authorizationPath: string,
+		authTokenPath: string
 	) {
 		this._clientId = clientId
 		this._clientSecret = clientSecret
 		this._authenticationServiceUrl = authenticationServiceUrl
 		this._callbackUrl = callbackUrl
 		this._authenticationPath = authenticationPath
+		this._authorizationPath = authorizationPath
+		this._authTokenPath = authTokenPath
 	}
 
 	get clientId(): string {
@@ -57,5 +63,21 @@ export class AuthConfig {
 
 	set authenticationPath(value: string) {
 		this._authenticationPath = value
+	}
+
+	get authorizationPath(): string {
+		return this._authorizationPath
+	}
+
+	set authorizationPath(value: string) {
+		this._authorizationPath = value
+	}
+
+	get authTokenPath(): string {
+		return this._authTokenPath
+	}
+
+	set authTokenPath(value: string) {
+		this._authTokenPath = value
 	}
 }

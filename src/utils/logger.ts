@@ -1,4 +1,4 @@
-import { format, transports, createLogger } from 'winston' 
+import { format, transports, createLogger } from 'winston'
 const { combine, timestamp, printf } = format
 import * as config from '../config'
 
@@ -10,7 +10,7 @@ const loggingFormat = printf(info => JSON.stringify({
 }))
 
 const WINSTON_CONFIG = {
-	level: config.LOGGING_LEVEL,
+	level: config.LOGGING_LEVEL.toLowerCase(),
 	format: combine(
 		timestamp(),
 		loggingFormat

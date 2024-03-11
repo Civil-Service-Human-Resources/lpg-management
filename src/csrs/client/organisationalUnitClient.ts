@@ -77,7 +77,7 @@ export class OrganisationalUnitClient {
 
     async create(organisationalUnit: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {
 		const parent = organisationalUnit.parentId ? `${this.CSRS_URL}${this.BASE_URL}/${organisationalUnit.parentId}` : null
-        const respData: OrganisationalUnit = (await this._http.postWithoutFollowing(this.BASE_URL, {
+        const respData: OrganisationalUnit = (await this._http.postWithoutFollowing<OrganisationalUnit>(this.BASE_URL, {
             code: organisationalUnit.code,
             name: organisationalUnit.name,
             abbreviation: organisationalUnit.abbreviation,

@@ -7,6 +7,8 @@ describe('AuthConfig tests', () => {
 	const authenticationServiceUrl: string = 'authentication-service-url'
 	const callbackUrl: string = 'callback-url'
 	const authenticationPath: string = 'authentication-path'
+	const authorizationPath: string = 'authorization-path'
+	const authTokenPath: string = 'authToken-path'
 
 	it('should set config properties in constructor', () => {
 		const config: AuthConfig = new AuthConfig(
@@ -14,7 +16,9 @@ describe('AuthConfig tests', () => {
 			clientSecret,
 			authenticationServiceUrl,
 			callbackUrl,
-			authenticationPath
+			authenticationPath,
+			authorizationPath,
+			authTokenPath
 		)
 
 		expect(config.clientId).to.equal(clientId)
@@ -25,7 +29,7 @@ describe('AuthConfig tests', () => {
 	})
 
 	it('should override config properties in setters', () => {
-		const config: AuthConfig = new AuthConfig('', '', '', '', '')
+		const config: AuthConfig = new AuthConfig('', '', '', '', '', '', '')
 
 		config.clientId = clientId
 		expect(config.clientId).to.equal(clientId)

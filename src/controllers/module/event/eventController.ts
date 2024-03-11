@@ -22,53 +22,30 @@ import {Course} from '../../../learning-catalogue/model/course'
 import {Module} from '../../../learning-catalogue/model/module'
 import { getLogger } from '../../../utils/logger'
 import * as EmailValidator from 'email-validator'
-import { ActionWorkerService } from '../../../learner-record/workers/actionWorkerService'
-import { WorkerAction } from '../../../learner-record/workers/WorkerAction'
+import {CslServiceClient} from '../../../csl-service/client'
+import {CancelBookingDto} from '../../../csl-service/model/CancelBookingDto'
 
 const { xss } = require('express-xss-sanitizer')
 
 
 export class EventController implements FormController {
 	logger = getLogger('EventController')
-	learningCatalogue: LearningCatalogue
-	learnerRecord: LearnerRecord
-	validator: Validator<Booking>
-	eventValidator: Validator<Event>
-	eventFactory: EventFactory
-	inviteFactory: InviteFactory
-	dateRangeCommandValidator: Validator<DateRangeCommand>
-	dateRangeValidator: Validator<DateRange>
-	dateRangeCommandFactory: DateRangeCommandFactory
-	identityService: IdentityService
 	router: Router
-	actionWorkerService: ActionWorkerService
 
 	constructor(
-		learningCatalogue: LearningCatalogue,
-		learnerRecord: LearnerRecord,
-		eventValidator: Validator<Event>,
-		bookingValidator: Validator<Booking>,
-		eventFactory: EventFactory,
-		inviteFactory: InviteFactory,
-		dateRangeCommandValidator: Validator<DateRangeCommand>,
-		dateRangeValidator: Validator<DateRange>,
-		dateRangeCommandFactory: DateRangeCommandFactory,
-		identityService: IdentityService,
-		actionWorkerService: ActionWorkerService
+		public learningCatalogue: LearningCatalogue,
+		public learnerRecord: LearnerRecord,
+		public eventValidator: Validator<Event>,
+		public validator: Validator<Booking>,
+		public eventFactory: EventFactory,
+		public inviteFactory: InviteFactory,
+		public dateRangeCommandValidator: Validator<DateRangeCommand>,
+		public dateRangeValidator: Validator<DateRange>,
+		public dateRangeCommandFactory: DateRangeCommandFactory,
+		public identityService: IdentityService,
+		public cslService: CslServiceClient
 	) {
-		this.learningCatalogue = learningCatalogue
-		this.learnerRecord = learnerRecord
-		this.eventValidator = eventValidator
-		this.validator = bookingValidator
-		this.eventFactory = eventFactory
-		this.inviteFactory = inviteFactory
-		this.dateRangeCommandValidator = dateRangeCommandValidator
-		this.dateRangeValidator = dateRangeValidator
-		this.dateRangeCommandFactory = dateRangeCommandFactory
-		this.identityService = identityService
-		this.actionWorkerService = actionWorkerService
 		this.router = Router()
-
 		this.setRouterPaths()
 	}
 
@@ -153,7 +130,7 @@ export class EventController implements FormController {
 				next()
 			} else {
 				if (req.user && req.user.uid) {
-					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP ' 
+					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP '
 						+ req.ip + ' from page ' + req.originalUrl)
 					}
 				res.render('page/unauthorised')
@@ -600,17 +577,10 @@ export class EventController implements FormController {
 			const courseId = req.params.courseId
 			const moduleId = req.params.moduleId
 			const eventId = req.params.eventId
-			const bookings = await this.learnerRecord.getEventBookings(eventId)
 			const bookingId = req.params.bookingId
-			// @ts-ignore
-			const booking = this.findBooking(bookings, bookingId)
 
-			this.actionWorkerService.getWorker(WorkerAction.APPROVED_BOOKING).applyActionToLearnerRecord(booking.learner, courseId, moduleId, eventId)
-
-			booking.status = Booking.Status.CONFIRMED
-			await this.learnerRecord.updateBooking(eventId, booking)
-
-			return res.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/attendee/${req.params.bookingId}`)
+			await this.cslService.approveBooking(courseId, moduleId, eventId, bookingId)
+			return res.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events/${eventId}/attendee/${bookingId}`)
 		}
 	}
 
@@ -651,16 +621,8 @@ export class EventController implements FormController {
 			const moduleId = req.params.moduleId
 			const eventId = req.params.eventId
 
-			const bookings = await this.learnerRecord.getEventBookings(eventId)
-			const bookingId = req.params.bookingId
-			// @ts-ignore
-			const booking = this.findBooking(bookings, bookingId)
-
-			this.actionWorkerService.getWorker(WorkerAction.CANCEL_BOOKING).applyActionToLearnerRecord(booking.learner, courseId, moduleId, eventId)
-
-			booking.status = Booking.Status.CANCELLED
-			booking.cancellationReason = data.cancellationReason
-			await this.learnerRecord.updateBooking(eventId, booking)
+			await this.cslService.cancelBooking(courseId, moduleId, eventId,
+				req.params.bookingId, new CancelBookingDto(data.cancellationReason))
 
 			return res.redirect(`/content-management/courses/${courseId}/modules/${moduleId}/events-overview/${eventId}`)
 		}
