@@ -10,19 +10,17 @@ export class IdentityService {
 	}
 
 	async getDetails(token: string) {
-		const response = await this.http.get(`/oauth/resolve`, {
+		const response = await this.http.get(config.AUTHENTICATION.endpoints.resolve, {
 			baseURL: config.AUTHENTICATION.authenticationServiceUrl,
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 		})
-		const identity = new Identity(response.data.uid, response.data.roles, token)
-
-		return identity
+		return new Identity(response.data.uid, response.data.roles, token)
 	}
 
 	async logout(token: string) {
-		await this.http.get(`/oauth/logout`, {
+		await this.http.get(config.AUTHENTICATION.endpoints.logout, {
 			baseURL: config.AUTHENTICATION.authenticationServiceUrl,
 			headers: {
 				Authorization: `Bearer ${token}`,

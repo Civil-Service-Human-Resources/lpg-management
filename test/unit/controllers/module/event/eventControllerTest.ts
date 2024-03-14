@@ -22,10 +22,7 @@ import {Booking} from '../../../../../src/learner-record/model/booking'
 import {DateTime} from '../../../../../src/lib/dateTime'
 import {Course} from '../../../../../src/learning-catalogue/model/course'
 import {Module} from '../../../../../src/learning-catalogue/model/module'
-import { ActionWorkerService } from '../../../../../src/learner-record/workers/actionWorkerService'
-import { WorkerAction } from '../../../../../src/learner-record/workers/WorkerAction'
-import { ApproveBookingActionWorker } from '../../../../../src/learner-record/workers/approveBookingActionWorker'
-import { CancelBookingActionWorker } from '../../../../../src/learner-record/workers/cancelBookingActionWorker'
+import {CslServiceClient} from '../../../../../src/csl-service/client'
 
 chai.use(sinonChai)
 
@@ -41,9 +38,7 @@ describe('EventController', function() {
 	let dateRangeValidator: Validator<DateRange>
 	let dateRangeCommandFactory: DateRangeCommandFactory
 	let identityService: IdentityService
-	let actionWorkerService: ActionWorkerService
-	let approvedBookingActionWorker: ApproveBookingActionWorker
-	let cancelBookingActionWorker: CancelBookingActionWorker
+	let cslService: CslServiceClient
 	let next: NextFunction
 	let error: Error
 
@@ -58,9 +53,7 @@ describe('EventController', function() {
 		dateRangeValidator = <Validator<DateRange>>{}
 		dateRangeCommandFactory = <DateRangeCommandFactory>{}
 		identityService = <IdentityService>{}
-		actionWorkerService = <ActionWorkerService>{}
-		approvedBookingActionWorker = <ApproveBookingActionWorker>{}
-		cancelBookingActionWorker = <CancelBookingActionWorker>{}
+		cslService = <CslServiceClient>{}
 
 		eventController = new EventController(
 			learningCatalogue,
@@ -73,7 +66,7 @@ describe('EventController', function() {
 			dateRangeValidator,
 			dateRangeCommandFactory,
 			identityService,
-			actionWorkerService
+			cslService
 		)
 
 		next = sinon.stub()
@@ -563,11 +556,6 @@ describe('EventController', function() {
 	})
 
 	it('should change booking status to confirmed and redirect to attendee page', async function() {
-		const booking: Booking = new Booking()
-		booking.id = 99
-		booking.learner = "learnerId"
-		const bookings = [booking]
-
 		const registerLearner: (request: Request, response: Response) => void = eventController.updateBooking()
 
 		const request: Request = mockReq()
@@ -581,27 +569,15 @@ describe('EventController', function() {
 
 		request.body.action = 'register'
 
-		learnerRecord.updateBooking = sinon.stub()
-		learnerRecord.getEventBookings = sinon.stub().returns(bookings)
-
-		approvedBookingActionWorker.applyActionToLearnerRecord = sinon.stub()
-		actionWorkerService.getWorker = sinon.stub().returns(approvedBookingActionWorker)
+		cslService.approveBooking = sinon.stub()
 
 		await registerLearner(request, response)
 
-		expect(learnerRecord.getEventBookings).to.have.been.calledOnceWith('eventId')
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events/eventId/attendee/99`)
-		expect(booking.status).to.be.equal(Booking.Status.CONFIRMED)
-		expect(actionWorkerService.getWorker).to.have.been.calledOnceWith(WorkerAction.APPROVED_BOOKING)
-		expect(approvedBookingActionWorker.applyActionToLearnerRecord).to.have.been.calledOnceWith('learnerId', 'courseId', 'moduleId', 'eventId')
+		expect(cslService.approveBooking).to.have.been.calledOnceWith('courseId', 'moduleId', 'eventId', 99)
 	})
 
 	it('should change booking status to cancelled and redirect to event overview page', async function() {
-		const booking: Booking = new Booking()
-		booking.id = 99
-		booking.learner = "learnerId"
-		const bookings = [booking]
-
 		const registerLearner: (request: Request, response: Response) => void = eventController.cancelBooking()
 
 		const request: Request = mockReq()
@@ -615,21 +591,14 @@ describe('EventController', function() {
 
 		request.body.reason = 'cancel'
 
-		learnerRecord.updateBooking = sinon.stub()
-		learnerRecord.getEventBookings = sinon.stub().returns(bookings)
-
-		cancelBookingActionWorker.applyActionToLearnerRecord = sinon.stub()
-		actionWorkerService.getWorker = sinon.stub().returns(cancelBookingActionWorker)
+		cslService.cancelBooking = sinon.stub().resolves({})
 
 		validator.check = sinon.stub().returns({})
 
 		await registerLearner(request, response)
 
-		expect(learnerRecord.getEventBookings).to.have.been.calledOnceWith('eventId')
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`)
-		expect(booking.status).to.be.equal(Booking.Status.CANCELLED)
-		expect(actionWorkerService.getWorker).to.have.been.calledOnceWith(WorkerAction.CANCEL_BOOKING)
-		expect(cancelBookingActionWorker.applyActionToLearnerRecord).to.have.been.calledOnceWith('learnerId', 'courseId', 'moduleId', 'eventId')
+		expect(cslService.cancelBooking).to.have.been.calledOnceWith('courseId', 'moduleId', 'eventId', 99)
 	})
 
 	it('should redirect to cancel attendee page if cancellation reason is not selected', async function() {

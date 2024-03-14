@@ -76,7 +76,6 @@ import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
 import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenController'
 import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
-import { ActionWorkerService } from './learner-record/workers/actionWorkerService'
 import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
 import { OrganisationalUnitClient } from './csrs/client/organisationalUnitClient'
 import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
@@ -92,7 +91,6 @@ export class ApplicationContext {
 
 	controllers: Controller[] = []
 
-	actionWorkerService: ActionWorkerService
 	identityService: IdentityService
 	auth: Auth
 	identityConfig: IdentityConfig
@@ -195,7 +193,9 @@ export class ApplicationContext {
 				config.AUTHENTICATION.clientSecret,
 				config.AUTHENTICATION.authenticationServiceUrl,
 				config.AUTHENTICATION.callbackUrl,
-				config.AUTHENTICATION_PATH
+				config.AUTHENTICATION_PATH,
+				config.AUTHENTICATION.endpoints.authorization,
+				config.AUTHENTICATION.endpoints.token
 			),
 			passport,
 			this.identityService
@@ -316,9 +316,6 @@ export class ApplicationContext {
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
-		this.actionWorkerService = new ActionWorkerService(this.learningCatalogue, this.csrsService, this.learnerRecord, this.organisationalUnitService, this.cslService)
-		this.actionWorkerService.init()
-
 		this.eventController = new EventController(
 			this.learningCatalogue,
 			this.learnerRecord,
@@ -330,7 +327,7 @@ export class ApplicationContext {
 			this.dateRangeValidator,
 			this.dateRangeCommandFactory,
 			this.identityService,
-			this.actionWorkerService
+			this.cslService
 		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)

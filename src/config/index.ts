@@ -1,10 +1,14 @@
 import 'reflect-metadata'
 import * as dotenv from 'dotenv'
+import * as path from 'path'
 
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
-	dotenv.load()
+	console.log('Development environment detected, loading .env')
+	dotenv.load({
+		path: path.resolve(__dirname + '/.env')
+	})
 }
 
 function getEnv(obj: any, attr: string) {
@@ -34,7 +38,13 @@ export const AUTHENTICATION = set({
 	clientSecret: env.OAUTH_CLIENT_SECRET || 'test',
 	authenticationServiceUrl: env.AUTHENTICATION_SERVICE_URL || 'http://localhost:8080',
 	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
-	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS)
+	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS),
+	endpoints: set({
+		token: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token',
+		authorization: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth/authorize',
+		resolve: env.AUTHENTICATION_SERVICE_RESOLVE_ENDPOINT || '/oauth/resolve',
+		logout: env.AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT || '/oauth/logout',
+	}),
 })
 
 export const REDIS = set({
