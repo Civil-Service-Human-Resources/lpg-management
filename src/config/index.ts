@@ -25,19 +25,19 @@ function set<T>(defaultValue: T, envValues: Record<string, T> = {}): T {
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
-export const APPLICATIONINSIGHTS_CONNECTION_STRING = env.APPLICATIONINSIGHTS_CONNECTION_STRING
+export const APPLICATIONINSIGHTS_CONNECTION_STRING = env.APPLICATIONINSIGHTS_CONNECTION_STRING || 'ai_key'
 
-export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.local.learn.civilservice.gov.uk/lpgdevcontent'
+export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.develop.learn.civilservice.gov.uk/lpgdevcontent'
 
 export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 
 export const LOGGING_LEVEL = env.LOGGING_LEVEL
 
 export const AUTHENTICATION = set({
-	clientId: env.OAUTH_CLIENT_ID || 'a5881544-6159-4d2f-9b51-8c47ce97454d',
+	clientId: env.OAUTH_CLIENT_ID || '89e1b5f4-01e6-470a-b2dc-78969140052a',
 	clientSecret: env.OAUTH_CLIENT_SECRET || 'test',
 	authenticationServiceUrl: env.AUTHENTICATION_SERVICE_URL || 'http://localhost:8080',
-	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
+	callbackUrl: env.CALLBACK_URL || 'http://management.develop.learn.civilservice.gov.uk:3005',
 	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS),
 	endpoints: set({
 		token: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token',
