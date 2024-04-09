@@ -78,7 +78,7 @@ export class Identity {
 	}
 
 	isMVPReporter() {
-		return this.hasRole(Role.MVP_REPORTER) && this.isOrganisationReporter()
+		return this.hasRole(Role.MVP_REPORTER) && (this.isOrganisationReporter() || this.isCshrReporter())
 	}
 
 	hasEventViewingRole() {
