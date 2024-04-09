@@ -11,7 +11,7 @@
             {% if identity.hasAnyAdminRole() %}
                 <a class="nav-item govuk-link {% if originalUrl === '/content-management' %}active{% endif %}" href="/content-management">Admin</a>
             {% endif %}
-            {% if identity.isCshrReporter() or identity.isOrganisationReporter() or identity.isProfessionReporter() or identity.isKPMGSupplierReporter()  or identity.isKornferrySupplierReporter() %}
+            {% if identity.isReporter() %}
                 <a class="nav-item govuk-link {% if originalUrl === '/reporting' %}active{% endif %}" href="/reporting">Reporting</a>
             {% endif %}
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/sign-out">Sign out</a>

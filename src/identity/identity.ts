@@ -78,7 +78,7 @@ export class Identity {
 	}
 
 	isMVPReporter() {
-		return this.hasRole(Role.MVP_REPORTER)
+		return this.hasRole(Role.MVP_REPORTER) && this.isOrganisationReporter()
 	}
 
 	hasEventViewingRole() {
@@ -148,6 +148,12 @@ export class Identity {
 
 	hasLearningArchive() {
 		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
+	}
+
+	isReporter() {
+		return this.isCshrReporter() || this.isProfessionReporter() ||
+			this.isOrganisationReporter() || this.isKPMGSupplierReporter() ||
+			this.isKornferrySupplierReporter();
 	}
 
 	isLearner() {
