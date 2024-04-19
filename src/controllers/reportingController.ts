@@ -44,6 +44,12 @@ export class ReportingController {
 		}
 	}
 
+	getChooseOrganisationPage() {
+		return async (Request: Request, response: Response) => {
+			response.render('page/reporting/choose-organisation')
+		}
+	}
+
 	generateReportBookingInformation() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			const reportType = 'Booking_information_'

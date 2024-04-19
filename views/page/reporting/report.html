@@ -1,21 +1,23 @@
-{% from "../../component/reporting/macro.njk" import reporting with context %}
+{% from "date-input/macro.njk" import govukDateInput %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../component/Page.njk" %} 
+{% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['report_'+ (pageTitle | lower | replace(" ", "_")) +'_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}{{ i18n['administration_pages_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% block content %}
+{% set errors = sessionFlash.errors %}
 
-    <div class="govuk-grid row">
-        <div class="govuk-column-full">
-            <h1 class="govuk-heading-l">{{pageTitle}}</h1>
+{{ errorSummary(errors.fields) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="govuk-heading-l">Reporting - Choose organisation</h1>
+            <div class="reports-container">
+                Choose organisation
+            </div>
         </div>
-    </div>
-    <div class="govuk-grid row">
-        <div class="govuk-column-two-thirds">
-             {{ reporting(pageTitle | lower | replace(" ", "-")) }}
-        </div>
-        <div class="govuk-column-one-third">
+        <div class="govuk-grid-column-one-third">
         </div>
     </div>
 {% endblock %}
