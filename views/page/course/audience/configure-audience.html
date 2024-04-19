@@ -27,7 +27,7 @@
                 <div class="audience-content">
                     <p class="govuk-body">Organisation</p>
                     {% if audience.departments and audience.departments.length > 0 %}
-                        <p class="audience-type no-margin">{{ audience.departments | jsonpath(departmentCodeToName) | sort | join(', ') }}</p>
+                        <p class="audience-type no-margin">{{ audience.departmentsAsNames | join(', ') }}</p>
                     {% else %}
                         <p class="unset">No organisations have been added</p>
                     {% endif %}

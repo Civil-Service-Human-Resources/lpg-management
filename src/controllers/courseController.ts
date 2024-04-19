@@ -14,6 +14,7 @@ import {Validate} from './formValidator'
 import {FormController} from './formController'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
+import {AudienceViewModel} from './audience/model/AudienceViewModel'
 const { xss } = require('express-xss-sanitizer')
 
 export class CourseController implements FormController {
@@ -82,7 +83,7 @@ export class CourseController implements FormController {
 				next()
 			} else {
 				if (req.user && req.user.uid) {
-					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP ' 
+					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP '
 						+ req.ip + ' from page ' + req.originalUrl)
 					}
 				res.render('page/unauthorised')
@@ -100,12 +101,17 @@ export class CourseController implements FormController {
 
 			const grades = this.courseService.getUniqueGrades(res.locals.course)
 
-			const sortedAudiences = await this.courseService.sortAudiences(res.locals.course.audiences)
+			const sortedAudiences = (await this.courseService.sortAudiences(res.locals.course.audiences))
+				.map(a => {
+					const audienceViewModel = AudienceViewModel.fromAudience(a)
+					audienceViewModel.setDepartmentNames(departmentCodeToName)
+					return audienceViewModel
+				})
+
 
 			res.render('page/course/course-overview', {
 				faceToFaceModules,
 				AudienceType: Audience.Type,
-				departmentCodeToName,
 				gradeCodeToName,
 				audienceIdToEvent,
 				eventIdToModuleId,

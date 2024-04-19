@@ -1,6 +1,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {Audience} from '../learning-catalogue/model/audience'
 import {CsrsService} from '../csrs/service/csrsService'
+import {AudienceViewModel} from '../controllers/audience/model/AudienceViewModel'
 // import {Duration} from "moment"
 
 export class AudienceService {
@@ -11,12 +12,14 @@ export class AudienceService {
 	}
 
 	/* istanbul ignore next */
-	static findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404() {
+	findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404() {
 		return async (req: Request, res: Response, next: NextFunction, audienceId: string) => {
 			if (res.locals.course && res.locals.course.audiences) {
-				const audience = res.locals.course.audiences.find((audience: Audience) => audience.id == audienceId)
+				const audience: Audience = res.locals.course.audiences.find((audience: Audience) => audience.id == audienceId)
 				if (audience) {
-					res.locals.audience = audience
+					const audienceViewModel = AudienceViewModel.fromAudience(audience)
+					audienceViewModel.setDepartmentNames(await this.csrsService.getDepartmentCodeToNameMapping())
+					res.locals.audience = audienceViewModel
 					next()
 				}
 			}
