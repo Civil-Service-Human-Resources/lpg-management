@@ -46,11 +46,9 @@
                         <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
                           <select class = "autocomplete__organisations" name="parent" id="parent">
                               <option value="" selected></option>
-                              <option value="">Org1</option>
-                              <option value="">Org2</option>
-                              <!-- {% for key in organisationalUnits %}
-                                  <option value={{ key.code }}>{{ key.formattedName }}</option>
-                              {% endfor %} -->
+                              {% for organisation in organisationListForTypeAhead %}
+                                  <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
+                              {% endfor %}
                           </select>
                       </div>
                       </div>

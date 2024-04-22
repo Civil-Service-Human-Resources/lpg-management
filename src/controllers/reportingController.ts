@@ -54,7 +54,8 @@ export class ReportingController {
 			let civilServant = await this.csrsService.getCivilServant()
 			let organisationName = civilServant.organisationalUnit.name
 			response.render('page/reporting/choose-organisation', {
-				organisationName: organisationName
+				organisationName: organisationName,
+				organisationListForTypeAhead: this.csrsService.listOrganisationalUnitsForTypehead()
 			})
 		}
 	}
