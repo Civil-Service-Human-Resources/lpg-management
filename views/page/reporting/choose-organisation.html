@@ -1,3 +1,4 @@
+{% from "../../component/reporting/macro.njk" import reporting with context %}
 {% from "radios/macro.njk" import govukRadios %}
 
 {% extends "../../component/Page.njk" %} 
@@ -12,9 +13,6 @@
         </div>
     </div>
     <div class="govuk-grid row">
-        <div class="govuk-column-two-thirds">
-             {{ reporting(pageTitle | lower | replace(" ", "-")) }}
-        </div>
         <div class="govuk-column-one-third">
             {% if identity.isMVPReporter() %}
             <div class="govuk-form-group">
