@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response} from 'express'
 import {Audience} from '../learning-catalogue/model/audience'
 import {CsrsService} from '../csrs/service/csrsService'
-import {AudienceViewModel} from '../controllers/audience/model/AudienceViewModel'
 // import {Duration} from "moment"
 
 export class AudienceService {
@@ -17,9 +16,11 @@ export class AudienceService {
 			if (res.locals.course && res.locals.course.audiences) {
 				const audience: Audience = res.locals.course.audiences.find((audience: Audience) => audience.id == audienceId)
 				if (audience) {
-					const audienceViewModel = AudienceViewModel.fromAudience(audience)
-					audienceViewModel.setDepartmentNames(await this.csrsService.getDepartmentCodeToNameMapping())
-					res.locals.audience = audienceViewModel
+					const codeToNameMap  = await this.csrsService.getDepartmentCodeToNameMapping()
+					res.locals.audience = audience
+					res.locals.audienceDepartmentsAsNames = (audience.departments || [])
+						.map(d => codeToNameMap[d])
+						.sort()
 					next()
 				}
 			}
