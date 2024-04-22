@@ -10,6 +10,7 @@ import {Validator} from '../../../src/learning-catalogue/validator/validator'
 import {DateStartEndCommand} from '../../../src/controllers/command/dateStartEndCommand'
 import {DateStartEndCommandFactory} from '../../../src/controllers/command/factory/dateStartEndCommandFactory'
 import {DateStartEnd} from '../../../src/learning-catalogue/model/dateStartEnd'
+import { CsrsService } from 'src/csrs/service/csrsService'
 
 chai.use(sinonChai)
 
@@ -19,13 +20,15 @@ describe('Reporting Controller Tests', function() {
 	let dateStartEndCommandValidator: Validator<DateStartEndCommand>
 	let dateStartEndCommandFactory: DateStartEndCommandFactory
 	let dateStartEndValidator: Validator<DateStartEnd>
+	let csrsService: CsrsService
 
 	beforeEach(() => {
 		reportService = <ReportService>{}
+		csrsService = <CsrsService>{}
 		dateStartEndCommandValidator: <Validator<DateStartEndCommand>>{}
 		dateStartEndCommandFactory: <DateStartEndCommandFactory>{}
 		dateStartEndValidator: <Validator<DateStartEnd>>{}
-		reportingController = new ReportingController(reportService, dateStartEndCommandFactory, dateStartEndCommandValidator, dateStartEndValidator)
+		reportingController = new ReportingController(reportService, dateStartEndCommandFactory, dateStartEndCommandValidator, dateStartEndValidator, csrsService)
 	})
 
 	it('should render reporting home page', async function() {

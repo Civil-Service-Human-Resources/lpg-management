@@ -7,7 +7,6 @@ import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {PlaceholderDate} from '../learning-catalogue/model/placeholderDate'
 import { CsrsService } from 'src/csrs/service/csrsService'
-import { CivilServant } from 'src/csrs/model/civilServant'
 const { xss } = require('express-xss-sanitizer')
 
 
