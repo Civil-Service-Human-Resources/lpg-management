@@ -32,6 +32,7 @@ export class ReportingController {
 
 	private configureRouterPaths() {
 		this.router.get('/reporting', xss(), this.getReports())
+		this.router.get('/reporting/course-completions/choose-organisation', xss(), this.getChooseOrganisationPage())
 		this.router.post('/reporting/booking-information', xss(), this.generateReportBookingInformation())
 		this.router.post('/reporting/learner-record', xss(), this.generateReportLearnerRecord())
 	}
