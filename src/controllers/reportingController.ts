@@ -6,6 +6,8 @@ import {DateStartEndCommand} from './command/dateStartEndCommand'
 import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {PlaceholderDate} from '../learning-catalogue/model/placeholderDate'
+import { CsrsService } from 'src/csrs/service/csrsService'
+import { CivilServant } from 'src/csrs/model/civilServant'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -15,12 +17,14 @@ export class ReportingController {
 	dateStartEndCommandFactory: DateStartEndCommandFactory
 	dateStartEndCommandValidator: Validator<DateStartEndCommand>
 	dateStartEndValidator: Validator<DateStartEnd>
+	csrsService: CsrsService
 
 	constructor(
 		reportService: ReportService,
 		dateStartEndCommandFactory: DateStartEndCommandFactory,
 		dateStartEndCommandValidator: Validator<DateStartEndCommand>,
-		dateStartEndValidator: Validator<DateStartEnd>
+		dateStartEndValidator: Validator<DateStartEnd>,
+		csrsService: CsrsService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
@@ -28,6 +32,7 @@ export class ReportingController {
 		this.dateStartEndCommandFactory = dateStartEndCommandFactory
 		this.dateStartEndCommandValidator = dateStartEndCommandValidator
 		this.dateStartEndValidator = dateStartEndValidator
+		this.csrsService = csrsService
 	}
 
 	private configureRouterPaths() {
@@ -47,7 +52,11 @@ export class ReportingController {
 
 	getChooseOrganisationPage() {
 		return async (Request: Request, response: Response) => {
-			response.render('page/reporting/choose-organisation')
+			let civilServant = await this.csrsService.getCivilServant()
+			let organisationName = civilServant.organisationalUnit.name
+			response.render('page/reporting/choose-organisation', {
+				organisationName: organisationName
+			})
 		}
 	}
 
