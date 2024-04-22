@@ -46,7 +46,16 @@
                         <label class="govuk-label" for="other-organisation-dropdown">
                           Organisation
                         </label>
-                        <input class="govuk-input govuk-!-width-one-third" id="other-organisation-dropdown" name="organisation">
+                        <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
+                          <select class = "autocomplete__organisations" name="parent" id="parent">
+                              <option value="" selected></option>
+                              <option value="">Org1</option>
+                              <option value="">Org2</option>
+                              <!-- {% for key in organisationalUnits %}
+                                  <option value={{ key.code }}>{{ key.formattedName }}</option>
+                              {% endfor %} -->
+                          </select>
+                      </div>
                       </div>
                     </div>
                 </fieldset>
