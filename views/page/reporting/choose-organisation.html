@@ -47,14 +47,18 @@ i18n['proposition_name'] }}{% endblock %}
               <label class="govuk-label" for="other-organisation-dropdown">
                 Organisation
               </label>
-              <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
-                <select class="autocomplete__organisations" name="parent" id="parent">
-                  <option value="" selected></option>
-                  {% for organisation in organisationListForTypeAhead %}
-                  <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
-                  {% endfor %}
-                </select>
-              </div>
+              <form action="/" method="get">
+                <fieldset class="govuk-fieldset module-selector">
+                    <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
+                        <select class = "autocomplete__organisations" name="parent" id="parent">
+                            <option value="" selected></option>
+                            {% for organisation in organisationListForTypeAhead %}
+                                <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </fieldset>
+            </form>
             </div>
           </div>
       </fieldset>
