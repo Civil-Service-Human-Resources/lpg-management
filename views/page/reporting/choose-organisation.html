@@ -2,63 +2,70 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
 
-{% extends "../../component/Page.njk" %} 
+{% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['report_'+ (pageTitle | lower | replace(" ", "_")) +'_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}{{ i18n['report_'+ (pageTitle | lower | replace(" ", "_")) +'_title'] }} - {{
+i18n['proposition_name'] }}{% endblock %}
 
 {% block content %}
 
-    <div class="govuk-grid row">
-        <div class="govuk-column-full">
-            <h1 class="govuk-heading-l">{{pageTitle}}</h1>
+<div class="govuk-grid row">
+  <div class="govuk-column-full">
+    <h1 class="govuk-heading-l">{{pageTitle}}</h1>
+  </div>
+</div>
+<div class="govuk-grid row">
+  <div class="govuk-column-one-third">
+    {% if identity.isMVPReporter() %}
+    <div class="govuk-form-group">
+      <fieldset class="govuk-fieldset" aria-describedby="organisation-hint">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">
+            Select an organisation
+          </h1>
+        </legend>
+        <div id="organisation-hint" class="govuk-hint">
+          Which organisation would you like to report on?
         </div>
-    </div>
-    <div class="govuk-grid row">
-        <div class="govuk-column-one-third">
-            {% if identity.isMVPReporter() %}
+        <div class="govuk-radios" data-module="govuk-radios">
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="main-organisation" name="organisation" type="radio"
+              value="cabinet-office" data-aria-controls="conditional-organisation">
+            <label class="govuk-label govuk-radios__label" for="main-organisation">
+              {{ organisationName }}
+            </label>
+          </div>
+          <div class="govuk-radios__item">
+            <input class="govuk-radios__input" id="organisation-2" name="organisation" type="radio" value="other-org"
+              data-aria-controls="conditional-organisation-2">
+            <label class="govuk-label govuk-radios__label" for="organisation-2">
+              Other organisations
+            </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-organisation-2">
             <div class="govuk-form-group">
-                <fieldset class="govuk-fieldset" aria-describedby="organisation-hint">
-                  <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-                    <h1 class="govuk-fieldset__heading">
-                      Select an organisation
-                    </h1>
-                  </legend>
-                  <div id="organisation-hint" class="govuk-hint">
-                    Which organisation would you like to report on?
-                  </div>
-                  <div class="govuk-radios" data-module="govuk-radios">
-                    <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="main-organisation" name="organisation" type="radio" value="cabinet-office" data-aria-controls="conditional-organisation">
-                      <label class="govuk-label govuk-radios__label" for="main-organisation">
-                        {{ organisationName }}
-                      </label>
-                    </div>
-                    <div class="govuk-radios__item">
-                      <input class="govuk-radios__input" id="organisation-2" name="organisation" type="radio" value="other-org" data-aria-controls="conditional-organisation-2">
-                      <label class="govuk-label govuk-radios__label" for="organisation-2">
-                        Other organisations
-                      </label>
-                    </div>
-                    <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-organisation-2">
-                      <div class="govuk-form-group">
-                        <label class="govuk-label" for="other-organisation-dropdown">
-                          Organisation
-                        </label>
-                        <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
-                          <select class = "autocomplete__organisations" name="parent" id="parent">
-                              <option value="" selected></option>
-                              {% for organisation in organisationListForTypeAhead %}
-                                  <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
-                      </div>
+              <label class="govuk-label" for="other-organisation-dropdown">
+                Organisation
+              </label>
+              <form action="/" method="get">
+                <fieldset class="govuk-fieldset module-selector">
+                    <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
+                        <select class = "autocomplete__organisations" name="parent" id="parent">
+                            <option value="" selected></option>
+                            {% for organisation in organisationListForTypeAhead %}
+                                <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
                 </fieldset>
-              </div>
-            {% else %}
-                You are not authorised to see this page.
-            {% endif %}
-        </div>
+            </form>
+            </div>
+          </div>
+      </fieldset>
     </div>
+    {% else %}
+    You are not authorised to see this page.
+    {% endif %}
+  </div>
+</div>
 {% endblock %}
