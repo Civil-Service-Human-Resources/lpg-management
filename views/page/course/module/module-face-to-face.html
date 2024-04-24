@@ -2,6 +2,7 @@
 {% from "textarea/macro.njk" import govukTextarea %}
 {% from "button/macro.njk" import govukButton %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "./macros/optionalModule" import optionalModule %}
 
 {% extends "../../../component/Page.njk" %}
 
@@ -110,25 +111,8 @@
                     }) }}
                 {% endif %}
 
-                {{ govukCheckboxes({
-                    idPrefix: "optional",
-                    name: "optional",
-                    classes: "font-light",
-                    fieldset: {
-                        legend: {
-                            text: "Is this an optional module?",
-                            isPageHeading: true,
-                            classes: "font-bold",
-                            checked: true if module.optional
-                        }
-                    },
-                    items: [
-                        {
-                            value: "true",
-                            text: "Yes, this is optional"
-                        }
-                    ]
-                }) }}
+                {{ optionalModule(module.optional) }}
+
                 <div class="button-container">
                     {{ govukButton({
                         text: "Edit item" if module.id else "Add item",

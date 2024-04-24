@@ -1,0 +1,23 @@
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% macro optionalModule(moduleIsOptional) %}
+    {{ govukCheckboxes({
+        idPrefix: "optional",
+        name: "optional",
+        classes: "font-light",
+        fieldset: {
+            legend: {
+                text: "Is this an optional module?",
+                isPageHeading: true,
+                classes: "font-bold"
+            }
+        },
+        items: [
+            {
+                value: "true",
+                text: "Yes, this is optional",
+                checked: true if moduleIsOptional
+            }
+        ]
+    }) }}
+{% endmacro %}

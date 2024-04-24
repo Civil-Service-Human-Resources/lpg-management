@@ -4,6 +4,7 @@
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "file-upload/macro.njk" import govukFileUpload %}
 {% from "warning-text/macro.njk" import govukWarningText %}
+{% from "./macros/optionalModule" import optionalModule %}
 
 {% extends "../../../component/Page.njk" %}
 
@@ -225,26 +226,7 @@
                 }) }}
                 {% endif %}
 
-
-                {{ govukCheckboxes({
-                idPrefix: "isOptional",
-                name: "isOptional",
-                classes: "font-light",
-                fieldset: {
-                legend: {
-                text: "Is this an optional module?",
-                isPageHeading: true,
-                classes: "font-bold"
-                }
-                },
-                items: [
-                {
-                value: "true",
-                text: "Yes, this is optional",
-                    checked: true if module.optional
-                }
-                ]
-                }) }}
+                {{ optionalModule(module.optional) }}
 
                 {{ govukCheckboxes({
                     idPrefix: "associatedLearning",
