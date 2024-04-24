@@ -14,7 +14,6 @@ import {Validate} from './formValidator'
 import {FormController} from './formController'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
-import {AudienceViewModel} from './audience/model/AudienceViewModel'
 const { xss } = require('express-xss-sanitizer')
 
 export class CourseController implements FormController {
@@ -100,18 +99,21 @@ export class CourseController implements FormController {
 			const eventIdToModuleId = this.courseService.getEventIdToModuleIdMapping(res.locals.course)
 
 			const grades = this.courseService.getUniqueGrades(res.locals.course)
+			const audienceIdToDepsMap: any = {}
 
 			const sortedAudiences = (await this.courseService.sortAudiences(res.locals.course.audiences))
 				.map(a => {
-					const audienceViewModel = AudienceViewModel.fromAudience(a)
-					audienceViewModel.setDepartmentNames(departmentCodeToName)
-					return audienceViewModel
+					audienceIdToDepsMap[a.id] = (a.departments || [])
+						.map(d => departmentCodeToName[d])
+						.sort()
+					return a
 				})
 
 
 			res.render('page/course/course-overview', {
 				faceToFaceModules,
 				AudienceType: Audience.Type,
+				audienceIdToDepsMap,
 				gradeCodeToName,
 				audienceIdToEvent,
 				eventIdToModuleId,
