@@ -54,28 +54,28 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			if(currentUser && currentUser.isMVPReporter()){
-				let userDomain: string = currentUser.username.split("@")[1]
+			console.log(currentUser)
 
-				let civilServant = await this.csrsService.getCivilServant()
-				
-				let organisationName = civilServant.organisationalUnit.name
+			// let userDomain: string = currentUser.username.split("@")[1]
 
-				let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
-				let organisationsForTypeahead = organisationList.typeahead
+			let civilServant = await this.csrsService.getCivilServant()
+			
+			let organisationName = civilServant.organisationalUnit.name
 
-				if(!currentUser.isUnrestrictedOrganisation()){
-					organisationsForTypeahead = organisationsForTypeahead.filter(organisation => organisation.domains.map(domain => domain.domain).includes(userDomain))
-				}
-				
-				let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
+			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
+			let organisationsForTypeahead = organisationList.typeahead
 
-				response.render('page/reporting/choose-organisation', {
-					organisationName: organisationName,
-					organisationListForTypeAhead: organisationsForTypeahead,
-					showTypeaheadOption: userCanAccessMultipleOrganisations
-				})
-			}
+			// if(!currentUser.isUnrestrictedOrganisation()){
+			// 	organisationsForTypeahead = organisationsForTypeahead.filter(organisation => organisation.domains.map(domain => domain.domain).includes(userDomain))
+			// }
+			
+			let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
+
+			response.render('page/reporting/choose-organisation', {
+				organisationName: organisationName,
+				organisationListForTypeAhead: organisationsForTypeahead,
+				showTypeaheadOption: userCanAccessMultipleOrganisations
+			})
 			
 		}
 	}
