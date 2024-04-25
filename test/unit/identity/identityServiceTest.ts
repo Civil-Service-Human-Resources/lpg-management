@@ -25,7 +25,7 @@ describe('IdentityService tests...', function() {
 			.returns({
 				data: {
 					uid: 'abc123',
-					username: 'user',
+					"username": "user@domain.com",
 					roles: ['ROLE1', 'ROLE2'],
 				},
 			})
