@@ -52,12 +52,18 @@ export class ReportingController {
 	getChooseOrganisationPage() {
 		return async (Request: Request, response: Response) => {
 			let civilServant = await this.csrsService.getCivilServant()
+			
 			let organisationName = civilServant.organisationalUnit.name
 
-			let organisations = await this.csrsService.listOrganisationalUnitsForTypehead()
+			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
+			let organisations = organisationList.typeahead
+
+			let organisationsForDomain = organisations.filter((organisation) => organisation.domains.map(domain => domain.domain).includes("cabinetoffice.gov.uk"))
+
+			
 			response.render('page/reporting/choose-organisation', {
 				organisationName: organisationName,
-				organisationListForTypeAhead: organisations.typeahead
+				organisationListForTypeAhead: organisationsForDomain
 			})
 		}
 	}
