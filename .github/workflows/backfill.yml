@@ -1,7 +1,7 @@
 name: "Auto-create release backfills"
 
 on:
-  push:
+  create:
     branches:
       - '*'
 
