@@ -43,6 +43,7 @@ describe('AudienceController', () => {
 		audienceFactory = new AudienceFactory()
 		audienceValidator = new Validator(audienceFactory)
 		audienceService = <AudienceService>{}
+		audienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404 =  () => sinon.stub()
 		audienceController = new AudienceController(learningCatalogue, audienceValidator, audienceFactory, courseService, csrsService, audienceService)
 
 		req = mockReq()
