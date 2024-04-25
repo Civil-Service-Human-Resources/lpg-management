@@ -2,13 +2,9 @@ name: "Auto-create release backfills"
 
 on:
   push:
-    branches:
-      - 'idt-release-v**'
-      - 'idt-hotfix-v**'
 
 jobs:
   call-reusable-workflow:
-    if: github.event.created
     uses: Civil-Service-Human-Resources/csl-devops-templates/.github/workflows/auto-backfill-template.yml@main
     with:
       source_branch: ${{ github.ref_name }}
