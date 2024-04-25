@@ -16,6 +16,10 @@ export class IdentityService {
 				Authorization: `Bearer ${token}`,
 			},
 		})
+
+		console.log("RESOLVE RESPONSE:")
+		console.log(response.data)
+		
 		return new Identity(response.data.uid, response.data.username, response.data.roles, token)
 	}
 
