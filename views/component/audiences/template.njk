@@ -16,7 +16,7 @@
                             + (i18n.audience.type[audienceTypeAsString] | default("Unspecified", true)) + '</span></li>' %}
                     {% if audienceTypeAsString !== 'PRIVATE_COURSE' %}
                         {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span class="audience-info">'
-                            + (audience.departments | jsonpath(departmentCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
+                            + (audienceIdToDepsMap[audience.id] | join(', ') | default("Unspecified", true)) + '</span></li>
                         <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span class="audience-info">' + (audience.grades | jsonpath(gradeCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
                         <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span class="audience-info">' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
                         <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span class="audience-info">' + (audience.interests | join(', ') | default("Unspecified", true)) + '</span></li>' %}

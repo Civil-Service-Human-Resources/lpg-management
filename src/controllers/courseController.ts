@@ -82,7 +82,7 @@ export class CourseController implements FormController {
 				next()
 			} else {
 				if (req.user && req.user.uid) {
-					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP ' 
+					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP '
 						+ req.ip + ' from page ' + req.originalUrl)
 					}
 				res.render('page/unauthorised')
@@ -99,13 +99,21 @@ export class CourseController implements FormController {
 			const eventIdToModuleId = this.courseService.getEventIdToModuleIdMapping(res.locals.course)
 
 			const grades = this.courseService.getUniqueGrades(res.locals.course)
+			const audienceIdToDepsMap: any = {}
 
-			const sortedAudiences = await this.courseService.sortAudiences(res.locals.course.audiences)
+			const sortedAudiences = (await this.courseService.sortAudiences(res.locals.course.audiences))
+				.map(a => {
+					audienceIdToDepsMap[a.id] = (a.departments || [])
+						.map(d => departmentCodeToName[d])
+						.sort()
+					return a
+				})
+
 
 			res.render('page/course/course-overview', {
 				faceToFaceModules,
 				AudienceType: Audience.Type,
-				departmentCodeToName,
+				audienceIdToDepsMap,
 				gradeCodeToName,
 				audienceIdToEvent,
 				eventIdToModuleId,

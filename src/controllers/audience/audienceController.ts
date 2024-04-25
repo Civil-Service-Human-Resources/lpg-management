@@ -44,7 +44,7 @@ export class AudienceController {
 
 	private configurePathParametersProcessing() {
 		this.router.param('courseId', this.courseService.findCourseByCourseIdAndAssignToResponseLocalsOrReturn404())
-		this.router.param('audienceId', AudienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404())
+		this.router.param('audienceId', this.audienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404())
 	}
 
 	private setRouterPaths() {
@@ -97,14 +97,12 @@ export class AudienceController {
 
 	getConfigureAudience() {
 		return async (req: Request, res: Response) => {
-			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
 			const gradeCodeToName = await this.csrsService.getGradeCodeToNameMapping()
 			const audienceIdToEvent = this.courseService.getAudienceIdToEventMapping(res.locals.course)
 			const requiredBy = res.locals.audience.requiredBy ? new Date(res.locals.audience.requiredBy) : null
 			res.render('page/course/audience/configure-audience', {
 				requiredBy,
 				AudienceType: Audience.Type,
-				departmentCodeToName,
 				gradeCodeToName,
 				audienceIdToEvent,
 			})
