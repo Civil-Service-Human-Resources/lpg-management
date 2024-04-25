@@ -53,8 +53,7 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			console.log("Domain")
-			console.log(currentUser ? currentUser.username.split("@")[1] : "No user")
+			let userDomain = currentUser ? currentUser.username.split("@")[1] : ""
 
 			let civilServant = await this.csrsService.getCivilServant()
 			
@@ -62,6 +61,10 @@ export class ReportingController {
 
 			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
 			let organisationsForTypeahead = organisationList.typeahead
+
+			if(!currentUser.isUnrestrictedOrganisation()){
+				organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
+			}
 			
 			let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
 
