@@ -185,4 +185,8 @@ export class Identity {
 	isSkillsManagerOrSuperUser() {
 		return this.hasRole(Role.SKILLS_MANAGER) || this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter() || this.isProfessionReporter()
 	}
+
+	isUnrestrictedOrganisation(){
+		return this.hasRole("UNRESTRICTED_ORGANISATION")
+	}
 }

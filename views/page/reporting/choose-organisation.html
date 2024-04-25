@@ -16,7 +16,6 @@ i18n['proposition_name'] }}{% endblock %}
 </div>
 <div class="govuk-grid row">
   <div class="govuk-column-one-third">
-    {% if identity.isMVPReporter() %}
     <div class="govuk-form-group">
       <fieldset class="govuk-fieldset" aria-describedby="organisation-hint">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -35,6 +34,7 @@ i18n['proposition_name'] }}{% endblock %}
               {{ organisationName }}
             </label>
           </div>
+          {% if showTypeaheadOption %}
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" id="organisation-2" name="organisation" type="radio" value="other-org"
               data-aria-controls="conditional-organisation-2">
@@ -57,11 +57,14 @@ i18n['proposition_name'] }}{% endblock %}
               </div>
             </div>
           </div>
+          {% endif %}
+          {{ govukButton({
+            text: "Select courses",
+            classes: "button-blue left-aligned",
+            preventDoubleClick: true
+        }) }}
       </fieldset>
     </div>
-    {% else %}
-    You are not authorised to see this page.
-    {% endif %}
   </div>
 </div>
 {% endblock %}
