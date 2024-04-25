@@ -2,6 +2,8 @@ name: "Auto-create release backfills"
 
 on:
   push:
+    branches:
+      - '*'
 
 jobs:
   call-reusable-workflow:
