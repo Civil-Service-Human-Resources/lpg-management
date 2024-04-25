@@ -52,8 +52,8 @@ export class ReportingController {
 	getChooseOrganisationPage() {
 		return async (request: Request, response: Response) => {
 
-			// let user = request.user
-			// let userDomain = user.username.split("@")[1]
+			let user = request.user
+			console.log(user)
 
 			let civilServant = await this.csrsService.getCivilServant()
 			
