@@ -51,23 +51,26 @@ export class ReportingController {
 
 	getChooseOrganisationPage() {
 		return async (request: Request, response: Response) => {
-
 			let user = request.user
-			let userDomain = user.username.split("@")[1]
 
-			let civilServant = await this.csrsService.getCivilServant()
+			if(user && user.isMVPReporter()){
+				let userDomain = user.username.split("@")[1]
+
+				let civilServant = await this.csrsService.getCivilServant()
+				
+				let organisationName = civilServant.organisationalUnit.name
+
+				let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
+				let organisations = organisationList.typeahead
+
+				let organisationsForDomain = organisations.filter(org => org.domains.map(domain => domain.domain).includes(userDomain))
+				
+				response.render('page/reporting/choose-organisation', {
+					organisationName: organisationName,
+					organisationListForTypeAhead: organisationsForDomain
+				})
+			}
 			
-			let organisationName = civilServant.organisationalUnit.name
-
-			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
-			let organisations = organisationList.typeahead
-
-			let organisationsForDomain = organisations.filter(org => org.domains.map(domain => domain.domain).includes(userDomain))
-			
-			response.render('page/reporting/choose-organisation', {
-				organisationName: organisationName,
-				organisationListForTypeAhead: organisationsForDomain
-			})
 		}
 	}
 
