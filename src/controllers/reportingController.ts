@@ -54,6 +54,7 @@ export class ReportingController {
 			let currentUser = request.user
 
 			let userDomain = currentUser ? currentUser.username.split("@")[1] : ""
+			console.log("Domain: " + userDomain)
 
 			let civilServant = await this.csrsService.getCivilServant()
 			
@@ -62,7 +63,7 @@ export class ReportingController {
 			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
 			let organisationsForTypeahead = organisationList.typeahead
 
-			if(!currentUser.isUnrestrictedOrganisation()){
+			if(currentUser && !currentUser.isUnrestrictedOrganisation()){
 				organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
 			}
 			
