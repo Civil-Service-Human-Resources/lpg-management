@@ -7,7 +7,6 @@ import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
 import {Validator} from '../learning-catalogue/validator/validator'
 import {PlaceholderDate} from '../learning-catalogue/model/placeholderDate'
 import { CsrsService } from 'src/csrs/service/csrsService'
-import { IdentityService } from 'src/identity/identityService'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -18,7 +17,6 @@ export class ReportingController {
 	dateStartEndCommandValidator: Validator<DateStartEndCommand>
 	dateStartEndValidator: Validator<DateStartEnd>
 	csrsService: CsrsService
-	identityService: IdentityService
 
 	constructor(
 		reportService: ReportService,
@@ -26,7 +24,6 @@ export class ReportingController {
 		dateStartEndCommandValidator: Validator<DateStartEndCommand>,
 		dateStartEndValidator: Validator<DateStartEnd>,
 		csrsService: CsrsService,
-		identityService: IdentityService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
@@ -35,7 +32,6 @@ export class ReportingController {
 		this.dateStartEndCommandValidator = dateStartEndCommandValidator
 		this.dateStartEndValidator = dateStartEndValidator
 		this.csrsService = csrsService
-		this.identityService = identityService
 	}
 
 	private configureRouterPaths() {
@@ -56,6 +52,9 @@ export class ReportingController {
 	getChooseOrganisationPage() {
 		return async (request: Request, response: Response) => {
 
+			let user = request.user
+			let userDomain = user.username.split("@")[1]
+
 			let civilServant = await this.csrsService.getCivilServant()
 			
 			let organisationName = civilServant.organisationalUnit.name
@@ -63,11 +62,11 @@ export class ReportingController {
 			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
 			let organisations = organisationList.typeahead
 
-
+			let organisationsForDomain = organisations.filter(org => org.domains.map(domain => domain.domain).includes(userDomain))
 			
 			response.render('page/reporting/choose-organisation', {
 				organisationName: organisationName,
-				organisationListForTypeAhead: organisations
+				organisationListForTypeAhead: organisationsForDomain
 			})
 		}
 	}

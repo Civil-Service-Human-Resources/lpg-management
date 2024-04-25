@@ -50,7 +50,7 @@ i18n['proposition_name'] }}{% endblock %}
               <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
                 <select class="autocomplete__organisations" name="parent" id="parent">
                   <option value="" selected></option>
-                  {% for organisation in organisationListForTypeAhead.filter((org) => org.domains.map(domain => domain.domain).includes(identity.username.split("@")[1])) %}
+                  {% for organisation in organisationListForTypeAhead %}
                   <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
                   {% endfor %}
                 </select>
