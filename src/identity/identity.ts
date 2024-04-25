@@ -31,11 +31,14 @@ export enum Role {
 export class Identity {
 
 	readonly uid: string
+	readonly username: string
 	readonly roles: string[]
 	readonly accessToken: string
+	
 
-	constructor(uid: string, roles: string[], accessToken: string) {
+	constructor(uid: string, username: string, roles: string[], accessToken: string) {
 		this.uid = uid
+		this.username = username
 		this.roles = roles
 		this.accessToken = accessToken
 	}

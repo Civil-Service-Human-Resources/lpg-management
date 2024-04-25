@@ -16,7 +16,7 @@ export class IdentityService {
 				Authorization: `Bearer ${token}`,
 			},
 		})
-		return new Identity(response.data.uid, response.data.roles, token)
+		return new Identity(response.data.uid, response.data.username, response.data.roles, token)
 	}
 
 	async logout(token: string) {

@@ -33,7 +33,7 @@ describe('IdentityService tests...', function() {
 		http.get = axiosGet
 
 		const returnValue = identityService.getDetails(token)
-		const identity = new Identity('abc123', ['ROLE1', 'ROLE2'], token)
+		const identity = new Identity('abc123', 'user@domain.com', ['ROLE1', 'ROLE2'], token)
 
 		returnValue.then(function(data) {
 			expect(data).to.eql(identity)
