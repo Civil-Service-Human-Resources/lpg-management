@@ -35,7 +35,6 @@ export class Identity {
 	readonly roles: string[]
 	readonly accessToken: string
 	
-
 	constructor(uid: string, username: string, roles: string[], accessToken: string) {
 		this.uid = uid
 		this.username = username
