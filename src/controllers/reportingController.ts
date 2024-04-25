@@ -53,8 +53,8 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			console.log("Username")
-			console.log(currentUser ? currentUser.username : "No user")
+			console.log("Domain")
+			console.log(currentUser ? currentUser.username.split("@")[1] : "No user")
 
 			let civilServant = await this.csrsService.getCivilServant()
 			
