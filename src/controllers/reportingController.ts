@@ -82,13 +82,13 @@ export class ReportingController {
 			let selectedOrganisationId = request.body.organisationId
 			let user = request.user
 			
-			let userCanAccessOrganisation = (await this.getOrganisationalUnitsForUser(user)).map(org => org.id).includes(selectedOrganisationId)
+			let userCanAccessOrganisation = (await this.getOrganisationalUnitsForUser(user)).map(org => org.id).includes(parseInt(selectedOrganisationId))
 
 			if(userCanAccessOrganisation){
 				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
 			}
 			else{
-				response.render("page/error")
+				response.render("page/unauthorised")
 			}
 			
 		}
