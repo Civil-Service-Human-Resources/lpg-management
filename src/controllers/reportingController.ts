@@ -62,14 +62,18 @@ export class ReportingController {
 				}
 
 				let civilServant = await this.csrsService.getCivilServant()
-				let organisationName = civilServant.organisationalUnit.name
+
+				let directOrganisation = civilServant.organisationalUnit
 
 				let organisationsForTypeahead = await this.getOrganisationalUnitsForUser(currentUser)
 				
 				let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
 
 				response.render('page/reporting/choose-organisation', {
-					organisationName: organisationName,
+					firstOrganisationOption: {
+						name: directOrganisation.name,
+						id: directOrganisation.id
+					},
 					organisationListForTypeAhead: organisationsForTypeahead,
 					showTypeaheadOption: userCanAccessMultipleOrganisations
 				})
@@ -94,7 +98,6 @@ export class ReportingController {
 
 					let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
 					let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
-					console.log(organisationIdsForUser)
 					let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(selectedOrganisationId))
 
 					if(!userCanAccessOrganisation){

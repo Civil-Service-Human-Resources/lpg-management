@@ -31,8 +31,20 @@
             <input class="govuk-radios__input" id="main-organisation" name="organisation" type="radio"
               value="cabinet-office" data-aria-controls="conditional-organisation">
             <label class="govuk-label govuk-radios__label" for="main-organisation">
-              {{ organisationName }}
+              {{ firstOrganisationOption.name }}
             </label>
+          </div>
+          <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-main-organisation">
+            <div class="govuk-form-group">
+              <form action="/reporting/course-completions/choose-organisation" method="post">
+                <input type="hidden" name="organisationId" value="{{ firstOrganisationOption }}"/>
+                {{ govukButton({
+                  text: "Select courses",
+                  classes: "button-blue left-aligned",
+                  preventDoubleClick: true
+                }) }}
+              </form>
+            </div>
           </div>
           {% if showTypeaheadOption %}
           <div class="govuk-radios__item">
