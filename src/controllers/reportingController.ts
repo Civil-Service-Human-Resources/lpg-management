@@ -89,19 +89,25 @@ export class ReportingController {
 				if(!user.isMVPReporter()){
 					response.render("page/unauthorised")
 				}
+				else {
+					let selectedOrganisationId = request.body.organisationId
 
-				let selectedOrganisationId = request.body.organisationId
+					let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
+					let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
+					console.log(organisationIdsForUser)
+					let userCanAccessOrganisation = organisationIdsForUser.includes(selectedOrganisationId)
 
-				let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
-				let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
-				console.log(organisationIdsForUser)
-				let userCanAccessOrganisation = organisationIdsForUser.includes(selectedOrganisationId)
+					if(!userCanAccessOrganisation){
+						response.render("page/unauthorised")
+					}
+					else{
+						response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
+					}
 
-				if(!userCanAccessOrganisation){
-					response.render("page/unauthorised")
+					
 				}
 
-				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
+				
 			}
 			else{
 				response.render("page/error")	
