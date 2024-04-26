@@ -56,26 +56,31 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			let userDomain = currentUser ? currentUser.username.split("@")[1] : ""
+			if(currentUser && currentUser.isMVPReporter()){
+				let userDomain = currentUser.username.split("@")[1]
 
-			let civilServant = await this.csrsService.getCivilServant()
-			
-			let organisationName = civilServant.organisationalUnit.name
+				let civilServant = await this.csrsService.getCivilServant()
+				
+				let organisationName = civilServant.organisationalUnit.name
 
-			let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
-			let organisationsForTypeahead = organisationList.typeahead
+				let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
+				let organisationsForTypeahead = organisationList.typeahead
 
-			if(currentUser && !currentUser.isUnrestrictedOrganisation()){
-				organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
+				if(currentUser && !currentUser.isUnrestrictedOrganisation()){
+					organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
+				}
+				
+				let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
+
+				response.render('page/reporting/choose-organisation', {
+					organisationName: organisationName,
+					organisationListForTypeAhead: organisationsForTypeahead,
+					showTypeaheadOption: userCanAccessMultipleOrganisations
+				})
 			}
-			
-			let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
-
-			response.render('page/reporting/choose-organisation', {
-				organisationName: organisationName,
-				organisationListForTypeAhead: organisationsForTypeahead,
-				showTypeaheadOption: userCanAccessMultipleOrganisations
-			})
+			else {
+				response.redirect("/")
+			}
 			
 		}
 	}
@@ -83,7 +88,6 @@ export class ReportingController {
 	submitOrganisationSelection(){
 		return async(request: Request, response: Response) => {
 			let selectedOrganisationId = request.body.organisationId
-			console.log(`OrgID: ${selectedOrganisationId}`)
 			
 			response.redirect(`/reporting/course-completions`)
 		}
