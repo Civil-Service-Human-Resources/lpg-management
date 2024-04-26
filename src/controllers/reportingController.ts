@@ -88,6 +88,7 @@ export class ReportingController {
 	submitOrganisationSelection(){
 		return async(request: Request, response: Response) => {
 			let selectedOrganisationId = request.body.organisationId
+			console.log(`Selected organisation ID: ${selectedOrganisationId}`)
 			
 			response.redirect(`/reporting/course-completions`)
 		}
