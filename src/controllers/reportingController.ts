@@ -36,9 +36,12 @@ export class ReportingController {
 
 	private configureRouterPaths() {
 		this.router.get('/reporting', xss(), this.getReports())
-		this.router.get('/reporting/course-completions/choose-organisation', xss(), this.getChooseOrganisationPage())
+		
 		this.router.post('/reporting/booking-information', xss(), this.generateReportBookingInformation())
 		this.router.post('/reporting/learner-record', xss(), this.generateReportLearnerRecord())
+
+		this.router.get('/reporting/course-completions/choose-organisation', xss(), this.getChooseOrganisationPage())
+		this.router.post('/reporting/course-completions/choose-organisation', xss(), this.submitOrganisationSelection())
 	}
 
 	getReports() {
@@ -75,6 +78,13 @@ export class ReportingController {
 				showTypeaheadOption: userCanAccessMultipleOrganisations
 			})
 			
+		}
+	}
+
+	submitOrganisationSelection(){
+		return async(request: Request, response: Response) => {
+			console.log(request.body)
+			response.redirect(`/reporting/course-completions`)
 		}
 	}
 

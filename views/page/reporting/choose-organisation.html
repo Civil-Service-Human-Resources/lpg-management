@@ -5,8 +5,7 @@
 
 {% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['report_'+ (pageTitle | lower | replace(" ", "_")) +'_title'] }} - {{
-i18n['proposition_name'] }}{% endblock %}
+{% block pageTitle %}Reporting - Choose organisation }} - {{i18n['proposition_name'] }}{% endblock %}
 
 {% block content %}
 
@@ -59,11 +58,15 @@ i18n['proposition_name'] }}{% endblock %}
             </div>
           </div>
           {% endif %}
-          {{ govukButton({
-            text: "Select courses",
-            classes: "button-blue left-aligned",
-            preventDoubleClick: true
-        }) }}
+
+          <form action="/reporting/course-completions/choose-organisation" method="post">
+            <input type="hidden" name="organisationId" />
+            {{ govukButton({
+              text: "Select courses",
+              classes: "button-blue left-aligned",
+              preventDoubleClick: true
+            }) }}
+          </form>
       </fieldset>
     </div>
   </div>
