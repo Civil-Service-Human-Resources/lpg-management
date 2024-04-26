@@ -56,7 +56,11 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			if(currentUser && currentUser.isMVPReporter()){
+			if(currentUser){
+				if(!currentUser.isMVPReporter()){
+					response.render("page/unauthorised")
+				}
+
 				let civilServant = await this.csrsService.getCivilServant()
 				let organisationName = civilServant.organisationalUnit.name
 
@@ -71,7 +75,7 @@ export class ReportingController {
 				})
 			}
 			else {
-				response.redirect("/")
+				response.render("page/error")
 			}
 			
 		}
@@ -79,18 +83,29 @@ export class ReportingController {
 
 	submitOrganisationSelection(){
 		return async(request: Request, response: Response) => {
-			let selectedOrganisationId = request.body.organisationId
 			let user = request.user
-			
-			let userCanAccessOrganisation = (await this.getOrganisationalUnitsForUser(user)).map(org => org.id).includes(parseInt(selectedOrganisationId))
 
-			if(userCanAccessOrganisation){
+			if(user){
+				if(!user.isMVPReporter()){
+					response.render("page/unauthorised")
+				}
+
+				let selectedOrganisationId = request.body.organisationId
+
+				let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
+				let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
+				console.log(organisationIdsForUser)
+				let userCanAccessOrganisation = organisationIdsForUser.includes(selectedOrganisationId)
+
+				if(!userCanAccessOrganisation){
+					response.render("page/unauthorised")
+				}
+
 				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
 			}
 			else{
-				response.render("page/unauthorised")
+				response.render("page/error")	
 			}
-			
 		}
 	}
 
