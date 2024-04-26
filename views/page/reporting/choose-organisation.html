@@ -29,7 +29,7 @@
         <div class="govuk-radios" data-module="govuk-radios">
           <div class="govuk-radios__item">
             <input class="govuk-radios__input" id="main-organisation" name="organisation" type="radio"
-              value="main-org" data-aria-controls="conditional-organisation">
+              value="main-org" data-aria-controls="conditional-main-organisation">
             <label class="govuk-label govuk-radios__label" for="main-organisation">
               {{ firstOrganisationOption.name }}
             </label>
@@ -64,7 +64,7 @@
                 <select class="autocomplete__organisations" name="organisationId" id="parent">
                   <option value="" selected></option>
                   {% for organisation in organisationListForTypeAhead %}
-                  <option value={{ organisation.code }}>{{ organisation.formattedName }}</option>
+                  <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
                   {% endfor %}
                 </select>
                 {{ govukButton({
@@ -77,15 +77,6 @@
             </div>
           </div>
           {% endif %}
-
-          <form action="/reporting/course-completions/choose-organisation" method="post">
-            <input type="hidden" name="organisationId" />
-            {{ govukButton({
-              text: "Select courses",
-              classes: "button-blue left-aligned",
-              preventDoubleClick: true
-            }) }}
-          </form>
       </fieldset>
     </div>
   </div>
