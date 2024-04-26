@@ -57,18 +57,10 @@ export class ReportingController {
 			let currentUser = request.user
 
 			if(currentUser && currentUser.isMVPReporter()){
-				let userDomain = currentUser.username.split("@")[1]
-
 				let civilServant = await this.csrsService.getCivilServant()
-				
 				let organisationName = civilServant.organisationalUnit.name
 
-				let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
-				let organisationsForTypeahead = organisationList.typeahead
-
-				if(currentUser && !currentUser.isUnrestrictedOrganisation()){
-					organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
-				}
+				let organisationsForTypeahead = await this.getOrganisationalUnitsForUser(currentUser)
 				
 				let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
 
@@ -88,9 +80,17 @@ export class ReportingController {
 	submitOrganisationSelection(){
 		return async(request: Request, response: Response) => {
 			let selectedOrganisationId = request.body.organisationId
-			console.log(`Selected organisation ID: ${selectedOrganisationId}`)
+			let user = request.user
 			
-			response.redirect(`/reporting/course-completions`)
+			let userCanAccessOrganisation = (await this.getOrganisationalUnitsForUser(user)).map(org => org.id).includes(selectedOrganisationId)
+
+			if(userCanAccessOrganisation){
+				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
+			}
+			else{
+				response.render("page/error")
+			}
+			
 		}
 	}
 
@@ -173,5 +173,17 @@ export class ReportingController {
 				}
 			}
 		}
+	}
+
+	private async getOrganisationalUnitsForUser(user: any){
+		let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
+		let organisationsForTypeahead = organisationList.typeahead
+
+		if(!user.isUnrestrictedOrganisation()){
+			let userDomain = user.username.split("@")[1]
+			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
+		}
+
+		return organisationsForTypeahead
 	}
 }
