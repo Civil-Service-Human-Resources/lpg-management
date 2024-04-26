@@ -57,7 +57,6 @@ export class ReportingController {
 			let currentUser = request.user
 
 			let userDomain = currentUser ? currentUser.username.split("@")[1] : ""
-			console.log("Domain: " + userDomain)
 
 			let civilServant = await this.csrsService.getCivilServant()
 			
@@ -83,7 +82,9 @@ export class ReportingController {
 
 	submitOrganisationSelection(){
 		return async(request: Request, response: Response) => {
-			console.log(request.body)
+			let selectedOrganisationId = request.body.organisationId
+			console.log(`OrgID: ${selectedOrganisationId}`)
+			
 			response.redirect(`/reporting/course-completions`)
 		}
 	}
