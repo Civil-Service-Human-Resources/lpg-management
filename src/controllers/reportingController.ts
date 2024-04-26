@@ -95,7 +95,7 @@ export class ReportingController {
 					let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
 					let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
 					console.log(organisationIdsForUser)
-					let userCanAccessOrganisation = organisationIdsForUser.includes(selectedOrganisationId)
+					let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(selectedOrganisationId))
 
 					if(!userCanAccessOrganisation){
 						response.render("page/unauthorised")
