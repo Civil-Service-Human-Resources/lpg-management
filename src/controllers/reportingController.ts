@@ -82,12 +82,15 @@ export class ReportingController {
 			let selectedOrganisationId = request.body.organisationId
 			let selectedCourseIds = request.body.courseIds
 
+			request.session.selectedOrganisationId = selectedOrganisationId
+			request.session.selectedCourseIds = selectedCourseIds
+
 			if(currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
 				if(selectedCourseIds !== undefined){
-					response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}&courseIds=${selectedCourseIds}`)
+					response.redirect(`/reporting/course-completions`)
 				}
 				else{
-					response.redirect(`/reporting/course-completions/choose-courses?organisationId=${selectedOrganisationId}`)
+					response.redirect(`/reporting/course-completions/choose-courses`)
 				}
 				
 			}
