@@ -172,7 +172,7 @@ export class Identity {
 	}
 
 	isOrganisationReporter() {
-		return this.hasRole('ORGANISATION_REPORTER')
+		return this.hasRole(Role.ORGANISATION_REPORTER)
 	}
 
 	isKPMGSupplierReporter() {

@@ -56,7 +56,7 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			if (currentUser && currentUser.isMVPReporter()) {
+			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
 				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
@@ -80,8 +80,8 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisationId
-			
-			if(currentUser && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
+
+			if(currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
 				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
 			}
 			else {
