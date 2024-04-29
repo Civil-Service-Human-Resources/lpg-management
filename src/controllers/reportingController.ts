@@ -80,9 +80,16 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisationId
+			let selectedCourseIds = request.body.courseIds
 
 			if(currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
-				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
+				if(selectedCourseIds !== undefined){
+					response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}&courseIds=${selectedCourseIds}`)
+				}
+				else{
+					response.redirect(`/reporting/choose-courses?organisationId=${selectedOrganisationId}`)
+				}
+				
 			}
 			else {
 				response.render("page/unauthorised")
