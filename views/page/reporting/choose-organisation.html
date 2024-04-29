@@ -67,11 +67,13 @@
                   <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
                   {% endfor %}
                 </select>
-                {{ govukButton({
-                  text: "Select courses",
-                  classes: "button-blue left-aligned",
-                  preventDoubleClick: true
-                }) }}
+                <div>
+                  {{ govukButton({
+                    text: "Select courses",
+                    classes: "button-blue left-aligned",
+                    preventDoubleClick: true
+                  }) }}
+                </div>
                 </form>
               </div>
             </div>

@@ -57,17 +57,15 @@ export class ReportingController {
 			let currentUser = request.user
 
 			if (currentUser && currentUser.isMVPReporter()) {
-				let civilServant = await this.csrsService.getCivilServant()
-				let directOrganisation = civilServant.organisationalUnit
-				let organisationsForTypeahead = await this.getOrganisationalUnitsForUser(currentUser)
-				let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
+				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
+				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
 				response.render('page/reporting/choose-organisation', {
 					firstOrganisationOption: {
-						name: directOrganisation.name,
-						id: directOrganisation.id
+						name: organisationChoices.directOrganisation.name,
+						id: organisationChoices.directOrganisation.id
 					},
-					organisationListForTypeAhead: organisationsForTypeahead,
+					organisationListForTypeAhead: organisationChoices.typeaheadOrganisations,
 					showTypeaheadOption: userCanAccessMultipleOrganisations
 				})
 			}
@@ -81,20 +79,10 @@ export class ReportingController {
 	submitOrganisationSelection() {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
-
-			if(currentUser && currentUser.isMVPReporter()){
-				let selectedOrganisationId = request.body.organisationId
-
-				let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(currentUser)
-				let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
-				let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(selectedOrganisationId))
-
-				if (!userCanAccessOrganisation) {
-					response.render("page/unauthorised")
-				}
-				else {
-					response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
-				}
+			let selectedOrganisationId = request.body.organisationId
+			
+			if(currentUser && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
+				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
 			}
 			else {
 				response.render("page/unauthorised")
@@ -183,6 +171,19 @@ export class ReportingController {
 		}
 	}
 
+	private async getOrganisationChoicesForUser(user: any){
+		return {
+			directOrganisation: await this.getDirectOrganisationForCurrentCivilServant(),
+			typeaheadOrganisations: await this.getOrganisationalUnitsForUser(user)
+		}
+	}
+
+	private async getDirectOrganisationForCurrentCivilServant(){
+		let civilServant = await this.csrsService.getCivilServant()
+		let directOrganisation = civilServant.organisationalUnit
+		return directOrganisation
+	}
+
 	private async getOrganisationalUnitsForUser(user: any) {
 		let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
 		let organisationsForTypeahead = organisationList.typeahead
@@ -193,5 +194,12 @@ export class ReportingController {
 		}
 
 		return organisationsForTypeahead
+	}
+
+	private async userCanSeeReportingForOrganisation(user: any, organisationId: any){
+		let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
+		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
+		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
+		return userCanAccessOrganisation
 	}
 }
