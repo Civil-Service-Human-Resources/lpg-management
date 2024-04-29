@@ -1,6 +1,7 @@
 import {IsNotEmpty} from 'class-validator'
 import moment = require('moment')
 import {DateStartEnd} from '../../learning-catalogue/model/dateStartEnd'
+import {IsValidDateString} from '../../learning-catalogue/validator/custom/isValidDateString'
 
 export class DateStartEndCommand {
 	@IsNotEmpty({
@@ -45,5 +46,21 @@ export class DateStartEndCommand {
 		dateRange.endDate = moment([this.endYear, +this.endMonth - 1, this.endDay]).format('YYYY-MM-DD')
 
 		return dateRange
+	}
+
+	@IsValidDateString({
+		groups: ['all', 'event.all', 'event.dateRanges.date'],
+		message: 'validation_report_start_invalid',
+	})
+	getStartDate(): string {
+		return moment([this.startYear, +this.startMonth - 1, this.startDay]).format('YYYY-MM-DD')
+	}
+
+	@IsValidDateString({
+		groups: ['all', 'event.all', 'event.dateRanges.date'],
+		message: 'validation_report_end_invalid',
+	})
+	getEndDate(): string {
+		return moment([this.endYear, +this.endMonth - 1, this.endDay]).format('YYYY-MM-DD')
 	}
 }

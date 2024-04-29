@@ -5,6 +5,8 @@ import {AssetMiddleware} from '../../src/middleware/asset'
 import {RequestMiddleware} from '../../src/middleware/requestMiddleware'
 import {NunjucksMiddleware} from '../../src/middleware/nunjucks'
 import {Identity} from '../../src/identity/identity'
+import * as session from 'express-session'
+
 
 const app: express.Express = express()
 app.use((req, res, next) => {
@@ -27,6 +29,10 @@ const middleware: Middleware[] = [
 middleware.forEach(m => {
 	m.applyMiddleware(app)
 })
+
+app.use(session({
+	secret: 'secret'
+}))
 
 export const getApp = () => {
 	return app

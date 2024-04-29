@@ -1,12 +1,12 @@
-export class ReportServiceConfig {
+import {RestServiceConfig} from '../lib/http/restServiceConfig'
+
+export class ReportServiceConfig implements RestServiceConfig {
 	private _url: string
 	private _timeout: number
-	private _map: any
 
-	constructor(url: string, timeout: number, map: any) {
+	constructor(url: string, timeout: number) {
 		this._url = url
 		this._timeout = timeout
-		this._map = map
 	}
 
 	get url(): string {
@@ -17,7 +17,4 @@ export class ReportServiceConfig {
 		return this._timeout
 	}
 
-	get map(): any {
-		return this._map
-	}
 }

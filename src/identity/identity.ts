@@ -29,13 +29,72 @@ export enum Role {
 	SUPER_REPORTER = 'SUPER_REPORTER'
 }
 
+export enum CompoundRole {
+	ANY,
+	ALL
+}
+
+export abstract class CompoundRoleBase {
+	constructor(public roles: Role[]) { }
+
+	public abstract checkRoles(userRoles: string[]): boolean
+	public abstract getType(): CompoundRole
+	public abstract getDescription(): string
+}
+
+export class AnyOfCompoundRole extends CompoundRoleBase {
+	public checkRoles(userRoles: string[]): boolean {
+		return this.roles.some(r => userRoles.includes(r))
+	}
+
+	getType(): CompoundRole {
+		return CompoundRole.ANY
+	}
+
+	getDescription(): string {
+		return `ANY of the following roles: ${this.roles}.`
+	}
+}
+
+export class AllOfCompoundRole extends CompoundRoleBase {
+	public checkRoles(userRoles: string[]): boolean {
+		return this.roles.every(r => userRoles.includes(r))
+	}
+
+	getType(): CompoundRole {
+		return CompoundRole.ALL
+	}
+
+	getDescription(): string {
+		return `ALL of the following roles: ${this.roles}.`
+	}
+}
+
+export class UserRole {
+	constructor(public compoundRoles: CompoundRoleBase[]) {
+	}
+
+	public checkRoles(userRoles: string[]): boolean {
+		let authorised = true
+		for (const compoundRole of this.compoundRoles) {
+			if (!compoundRole.checkRoles(userRoles)) {
+				authorised = false
+			}
+		}
+		return authorised
+	}
+}
+
+export const reporterRole = new UserRole([new AnyOfCompoundRole([Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
+Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER])])
+
 export class Identity {
 
 	readonly uid: string
 	readonly username: string
 	readonly roles: string[]
 	readonly accessToken: string
-	
+
 	constructor(uid: string, username: string, roles: string[], accessToken: string) {
 		this.uid = uid
 		this.username = username
@@ -153,10 +212,12 @@ export class Identity {
 		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
 	}
 
+	isRole(role: UserRole) {
+		return role.checkRoles(this.roles)
+	}
+
 	isReporter() {
-		return this.isCshrReporter() || this.isProfessionReporter() ||
-			this.isOrganisationReporter() || this.isKPMGSupplierReporter() ||
-			this.isKornferrySupplierReporter();
+		return this.isRole(reporterRole)
 	}
 
 	isLearner() {

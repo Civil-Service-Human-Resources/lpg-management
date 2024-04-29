@@ -1,16 +1,22 @@
 import {getLogger} from '../../utils/logger'
 import {NextFunction, Request, Response} from 'express'
-import {Role} from '../../identity/identity'
+import {CompoundRoleBase} from '../../identity/identity'
 
 const logger  = getLogger("roleCheck")
 
-export const roleCheckMiddleware = (requiredRoles: Role[]) => (req: Request, res: Response, next: NextFunction) => {
-	let errorMsg: string
+export const roleCheckMiddleware = (requiredRoles: CompoundRoleBase[]) => (req: Request, res: Response, next: NextFunction) => {
+	let errorMsg: string = ""
 	if (req.user) {
 		const userRoles: string[] = req.user.roles
-		const matchingRoles = requiredRoles.filter(r => userRoles.includes(r))
-		if (matchingRoles.length === 0) {
-			errorMsg = `User '${req.user.uid}' is missing one of the following required roles: [${requiredRoles}] for URL ${req.originalUrl}. User has roles: [${userRoles}]`
+		let hasRequiredRoles = true
+		for (const requiredRole of requiredRoles) {
+			if (!requiredRole.checkRoles(userRoles)) {
+				errorMsg += ` ${requiredRole.getDescription()}`
+				hasRequiredRoles = false
+			}
+		}
+		if (!hasRequiredRoles) {
+			errorMsg = `User '${req.user.uid}' does not have the correct roles assigned for URL ${req.originalUrl}. User has roles: [${userRoles}], required Roles are: ` + errorMsg
 		} else {
 			return next()
 		}

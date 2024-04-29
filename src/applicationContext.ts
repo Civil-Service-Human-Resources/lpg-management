@@ -63,7 +63,6 @@ import {OrganisationalUnitService} from './csrs/service/organisationalUnitServic
 import {ReportServiceConfig} from './report-service/reportServiceConfig'
 import {ReportService} from './report-service'
 import {DateStartEndCommand} from './controllers/command/dateStartEndCommand'
-import {DateStartEndCommandFactory} from './controllers/command/factory/dateStartEndCommandFactory'
 import {DateStartEnd} from './learning-catalogue/model/dateStartEnd'
 import {DateStartEndFactory} from './learning-catalogue/model/factory/dateStartEndFactory'
 import {SkillsController} from './controllers/skills/skillsController'
@@ -84,7 +83,6 @@ import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceConfig} from './csl-service/cslServiceConfig'
 import {CslServiceClient} from './csl-service/client'
-import {OrganisationalUnitDomainsController} from './controllers/organisationalUnit/organisationalUnitDomainsController'
 import {Controller} from './controllers/controller'
 
 export class ApplicationContext {
@@ -133,7 +131,6 @@ export class ApplicationContext {
 	csrsConfig: CsrsConfig
 	csrsService: CsrsService
 	dateRangeCommandFactory: DateRangeCommandFactory
-	dateStartEndCommandFactory: DateStartEndCommandFactory
 	dateRangeCommandValidator: Validator<DateRangeCommand>
 	dateStartEndCommandValidator: Validator<DateStartEndCommand>
 	dateStartEndValidator: Validator<DateStartEnd>
@@ -223,9 +220,6 @@ export class ApplicationContext {
 			checkperiod: config.CACHE.CHECK_PERIOD_SECONDS,
 		})
 
-		this.reportServiceConfig = new ReportServiceConfig(config.REPORT_SERVICE.url, config.REPORT_SERVICE.timeout, config.REPORT_SERVICE.map)
-		this.reportService = new ReportService(this.reportServiceConfig, new OauthRestService(this.reportServiceConfig, this.auth))
-
 		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
 
 		const organisationalUnitCacheRedis = createClient({
@@ -300,10 +294,8 @@ export class ApplicationContext {
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 
 		this.dateRangeCommandFactory = new DateRangeCommandFactory()
-		this.dateStartEndCommandFactory = new DateStartEndCommandFactory()
 		this.dateStartEndFactory = new DateStartEndFactory()
 		this.dateRangeCommandValidator = new Validator<DateRangeCommand>(this.dateRangeCommandFactory)
-		this.dateStartEndCommandValidator = new Validator<DateStartEndCommand>(this.dateStartEndCommandFactory)
 		this.dateStartEndValidator = new Validator<DateStartEnd>(this.dateStartEndFactory)
 		this.dateRangeFactory = new DateRangeFactory()
 		this.dateRangeValidator = new Validator<DateRange>(this.dateRangeFactory)
@@ -361,13 +353,8 @@ export class ApplicationContext {
 			this.agencyTokenFactory,
 		)
 
-		this.controllers.push(new OrganisationalUnitDomainsController(
-			this.organisationalUnitService
-		))
-
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
-		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator, this.csrsService)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 
