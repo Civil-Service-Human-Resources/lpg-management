@@ -87,7 +87,7 @@ export class ReportingController {
 					response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}&courseIds=${selectedCourseIds}`)
 				}
 				else{
-					response.redirect(`/reporting/choose-courses?organisationId=${selectedOrganisationId}`)
+					response.redirect(`/reporting/course-completions/choose-courses?organisationId=${selectedOrganisationId}`)
 				}
 				
 			}
