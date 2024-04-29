@@ -79,7 +79,12 @@ export class ReportingController {
 	submitOrganisationSelection() {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
-			let selectedOrganisationId = request.body.organisationId
+			let selectedOrganisationId = request.body.organisation
+
+			if(selectedOrganisationId === "other"){
+				selectedOrganisationId = request.body.organisationId
+			}
+
 			let selectedCourseIds = request.body.courseIds
 
 			request.session!.selectedOrganisationId = selectedOrganisationId
