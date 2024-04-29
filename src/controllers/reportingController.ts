@@ -1,11 +1,11 @@
-import {NextFunction, Request, Response, Router} from 'express'
-import {ReportService} from '../report-service'
+import { NextFunction, Request, Response, Router } from 'express'
+import { ReportService } from '../report-service'
 import moment = require('moment')
-import {DateStartEndCommandFactory} from './command/factory/dateStartEndCommandFactory'
-import {DateStartEndCommand} from './command/dateStartEndCommand'
-import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
-import {Validator} from '../learning-catalogue/validator/validator'
-import {PlaceholderDate} from '../learning-catalogue/model/placeholderDate'
+import { DateStartEndCommandFactory } from './command/factory/dateStartEndCommandFactory'
+import { DateStartEndCommand } from './command/dateStartEndCommand'
+import { DateStartEnd } from '../learning-catalogue/model/dateStartEnd'
+import { Validator } from '../learning-catalogue/validator/validator'
+import { PlaceholderDate } from '../learning-catalogue/model/placeholderDate'
 import { CsrsService } from 'src/csrs/service/csrsService'
 const { xss } = require('express-xss-sanitizer')
 
@@ -36,7 +36,7 @@ export class ReportingController {
 
 	private configureRouterPaths() {
 		this.router.get('/reporting', xss(), this.getReports())
-		
+
 		this.router.post('/reporting/booking-information', xss(), this.generateReportBookingInformation())
 		this.router.post('/reporting/learner-record', xss(), this.generateReportLearnerRecord())
 
@@ -56,17 +56,10 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			if(currentUser){
-				if(!currentUser.isMVPReporter()){
-					response.render("page/unauthorised")
-				}
-
+			if (currentUser && currentUser.isMVPReporter()) {
 				let civilServant = await this.csrsService.getCivilServant()
-
 				let directOrganisation = civilServant.organisationalUnit
-
 				let organisationsForTypeahead = await this.getOrganisationalUnitsForUser(currentUser)
-				
 				let userCanAccessMultipleOrganisations: boolean = organisationsForTypeahead.length > 1
 
 				response.render('page/reporting/choose-organisation', {
@@ -79,41 +72,32 @@ export class ReportingController {
 				})
 			}
 			else {
-				response.render("page/error")
+				response.render("page/unauthorised")
 			}
-			
+
 		}
 	}
 
-	submitOrganisationSelection(){
-		return async(request: Request, response: Response) => {
-			let user = request.user
+	submitOrganisationSelection() {
+		return async (request: Request, response: Response) => {
+			let currentUser = request.user
 
-			if(user){
-				if(!user.isMVPReporter()){
+			if(currentUser && currentUser.isMVPReporter()){
+				let selectedOrganisationId = request.body.organisationId
+
+				let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(currentUser)
+				let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
+				let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(selectedOrganisationId))
+
+				if (!userCanAccessOrganisation) {
 					response.render("page/unauthorised")
 				}
 				else {
-					let selectedOrganisationId = request.body.organisationId
-
-					let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
-					let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
-					let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(selectedOrganisationId))
-
-					if(!userCanAccessOrganisation){
-						response.render("page/unauthorised")
-					}
-					else{
-						response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
-					}
-
-					
+					response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
 				}
-
-				
 			}
-			else{
-				response.render("page/error")	
+			else {
+				response.render("page/unauthorised")
 			}
 		}
 	}
@@ -132,7 +116,7 @@ export class ReportingController {
 
 			const errors = await this.dateStartEndValidator.check(dateRange)
 			if (errors.size) {
-				request.session!.sessionFlash = {errors}
+				request.session!.sessionFlash = { errors }
 				request.session!.save(() => {
 					response.redirect(`/reporting`)
 				})
@@ -173,7 +157,7 @@ export class ReportingController {
 			const errors = await this.dateStartEndValidator.check(dateRange)
 
 			if (errors.size) {
-				request.session!.sessionFlash = {errors}
+				request.session!.sessionFlash = { errors }
 				request.session!.save(() => {
 					response.redirect(`/reporting`)
 				})
@@ -199,11 +183,11 @@ export class ReportingController {
 		}
 	}
 
-	private async getOrganisationalUnitsForUser(user: any){
+	private async getOrganisationalUnitsForUser(user: any) {
 		let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
 		let organisationsForTypeahead = organisationList.typeahead
 
-		if(!user.isUnrestrictedOrganisation()){
+		if (!user.isSuperReporter()) {
 			let userDomain = user.username.split("@")[1]
 			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
 		}
