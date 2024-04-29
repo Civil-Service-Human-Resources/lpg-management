@@ -184,6 +184,13 @@ export class ReportingController {
 		return directOrganisation
 	}
 
+	private async userCanSeeReportingForOrganisation(user: any, organisationId: any){
+		let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
+		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
+		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
+		return userCanAccessOrganisation
+	}
+
 	private async getOrganisationalUnitsForUser(user: any) {
 		let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
 		let organisationsForTypeahead = organisationList.typeahead
@@ -196,10 +203,5 @@ export class ReportingController {
 		return organisationsForTypeahead
 	}
 
-	private async userCanSeeReportingForOrganisation(user: any, organisationId: any){
-		let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
-		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
-		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
-		return userCanAccessOrganisation
-	}
+	
 }
