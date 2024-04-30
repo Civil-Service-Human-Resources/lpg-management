@@ -74,11 +74,11 @@
                   html: typeAheadHtml
                 }
               }
-            ]
+            ].filter(item => showTypeaheadOption || item.value !== "other")
           }) }}
 
           {{ govukButton({
-            text: "Select courses",
+            text: "Continue to course selection",
             preventDoubleClick: true
           }) }}
       </form>
