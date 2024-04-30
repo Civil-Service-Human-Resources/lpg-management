@@ -9,6 +9,27 @@
 
 {% block content %}
 
+{% set typeAheadHtml %}
+
+<div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-organisation-2">
+  <div class="govuk-form-group">
+    <label class="govuk-label" for="other-organisation-dropdown">
+      Organisation
+    </label>
+    <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
+
+      <select class="autocomplete__organisations" name="organisationId" id="parent">
+        <option value="" selected></option>
+        {% for organisation in organisationListForTypeAhead %}
+        <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
+
+{% endset -%}
+
 <div class="govuk-grid row">
   <div class="govuk-column-full">
     <h1 class="govuk-heading-l">{{pageTitle}}</h1>
@@ -25,48 +46,39 @@
               Select an organisation
             </h1>
           </legend>
-          <div id="organisation-hint" class="govuk-hint">
-            Which organisation would you like to report on?
-          </div>
-          <div class="govuk-radios" data-module="govuk-radios">
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="main-organisation" name="organisation" type="radio"
-                value={{ firstOrganisationOption.id }} data-aria-controls="conditional-main-organisation">
-              <label class="govuk-label govuk-radios__label" for="main-organisation">
-                {{ firstOrganisationOption.name }}
-              </label>
-            </div>
-            {% if showTypeaheadOption %}
-            <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="organisation-2" name="organisation" type="radio" value="other"
-                data-aria-controls="conditional-organisation-2">
-              <label class="govuk-label govuk-radios__label" for="organisation-2">
-                Other organisations
-              </label>
-            </div>
-            <div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-organisation-2">
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="other-organisation-dropdown">
-                  Organisation
-                </label>
-                <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
+          
+          {{ govukRadios({
+            name: "organisation",
+            fieldset: {
+              legend: {
+                text: "Select an organisation",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
+            hint: {
+              text: "Which organisation would you like to report on?"
+            },
+            items: [
+              {
+                value: {{ firstOrganisationOption.id }},
+                text: {{ firstOrganisationOption.name }}
+              },
+              {
+                value: "other",
+                text: "Other organisation",
+                conditional: {
+                  html: typeAheadHtml
+                }
+              }
+            ]
+          }) }}
 
-                  <select class="autocomplete__organisations" name="organisationId" id="parent">
-                    <option value="" selected></option>
-                    {% for organisation in organisationListForTypeAhead %}
-                    <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-            </div>
-            {% endif %}
-            <div>
-              {{ govukButton({
-                text: "Select courses",
-                preventDoubleClick: true
-              }) }}
-            </div>
+          {{ govukButton({
+            text: "Select courses",
+            preventDoubleClick: true
+          }) }}
+
         </fieldset>
       </form>
     </div>
