@@ -11,7 +11,7 @@ import {Auth} from '../../../src/identity/auth'
 import {IdentityService} from '../../../src/identity/identityService'
 import {AuthConfig} from '../../../src/identity/authConfig'
 import {Identity} from '../../../src/identity/identity'
-import { OrganisationalUnit } from '../../../src/csrs/model/organisationalUnit'
+// import { OrganisationalUnit } from '../../../src/csrs/model/organisationalUnit'
 import { CivilServant } from '../../../src/csrs/model/civilServant'
 import { CsrsService } from '../../../src/csrs/service/csrsService'
 import { OauthRestService } from 'lib/http/oauthRestService'
@@ -196,14 +196,14 @@ describe('Auth tests', function() {
 
 	it('should deserialize json to identity', () => {
 		const deserializeCallback = auth.deserializeUser()
-		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token", "organisationalUnit": { "children": [], "domains": [], "id": 1, "name": "Org1" }}'
+		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token"}'
 		
-		let organisationalUnit = new OrganisationalUnit()
-		organisationalUnit.id = 1
-		organisationalUnit.name = "Org1"
+		// let organisationalUnit = new OrganisationalUnit()
+		// organisationalUnit.id = 1
+		// organisationalUnit.name = "Org1"
 
 		const identity: Identity = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
-		identity.organisationalUnit = organisationalUnit
+		// identity.organisationalUnit = organisationalUnit
 
 		const doneCallback = sinon.stub()
 

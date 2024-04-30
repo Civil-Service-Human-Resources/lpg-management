@@ -7,7 +7,7 @@ import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
 import { CsrsService } from 'src/csrs/service/csrsService'
-import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
+// import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -78,8 +78,8 @@ export class Auth {
 			try {
 				const identityDetails = await this.identityService.getDetails(accessToken)
 
-				let civilServant = await this.csrsService.getCivilServant()
-				identityDetails.organisationalUnit = civilServant.organisationalUnit
+				// let civilServant = await this.csrsService.getCivilServant()
+				// identityDetails.organisationalUnit = civilServant.organisationalUnit
 
 				cb(null, identityDetails)
 			} catch (e) {
@@ -126,10 +126,10 @@ export class Auth {
 			let jsonResponse = JSON.parse(data)
 			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
 			
-			let organisationalUnit = new OrganisationalUnit()
-			organisationalUnit.id = jsonResponse.organisationalUnit.id
-			organisationalUnit.name = jsonResponse.organisationalUnit.name
-			user.organisationalUnit = organisationalUnit
+			// let organisationalUnit = new OrganisationalUnit()
+			// organisationalUnit.id = jsonResponse.organisationalUnit.id
+			// organisationalUnit.name = jsonResponse.organisationalUnit.name
+			// user.organisationalUnit = organisationalUnit
 			
 			done(null, user)
 		}
