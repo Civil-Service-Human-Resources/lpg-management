@@ -2,6 +2,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -27,6 +28,18 @@
 </div>
 
 {% endset -%}
+
+{% if sessionFlash.errors %}
+    {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+            {
+                text: "The organisation selected is not valid",
+                href: "#parent"
+            }
+        ]
+    }) }}
+{% endif %}
 
 <div class="govuk-grid row">
   <div class="govuk-column-full">
