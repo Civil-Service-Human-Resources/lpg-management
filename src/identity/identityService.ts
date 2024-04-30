@@ -1,9 +1,11 @@
 import {AxiosInstance} from 'axios'
 import {Identity} from './identity'
 import * as config from '../config'
+import { CsrsService } from 'src/csrs/service/csrsService'
 
 export class IdentityService {
 	http: AxiosInstance
+	csrsService: CsrsService
 
 	constructor(http: AxiosInstance) {
 		this.http = http
@@ -16,8 +18,10 @@ export class IdentityService {
 				Authorization: `Bearer ${token}`,
 			},
 		})
+
+		let organisationalUnit = (await this.csrsService.getCivilServant()).organisationalUnit
 		
-		return new Identity(response.data.uid, response.data.username, response.data.roles, token)
+		return new Identity(response.data.uid, response.data.username, response.data.roles, token, organisationalUnit)
 	}
 
 	async logout(token: string) {

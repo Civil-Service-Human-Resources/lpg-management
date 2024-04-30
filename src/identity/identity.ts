@@ -1,3 +1,5 @@
+import { OrganisationalUnit } from "src/csrs/model/organisationalUnit"
+
 export enum Role {
 	LEARNER = 'LEARNER',
 	ORGANISATION_MANAGER = 'ORGANISATION_MANAGER',
@@ -35,12 +37,14 @@ export class Identity {
 	readonly username: string
 	readonly roles: string[]
 	readonly accessToken: string
+	readonly organisationalUnit: OrganisationalUnit
 	
-	constructor(uid: string, username: string, roles: string[], accessToken: string) {
+	constructor(uid: string, username: string, roles: string[], accessToken: string, organisationalUnit: OrganisationalUnit | undefined = undefined) {
 		this.uid = uid
 		this.username = username
 		this.roles = roles
 		this.accessToken = accessToken
+		this.organisationalUnit
 	}
 
 	hasRole(role: string) {

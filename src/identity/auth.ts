@@ -74,6 +74,8 @@ export class Auth {
 			try {
 				const identityDetails = await this.identityService.getDetails(accessToken)
 
+				console.log(identityDetails)
+
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
