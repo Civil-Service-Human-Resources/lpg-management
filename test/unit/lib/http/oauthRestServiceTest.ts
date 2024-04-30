@@ -10,7 +10,6 @@ import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import * as sinonChai from 'sinon-chai'
-import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -26,7 +25,7 @@ describe('OAuthRestService tests', () => {
 			defaults: {},
 		}
 		auth = <Auth>{}
-		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123', new OrganisationalUnit())
+		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123')
 
 		restService = new OauthRestService(config, auth)
 		restService.http = http

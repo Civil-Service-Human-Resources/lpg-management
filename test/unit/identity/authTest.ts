@@ -184,11 +184,11 @@ describe('Auth tests', function() {
 
 	it('should deserialize json to identity', () => {
 		const deserializeCallback = auth.deserializeUser()
-		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token", "organisationalUnit": {"id": 1, "name": "Org1", "children": [], "domains": []}}'
+		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token"}'
 		let organisationalUnit = new OrganisationalUnit()
 		organisationalUnit.id = 1
 		organisationalUnit.name = "Org1"
-		const identity: Identity = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token', organisationalUnit)
+		const identity: Identity = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
 
 		const doneCallback = sinon.stub()
 
@@ -204,7 +204,7 @@ describe('Auth tests', function() {
 		const request: Request = <Request>{}
 		const next: NextFunction = sinon.stub()
 		request.isAuthenticated = sinon.stub().returns(true)
-		request.user = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token', new OrganisationalUnit())
+		request.user = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
 
 		addToResponseLocals(request, response, next)
 

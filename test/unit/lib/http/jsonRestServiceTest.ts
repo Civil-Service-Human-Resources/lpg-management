@@ -12,7 +12,6 @@ import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {JsonRestService} from '../../../../src/lib/http/jsonRestService'
 import * as sinonChai from 'sinon-chai'
-import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -28,7 +27,7 @@ describe('JsonRestService tests', () => {
 			defaults: {},
 		}
 		auth = <Auth>{}
-		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123', new OrganisationalUnit())
+		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123')
 
 		restService = new JsonRestService(config, auth)
 		restService.http = http

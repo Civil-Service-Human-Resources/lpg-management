@@ -1,7 +1,6 @@
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
 import {Identity, Role} from '../../../src/identity/identity'
-import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 describe('Identity tests', () => {
 	it('hasRoles() should return true if identity contains role', () => {
@@ -10,7 +9,7 @@ describe('Identity tests', () => {
 		const roles: string[] = ['role1', 'role2']
 		const accessToken: string = 'access-token'
 
-		const identity: Identity = new Identity(uid, username, roles, accessToken, new OrganisationalUnit())
+		const identity: Identity = new Identity(uid, username, roles, accessToken)
 
 		expect(identity.hasRole('role1')).to.be.true
 		expect(identity.hasRole('role2')).to.be.true
@@ -23,7 +22,7 @@ describe('Identity tests', () => {
 		const username = 'user@domain.com'
 		const accessToken: string = 'access-token'
 
-		const identity: Identity = new Identity(uid, username, roles, accessToken, new OrganisationalUnit())
+		const identity: Identity = new Identity(uid, username, roles, accessToken)
 
 		expect(identity.hasAnyRole(['role1'])).to.be.true
 		expect(identity.hasAnyRole(['role2'])).to.be.true
@@ -37,8 +36,8 @@ describe('Identity tests', () => {
 	it('isOrganisationManager() should return true if identity has organisation_manager roles', () => {
 		const accessToken: string = 'access-token'
 
-		const orgManager: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_MANAGER], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user2@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const orgManager: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_MANAGER], accessToken)
+		const learner: Identity = new Identity('id2', 'user2@domain.com', [Role.LEARNER], accessToken)
 
 		expect(orgManager.isOrganisationManager()).to.be.true
 		expect(learner.isOrganisationManager()).to.be.false
@@ -47,8 +46,8 @@ describe('Identity tests', () => {
 	it('isOrganisationManagerOrSuperUser() should return true if identity has organisation_manager roles', () => {
 		const accessToken: string = 'access-token'
 
-		const orgManager: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_MANAGER], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user2@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const orgManager: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_MANAGER], accessToken)
+		const learner: Identity = new Identity('id2', 'user2@domain.com', [Role.LEARNER], accessToken)
 
 		expect(orgManager.isOrganisationManagerOrSuperUser()).to.be.true
 		expect(learner.isOrganisationManagerOrSuperUser()).to.be.false
@@ -57,8 +56,8 @@ describe('Identity tests', () => {
 	it('isLearningManager() should return true if identity has learning manager roles', () => {
 		const accessToken: string = 'access-token'
 
-		const learningManager: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_MANAGER], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const learningManager: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_MANAGER], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(learningManager.isLearningManager()).to.be.true
 		expect(learner.isLearningManager()).to.be.false
@@ -67,8 +66,8 @@ describe('Identity tests', () => {
 	it('isCslAuthor() should return true if identity has csl author roles', () => {
 		const accessToken: string = 'access-token'
 
-		const cslAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.CSL_AUTHOR], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const cslAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.CSL_AUTHOR], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(cslAuthor.isCslAuthor()).to.be.true
 		expect(learner.isCslAuthor()).to.be.false
@@ -77,8 +76,8 @@ describe('Identity tests', () => {
 	it('isOrganisationAuthorOrSuperUser() should return true if identity has organisation author roles', () => {
 		const accessToken: string = 'access-token'
 
-		const organisationAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_AUTHOR], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user2@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const organisationAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_AUTHOR], accessToken)
+		const learner: Identity = new Identity('id2', 'user2@domain.com', [Role.LEARNER], accessToken)
 
 		expect(organisationAuthor.isOrganisationAuthorOrSuperUser()).to.be.true
 		expect(learner.isOrganisationAuthorOrSuperUser()).to.be.false
@@ -87,8 +86,8 @@ describe('Identity tests', () => {
 	it('isOrganisationAuthor() should return true if identity has organisation author roles', () => {
 		const accessToken: string = 'access-token'
 
-		const organisationAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_AUTHOR], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const organisationAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.ORGANISATION_AUTHOR], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(organisationAuthor.isOrganisationAuthor()).to.be.true
 		expect(learner.isOrganisationAuthor()).to.be.false
@@ -97,8 +96,8 @@ describe('Identity tests', () => {
 	it('isProfessionAuthorOrSuperUser() should return true if identity has profession author roles', () => {
 		const accessToken: string = 'access-token'
 
-		const professionAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.PROFESSION_AUTHOR], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const professionAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.PROFESSION_AUTHOR], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(professionAuthor.isProfessionAuthorOrSuperUser()).to.be.true
 		expect(learner.isProfessionAuthorOrSuperUser()).to.be.false
@@ -107,8 +106,8 @@ describe('Identity tests', () => {
 	it('isProfessionAuthor() should return true if identity has profession author roles', () => {
 		const accessToken: string = 'access-token'
 
-		const organisationAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.PROFESSION_AUTHOR], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const organisationAuthor: Identity = new Identity('id1', 'user@domain.com', [Role.PROFESSION_AUTHOR], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(organisationAuthor.isProfessionAuthor()).to.be.true
 		expect(learner.isProfessionAuthor()).to.be.false
@@ -117,8 +116,8 @@ describe('Identity tests', () => {
 	it('hasLearningCreate() should return true if identity has learning create roles', () => {
 		const accessToken: string = 'access-token'
 
-		const learningCreate: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_CREATE], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const learningCreate: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_CREATE], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(learningCreate.hasLearningCreate()).to.be.true
 		expect(learner.hasLearningCreate()).to.be.false
@@ -127,8 +126,8 @@ describe('Identity tests', () => {
 	it('hasLearningEdit() should return true if identity has learning edit roles', () => {
 		const accessToken: string = 'access-token'
 
-		const learningEdit: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_EDIT], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const learningEdit: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_EDIT], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(learningEdit.hasLearningEdit()).to.be.true
 		expect(learner.hasLearningEdit()).to.be.false
@@ -137,8 +136,8 @@ describe('Identity tests', () => {
 	it('hasLearningDelete() should return true if identity has learning delete roles', () => {
 		const accessToken: string = 'access-token'
 
-		const learningDelete: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_DELETE], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const learningDelete: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_DELETE], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(learningDelete.hasLearningDelete()).to.be.true
 		expect(learner.hasLearningDelete()).to.be.false
@@ -147,8 +146,8 @@ describe('Identity tests', () => {
 	it('hasLearningDelete() should return true if identity has learning publish roles', () => {
 		const accessToken: string = 'access-token'
 
-		const learningPublish: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_PUBLISH], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const learningPublish: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_PUBLISH], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(learningPublish.hasLearningPublish()).to.be.true
 		expect(learner.hasLearningPublish()).to.be.false
@@ -157,8 +156,8 @@ describe('Identity tests', () => {
 	it('hasLearningDelete() should return true if identity has learning delete roles', () => {
 		const accessToken: string = 'access-token'
 
-		const learningArchive: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_ARCHIVE], accessToken, new OrganisationalUnit())
-		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken, new OrganisationalUnit())
+		const learningArchive: Identity = new Identity('id1', 'user@domain.com', [Role.LEARNING_ARCHIVE], accessToken)
+		const learner: Identity = new Identity('id2', 'user@domain.com', [Role.LEARNER], accessToken)
 
 		expect(learningArchive.hasLearningArchive()).to.be.true
 		expect(learner.hasLearningArchive()).to.be.false

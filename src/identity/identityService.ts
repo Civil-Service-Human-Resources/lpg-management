@@ -19,10 +19,8 @@ export class IdentityService {
 				Authorization: `Bearer ${token}`,
 			},
 		})
-
-		let organisationalUnit = (await this.csrsService.getCivilServant()).organisationalUnit
 		
-		return new Identity(response.data.uid, response.data.username, response.data.roles, token, organisationalUnit)
+		return new Identity(response.data.uid, response.data.username, response.data.roles, token)
 	}
 
 	async logout(token: string) {
