@@ -5,6 +5,7 @@ import {AssetMiddleware} from '../../src/middleware/asset'
 import {RequestMiddleware} from '../../src/middleware/requestMiddleware'
 import {NunjucksMiddleware} from '../../src/middleware/nunjucks'
 import {Identity} from '../../src/identity/identity'
+import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 const app: express.Express = express()
 app.use((req, res, next) => {
@@ -13,7 +14,7 @@ app.use((req, res, next) => {
 	if(roleHeader !== undefined) {
 		roles = roleHeader.split(",")
 	}
-	const identity = new Identity("testUid", 'user@domain.com', roles, "accessToken")
+	const identity = new Identity("testUid", 'user@domain.com', roles, "accessToken", new OrganisationalUnit())
 	req.user = identity
 	res.locals.identity = identity
 	next()
