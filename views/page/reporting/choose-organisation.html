@@ -11,20 +11,18 @@
 
 {% set typeAheadHtml %}
 
-<div class="govuk-radios__conditional govuk-radios__conditional--hidden" id="conditional-organisation-2">
-  <div class="govuk-form-group">
-    <label class="govuk-label" for="other-organisation-dropdown">
-      Organisation
-    </label>
-    <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
+<div class="govuk-form-group">
+  <label class="govuk-label" for="other-organisation-dropdown">
+    Organisation
+  </label>
+  <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
 
-      <select class="autocomplete__organisations" name="organisationId" id="parent">
-        <option value="" selected></option>
-        {% for organisation in organisationListForTypeAhead %}
-        <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
-        {% endfor %}
-      </select>
-    </div>
+    <select class="autocomplete__organisations" name="organisationId" id="parent">
+      <option value="" selected></option>
+      {% for organisation in organisationListForTypeAhead %}
+      <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
+      {% endfor %}
+    </select>
   </div>
 </div>
 
@@ -38,15 +36,7 @@
 <div class="govuk-grid row">
   <div class="govuk-column-one-third">
     <div class="govuk-form-group">
-      <form action="/reporting/course-completions/choose-organisation" method="post">
-        <fieldset class="govuk-fieldset" aria-describedby="organisation-hint">
-          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-            <h1 class="govuk-fieldset__heading">
-              <span class="govuk-caption-m">Reporting</span>
-              Select an organisation
-            </h1>
-          </legend>
-          
+      <form action="/reporting/course-completions/choose-organisation" method="post">          
           {{ govukRadios({
             name: "organisation",
             fieldset: {
@@ -78,8 +68,6 @@
             text: "Select courses",
             preventDoubleClick: true
           }) }}
-
-        </fieldset>
       </form>
     </div>
   </div>
