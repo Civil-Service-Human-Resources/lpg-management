@@ -81,26 +81,33 @@ export class ReportingController {
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisation
 
-			if(selectedOrganisationId === "other"){
+			if (selectedOrganisationId === "other") {
 				selectedOrganisationId = request.body.organisationId
 			}
 
-			let selectedCourseIds = request.body.courseIds
+			if (selectedOrganisationId) {
+				let selectedCourseIds = request.body.courseIds
 
-			request.session!.selectedOrganisationId = selectedOrganisationId
-			request.session!.selectedCourseIds = selectedCourseIds
+				request.session!.selectedOrganisationId = selectedOrganisationId
+				request.session!.selectedCourseIds = selectedCourseIds
 
-			if(currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
-				if(selectedCourseIds !== undefined){
-					response.redirect(`/reporting/course-completions`)
+				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)) {
+					if (selectedCourseIds !== undefined) {
+						response.redirect(`/reporting/course-completions`)
+					}
+					else {
+						response.redirect(`/reporting/course-completions/choose-courses`)
+					}
+
 				}
-				else{
-					response.redirect(`/reporting/course-completions/choose-courses`)
+				else {
+					response.render("page/unauthorised")
 				}
-				
 			}
 			else {
-				response.render("page/unauthorised")
+				request.session!.sessionFlash = {
+					errors: ["You need to select an organisation before continuing."]
+				}
 			}
 		}
 	}
@@ -186,25 +193,25 @@ export class ReportingController {
 		}
 	}
 
-	private async getOrganisationChoicesForUser(user: any){
+	private async getOrganisationChoicesForUser(user: any) {
 		return {
 			directOrganisation: await this.getDirectOrganisationForCurrentCivilServant(),
 			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
 		}
 	}
 
-	private async getDirectOrganisationForCurrentCivilServant(){
+	private async getDirectOrganisationForCurrentCivilServant() {
 		let civilServant = await this.csrsService.getCivilServant()
 		let directOrganisation = civilServant.organisationalUnit
 		return directOrganisation
 	}
 
-	private async userCanSeeReportingForOrganisation(user: any, organisationId: any){
+	private async userCanSeeReportingForOrganisation(user: any, organisationId: any) {
 		let organisationalUnitsForUser = await this.csrsService.getOrganisationalUnitsForUser(user)
 		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
 		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
 		return userCanAccessOrganisation
 	}
 
-	
+
 }
