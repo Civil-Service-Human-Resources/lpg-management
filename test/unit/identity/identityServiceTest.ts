@@ -17,7 +17,7 @@ describe('IdentityService tests...', function() {
 
 	beforeEach(function() {
 		csrsService = new CsrsService(<OauthRestService>{}, <CacheService>{}, <OrganisationalUnitService>{})
-		identityService = new IdentityService(http, <CsrsService>{})
+		identityService = new IdentityService(http, csrsService)
 	})
 
 	it('getDetails() should return Identity', function() {
