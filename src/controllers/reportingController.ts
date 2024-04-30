@@ -108,6 +108,10 @@ export class ReportingController {
 				request.session!.sessionFlash = {
 					errors: ["You need to select an organisation before continuing."]
 				}
+
+				return request.session!.save(() => {
+					response.redirect('/reporting/course-completions/choose-organisation')
+				})
 			}
 		}
 	}
