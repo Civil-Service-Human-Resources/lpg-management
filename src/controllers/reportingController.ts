@@ -198,6 +198,7 @@ export class ReportingController {
 	}
 
 	private async getOrganisationChoicesForUser(user: any) {
+		console.log(user)
 		return {
 			directOrganisation: await this.getDirectOrganisationForCurrentCivilServant(),
 			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
