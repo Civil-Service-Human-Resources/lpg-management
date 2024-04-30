@@ -18,7 +18,6 @@ import {Audience} from './model/audience'
 import {Auth} from '../identity/auth'
 import {OauthRestService} from '../lib/http/oauthRestService'
 import {CslServiceClient} from '../csl-service/client'
-
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
 	private _moduleService: EntityService<Module>
@@ -81,6 +80,10 @@ export class LearningCatalogue {
 
 	async getCourse(courseId: string): Promise<Course> {
 		return this._courseService.get(`/courses/${courseId}`)
+	}
+
+	async getRequiredLearning(departmentCodes: string[]): Promise<DefaultPageResults<Course>> {
+		return await this._courseService.listAllWithPagination(`/courses?mandatory=true&department=${departmentCodes}`)
 	}
 
 	async createModule(courseId: string, module: Module): Promise<Module> {

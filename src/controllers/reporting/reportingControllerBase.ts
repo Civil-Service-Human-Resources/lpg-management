@@ -1,5 +1,5 @@
 import {Controller} from '../controller'
-import {CompoundRoleBase, reporterRole} from '../../identity/identity'
+// import {CompoundRoleBase, reporterRole} from '../../identity/identity'
 import {ReportService} from '../../report-service'
 
 export abstract class ReportingControllerBase extends Controller {
@@ -10,8 +10,8 @@ export abstract class ReportingControllerBase extends Controller {
 		super("/reporting", controllerName)
 	}
 
-	protected getRequiredRoles(): CompoundRoleBase[] {
-		return reporterRole.compoundRoles
-	}
+	// protected getRequiredRoles(): CompoundRoleBase[] {
+	// 	return reporterRole.compoundRoles
+	// }
 
 }

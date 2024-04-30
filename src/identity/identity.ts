@@ -52,8 +52,16 @@ export class AnyOfCompoundRole extends CompoundRoleBase {
 	}
 
 	getDescription(): string {
-		return `ANY of the following roles: ${this.roles}.`
+		return `ANY of the following roles: ${this.roles}`
 	}
+}
+
+export const Any = (...roles: Role[]) => {
+	return new AnyOfCompoundRole(roles)
+}
+
+export const All = (...roles: Role[]) => {
+	return new AllOfCompoundRole(roles)
 }
 
 export class AllOfCompoundRole extends CompoundRoleBase {
@@ -71,7 +79,9 @@ export class AllOfCompoundRole extends CompoundRoleBase {
 }
 
 export class UserRole {
-	constructor(public compoundRoles: CompoundRoleBase[]) {
+	public compoundRoles: CompoundRoleBase[]
+	constructor(...compoundRoles: CompoundRoleBase[]) {
+		this.compoundRoles = compoundRoles
 	}
 
 	public checkRoles(userRoles: string[]): boolean {
@@ -85,8 +95,10 @@ export class UserRole {
 	}
 }
 
-export const reporterRole = new UserRole([new AnyOfCompoundRole([Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
-Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER])])
+export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
+Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER))
+
+export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 
 export class Identity {
 

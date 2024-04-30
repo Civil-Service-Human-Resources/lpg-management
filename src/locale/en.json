@@ -274,7 +274,6 @@
 			}
 		}
 	},
-
 	"courseType": {
 		"face-to-face": "Face to Face",
 		"link": "Link",
@@ -282,6 +281,14 @@
 		"video": "Video",
 		"file": "File",
 		"blended": "Blended"
+	},
+	"reporting": {
+		"course_completions": {
+			"title": "Completed learning",
+			"validation": {
+				"requiredLearningSelection": "Please select which courses you want to report on"
+			}
+		}
 	},
 	"administration_pages_title": "Reporting",
 	"blended": "Blended",

@@ -130,4 +130,8 @@ export class CourseService {
 
 		return sortedAudiences
 	}
+
+	async getRequiredLearning(departmentCodes: string[]) {
+		return await this.learningCatalogue.getRequiredLearning(departmentCodes)
+	}
 }

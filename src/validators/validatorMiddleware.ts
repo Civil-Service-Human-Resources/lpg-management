@@ -24,7 +24,7 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 		logger.debug(`Validating request body ${JSON.stringify(req.body)} against class ${opts.dtoClass.name}`)
 		const output: any = plainToInstance(opts.dtoClass, req.body)
 		if (req.body !== undefined) {
-			const validationErrors = await validate(output, { skipMissingProperties: true })
+			const validationErrors = await validate(output, { skipMissingProperties: false })
 			if (validationErrors.length > 0) {
 				logger.debug(validationErrors)
 				const errors = ValidationErrorMapper.map(validationErrors)

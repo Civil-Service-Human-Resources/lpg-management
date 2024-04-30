@@ -8,15 +8,15 @@ export const roleCheckMiddleware = (requiredRoles: CompoundRoleBase[]) => (req: 
 	let errorMsg: string = ""
 	if (req.user) {
 		const userRoles: string[] = req.user.roles
-		let hasRequiredRoles = true
+		const errors = []
 		for (const requiredRole of requiredRoles) {
 			if (!requiredRole.checkRoles(userRoles)) {
-				errorMsg += ` ${requiredRole.getDescription()}`
-				hasRequiredRoles = false
+				errors.push(requiredRole.getDescription())
 			}
 		}
-		if (!hasRequiredRoles) {
-			errorMsg = `User '${req.user.uid}' does not have the correct roles assigned for URL ${req.originalUrl}. User has roles: [${userRoles}], required Roles are: ` + errorMsg
+		if (errors.length > 0) {
+			const roleErrors = errors.join(" ")
+			errorMsg = `User '${req.user.uid}' does not have the correct roles assigned for URL ${req.originalUrl}. User has roles: [${userRoles}], required Roles are: ` + roleErrors
 		} else {
 			return next()
 		}

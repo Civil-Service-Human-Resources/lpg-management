@@ -1,38 +1,41 @@
-{% from "../../component/reporting/macro.njk" import reporting with context %}
+{% from "../../../component/reporting/macro.njk" import reporting with context %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "../../../component/Page.njk" %}
 
-{% block pageTitle %}{{i18n['proposition_name'] }}{% endblock %}
-
+{% block pageTitle %}{{ i18n.reporting.course_completions.title }} - {{ i18n.proposition_name }}{% endblock %}
 {% block content %}
-
+    {% set errors = sessionFlash.errors %}
+    {{ errorSummary(errors.fields, true) }}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-m">Reporting</span>
-    <h1 class="govuk-heading-l">{{ pageTitle }}</h1>
+    <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
     <form method="post" action="/reporting/course-completions/choose-courses">
+        {% set requiredLearningOptions = pageModel.requiredLearningList %}
+        {% set requiredLearningOptions = requiredLearningOptions.concat({
+            "divider": "or"
+        }) %}
+        {% set requiredLearningOptions = requiredLearningOptions.concat({
+            "value": "all",
+            "text": "All required learning",
+            "behaviour": "exclusive"
+        }) %}
+        <input type='hidden' name='allRequiredLearning' value='{{ pageModel.allRequiredLearning }}'>
       {% set requiredHtml %}
         {{ govukCheckboxes({
-          name: "required-learning",
+          name: "requiredLearning",
           classes: "govuk-checkboxes--small",
           fieldset: {
             legend: {
               text: "Required learning"
             }
           },
-          items: [	pageModel.requiredLearning,
-            {
-              "divider": "or"
-            },
-            {
-              "value": "all",
-              "text": "All required learning",
-              "behaviour": "exclusive"
-            }]
+          items: requiredLearningOptions
         }) }}
       {% endset -%}
       {{ govukRadios({
@@ -45,16 +48,12 @@
         },
         items: [
           {
-            value: "required-learning",
+            value: "requiredLearning",
             text: "Required learning for " + pageModel.userDepartment,
             conditional: {
             html: requiredHtml
           },
             checked: true
-          },
-          {
-            value: "all-learning",
-            text: "All learning"
           }
         ]
       }) }}

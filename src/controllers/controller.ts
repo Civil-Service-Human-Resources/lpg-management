@@ -44,8 +44,8 @@ export abstract class Controller {
 
 	public buildRouter = (): Router => {
 		this.logger.debug(`Registering controller '${this.controllerName}'`)
-		this.applyRoleRestrictions()
 		const controllerMiddleware = this.getControllerMiddleware()
+		this.applyRoleRestrictions()
 		if (controllerMiddleware.length > 0) {
 			this.logger.debug(`Registering ${controllerMiddleware.length} controller middleware`)
 			this.router.use(controllerMiddleware)

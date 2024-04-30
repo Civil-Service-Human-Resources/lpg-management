@@ -1,6 +1,7 @@
 import {Controller} from '../controller'
-import {AllOfCompoundRole, AnyOfCompoundRole, CompoundRoleBase, Role} from '../../identity/identity'
+// import {AllOfCompoundRole, AnyOfCompoundRole, CompoundRoleBase, Role} from '../../identity/identity'
 import {ReportService} from '../../report-service'
+import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
 
 export abstract class CourseCompletionsControllerBaseBase extends Controller {
 
@@ -11,8 +12,7 @@ export abstract class CourseCompletionsControllerBaseBase extends Controller {
 	}
 
 	protected getRequiredRoles(): CompoundRoleBase[] {
-		return [new AllOfCompoundRole([Role.MVP_REPORTER]),
-			new AnyOfCompoundRole([Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER])]
+		return mvpReportingRole.compoundRoles
 	}
 
 }
