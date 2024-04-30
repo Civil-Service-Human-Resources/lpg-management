@@ -7,7 +7,7 @@ import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
 import { CsrsService } from 'src/csrs/service/csrsService'
-import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
+import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
