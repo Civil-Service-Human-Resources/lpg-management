@@ -185,7 +185,7 @@ export class ApplicationContext {
 			timeout: config.REQUEST_TIMEOUT_MS,
 		})
 
-		this.identityService = new IdentityService(this.axiosInstance)
+		this.identityService = new IdentityService(this.axiosInstance, this.csrsService)
 
 		this.auth = new Auth(
 			new AuthConfig(

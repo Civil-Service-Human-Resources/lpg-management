@@ -7,8 +7,9 @@ export class IdentityService {
 	http: AxiosInstance
 	csrsService: CsrsService
 
-	constructor(http: AxiosInstance) {
+	constructor(http: AxiosInstance, csrsService: CsrsService) {
 		this.http = http
+		this.csrsService = csrsService
 	}
 
 	async getDetails(token: string) {

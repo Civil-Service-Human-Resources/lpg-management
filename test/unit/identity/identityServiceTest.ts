@@ -4,6 +4,7 @@ import {expect} from 'chai'
 import {IdentityService} from '../../../src/identity/identityService'
 import {Identity} from '../../../src/identity/identity'
 import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
+import { CsrsService } from 'src/csrs/service/csrsService'
 
 describe('IdentityService tests...', function() {
 	let identityService: IdentityService
@@ -11,7 +12,7 @@ describe('IdentityService tests...', function() {
 	const organisationalUnit: OrganisationalUnit = <OrganisationalUnit>{}
 
 	beforeEach(function() {
-		identityService = new IdentityService(http)
+		identityService = new IdentityService(http, <CsrsService>{})
 	})
 
 	it('getDetails() should return Identity', function() {
