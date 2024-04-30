@@ -88,7 +88,7 @@ export class ReportingController {
 			if (selectedOrganisationId) {
 				let selectedCourseIds = request.body.courseIds
 
-				request.session!.selectedOrganisationId = selectedOrganisationId
+				request.session!.selectedOrganisationIds = selectedOrganisationId
 				request.session!.selectedCourseIds = selectedCourseIds
 
 				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)) {

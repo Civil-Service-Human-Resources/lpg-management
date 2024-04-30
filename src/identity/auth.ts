@@ -6,6 +6,7 @@ import {Identity} from './identity'
 import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
+import { CsrsService } from 'src/csrs/service/csrsService'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -15,15 +16,17 @@ export class Auth {
 	config: AuthConfig
 	passportStatic: PassportStatic
 	identityService: IdentityService
+	csrsService: CsrsService
 	currentUser: Identity
 
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
-	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService) {
+	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService, csrsService: CsrsService) {
 		this.config = config
 		this.passportStatic = passportStatic
 		this.identityService = identityService
+		this.csrsService
 	}
 
 	configure(app: any) {
@@ -74,6 +77,9 @@ export class Auth {
 			try {
 				const identityDetails = await this.identityService.getDetails(accessToken)
 
+				let civilServant = await this.csrsService.getCivilServant()
+				identityDetails.organisationalUnit = civilServant.organisationalUnit
+
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
@@ -117,7 +123,12 @@ export class Auth {
 	deserializeUser() {
 		return async (data: string, done: any) => {
 			let jsonResponse = JSON.parse(data)
-			done(null, new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken))
+			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
+			
+			let civilServant = await this.csrsService.getCivilServant()
+			user.organisationalUnit = civilServant.organisationalUnit
+			
+			done(null, user)
 		}
 	}
 
