@@ -204,6 +204,7 @@ export class ReportingController {
 		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
 		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
 		return userCanAccessOrganisation
+	}
 
 	
 }
