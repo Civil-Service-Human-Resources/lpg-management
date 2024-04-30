@@ -198,7 +198,8 @@ export class ApplicationContext {
 				config.AUTHENTICATION.endpoints.token
 			),
 			passport,
-			this.identityService
+			this.identityService,
+			this.csrsService
 		)
 
 		this.identityConfig = new IdentityConfig(config.AUTHENTICATION.authenticationServiceUrl, config.AUTHENTICATION.timeout)
