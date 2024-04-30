@@ -3,10 +3,12 @@ import * as sinon from 'sinon'
 import {expect} from 'chai'
 import {IdentityService} from '../../../src/identity/identityService'
 import {Identity} from '../../../src/identity/identity'
+import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 describe('IdentityService tests...', function() {
 	let identityService: IdentityService
 	const http: AxiosInstance = <AxiosInstance>{}
+	const organisationalUnit: OrganisationalUnit = <OrganisationalUnit>{}
 
 	beforeEach(function() {
 		identityService = new IdentityService(http)
@@ -33,7 +35,7 @@ describe('IdentityService tests...', function() {
 		http.get = axiosGet
 
 		const returnValue = identityService.getDetails(token)
-		const identity = new Identity('abc123', 'user@domain.com', ['ROLE1', 'ROLE2'], token)
+		const identity = new Identity('abc123', 'user@domain.com', ['ROLE1', 'ROLE2'], token, organisationalUnit)
 
 		returnValue.then(function(data) {
 			expect(data).to.eql(identity)
