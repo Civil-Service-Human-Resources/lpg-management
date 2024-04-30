@@ -189,7 +189,7 @@ export class ReportingController {
 	private async getOrganisationChoicesForUser(user: any){
 		return {
 			directOrganisation: await this.getDirectOrganisationForCurrentCivilServant(),
-			typeaheadOrganisations: await this.getOrganisationalUnitsForUser(user)
+			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
 		}
 	}
 
@@ -200,23 +200,10 @@ export class ReportingController {
 	}
 
 	private async userCanSeeReportingForOrganisation(user: any, organisationId: any){
-		let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
+		let organisationalUnitsForUser = await this.csrsService.getOrganisationalUnitsForUser(user)
 		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
 		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
 		return userCanAccessOrganisation
-	}
-
-	private async getOrganisationalUnitsForUser(user: any) {
-		let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
-		let organisationsForTypeahead = organisationList.typeahead
-
-		if (!user.isSuperReporter()) {
-			let userDomain = user.username.split("@")[1]
-			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
-		}
-
-		return organisationsForTypeahead
-	}
 
 	
 }

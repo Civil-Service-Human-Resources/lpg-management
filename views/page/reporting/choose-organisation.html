@@ -21,6 +21,7 @@
         <fieldset class="govuk-fieldset" aria-describedby="organisation-hint">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-m">Reporting</span>
               Select an organisation
             </h1>
           </legend>
@@ -50,7 +51,7 @@
                 </label>
                 <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
 
-                  <select class="autocomplete__organisations" name="organisationId" id="parent" required>
+                  <select class="autocomplete__organisations" name="organisationId" id="parent">
                     <option value="" selected></option>
                     {% for organisation in organisationListForTypeAhead %}
                     <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
