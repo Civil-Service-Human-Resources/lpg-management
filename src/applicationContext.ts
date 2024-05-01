@@ -368,7 +368,7 @@ export class ApplicationContext {
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
-		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator, this.csrsService)
+		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator, this.csrsService, this.organisationalUnitService)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 
