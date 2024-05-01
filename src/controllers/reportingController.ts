@@ -98,8 +98,6 @@ export class ReportingController {
 					organisationIdsForReporting = [selectedOrganisationId]
 				}
 
-				console.log("Selected IDs: " + organisationIdsForReporting)
-
 				request.session!.selectedOrganisationIds = organisationIdsForReporting.join(",")
 				request.session!.selectedCourseIds = selectedCourseIds
 
