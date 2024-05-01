@@ -93,7 +93,7 @@ export class ReportingController {
 				let directOrganisation = await this.getDirectOrganisationForCurrentCivilServant()
 				let selectedCourseIds = request.body.courseIds
 
-				request.session!.selectedOrganisationIds = (await this.organisationalUnitService.cascadeOrganisationHierarchy(directOrganisation, selectedOrganisationId)).join(",")
+				request.session!.selectedOrganisationIds = (await this.organisationalUnitService.cascadeOrganisationHierarchy(selectedOrganisationId, directOrganisation)).join(",")
 				request.session!.selectedCourseIds = selectedCourseIds
 
 				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)) {
