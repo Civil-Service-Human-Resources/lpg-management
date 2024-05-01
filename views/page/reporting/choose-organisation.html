@@ -50,6 +50,26 @@
   <div class="govuk-column-one-third">
     <div class="govuk-form-group">
       <form action="/reporting/course-completions/choose-organisation" method="post">          
+
+        {% set radioItems = [
+          {
+            {
+              value: firstOrganisationOption.id,
+              text: firstOrganisationOption.name
+            }
+          }  
+        ] %}
+
+        {% if showTypeaheadOption %}
+          {% set radioItems = (radioItems.push({
+            value: "other",
+            text: "Other organisation",
+            conditional: {
+              html: typeAheadHtml
+            }
+          }), radioItems) %}
+        {% endif %}
+
           {{ govukRadios({
             name: "organisation",
             fieldset: {
@@ -62,19 +82,7 @@
             hint: {
               text: "Which organisation would you like to report on?"
             },
-            items: [
-              {
-                value: firstOrganisationOption.id,
-                text: firstOrganisationOption.name
-              },
-              {
-                value: "other",
-                text: "Other organisation",
-                conditional: {
-                  html: typeAheadHtml
-                }
-              }
-            ]
+            items: radioItems
           }) }}
 
           {{ govukButton({
