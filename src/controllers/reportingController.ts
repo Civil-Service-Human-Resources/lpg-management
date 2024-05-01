@@ -7,6 +7,7 @@ import { DateStartEnd } from '../learning-catalogue/model/dateStartEnd'
 import { Validator } from '../learning-catalogue/validator/validator'
 import { PlaceholderDate } from '../learning-catalogue/model/placeholderDate'
 import { CsrsService } from 'src/csrs/service/csrsService'
+import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -17,6 +18,7 @@ export class ReportingController {
 	dateStartEndCommandValidator: Validator<DateStartEndCommand>
 	dateStartEndValidator: Validator<DateStartEnd>
 	csrsService: CsrsService
+	organisationalUnitService: OrganisationalUnitService
 
 	constructor(
 		reportService: ReportService,
@@ -24,6 +26,7 @@ export class ReportingController {
 		dateStartEndCommandValidator: Validator<DateStartEndCommand>,
 		dateStartEndValidator: Validator<DateStartEnd>,
 		csrsService: CsrsService,
+		organisationalUnitService: OrganisationalUnitService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
@@ -32,6 +35,7 @@ export class ReportingController {
 		this.dateStartEndCommandValidator = dateStartEndCommandValidator
 		this.dateStartEndValidator = dateStartEndValidator
 		this.csrsService = csrsService
+		this.organisationalUnitService = organisationalUnitService
 	}
 
 	private configureRouterPaths() {
@@ -86,9 +90,10 @@ export class ReportingController {
 			}
 
 			if (selectedOrganisationId) {
+				let directOrganisation = await this.getDirectOrganisationForCurrentCivilServant()
 				let selectedCourseIds = request.body.courseIds
 
-				request.session!.selectedOrganisationIds = selectedOrganisationId
+				request.session!.selectedOrganisationIds = (await this.organisationalUnitService.cascadeOrganisationHierarchy(directOrganisation, selectedCourseIds)).join(",")
 				request.session!.selectedCourseIds = selectedCourseIds
 
 				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)) {
