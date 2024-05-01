@@ -48,13 +48,9 @@ export class OrganisationalUnitService {
 		return hierarchy
 	}
 
-	async cascadeOrganisationHierarchy(topOrganisationId: number, bottomHierarchyId: number): Promise<OrganisationalUnit[]>{
-		let organisationHierarchyForBottomOrganisation: OrganisationalUnit[] = await this.getOrgHierarchy(bottomHierarchyId)
+	async cascadeOrganisationHierarchy(topOrganisationId: number, bottomOrganisationId: number): Promise<OrganisationalUnit[]>{
+		let organisationHierarchyForBottomOrganisation: OrganisationalUnit[] = await this.getOrgHierarchy(bottomOrganisationId)
 		let hierarchySplicedToTopOrganisation: OrganisationalUnit[] = [...organisationHierarchyForBottomOrganisation].splice(0, organisationHierarchyForBottomOrganisation.map(org => org.id).indexOf(topOrganisationId)+1)
-		console.log("CASCADED ORGS")
-		hierarchySplicedToTopOrganisation.forEach((org) => {
-			console.log(org)
-		})
 		
 		return hierarchySplicedToTopOrganisation
 	}
