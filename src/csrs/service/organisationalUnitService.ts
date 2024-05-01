@@ -55,6 +55,7 @@ export class OrganisationalUnitService {
 		
 		console.log("SPLICED HIERARCHY:")
 		let hierarchySplicedToTopOrganisation: OrganisationalUnit[] = [...organisationHierarchyForBottomOrganisation].splice(0, organisationHierarchyForBottomOrganisation.map(org => org.id).indexOf(topOrganisationId)+1)
+		console.log(hierarchySplicedToTopOrganisation)
 		
 		return hierarchySplicedToTopOrganisation
 	}
