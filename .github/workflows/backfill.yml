@@ -3,12 +3,7 @@ name: "Auto-create release backfills"
 on:
   create:
     branches:
-      - 'idt-release-v*'
-      - 'idt-hotfix-v*'
-  push:
-    branches:
-      - 'idt-release-v*'
-      - 'idt-hotfix-v*'
+      - '*'
 
 jobs:
   call-reusable-workflow:
