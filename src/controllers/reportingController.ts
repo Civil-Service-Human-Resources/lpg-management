@@ -93,10 +93,13 @@ export class ReportingController {
 				let directOrganisation = await this.getDirectOrganisationForCurrentCivilServant()
 				let selectedCourseIds = request.body.courseIds
 
-				let organisationIdsForReporting = (await this.organisationalUnitService.cascadeOrganisationHierarchy(directOrganisation.id, selectedOrganisationId)).map((org => org.id))
+				let organisationIdsForReporting = (await this.organisationalUnitService.cascadeOrganisationHierarchy(selectedOrganisationId, directOrganisation.id)).map((org => org.id))
 				if(organisationIdsForReporting.length === 0){
 					organisationIdsForReporting = [selectedOrganisationId]
 				}
+
+				console.log(organisationIdsForReporting)
+				
 
 				request.session!.selectedOrganisationIds = organisationIdsForReporting.join(",")
 				request.session!.selectedCourseIds = selectedCourseIds
