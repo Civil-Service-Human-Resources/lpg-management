@@ -8,6 +8,7 @@ import { Validator } from '../learning-catalogue/validator/validator'
 import { PlaceholderDate } from '../learning-catalogue/model/placeholderDate'
 import { CsrsService } from 'src/csrs/service/csrsService'
 import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
+import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -59,7 +60,7 @@ export class ReportingController {
 	getChooseOrganisationPage() {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
-
+			
 			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
 				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
@@ -84,27 +85,18 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisation
+			let selectedCourseIds = request.body.courseIds
 
 			if (selectedOrganisationId === "other") {
 				selectedOrganisationId = request.body.organisationId
 			}
 
 			if (selectedOrganisationId) {
-				let directOrganisation = await this.getDirectOrganisationForCurrentCivilServant()
-				let selectedCourseIds = request.body.courseIds
+				let organisationIdsForReporting = [+selectedOrganisationId, ...(await this.getChildOrganisationIdsForOrganisationId(+selectedOrganisationId))]
+				request.session!.selectedOrganisationIds = organisationIdsForReporting
+				request.session!.selectedCourseIds = selectedCourseIds	
 
-				let organisationIdsForReporting = (await this.organisationalUnitService.cascadeOrganisationHierarchy(selectedOrganisationId, directOrganisation.id)).map((org => org.id))
-				if(organisationIdsForReporting.length === 0){
-					organisationIdsForReporting = [selectedOrganisationId]
-				}
-
-				console.log(organisationIdsForReporting)
-				
-
-				request.session!.selectedOrganisationIds = organisationIdsForReporting.join(",")
-				request.session!.selectedCourseIds = selectedCourseIds
-
-				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)) {
+				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanAccessReportingForOrganisation(currentUser, selectedOrganisationId)) {
 					if (selectedCourseIds !== undefined) {
 						response.redirect(`/reporting/course-completions`)
 					}
@@ -210,24 +202,26 @@ export class ReportingController {
 		}
 	}
 
-	private async getOrganisationChoicesForUser(user: any) {
+	async getOrganisationChoicesForUser(user: any) {
 		return {
-			directOrganisation: await this.getDirectOrganisationForCurrentCivilServant(),
+			directOrganisation: user.organisationalUnit,
 			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
 		}
 	}
 
-	private async getDirectOrganisationForCurrentCivilServant() {
-		let civilServant = await this.csrsService.getCivilServant()
-		let directOrganisation = civilServant.organisationalUnit
-		return directOrganisation
-	}
-
-	private async userCanSeeReportingForOrganisation(user: any, organisationId: any) {
+	async userCanAccessReportingForOrganisation(user: any, organisationId: any) {
 		let organisationalUnitsForUser = await this.csrsService.getOrganisationalUnitsForUser(user)
 		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
 		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
 		return userCanAccessOrganisation
+	}
+
+	async getChildOrganisationIdsForOrganisationId(organisationId: number): Promise<number[]> {
+		let childOrganisationsForSelectedOrganisationId: OrganisationalUnit[] | undefined = (await this.organisationalUnitService.getOrgDropdown())
+					.getOrgWithChildren(organisationId)?.children
+				
+				let childOrganisationIds = childOrganisationsForSelectedOrganisationId ? childOrganisationsForSelectedOrganisationId.map(org => org.id) : []				
+				return childOrganisationIds
 	}
 
 

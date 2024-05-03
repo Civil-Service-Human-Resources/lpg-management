@@ -116,7 +116,6 @@ export class AudienceController {
 			const selectedOrganisations = res.locals.audience.departments
 
 			let organisations: OrganisationalUnitTypeAhead = await this.csrsService.listOrganisationalUnitsForTypehead()
-
 			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations.typeahead, selectedOrganisations: selectedOrganisations})
 		}
 	}

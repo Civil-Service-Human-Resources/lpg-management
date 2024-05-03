@@ -10,6 +10,7 @@ import {CacheService} from '../../../../src/lib/cacheService'
 import { OrganisationalUnitService } from '../../../../src/csrs/service/organisationalUnitService'
 import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 import { OrganisationalUnit } from '../../../../src/csrs/model/organisationalUnit'
+import { Domain } from 'src/csrs/model/domain'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -163,4 +164,89 @@ describe('CsrsService tests', () => {
 			expect(await csrsService.getDepartmentAbbreviationsFromCodes(['hmrc', 'dwp'])).to.be.deep.equal([hmrcAbbreviation, dwpAbbreviation])
 		})
 	})
+
+	describe("#getOrganisationalUnitsForUser", () => {
+		it("should return a filtered list of organisations according to the user's domain if user is not a super reporter", async () => {
+
+			let mockUser = {
+				isSuperReporter: () => {
+					return false
+				},
+				username: "user@user-domain.gov.uk"
+			}
+
+			let userDomain = new Domain(1, "user-domain.gov.uk")
+			let notUserDomain = new Domain(2, "not-user-domain.gov.uk")
+
+			let organisation1 = new OrganisationalUnit()
+			organisation1.id = 1
+			organisation1.domains = [userDomain]
+
+			let organisation2 = new OrganisationalUnit()
+			organisation2.id = 2
+			organisation2.domains = [notUserDomain]
+
+			let organisation3 = new OrganisationalUnit()
+			organisation3.id = 3
+			organisation3.domains = [userDomain, notUserDomain]
+
+			let listOrganisationalUnitsForTypehead = sinon
+				.stub()
+				.returns({
+					typeahead: [organisation1, organisation2, organisation3]
+				})
+
+			csrsService.listOrganisationalUnitsForTypehead = listOrganisationalUnitsForTypehead
+
+			let actualResult = await csrsService.getOrganisationalUnitsForUser(mockUser)
+
+			expect(actualResult.length).to.equal(2)
+			expect(actualResult[0].id).to.equal(1)
+			expect(actualResult[1].id).to.equal(3)
+
+		})
+
+		it("should return all organisations if user is a super reporter", async () => {
+
+			let mockUser = {
+				isSuperReporter: () => {
+					return true
+				},
+				username: "user@user-domain.gov.uk"
+			}
+
+			let userDomain = new Domain(1, "user-domain.gov.uk")
+			let notUserDomain = new Domain(2, "not-user-domain.gov.uk")
+
+			let organisation1 = new OrganisationalUnit()
+			organisation1.id = 1
+			organisation1.domains = [userDomain]
+
+			let organisation2 = new OrganisationalUnit()
+			organisation2.id = 2
+			organisation2.domains = [notUserDomain]
+
+			let organisation3 = new OrganisationalUnit()
+			organisation3.id = 3
+			organisation3.domains = [userDomain, notUserDomain]
+
+			let listOrganisationalUnitsForTypehead = sinon
+				.stub()
+				.returns({
+					typeahead: [organisation1, organisation2, organisation3]
+				})
+
+			csrsService.listOrganisationalUnitsForTypehead = listOrganisationalUnitsForTypehead
+
+			let actualResult = await csrsService.getOrganisationalUnitsForUser(mockUser)
+
+			expect(actualResult.length).to.equal(3)
+			expect(actualResult[0].id).to.equal(1)
+			expect(actualResult[1].id).to.equal(2)
+			expect(actualResult[2].id).to.equal(3)
+
+		})
+	})
+
+	
 })

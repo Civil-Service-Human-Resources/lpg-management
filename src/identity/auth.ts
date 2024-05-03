@@ -6,8 +6,6 @@ import {Identity} from './identity'
 import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
-import { CsrsService } from 'src/csrs/service/csrsService'
-// import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -17,17 +15,16 @@ export class Auth {
 	config: AuthConfig
 	passportStatic: PassportStatic
 	identityService: IdentityService
-	csrsService: CsrsService
 	currentUser: Identity
+	getCivilServant: () => Promise<any>
 
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
-	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService, csrsService: CsrsService) {
+	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService) {
 		this.config = config
 		this.passportStatic = passportStatic
 		this.identityService = identityService
-		this.csrsService = csrsService
 	}
 
 	configure(app: any) {
@@ -78,9 +75,9 @@ export class Auth {
 			try {
 				const identityDetails = await this.identityService.getDetails(accessToken)
 
-				// let civilServant = await this.csrsService.getCivilServant()
-				// identityDetails.organisationalUnit = civilServant.organisationalUnit
-
+				let civilServant = await this.getCivilServant()
+				identityDetails.organisationalUnit = civilServant.organisationalUnit
+				
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
@@ -124,12 +121,9 @@ export class Auth {
 	deserializeUser() {
 		return async (data: string, done: any) => {
 			let jsonResponse = JSON.parse(data)
-			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
 			
-			// let organisationalUnit = new OrganisationalUnit()
-			// organisationalUnit.id = jsonResponse.organisationalUnit.id
-			// organisationalUnit.name = jsonResponse.organisationalUnit.name
-			// user.organisationalUnit = organisationalUnit
+			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
+			user.organisationalUnit = jsonResponse.organisationalUnit
 			
 			done(null, user)
 		}

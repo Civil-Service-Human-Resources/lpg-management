@@ -1,6 +1,7 @@
 import {beforeEach, describe, it} from 'mocha'
 import {ReportingController} from '../../../src/controllers/reportingController'
 import {mockReq, mockRes} from 'sinon-express-mock'
+import * as sinon from 'sinon'
 import * as chai from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {expect} from 'chai'
@@ -12,6 +13,7 @@ import {DateStartEndCommandFactory} from '../../../src/controllers/command/facto
 import {DateStartEnd} from '../../../src/learning-catalogue/model/dateStartEnd'
 import { CsrsService } from 'src/csrs/service/csrsService'
 import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
+import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 chai.use(sinonChai)
 
@@ -44,5 +46,45 @@ describe('Reporting Controller Tests', function() {
 		await getReports(req, res)
 
 		expect(res.render).to.have.been.calledOnceWith('page/reporting/index')
+	})
+
+	it("userCanAccessReportingForOrganisation() should return true if selected organisationId is included in the user's organisational units", async function() {
+		let organisation1 = new OrganisationalUnit()
+		organisation1.id = 1
+		let organisation2 = new OrganisationalUnit()
+		organisation2.id = 2
+
+		const getOrganisationalUnitsForUser = sinon
+			.stub()
+			.returns([organisation1, organisation2])
+		
+		csrsService.getOrganisationalUnitsForUser = getOrganisationalUnitsForUser
+
+		let selectedOrganisationId = 1
+
+		let expectedResult = true
+		let actualResult = await reportingController.userCanAccessReportingForOrganisation(<any>{}, selectedOrganisationId)
+
+		expect(actualResult).to.equal(expectedResult)
+	})
+
+	it("userCanAccessReportingForOrganisation() should return false if selected organisationId is not included in the user's organisational units", async function() {
+		let organisation1 = new OrganisationalUnit()
+		organisation1.id = 1
+		let organisation2 = new OrganisationalUnit()
+		organisation2.id = 2
+
+		const getOrganisationalUnitsForUser = sinon
+			.stub()
+			.returns([organisation1, organisation2])
+		
+		csrsService.getOrganisationalUnitsForUser = getOrganisationalUnitsForUser
+
+		let selectedOrganisationId = 4
+
+		let expectedResult = false
+		let actualResult = await reportingController.userCanAccessReportingForOrganisation(<any>{}, selectedOrganisationId)
+
+		expect(actualResult).to.equal(expectedResult)
 	})
 })

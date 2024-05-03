@@ -3,19 +3,13 @@ import * as sinon from 'sinon'
 import {expect} from 'chai'
 import {IdentityService} from '../../../src/identity/identityService'
 import {Identity} from '../../../src/identity/identity'
-import { CsrsService } from '../../../src/csrs/service/csrsService'
-import { OauthRestService } from 'lib/http/oauthRestService'
-import { CacheService } from 'lib/cacheService'
-import { OrganisationalUnitService } from '../../../src/csrs/service/organisationalUnitService'
 
 describe('IdentityService tests...', function() {
 	let identityService: IdentityService
-	let csrsService: CsrsService
 	const http: AxiosInstance = <AxiosInstance>{}
 
 	beforeEach(function() {
-		csrsService = new CsrsService(<OauthRestService>{}, <CacheService>{}, <OrganisationalUnitService>{})
-		identityService = new IdentityService(http, csrsService)
+		identityService = new IdentityService(http)
 	})
 
 	it('getDetails() should return Identity', function() {

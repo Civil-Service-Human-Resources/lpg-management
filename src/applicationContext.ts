@@ -185,7 +185,7 @@ export class ApplicationContext {
 			timeout: config.REQUEST_TIMEOUT_MS,
 		})
 
-		this.identityService = new IdentityService(this.axiosInstance, this.csrsService)
+		this.identityService = new IdentityService(this.axiosInstance)
 
 		this.auth = new Auth(
 			new AuthConfig(
@@ -198,8 +198,7 @@ export class ApplicationContext {
 				config.AUTHENTICATION.endpoints.token
 			),
 			passport,
-			this.identityService,
-			this.csrsService
+			this.identityService
 		)
 
 		this.identityConfig = new IdentityConfig(config.AUTHENTICATION.authenticationServiceUrl, config.AUTHENTICATION.timeout)
@@ -251,6 +250,7 @@ export class ApplicationContext {
 
 		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.organisationalUnitService)
 
+		this.auth.getCivilServant = this.csrsService.getCivilServant
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
 		this.courseController = new CourseController(this.learningCatalogue, this.courseValidator, this.courseFactory, this.courseService, this.csrsService)

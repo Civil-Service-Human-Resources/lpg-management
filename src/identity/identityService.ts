@@ -1,15 +1,12 @@
 import {AxiosInstance} from 'axios'
 import {Identity} from './identity'
 import * as config from '../config'
-import { CsrsService } from 'src/csrs/service/csrsService'
 
 export class IdentityService {
 	http: AxiosInstance
-	csrsService: CsrsService
 
-	constructor(http: AxiosInstance, csrsService: CsrsService) {
+	constructor(http: AxiosInstance) {
 		this.http = http
-		this.csrsService = csrsService
 	}
 
 	async getDetails(token: string) {
