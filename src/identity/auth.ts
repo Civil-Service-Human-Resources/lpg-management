@@ -6,6 +6,7 @@ import {Identity} from './identity'
 import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
+import { CivilServantProfileService } from '../../src/csrs/service/civilServantProfileService'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -15,9 +16,8 @@ export class Auth {
 	config: AuthConfig
 	passportStatic: PassportStatic
 	identityService: IdentityService
+	civilServantProfileService: CivilServantProfileService
 	currentUser: Identity
-	getCivilServant: () => Promise<any>
-
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
@@ -25,6 +25,7 @@ export class Auth {
 		this.config = config
 		this.passportStatic = passportStatic
 		this.identityService = identityService
+		this.civilServantProfileService = new CivilServantProfileService()
 	}
 
 	configure(app: any) {
@@ -75,8 +76,9 @@ export class Auth {
 			try {
 				const identityDetails = await this.identityService.getDetails(accessToken)
 
-				let civilServant = await this.getCivilServant()
-				identityDetails.organisationalUnit = civilServant.organisationalUnit
+				let civilServantProfile = await this.civilServantProfileService.getProfile(accessToken)
+				
+				identityDetails.organisationalUnit = civilServantProfile.organisationalUnit
 				
 				cb(null, identityDetails)
 			} catch (e) {

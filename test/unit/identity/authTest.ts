@@ -39,7 +39,6 @@ describe('Auth tests', function() {
 		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath)
 
 		auth = new Auth(config, passportStatic, identityService)
-		auth.getCivilServant = csrsService.getCivilServant
 	})
 
 	it('should return next function if user is authenticated', function() {
@@ -109,7 +108,6 @@ describe('Auth tests', function() {
 
 		identityService.getDetails = getDetails
 		csrsService.getCivilServant = getCivilServant
-		auth.getCivilServant = csrsService.getCivilServant
 
 		const passportCallback = sinon.stub()
 
