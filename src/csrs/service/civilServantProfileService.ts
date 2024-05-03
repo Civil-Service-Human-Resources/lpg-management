@@ -1,21 +1,22 @@
-import { JsonRestService } from "../../lib/http/jsonRestService"
 import * as config from '../../config/index'
+import { AxiosInstance } from "axios"
 
 export class CivilServantProfileService {
-    jsonRestService: JsonRestService
+    http: AxiosInstance
 
-    constructor(){
-        const registryConfig = {
-            url: config.REGISTRY_SERVICE.url,
-            timeout: config.REGISTRY_SERVICE.timeout
-        }
-
-        this.jsonRestService = new JsonRestService(registryConfig, null)
+    constructor(http: AxiosInstance){
+        this.http = http
     }
 
     async getProfile(accessToken: string){
-        let profile = await this.jsonRestService.getWithConfig("/civilServants/me", this.getAuthorisationHeaderFromAccessToken(accessToken))        
-        return profile
+        const response = await this.http.get("/civilServants/me", {
+            baseURL: config.REGISTRY_SERVICE.url,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            }
+        })
+
+        return response.data
     }
 
     getAuthorisationHeaderFromAccessToken(accessToken: any){

@@ -5,7 +5,7 @@ export class OauthRestService extends JsonRestService {
 		return {
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${this.auth?.currentUser.accessToken}`,
+				Authorization: `Bearer ${this.auth.currentUser.accessToken}`,
 			},
 		}
 	}

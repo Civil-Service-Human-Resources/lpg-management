@@ -8,9 +8,9 @@ export class JsonRestService {
 	logger = getLogger('JsonRestService')
 	private _http: AxiosInstance
 	config: any
-	auth: Auth | null
+	auth: Auth
 
-	constructor(config: any, auth: Auth | null) {
+	constructor(config: any, auth: Auth) {
 		this.logger.debug(`Constructing JsonRestService with config: ${JSON.stringify(config)}`)
 		this.auth = auth
 		this._http = axios.create({

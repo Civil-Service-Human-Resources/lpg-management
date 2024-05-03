@@ -11,13 +11,13 @@ import {Auth} from '../../../src/identity/auth'
 import {IdentityService} from '../../../src/identity/identityService'
 import {AuthConfig} from '../../../src/identity/authConfig'
 import {Identity} from '../../../src/identity/identity'
-// import { OrganisationalUnit } from '../../../src/csrs/model/organisationalUnit'
 import { CivilServant } from '../../../src/csrs/model/civilServant'
 import { CsrsService } from '../../../src/csrs/service/csrsService'
 import { OauthRestService } from 'lib/http/oauthRestService'
 import { CacheService } from 'lib/cacheService'
 import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
 import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
+import { CivilServantProfileService } from 'src/csrs/service/civilServantProfileService'
 
 chai.use(sinonChai)
 
@@ -26,6 +26,7 @@ describe('Auth tests', function() {
 	let passportStatic: PassportStatic = <PassportStatic>{}
 	let identityService: IdentityService = <IdentityService>{}
 	let csrsService: CsrsService = new CsrsService(<OauthRestService>{}, <CacheService>{}, <OrganisationalUnitService>{})
+	let civilServantProfileService: CivilServantProfileService = <CivilServantProfileService>{}
 
 	const clientId = 'clientId'
 	const clientSecret = 'secret'
@@ -38,7 +39,7 @@ describe('Auth tests', function() {
 	beforeEach(() => {
 		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath)
 
-		auth = new Auth(config, passportStatic, identityService)
+		auth = new Auth(config, passportStatic, identityService, civilServantProfileService)
 	})
 
 	it('should return next function if user is authenticated', function() {
@@ -106,8 +107,13 @@ describe('Auth tests', function() {
 			.stub()
 			.returns(<CivilServant>sinon.createStubInstance(CivilServant))
 
+		const getProfile = sinon
+			.stub()
+			.returns(<any>{})
+	
 		identityService.getDetails = getDetails
 		csrsService.getCivilServant = getCivilServant
+		civilServantProfileService.getProfile = getProfile
 
 		const passportCallback = sinon.stub()
 

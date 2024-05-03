@@ -21,11 +21,11 @@ export class Auth {
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
-	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService) {
+	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService, civilServantProfileService: CivilServantProfileService) {
 		this.config = config
 		this.passportStatic = passportStatic
 		this.identityService = identityService
-		this.civilServantProfileService = new CivilServantProfileService()
+		this.civilServantProfileService = civilServantProfileService
 	}
 
 	configure(app: any) {
