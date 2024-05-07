@@ -1,3 +1,5 @@
+import { OrganisationalUnit } from "src/csrs/model/organisationalUnit"
+
 export enum Role {
 	LEARNER = 'LEARNER',
 	ORGANISATION_MANAGER = 'ORGANISATION_MANAGER',
@@ -106,6 +108,8 @@ export class Identity {
 	readonly username: string
 	readonly roles: string[]
 	readonly accessToken: string
+	organisationalUnit?: OrganisationalUnit
+
 
 	constructor(uid: string, username: string, roles: string[], accessToken: string) {
 		this.uid = uid
@@ -245,7 +249,7 @@ export class Identity {
 	}
 
 	isOrganisationReporter() {
-		return this.hasRole('ORGANISATION_REPORTER')
+		return this.hasRole(Role.ORGANISATION_REPORTER)
 	}
 
 	isKPMGSupplierReporter() {

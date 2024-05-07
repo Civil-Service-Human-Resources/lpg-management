@@ -7,6 +7,8 @@ import { DateStartEnd } from '../learning-catalogue/model/dateStartEnd'
 import { Validator } from '../learning-catalogue/validator/validator'
 import { PlaceholderDate } from '../learning-catalogue/model/placeholderDate'
 import { CsrsService } from 'src/csrs/service/csrsService'
+import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
+import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -17,6 +19,7 @@ export class ReportingController {
 	dateStartEndCommandValidator: Validator<DateStartEndCommand>
 	dateStartEndValidator: Validator<DateStartEnd>
 	csrsService: CsrsService
+	organisationalUnitService: OrganisationalUnitService
 
 	constructor(
 		reportService: ReportService,
@@ -24,6 +27,7 @@ export class ReportingController {
 		dateStartEndCommandValidator: Validator<DateStartEndCommand>,
 		dateStartEndValidator: Validator<DateStartEnd>,
 		csrsService: CsrsService,
+		organisationalUnitService: OrganisationalUnitService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
@@ -32,6 +36,7 @@ export class ReportingController {
 		this.dateStartEndCommandValidator = dateStartEndCommandValidator
 		this.dateStartEndValidator = dateStartEndValidator
 		this.csrsService = csrsService
+		this.organisationalUnitService = organisationalUnitService
 	}
 
 	private configureRouterPaths() {
@@ -55,8 +60,8 @@ export class ReportingController {
 	getChooseOrganisationPage() {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
-
-			if (currentUser && currentUser.isMVPReporter()) {
+			
+			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
 				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
@@ -79,13 +84,39 @@ export class ReportingController {
 	submitOrganisationSelection() {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
-			let selectedOrganisationId = request.body.organisationId
-			
-			if(currentUser && currentUser.isMVPReporter() && await this.userCanSeeReportingForOrganisation(currentUser, selectedOrganisationId)){
-				response.redirect(`/reporting/course-completions?organisationId=${selectedOrganisationId}`)
+			let selectedOrganisationId = request.body.organisation
+			let selectedCourseIds = request.body.courseIds
+
+			if (selectedOrganisationId === "other") {
+				selectedOrganisationId = request.body.organisationId
+			}
+
+			if (selectedOrganisationId) {
+				let organisationIdsForReporting = [+selectedOrganisationId, ...(await this.getChildOrganisationIdsForOrganisationId(+selectedOrganisationId))]
+				request.session!.selectedOrganisationIds = organisationIdsForReporting
+				request.session!.selectedCourseIds = selectedCourseIds	
+
+				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanAccessReportingForOrganisation(currentUser, selectedOrganisationId)) {
+					if (selectedCourseIds !== undefined) {
+						response.redirect(`/reporting/course-completions`)
+					}
+					else {
+						response.redirect(`/reporting/course-completions/choose-courses`)
+					}
+
+				}
+				else {
+					response.render("page/unauthorised")
+				}
 			}
 			else {
-				response.render("page/unauthorised")
+				request.session!.sessionFlash = {
+					errors: ["You need to select an organisation before continuing."]
+				}
+
+				return request.session!.save(() => {
+					response.redirect('/reporting/course-completions/choose-organisation')
+				})
 			}
 		}
 	}
@@ -171,35 +202,27 @@ export class ReportingController {
 		}
 	}
 
-	private async getOrganisationChoicesForUser(user: any){
+	async getOrganisationChoicesForUser(user: any) {
 		return {
-			directOrganisation: await this.getDirectOrganisationForCurrentCivilServant(),
-			typeaheadOrganisations: await this.getOrganisationalUnitsForUser(user)
+			directOrganisation: user.organisationalUnit,
+			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
 		}
 	}
 
-	private async getDirectOrganisationForCurrentCivilServant(){
-		let civilServant = await this.csrsService.getCivilServant()
-		let directOrganisation = civilServant.organisationalUnit
-		return directOrganisation
-	}
-
-	private async getOrganisationalUnitsForUser(user: any) {
-		let organisationList = await this.csrsService.listOrganisationalUnitsForTypehead()
-		let organisationsForTypeahead = organisationList.typeahead
-
-		if (!user.isSuperReporter()) {
-			let userDomain = user.username.split("@")[1]
-			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
-		}
-
-		return organisationsForTypeahead
-	}
-
-	private async userCanSeeReportingForOrganisation(user: any, organisationId: any){
-		let organisationalUnitsForUser = await this.getOrganisationalUnitsForUser(user)
+	async userCanAccessReportingForOrganisation(user: any, organisationId: any) {
+		let organisationalUnitsForUser = await this.csrsService.getOrganisationalUnitsForUser(user)
 		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
 		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
 		return userCanAccessOrganisation
 	}
+
+	async getChildOrganisationIdsForOrganisationId(organisationId: number): Promise<number[]> {
+		let childOrganisationsForSelectedOrganisationId: OrganisationalUnit[] | undefined = (await this.organisationalUnitService.getOrgDropdown())
+					.getOrgWithChildren(organisationId)?.children
+				
+				let childOrganisationIds = childOrganisationsForSelectedOrganisationId ? childOrganisationsForSelectedOrganisationId.map(org => org.id) : []				
+				return childOrganisationIds
+	}
+
+
 }

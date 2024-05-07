@@ -69,6 +69,7 @@ import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceClient} from './csl-service/client'
 import {Controller} from './controllers/controller'
+import { CivilServantProfileService } from './csrs/service/civilServantProfileService'
 import {CourseTypeAheadCache} from './learning-catalogue/courseTypeaheadCache'
 import {RestServiceConfig} from './lib/http/restServiceConfig'
 import {createConfig} from './lib/http/restServiceConfigFactory'
@@ -146,6 +147,7 @@ export class ApplicationContext {
 	questionFactory: QuestionFactory
 	quizFactory: QuizFactory
 	questionValidator: Validator<Question>
+	civilServantProfileService: CivilServantProfileService
 
 
 	@EnvValue('LPG_UI_URL')
@@ -163,6 +165,7 @@ export class ApplicationContext {
 		})
 
 		this.identityService = new IdentityService(this.axiosInstance)
+		this.civilServantProfileService = new CivilServantProfileService(this.axiosInstance)
 
 		this.auth = new Auth(
 			new AuthConfig(
@@ -175,7 +178,8 @@ export class ApplicationContext {
 				config.AUTHENTICATION.endpoints.token
 			),
 			passport,
-			this.identityService
+			this.identityService,
+			this.civilServantProfileService
 		)
 
 		this.identityConfig = createConfig({
@@ -329,6 +333,7 @@ export class ApplicationContext {
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
+		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator, this.csrsService, this.organisationalUnitService)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 

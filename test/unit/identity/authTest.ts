@@ -11,6 +11,13 @@ import {Auth} from '../../../src/identity/auth'
 import {IdentityService} from '../../../src/identity/identityService'
 import {AuthConfig} from '../../../src/identity/authConfig'
 import {Identity} from '../../../src/identity/identity'
+import { CivilServant } from '../../../src/csrs/model/civilServant'
+import { CsrsService } from '../../../src/csrs/service/csrsService'
+import { OauthRestService } from 'lib/http/oauthRestService'
+import { CacheService } from 'lib/cacheService'
+import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
+import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
+import { CivilServantProfileService } from 'src/csrs/service/civilServantProfileService'
 
 chai.use(sinonChai)
 
@@ -18,6 +25,8 @@ describe('Auth tests', function() {
 	let auth: Auth
 	let passportStatic: PassportStatic = <PassportStatic>{}
 	let identityService: IdentityService = <IdentityService>{}
+	let csrsService: CsrsService = new CsrsService(<OauthRestService>{}, <CacheService>{}, <OrganisationalUnitService>{})
+	let civilServantProfileService: CivilServantProfileService = <CivilServantProfileService>{}
 
 	const clientId = 'clientId'
 	const clientSecret = 'secret'
@@ -30,7 +39,7 @@ describe('Auth tests', function() {
 	beforeEach(() => {
 		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath)
 
-		auth = new Auth(config, passportStatic, identityService)
+		auth = new Auth(config, passportStatic, identityService, civilServantProfileService)
 	})
 
 	it('should return next function if user is authenticated', function() {
@@ -94,7 +103,18 @@ describe('Auth tests', function() {
 			.withArgs(accessToken)
 			.returns(identity)
 
+		const getCivilServant = sinon
+			.stub()
+			.returns(<CivilServant>sinon.createStubInstance(CivilServant))
+
+		const getProfile = sinon
+			.stub()
+			.returns(<any>{})
+	
 		identityService.getDetails = getDetails
+		csrsService.getCivilServant = getCivilServant
+		civilServantProfileService.getProfile = getProfile
+
 		const passportCallback = sinon.stub()
 
 		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(function() {
@@ -183,8 +203,14 @@ describe('Auth tests', function() {
 
 	it('should deserialize json to identity', () => {
 		const deserializeCallback = auth.deserializeUser()
-		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token"}'
+		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token", "organisationalUnit": {"id": 1, "name": "Org1", "children": [], "domains": []}}'
+		
+		let organisationalUnit = new OrganisationalUnit()
+		organisationalUnit.id = 1
+		organisationalUnit.name = "Org1"
+
 		const identity: Identity = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
+		identity.organisationalUnit = organisationalUnit
 
 		const doneCallback = sinon.stub()
 
