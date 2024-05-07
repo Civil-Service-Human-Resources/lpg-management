@@ -4,9 +4,8 @@ import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactor
 import {NextFunction, Request, Response, Router} from 'express'
 import {Module} from '../../learning-catalogue/model/module'
 import * as asyncHandler from 'express-async-handler'
-import * as moment from 'moment'
-import {Course} from '../../learning-catalogue/model/course'
 import {CourseService} from 'lib/courseService'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -29,39 +28,7 @@ export class FaceToFaceModuleController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		let course: Course
-		this.router.param(
-			'courseId',
-			asyncHandler(async (req: Request, res: Response, next: NextFunction, courseId: string) => {
-				course = await this.learningCatalogue.getCourse(courseId)
-
-				if (course) {
-					res.locals.course = course
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			})
-		)
-
-		this.router.param(
-			'moduleId',
-			asyncHandler(async (req: Request, res: Response, next: NextFunction, moduleId: string) => {
-				if (course) {
-					const module = await this.courseService.getModuleByModuleId(course, moduleId)
-					if (module) {
-						const duration = moment.duration(module.duration, 'seconds')
-						res.locals.module = module
-						res.locals.module.hours = duration.hours()
-						res.locals.module.minutes = duration.minutes()
-						next()
-					} else {
-						res.sendStatus(404)
-					}
-				}
-			})
-		)
-
+		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/module-face-to-face/:moduleId?', xss(), asyncHandler(this.getModule()))
 		this.router.post('/content-management/courses/:courseId/module-face-to-face/', xss(), asyncHandler(this.setModule()))
 		this.router.post('/content-management/courses/:courseId/module-face-to-face/:moduleId', xss(), asyncHandler(this.editModule()))

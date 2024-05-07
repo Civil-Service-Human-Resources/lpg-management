@@ -11,6 +11,7 @@ import {DateTime} from '../../lib/dateTime'
 import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -43,8 +44,7 @@ export class AudienceController {
 	}
 
 	private configurePathParametersProcessing() {
-		this.router.param('courseId', this.courseService.findCourseByCourseIdAndAssignToResponseLocalsOrReturn404())
-		this.router.param('audienceId', AudienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404())
+		applyLearningCatalogueMiddleware({getModule: false, getAudience: true}, this.router, this.learningCatalogue)
 	}
 
 	private setRouterPaths() {

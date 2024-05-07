@@ -9,16 +9,12 @@
 		"test": "npm run compile && find dist -name '*Test.js' | xargs ./node_modules/nyc/bin/nyc.js --reporter=text --reporter=html ./node_modules/mocha/bin/mocha",
 		"test:ts": "nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
 		"compile": "tsc",
-		"build": "npm run sass && npm run compile",
+		"build": "npm run js && npm run sass && npm run compile",
+		"js": "browserify views/assets/js/main.js -o views/assets/js/main-bundle.js",
+		"watch-js": "watchify views/assets/js/main.js -o views/assets/js/main-bundle.js -v",
 		"watch-sass": "node-sass -w -r views/assets/styles/ -o dist/views/assets/styles/ --output-style compressed",
 		"start": "npm run clean && npm run build && node dist/build/src/server.js",
-		"start:dev": "nodemon src/server.ts",
-		"cucumber": "./node_modules/cucumber/bin/cucumber-js test/acceptance/",
-		"acceptance-test": "npm run start-mock-identity-service && npm run start-mock-learning-catalogue && npm run cucumber && npm run stop-mock-identity-service && npm run stop-mock-learning-catalogue",
-		"start-mock-identity-service": "node ./test/acceptance/features/steps/lib/mock-server.js start -p 8080 -n identity_service",
-		"stop-mock-identity-service": "node ./test/acceptance/features/steps/lib/mock-server.js stop -p 8080 -n identity_service",
-		"start-mock-learning-catalogue": "node ./test/acceptance/features/steps/lib/mock-server.js start -p 9001 -n lerning_catalogue",
-		"stop-mock-learning-catalogue": "node ./test/acceptance/features/steps/lib/mock-server.js stop -p 9001 -n learning_catalogue"
+		"start:dev": "concurrently \"nodemon src/server.ts\" \"npm run watch-js\" \"npm run watch-sass\""
 	},
 	"repository": {
 		"type": "git",
@@ -90,8 +86,11 @@
 		"@types/sinon-express-mock": "1.3.5",
 		"@types/superagent": "4.1.10",
 		"@types/supertest": "^2.0.11",
+		"accessible-autocomplete": "file:views/assets/js/accessible-autocomplete-multiselect",
+		"browserify": "^17.0.0",
 		"chai": "4.1.2",
 		"chai-as-promised": "7.1.1",
+		"concurrently": "^8.2.2",
 		"cucumber": "4.2.1",
 		"daemonize-process": "1.0.9",
 		"minimist": "1.2.5",
@@ -109,6 +108,7 @@
 		"tough-cookie": "2.4.3",
 		"ts-mocha": "^10.0.0",
 		"ts-node": "7.0.0",
-		"typescript": "4.1.3"
+		"typescript": "4.1.3",
+		"watchify": "^4.0.0"
 	}
 }

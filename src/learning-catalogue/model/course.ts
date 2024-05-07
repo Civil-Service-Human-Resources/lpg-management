@@ -6,6 +6,7 @@ import {DateTime} from '../../lib/dateTime'
 import {LearningProvider} from './learningProvider'
 import {Status} from './status'
 import {Visibility} from './visibility'
+import {Type} from 'class-transformer'
 
 export class Course {
 	id: string
@@ -41,6 +42,7 @@ export class Course {
 	preparation: string
 	modules: Module[]
 	audiences: Audience[]
+	@Type(() => LearningProvider)
 	learningProvider: LearningProvider
 
 	@IsIn(['Draft', 'Published', 'Archived'], {

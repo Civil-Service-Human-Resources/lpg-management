@@ -1,5 +1,4 @@
 import {LearnerRecord} from '../../../src/learner-record'
-import {LearnerRecordConfig} from '../../../src/learner-record/learnerRecordConfig'
 import {beforeEach} from 'mocha'
 import {Auth} from '../../../src/identity/auth'
 import * as sinon from 'sinon'
@@ -12,6 +11,7 @@ import {BookingFactory} from '../../../src/learner-record/model/factory/bookingF
 import {Booking} from '../../../src/learner-record/model/booking'
 import {InviteFactory} from '../../../src/learner-record/model/factory/inviteFactory'
 import {Invite} from '../../../src/learner-record/model/invite'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -22,7 +22,7 @@ describe('Leaner Record Tests', () => {
 	let bookingFactory: BookingFactory
 	let restService: OauthRestService
 
-	const config = new LearnerRecordConfig('http://example.org', 60000)
+	const config = new RestServiceConfig('http://example.org', 60000)
 
 	beforeEach(() => {
 		inviteFactory = <InviteFactory>{}

@@ -1,9 +1,20 @@
-import {Transform} from 'class-transformer'
-import {IsNotEmpty, ValidateIf} from 'class-validator'
+import {Exclude, Transform} from 'class-transformer'
+import {ArrayMaxSize, IsNotEmpty, ValidateIf} from 'class-validator'
+import {REPORTING} from '../../../config'
 
 export class ChooseCoursesModel {
+
+	// settings
+	@Exclude()
+	public maxCoursesSelection: number = REPORTING.COURSE_COMPLETIONS_MAX_COURSES
+
+	// data
+	@Exclude()
 	public userDepartment: string;
+	@Exclude()
 	public requiredLearningList: BasicCourse[]
+	@Exclude()
+	public courseSearchList: BasicCourse[]
 
 	// input attributes
 	public learning: string
@@ -21,10 +32,27 @@ export class ChooseCoursesModel {
 	public requiredLearning: string[]
 	public allRequiredLearning: string
 
-	constructor(userDepartment: string, requiredLearningList: BasicCourse[] = []) {
+	@ValidateIf(o => o.learning === "courseSearch")
+	@IsNotEmpty({
+		message: 'reporting.course_completions.validation.courseSearchSelection',
+	})
+	@ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_COURSES, {
+		message: 'reporting.course_completions.validation.maximumCourses',
+	})
+	@Transform(({value}) => {
+		if (typeof value === "string") {
+			return [value]
+		} else {
+			return [...value]
+		}
+	})
+	public courseSearch: string[]
+
+	constructor(userDepartment: string, requiredLearningList: BasicCourse[] = [], courseSearchList: BasicCourse[] = []) {
 		this.userDepartment = userDepartment
 		this.requiredLearningList = requiredLearningList
 		this.allRequiredLearning = requiredLearningList.map(c => c.value).join(",")
+		this.courseSearchList = courseSearchList
 	}
 
 	getCourseIdsFromSelection(): string[] {
@@ -33,8 +61,9 @@ export class ChooseCoursesModel {
 				return this.allRequiredLearning.split(",")
 			}
 			return this.requiredLearning
+		} else {
+			return this.courseSearch
 		}
-		return []
 	}
 
 }

@@ -2,7 +2,6 @@ import {LearningCatalogue} from '../learning-catalogue'
 import {Course} from '../learning-catalogue/model/course'
 import {Event} from '../learning-catalogue/model/event'
 import {Module} from '../learning-catalogue/model/module'
-import {NextFunction, Request, Response} from 'express'
 import {FaceToFaceModule} from '../learning-catalogue/model/faceToFaceModule'
 import {Audience} from '../learning-catalogue/model/audience'
 import * as _ from 'lodash'
@@ -12,6 +11,10 @@ export class CourseService {
 
 	constructor(learningCatalogue: LearningCatalogue) {
 		this.learningCatalogue = learningCatalogue
+	}
+
+	async getCourseDropdown() {
+		return (await this.learningCatalogue.getCourseTypeAhead()).typeahead
 	}
 
 	async sortModules(courseId: string, moduleIds: string[]): Promise<Course> {
@@ -38,19 +41,6 @@ export class CourseService {
 		course.modules = modules
 
 		return await this.learningCatalogue.updateCourse(course)
-	}
-
-	/* istanbul ignore next */
-	findCourseByCourseIdAndAssignToResponseLocalsOrReturn404() {
-		return async (req: Request, res: Response, next: NextFunction, courseId: string) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
-			if (course) {
-				res.locals.course = course
-				next()
-			} else {
-				res.sendStatus(404)
-			}
-		}
 	}
 
 	getAllEventsOnCourse(course: Course): Event[] {

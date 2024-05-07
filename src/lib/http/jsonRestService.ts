@@ -3,6 +3,7 @@ import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
 import { getLogger } from '../../utils/logger'
 import { ResourceNotFoundError } from '../exception/resourceNotFoundError'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 export class JsonRestService {
 	logger = getLogger('JsonRestService')
@@ -10,7 +11,7 @@ export class JsonRestService {
 	config: any
 	auth: Auth
 
-	constructor(config: any, auth: Auth) {
+	constructor(config: RestServiceConfig, auth: Auth) {
 		this.logger.debug(`Constructing JsonRestService with config: ${JSON.stringify(config)}`)
 		this.auth = auth
 		this._http = axios.create({
@@ -29,7 +30,9 @@ export class JsonRestService {
 				const stringedParams = JSON.stringify(req.params)
 				logMsg += ` Params: ${stringedParams}`
 			}
-			this.logger.debug(logMsg)
+			if (config.detailedLogs) {
+				this.logger.debug(logMsg)
+			}
 			return conf
 		})
 
@@ -43,7 +46,9 @@ export class JsonRestService {
 				const stringedParams = JSON.stringify(response.config.params)
 				logMsg += ` Params: ${stringedParams}`
 			}
-			this.logger.debug(logMsg)
+			if (config.detailedLogs) {
+				this.logger.debug(logMsg)
+			}
 			if (response.status === 404) {
 				throw new ResourceNotFoundError(response.config.url!)
 			}

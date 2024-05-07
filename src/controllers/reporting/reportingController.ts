@@ -5,19 +5,23 @@ import {NextFunction, Request, Response} from 'express'
 import {PlaceholderDate} from '../../learning-catalogue/model/placeholderDate'
 import {DateStartEndCommand} from '../command/dateStartEndCommand'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
-import {ReportingControllerBase} from './reportingControllerBase'
 import {Report, ReportType} from './Report'
+import {Controller} from '../controller'
 
-export class ReportingController extends ReportingControllerBase {
+export class ReportingController extends Controller {
 
 	public constructor (protected reportService: ReportService) {
-		super("reportingController", reportService)
+		super("/reporting", "reportingController")
 	}
 
 	private reportMap: Map<Report, ReportType> = new Map<Report, ReportType>([
 		[Report.BOOKING, new ReportType("Booking_information")],
-		[Report.LEARNER_RECORD, new ReportType("LEARNER_RECORD")]
+		[Report.LEARNER_RECORD, new ReportType("Learner_record")]
 	])
+
+	// protected getRequiredRoles(): CompoundRoleBase[] {
+	// 	return reporterRole.compoundRoles
+	// }
 
 	private reportGeneratingPostRequest(url: string, reportType: Report) {
 		return postRequestWithBody(url, this.generateReport(reportType),{

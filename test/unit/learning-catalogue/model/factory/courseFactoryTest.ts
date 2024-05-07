@@ -10,22 +10,19 @@ import * as sinon from 'sinon'
 import {Audience} from '../../../../../src/learning-catalogue/model/audience'
 import {AudienceFactory} from '../../../../../src/learning-catalogue/model/factory/audienceFactory'
 import {LearningProvider} from '../../../../../src/learning-catalogue/model/learningProvider'
-import {LearningProviderFactory} from '../../../../../src/learning-catalogue/model/factory/learningProviderFactory'
 import {Status} from '../../../../../src/learning-catalogue/model/status'
+import {plainToInstance} from 'class-transformer'
 
 chai.use(sinonChai)
 
 describe('CourseFactory tests', () => {
 	let moduleFactory: ModuleFactory
 	let courseFactory: CourseFactory
-	let learningProviderFactory: LearningProviderFactory
 
 	beforeEach(() => {
 		moduleFactory = new ModuleFactory()
 		courseFactory = new CourseFactory()
-		learningProviderFactory = new LearningProviderFactory()
 		courseFactory.moduleFactory = moduleFactory
-		courseFactory.learningProviderFactory = learningProviderFactory
 	})
 
 	it('should create a a Course from data', () => {
@@ -54,7 +51,7 @@ describe('CourseFactory tests', () => {
 			id: 'learningProviderId',
 			name: 'learningProvider',
 		}
-		const courseLearningProvider: LearningProvider = new LearningProviderFactory().create(learningProviderData)
+		const courseLearningProvider: LearningProvider = plainToInstance(LearningProvider, learningProviderData)
 
 		const data: object = {
 			id: id,
@@ -146,8 +143,6 @@ describe('CourseFactory tests', () => {
 			learningProvider: null,
 		}
 
-		learningProviderFactory.create = sinon.stub()
-
 		const result: Course = courseFactory.create(data)
 
 		expect(result.id).to.equal(id)
@@ -157,6 +152,5 @@ describe('CourseFactory tests', () => {
 		expect(result.learningOutcomes).to.equal(learningOutcomes)
 		expect(result.modules[0]).to.deep.equal(courseModule)
 		expect(result.audiences[0]).to.deep.equal(courseAudience)
-		expect(learningProviderFactory.create).to.have.been.calledOnceWith({})
 	})
 })

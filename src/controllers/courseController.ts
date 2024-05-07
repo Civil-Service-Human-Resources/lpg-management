@@ -14,6 +14,7 @@ import {Validate} from './formValidator'
 import {FormController} from './formController'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
+import {applyLearningCatalogueMiddleware} from './middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 export class CourseController implements FormController {
@@ -32,30 +33,12 @@ export class CourseController implements FormController {
 		this.courseService = courseService
 		this.csrsService = csrsService
 		this.router = Router()
-
-		this.getCourseFromRouterParamAndSetOnLocals()
-
 		this.configureRouterPaths()
-	}
-
-	// prettier-ignore
-	/* istanbul ignore next */
-	private getCourseFromRouterParamAndSetOnLocals() {
-		this.router.param('courseId', asyncHandler(async (req: Request, res: Response, next: NextFunction, courseId: string) => {
-				const course = await this.learningCatalogue.getCourse(courseId)
-
-				if (course) {
-					res.locals.course = course
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			})
-		)
 	}
 
 	/* istanbul ignore next */
 	private configureRouterPaths() {
+		applyLearningCatalogueMiddleware({getModule: false}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/overview', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.courseOverview()))
 		this.router.get('/content-management/courses/:courseId/preview', xss(), this.checkForEventViewRole(), this.coursePreview())
 
@@ -82,7 +65,7 @@ export class CourseController implements FormController {
 				next()
 			} else {
 				if (req.user && req.user.uid) {
-					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP ' 
+					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP '
 						+ req.ip + ' from page ' + req.originalUrl)
 					}
 				res.render('page/unauthorised')

@@ -38,6 +38,19 @@
           items: requiredLearningOptions
         }) }}
       {% endset -%}
+      {% set courseSearch %}
+        <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
+          <label class="govuk-label" for="courseSearch">All courses</label>
+          <div id="subject-hint" class="govuk-hint">
+              <span id="course-completions-js-hint" class='hidden'>Start typing to filter available courses.</span> You can select up to {{ pageModel.maxCoursesSelection}} courses.
+          </div>
+          <select id="courseSearch" name="courseSearch" class="govuk-input" aria-labelledby="courseSearch" multiple>
+              {% for course in pageModel.courseSearchList %}
+                  <option {% if  (pageModel.courseSearch or []).indexOf(course.value) > -1 %}selected{% endif %} value={{ course.value }}>{{ course.text }}</option>
+              {% endfor %}
+          </select>
+        </div>
+      {% endset -%}
       {{ govukRadios({
         name: "learning",
         fieldset: {
@@ -51,9 +64,16 @@
             value: "requiredLearning",
             text: "Required learning for " + pageModel.userDepartment,
             conditional: {
-            html: requiredHtml
-          },
+                html: requiredHtml
+            },
             checked: true
+          },
+          {
+              value: "courseSearch",
+              text: "Search for courses",
+              conditional: {
+                  html: courseSearch
+              }
           }
         ]
       }) }}
@@ -66,8 +86,10 @@
 {% endblock %}
 
 {% block bodyEnd %}
+    <script>
+		document.getElementById("course-completions-js-hint").className = ""
+    </script>
     <script src="/govuk-frontend/all.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>
-    <script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
-    <script type="text/javascript" src="/js/manage-orgs.js"></script>
+    <script type="text/javascript" src="/js/main-bundle.js"></script>
 {% endblock %}

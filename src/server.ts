@@ -38,8 +38,9 @@ ctx.auth.configure(app)
 
 const reportService = buildReportService({
 	url: config.REPORT_SERVICE.url,
-	timeout: config.REPORT_SERVICE.timeout
-}, ctx.auth, ctx.courseService, ctx.csrsService, ctx.organisationalUnitService)
+	timeout: config.REPORT_SERVICE.timeout,
+	detailedLogs: config.REPORT_SERVICE.detailedLogs
+}, ctx.auth, ctx.courseService, ctx.organisationalUnitService)
 
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
@@ -50,9 +51,6 @@ const controllers: Controller[] = [
 app.use(ctx.addToResponseLocals())
 app.use(ctx.courseController.router)
 app.use(ctx.audienceController.router)
-app.use(ctx.learningProviderController.router)
-app.use(ctx.cancellationPolicyController.router)
-app.use(ctx.termsAndConditionsController.router)
 app.use(ctx.moduleController.router)
 app.use(ctx.fileController.router)
 app.use(ctx.youtubeModuleController.router)

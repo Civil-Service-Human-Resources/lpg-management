@@ -1,4 +1,3 @@
-import {CourseCompletionsControllerBaseBase} from './courseCompletionsControllerBase'
 import {getRequest, postRequestWithBody, Route} from '../route'
 import {NextFunction, Request, Response} from 'express'
 import {ReportService} from '../../report-service'
@@ -6,23 +5,46 @@ import {ChooseCoursesModel} from './model/chooseCoursesModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {CourseCompletionsSession} from './model/courseCompletionsSession'
+import {Controller} from '../controller'
+import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
 
-export class CourseCompletionsController extends CourseCompletionsControllerBaseBase {
+export class CourseCompletionsController extends Controller {
 
-	constructor(
-		protected reportService: ReportService,
-	) {
-		super('CourseCompletionsController', reportService)
+	constructor(protected reportService: ReportService,) {
+		super("/reporting/course-completions", 'CourseCompletionsController')
+	}
+
+	protected getRequiredRoles(): CompoundRoleBase[] {
+		return mvpReportingRole.compoundRoles
+	}
+
+	private fetchSessionObject(req: Request): CourseCompletionsSession | undefined {
+		return req.session ? plainToInstance(CourseCompletionsSession,
+				req.session.courseCompletions as CourseCompletionsSession) : undefined
+	}
+
+	private saveSessionObject(sessionObject: CourseCompletionsSession, req: Request, cb: () => void): void {
+		req.session!.courseCompletions = sessionObject
+		req.session!.save(() => {
+			cb()
+		})
 	}
 
 	private checkForOrgIdsInSessionMiddleware() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			const session = plainToInstance(CourseCompletionsSession,
-				request.session!.courseCompletions as CourseCompletionsSession)
-			if (session === undefined || session.organisationIds === undefined ||
-				session.organisationIds.length === 0) {
-				this.logger.debug(`session: ${session}`)
+			const session = this.fetchSessionObject(request)
+			if (session === undefined || !session.hasSelectedOrganisations()) {
 				return response.redirect("/reporting/course-completions/choose-organisation")
+			}
+			next()
+		}
+	}
+
+	private checkForCourseIdsInSessionMiddleware() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const session = this.fetchSessionObject(request)
+			if (session === undefined || !session.hasSelectedCourses()) {
+				return response.redirect("/reporting/course-completions/choose-courses")
 			}
 			next()
 		}
@@ -30,9 +52,8 @@ export class CourseCompletionsController extends CourseCompletionsControllerBase
 
 	protected getRoutes(): Route[] {
 		return [
-			getRequest('/', this.renderReport()),
-			getRequest('/choose-courses', this.renderChooseCourses(),
-				[this.checkForOrgIdsInSessionMiddleware()]),
+			getRequest('/', this.renderReport(), [this.checkForCourseIdsInSessionMiddleware()]),
+			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
 			postRequestWithBody('/choose-courses', this.chooseCourses(),
 				{
 					dtoClass: ChooseCoursesModel,
@@ -52,9 +73,11 @@ export class CourseCompletionsController extends CourseCompletionsControllerBase
 
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
-			request.session!.courseCompletions.courseIds = undefined
-			request.session!.save(async () => {
-				const pageModel = await this.reportService.getChooseCoursePage()
+			const session = this.fetchSessionObject(request)!
+			session.courseIds = []
+			const selectedOrganisation = session.organisationIds![0]
+			this.saveSessionObject(session, request, async () => {
+				const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
 				response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 			})
 		}
@@ -64,10 +87,18 @@ export class CourseCompletionsController extends CourseCompletionsControllerBase
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(ChooseCoursesModel, request.body as ChooseCoursesModel)
 			const courseIds = pageModel.getCourseIdsFromSelection()
-			const session = plainToInstance(CourseCompletionsSession,
-				request.session!.courseCompletions as CourseCompletionsSession)
+			if (!await this.reportService.validateCourseSelections(courseIds)) {
+				const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
+				request.session!.sessionFlash = {
+					error,
+				}
+				return request.session!.save(() => {
+					response.redirect('/reporting/course-completions/choose-courses')
+				})
+			}
+			const session = this.fetchSessionObject(request)!
 			session.courseIds = courseIds
-			request.session!.save(() => {
+			this.saveSessionObject(session, request, async () => {
 				response.redirect('/reporting/course-completions')
 			})
 		}

@@ -6,19 +6,19 @@ import * as chai from 'chai'
 import * as url from 'url'
 
 import {expect} from 'chai'
-import {LearningCatalogueConfig} from '../../../../src/learning-catalogue/learningCatalogueConfig'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {JsonRestService} from '../../../../src/lib/http/jsonRestService'
 import * as sinonChai from 'sinon-chai'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
 
 describe('JsonRestService tests', () => {
 	let http: AxiosInstance
-	let config = new LearningCatalogueConfig('http://example.org', 60000)
+	let config = new RestServiceConfig('http://example.org', 60000)
 	let auth: Auth
 	let restService: JsonRestService
 

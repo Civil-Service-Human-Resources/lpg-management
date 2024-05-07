@@ -1,18 +1,17 @@
 import {Course} from '../course'
 import {ModuleFactory} from './moduleFactory'
 import {AudienceFactory} from './audienceFactory'
-import {LearningProviderFactory} from './learningProviderFactory'
 import {Visibility} from '../visibility'
+import {plainToInstance} from 'class-transformer'
+import {LearningProvider} from '../learningProvider'
 
 export class CourseFactory {
 	private _moduleFactory: ModuleFactory
 	private audienceFactory: AudienceFactory
-	private _learningProviderFactory: LearningProviderFactory
 
-	constructor(audienceFactory = new AudienceFactory(), moduleFactory = new ModuleFactory(), learningProviderFactory = new LearningProviderFactory()) {
+	constructor(audienceFactory = new AudienceFactory(), moduleFactory = new ModuleFactory()) {
 		this.audienceFactory = audienceFactory
 		this._moduleFactory = moduleFactory
-		this._learningProviderFactory = learningProviderFactory
 		this.create = this.create.bind(this)
 	}
 
@@ -28,7 +27,7 @@ export class CourseFactory {
 		course.modules = (data.modules || []).map(this._moduleFactory.create)
 		course.audiences = (data.audiences || []).map(this.audienceFactory.create)
 		course.status = 'status' in data ? data.status : course.status
-		course.learningProvider = this._learningProviderFactory.create(data.learningProvider || {})
+		course.learningProvider = plainToInstance(LearningProvider, data.learningProvider)
 		course.visibility = Visibility[data.visibility as keyof typeof Visibility]
 		course.topicId = data.topicId
 
@@ -48,7 +47,4 @@ export class CourseFactory {
 		this._moduleFactory = value
 	}
 
-	set learningProviderFactory(value: LearningProviderFactory) {
-		this._learningProviderFactory = value
-	}
 }
