@@ -28,7 +28,8 @@ export enum Role {
 	PROFESSION_MANAGER = 'PROFESSION_MANAGER',
 	PROFESSION_REPORTER = 'PROFESSION_REPORTER',
 	MVP_REPORTER = 'MVP_REPORTER',
-	SUPER_REPORTER = 'SUPER_REPORTER'
+	SUPER_REPORTER = 'SUPER_REPORTER',
+	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION'
 }
 
 export class Identity {
@@ -192,5 +193,9 @@ export class Identity {
 
 	isSuperReporter(){
 		return this.hasRole(Role.SUPER_REPORTER)
+	}
+
+	isUnrestrictedOrganisation() {
+		return this.hasRole(Role.UNRESTRICTED_ORGANISATION)
 	}
 }

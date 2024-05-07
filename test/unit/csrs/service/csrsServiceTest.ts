@@ -172,8 +172,14 @@ describe('CsrsService tests', () => {
 				isSuperReporter: () => {
 					return false
 				},
+				isSuperUser: () => {
+					return false
+				},
+				isUnrestrictedOrganisation: () => {
+					return false
+				},
 				username: "user@user-domain.gov.uk"
-			}
+			}				
 
 			let userDomain = new Domain(1, "user-domain.gov.uk")
 			let notUserDomain = new Domain(2, "not-user-domain.gov.uk")
@@ -212,8 +218,14 @@ describe('CsrsService tests', () => {
 				isSuperReporter: () => {
 					return true
 				},
+				isSuperUser: () => {
+					return false
+				},
+				isUnrestrictedOrganisation: () => {
+					return false
+				},
 				username: "user@user-domain.gov.uk"
-			}
+			}	
 
 			let userDomain = new Domain(1, "user-domain.gov.uk")
 			let notUserDomain = new Domain(2, "not-user-domain.gov.uk")
@@ -245,6 +257,66 @@ describe('CsrsService tests', () => {
 			expect(actualResult[1].id).to.equal(2)
 			expect(actualResult[2].id).to.equal(3)
 
+		})
+
+		it("userCanAccessAllOrganisations() should return false if all checks are false", () => {
+			let mockUser = {
+				isSuperReporter: () => {
+					return false
+				},
+				isSuperUser: () => {
+					return false
+				},
+				isUnrestrictedOrganisation: () => {
+					return false
+				}
+				
+			}
+
+			let expectedResult = false
+			let actualResult = csrsService.userCanAccessAllOrganisations(mockUser)
+
+			expect(actualResult).to.equal(expectedResult)
+		})
+
+		it("userCanAccessAllOrganisations() should return true if only isUnrestrictedOrganisation() is true", () => {
+			let mockUser = {
+				isSuperReporter: () => {
+					return false
+				},
+				isSuperUser: () => {
+					return false
+				},
+				isUnrestrictedOrganisation: () => {
+					return true
+				}
+				
+			}
+
+			let expectedResult = true
+			let actualResult = csrsService.userCanAccessAllOrganisations(mockUser)
+
+			expect(actualResult).to.equal(expectedResult)
+		})
+
+		it("userCanAccessAllOrganisations() should return true if user is super reporter, super user and unrestricted organisation", () => {
+			let mockUser = {
+				isSuperReporter: () => {
+					return true
+				},
+				isSuperUser: () => {
+					return true
+				},
+				isUnrestrictedOrganisation: () => {
+					return true
+				}
+				
+			}
+
+			let expectedResult = true
+			let actualResult = csrsService.userCanAccessAllOrganisations(mockUser)
+
+			expect(actualResult).to.equal(expectedResult)
 		})
 	})
 
