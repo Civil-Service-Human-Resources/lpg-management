@@ -13,7 +13,7 @@
 {% set typeAheadHtml %}
 
 <div class="govuk-form-group">
-  <label class="govuk-label" for="other-organisation-dropdown">
+  <label class="govuk-label" for="parent">
     Organisation
   </label>
   <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
@@ -30,65 +30,63 @@
 {% endset -%}
 
 {% if sessionFlash.errors %}
-    {{ govukErrorSummary({
-        titleText: "There is a problem",
-        errorList: [
-            {
-                text: sessionFlash.errors[0],
-                href: "#parent"
-            }
-        ]
-    }) }}
+{{ govukErrorSummary({
+titleText: "There is a problem",
+errorList: [
+{
+text: sessionFlash.errors[0],
+href: "#parent"
+}
+]
+}) }}
 {% endif %}
 
 <div class="govuk-grid row">
   <div class="govuk-column-full">
-    <h1 class="govuk-heading-l">{{pageTitle}}</h1>
+    <span class="govuk-caption-m">Reporting</span>
+    <h1 class="govuk-heading-l">Select organisation</h1>
   </div>
 </div>
 <div class="govuk-grid row">
   <div class="govuk-column-one-third">
     <div class="govuk-form-group">
-      <form action="/reporting/course-completions/choose-organisation" method="post">          
+      <form action="/reporting/course-completions/choose-organisation" method="post">
 
         {% set radioItems = [
-          {
-            value: firstOrganisationOption.id,
-            text: firstOrganisationOption.name,
-            checked: true
-          }
+        {
+        value: firstOrganisationOption.id,
+        text: firstOrganisationOption.name,
+        checked: true
+        }
         ] %}
 
         {% if showTypeaheadOption %}
-          {% set radioItems = (radioItems.push({
-            value: "other",
-            text: "Other organisation",
-            conditional: {
-              html: typeAheadHtml
-            }
-          }), radioItems) %}
+        {% set radioItems = (radioItems.push({
+        value: "other",
+        text: "Other organisation",
+        conditional: {
+        html: typeAheadHtml
+        }
+        }), radioItems) %}
         {% endif %}
 
-          {{ govukRadios({
-            name: "organisation",
-            fieldset: {
-              legend: {
-                text: "Select an organisation",
-                isPageHeading: true,
-                classes: "govuk-fieldset__legend--l"
-              }
-            },
-            hint: {
-              text: "Which organisation would you like to report on?"
-            },
-            items: radioItems
-          }) }}
-          <div style="margin-top: 15px">
+        {{ govukRadios({
+        name: "organisation",
+        fieldset: {
+        legend: {
+        text: "Which organisation would you like to report on?",
+        isPageHeading: false,
+        classes: "govuk-hint"
+        }
+        },
+        items: radioItems
+        }) }}
+        <div style="margin-top: 15px">
           {{ govukButton({
-            text: "Continue to course selection",
-            preventDoubleClick: true
+          text: "Continue to course selection",
+          preventDoubleClick: true
           }) }}
-          </div>
+        </div>
       </form>
     </div>
   </div>

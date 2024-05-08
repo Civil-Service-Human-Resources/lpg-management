@@ -200,12 +200,16 @@ export class CsrsService {
 		let organisationList = await this.listOrganisationalUnitsForTypehead()
 		let organisationsForTypeahead = organisationList.typeahead
 
-		if (!user.isSuperReporter()) {
+		if (!this.userCanAccessAllOrganisations(user)) {
 			let userDomain = user.username.split("@")[1]
 			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(userDomain))
 		}
 
 		return organisationsForTypeahead
+	}
+
+	userCanAccessAllOrganisations(user: any){			
+		return (user.isSuperReporter() || user.isSuperUser() || user.isUnrestrictedOrganisation())
 	}
 
 }

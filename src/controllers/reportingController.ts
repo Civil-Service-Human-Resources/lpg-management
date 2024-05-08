@@ -92,7 +92,7 @@ export class ReportingController {
 			}
 
 			if (selectedOrganisationId) {
-				let organisationIdsForReporting = [+selectedOrganisationId, ...(await this.getChildOrganisationIdsForOrganisationId(+selectedOrganisationId))]
+				let organisationIdsForReporting = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
 				request.session!.selectedOrganisationIds = organisationIdsForReporting
 				request.session!.selectedCourseIds = selectedCourseIds	
 
@@ -216,12 +216,20 @@ export class ReportingController {
 		return userCanAccessOrganisation
 	}
 
-	async getChildOrganisationIdsForOrganisationId(organisationId: number): Promise<number[]> {
-		let childOrganisationsForSelectedOrganisationId: OrganisationalUnit[] | undefined = (await this.organisationalUnitService.getOrgDropdown())
-					.getOrgWithChildren(organisationId)?.children
+	async getOrganisationWithAllChildren(organisationId: number): Promise<number[]> {
+		let organisationWithChildren = (await this.organisationalUnitService.getOrgDropdown())
+			.getOrgWithChildren(organisationId)
+
+		let allChildren: OrganisationalUnit[] | undefined = organisationWithChildren ? this.getAllChildOrganisations(organisationWithChildren) : undefined
 				
-				let childOrganisationIds = childOrganisationsForSelectedOrganisationId ? childOrganisationsForSelectedOrganisationId.map(org => org.id) : []				
-				return childOrganisationIds
+		let childOrganisationIds = allChildren ? allChildren.map(child => child.id) : [organisationId]
+		childOrganisationIds = [...new Set(childOrganisationIds)]
+		
+		return childOrganisationIds
+	}
+
+	getAllChildOrganisations(organisation: OrganisationalUnit): OrganisationalUnit[] {
+		return [organisation, organisation.children.flatMap(child => this.getAllChildOrganisations(child))].flatMap(item=>item)
 	}
 
 
