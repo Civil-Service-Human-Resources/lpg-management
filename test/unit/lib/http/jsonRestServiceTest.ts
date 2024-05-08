@@ -27,7 +27,7 @@ describe('JsonRestService tests', () => {
 			defaults: {},
 		}
 		auth = <Auth>{}
-		auth.currentUser = new Identity('user123', [], 'access123')
+		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123')
 
 		restService = new JsonRestService(config, auth)
 		restService.http = http

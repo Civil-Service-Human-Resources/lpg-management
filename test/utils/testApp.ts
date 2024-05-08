@@ -13,7 +13,7 @@ app.use((req, res, next) => {
 	if(roleHeader !== undefined) {
 		roles = roleHeader.split(",")
 	}
-	const identity = new Identity("testUid", roles, "accessToken")
+	const identity = new Identity("testUid", 'user@domain.com', roles, "accessToken")
 	req.user = identity
 	res.locals.identity = identity
 	next()

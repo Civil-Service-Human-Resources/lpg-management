@@ -1,3 +1,5 @@
+import { OrganisationalUnit } from "src/csrs/model/organisationalUnit"
+
 export enum Role {
 	LEARNER = 'LEARNER',
 	ORGANISATION_MANAGER = 'ORGANISATION_MANAGER',
@@ -25,17 +27,22 @@ export enum Role {
 	ORGANISATION_REPORTER = 'ORGANISATION_REPORTER',
 	PROFESSION_MANAGER = 'PROFESSION_MANAGER',
 	PROFESSION_REPORTER = 'PROFESSION_REPORTER',
-	MVP_REPORTER = 'MVP_REPORTER'
+	MVP_REPORTER = 'MVP_REPORTER',
+	SUPER_REPORTER = 'SUPER_REPORTER',
+	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION'
 }
 
 export class Identity {
 
 	readonly uid: string
+	readonly username: string
 	readonly roles: string[]
 	readonly accessToken: string
-
-	constructor(uid: string, roles: string[], accessToken: string) {
+	organisationalUnit?: OrganisationalUnit
+	
+	constructor(uid: string, username: string, roles: string[], accessToken: string) {
 		this.uid = uid
+		this.username = username
 		this.roles = roles
 		this.accessToken = accessToken
 	}
@@ -169,7 +176,7 @@ export class Identity {
 	}
 
 	isOrganisationReporter() {
-		return this.hasRole('ORGANISATION_REPORTER')
+		return this.hasRole(Role.ORGANISATION_REPORTER)
 	}
 
 	isKPMGSupplierReporter() {
@@ -182,5 +189,13 @@ export class Identity {
 
 	isSkillsManagerOrSuperUser() {
 		return this.hasRole(Role.SKILLS_MANAGER) || this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter() || this.isProfessionReporter()
+	}
+
+	isSuperReporter(){
+		return this.hasRole(Role.SUPER_REPORTER)
+	}
+
+	isUnrestrictedOrganisation() {
+		return this.hasRole(Role.UNRESTRICTED_ORGANISATION)
 	}
 }
