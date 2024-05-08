@@ -1,8 +1,10 @@
 export class CourseCompletionsSession {
-	constructor(public organisationIds?: number[], public courseIds?: string[]) { }
+	constructor(public selectedOrganisationId?: number, public allOrganisationIds?: number[], public courseIds?: string[]) { }
 
 	hasSelectedOrganisations() {
-		return this.organisationIds !== undefined && this.organisationIds.length > 0
+		return this.selectedOrganisationId !== undefined &&
+			this.allOrganisationIds !== undefined &&
+			this.allOrganisationIds.length > 0
 	}
 
 	hasSelectedCourses() {

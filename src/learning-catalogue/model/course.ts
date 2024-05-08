@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import {Module} from './module'
 import {IsIn, IsNotEmpty, MaxLength} from 'class-validator'
 import {Audience} from './audience'

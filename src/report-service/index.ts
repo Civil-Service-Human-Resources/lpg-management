@@ -28,7 +28,6 @@ export class ReportService {
 
 	async getChooseCoursePage(selectedOrganisationId: number): Promise<ChooseCoursesModel> {
 		const userOrganisation = (await this.organisationalUnitService.getOrganisation(selectedOrganisationId, true))
-		console.log(userOrganisation)
 		const allCourses = await this.courseService.getCourseDropdown()
 		const hierarchy = await this.organisationalUnitService.getOrgHierarchy(userOrganisation.id)
 		const departmentCodes = hierarchy.map(o => o.code)

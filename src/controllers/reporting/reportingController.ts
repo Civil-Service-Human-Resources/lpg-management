@@ -7,6 +7,9 @@ import {DateStartEndCommand} from '../command/dateStartEndCommand'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {Report, ReportType} from './Report'
 import {Controller} from '../controller'
+import {DateStartEnd} from '../../learning-catalogue/model/dateStartEnd'
+import {validateAndMapErrors} from '../../validators/util'
+import {CompoundRoleBase, reporterRole} from '../../identity/identity'
 
 export class ReportingController extends Controller {
 
@@ -19,9 +22,9 @@ export class ReportingController extends Controller {
 		[Report.LEARNER_RECORD, new ReportType("Learner_record")]
 	])
 
-	// protected getRequiredRoles(): CompoundRoleBase[] {
-	// 	return reporterRole.compoundRoles
-	// }
+	protected getRequiredRoles(): CompoundRoleBase[] {
+		return reporterRole.compoundRoles
+	}
 
 	private reportGeneratingPostRequest(url: string, reportType: Report) {
 		return postRequestWithBody(url, this.generateReport(reportType),{
@@ -51,24 +54,29 @@ export class ReportingController extends Controller {
 
 	generateReport(reportType: Report) {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			const dateRange: DateStartEndCommand = request.body
-			try {
-				const report = await this.reportService.getReport(reportType, {
-					endDate: dateRange.getEndDate(),
-					startDate: dateRange.getStartDate()
-				})
-				const metadata = this.reportMap.get(reportType)
-				if (metadata) {
-					const filename = metadata.fileName.concat(moment().toISOString())
-					response.writeHead(200, {
-						'Content-type': 'text/csv',
-						'Content-disposition': `attachment;filename=${filename}.csv`,
-						'Content-length': report.length,
-					})
-					response.end(report)
+			const dateRange: DateStartEndCommand = response.locals.input
+			const startEnd = new DateStartEnd(dateRange.getStartDate(), dateRange.getEndDate())
+			const errors = await validateAndMapErrors(startEnd)
+			console.log(errors)
+			if (errors !== undefined) {
+				request.session!.sessionFlash = {
+					errors,
+					form: request.body,
 				}
-			} catch (error) {
-				throw new Error(error)
+				return request.session!.save(() => {
+					response.redirect('/reporting')
+				})
+			}
+			const report = await this.reportService.getReport(reportType, startEnd)
+			const metadata = this.reportMap.get(reportType)
+			if (metadata) {
+				const filename = metadata.fileName.concat(moment().toISOString())
+				response.writeHead(200, {
+					'Content-type': 'text/csv',
+					'Content-disposition': `attachment;filename=${filename}.csv`,
+					'Content-length': report.length,
+				})
+				response.end(report)
 			}
 		}
 	}

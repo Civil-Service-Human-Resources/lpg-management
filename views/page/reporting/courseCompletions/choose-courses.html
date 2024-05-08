@@ -2,6 +2,7 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
@@ -16,6 +17,7 @@
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
     <form method="post" action="/reporting/course-completions/choose-courses">
+        <div class="govuk-form-group">
         {% set requiredLearningOptions = pageModel.requiredLearningList %}
         {% set requiredLearningOptions = requiredLearningOptions.concat({
             "divider": "or"
@@ -77,6 +79,7 @@
           }
         ]
       }) }}
+        </div>
       {{ govukButton({
         text: "Continue"
       }) }}

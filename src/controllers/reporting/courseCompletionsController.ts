@@ -4,9 +4,9 @@ import {ReportService} from '../../report-service'
 import {ChooseCoursesModel} from './model/chooseCoursesModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {plainToInstance} from 'class-transformer'
-import {CourseCompletionsSession} from './model/courseCompletionsSession'
 import {Controller} from '../controller'
 import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
+import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
 
 export class CourseCompletionsController extends Controller {
 
@@ -18,21 +18,9 @@ export class CourseCompletionsController extends Controller {
 		return mvpReportingRole.compoundRoles
 	}
 
-	private fetchSessionObject(req: Request): CourseCompletionsSession | undefined {
-		return req.session ? plainToInstance(CourseCompletionsSession,
-				req.session.courseCompletions as CourseCompletionsSession) : undefined
-	}
-
-	private saveSessionObject(sessionObject: CourseCompletionsSession, req: Request, cb: () => void): void {
-		req.session!.courseCompletions = sessionObject
-		req.session!.save(() => {
-			cb()
-		})
-	}
-
 	private checkForOrgIdsInSessionMiddleware() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			const session = this.fetchSessionObject(request)
+			const session = fetchCourseCompletionSessionObject(request)
 			if (session === undefined || !session.hasSelectedOrganisations()) {
 				return response.redirect("/reporting/course-completions/choose-organisation")
 			}
@@ -42,7 +30,7 @@ export class CourseCompletionsController extends Controller {
 
 	private checkForCourseIdsInSessionMiddleware() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			const session = this.fetchSessionObject(request)
+			const session = fetchCourseCompletionSessionObject(request)
 			if (session === undefined || !session.hasSelectedCourses()) {
 				return response.redirect("/reporting/course-completions/choose-courses")
 			}
@@ -73,19 +61,17 @@ export class CourseCompletionsController extends Controller {
 
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
-			const session = this.fetchSessionObject(request)!
-			session.courseIds = []
-			const selectedOrganisation = session.organisationIds![0]
-			this.saveSessionObject(session, request, async () => {
-				const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
-				response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
-			})
+			const session = fetchCourseCompletionSessionObject(request)!
+			const selectedOrganisation = session.selectedOrganisationId!
+			const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
+			response.render('page/reporting/courseCompletions/choose-courses', {pageModel,
+				backButton: '/reporting/course-completions/choose-organisation'})
 		}
 	}
 
 	public chooseCourses() {
 		return async (request: Request, response: Response) => {
-			const pageModel = plainToInstance(ChooseCoursesModel, request.body as ChooseCoursesModel)
+			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
 			const courseIds = pageModel.getCourseIdsFromSelection()
 			if (!await this.reportService.validateCourseSelections(courseIds)) {
 				const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
@@ -96,9 +82,9 @@ export class CourseCompletionsController extends Controller {
 					response.redirect('/reporting/course-completions/choose-courses')
 				})
 			}
-			const session = this.fetchSessionObject(request)!
+			const session = fetchCourseCompletionSessionObject(request)!
 			session.courseIds = courseIds
-			this.saveSessionObject(session, request, async () => {
+			saveCourseCompletionSessionObject(session, request, async () => {
 				response.redirect('/reporting/course-completions')
 			})
 		}

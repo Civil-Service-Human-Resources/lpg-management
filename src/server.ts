@@ -31,16 +31,17 @@ import {OrganisationalUnitDomainsController} from './controllers/organisationalU
 import {Controller} from './controllers/controller'
 import {CourseCompletionsController} from './controllers/reporting/courseCompletionsController'
 import {ReportingController} from './controllers/reporting/reportingController'
+import {createConfig} from './lib/http/restServiceConfigFactory'
 
 middleware.applyAll(app)
 
 ctx.auth.configure(app)
 
-const reportService = buildReportService({
+const reportService = buildReportService(createConfig({
 	url: config.REPORT_SERVICE.url,
 	timeout: config.REPORT_SERVICE.timeout,
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
-}, ctx.auth, ctx.courseService, ctx.organisationalUnitService)
+}), ctx.auth, ctx.courseService, ctx.organisationalUnitService)
 
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
@@ -59,6 +60,7 @@ app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
 app.use(ctx.organisationController.router)
 app.use(ctx.searchController.router)
+app.use(ctx.reportingController.router)
 app.use(ctx.skillsController.router)
 app.use(ctx.agencyTokenController.router)
 logger.debug(`Registering ${controllers.length} controllers`)

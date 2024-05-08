@@ -51,7 +51,7 @@ describe('courseCompletionsController tests', () => {
 		describe('With session', () => {
 			const subApp = createSubApp()
 			subApp.all('*', (req, res, next) => {
-				req.session!.courseCompletions = new CourseCompletionsSession([1])
+				req.session!.courseCompletions = new CourseCompletionsSession(1,[1])
 				next()
 			}).use(app)
 			reportService.getChooseCoursePage.withArgs(1).resolves(new ChooseCoursesModel('department', [

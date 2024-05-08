@@ -1,10 +1,10 @@
-{% from "../../component/reporting/macro.njk" import reporting with context %}
+{% from "../../../component/reporting/macro.njk" import reporting with context %}
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "../../../component/Page.njk" %}
 
 {% block pageTitle %}Reporting - Choose organisation - {{i18n['proposition_name'] }}{% endblock %}
 
@@ -48,9 +48,9 @@ href: "#parent"
   </div>
 </div>
 <div class="govuk-grid row">
-  <div class="govuk-column-one-third">
-    <div class="govuk-form-group">
+  <div class="govuk-column-two-thirds">
       <form action="/reporting/course-completions/choose-organisation" method="post">
+    <div class="govuk-form-group">
 
         {% set radioItems = [
         {
@@ -75,20 +75,17 @@ href: "#parent"
         fieldset: {
         legend: {
         text: "Which organisation would you like to report on?",
-        isPageHeading: false,
-        classes: "govuk-hint"
+              classes: "govuk-fieldset__legend--s"
         }
         },
         items: radioItems
         }) }}
-        <div style="margin-top: 15px">
+    </div>
           {{ govukButton({
           text: "Continue to course selection",
           preventDoubleClick: true
           }) }}
-        </div>
       </form>
-    </div>
   </div>
 </div>
 {% endblock %}
@@ -96,6 +93,5 @@ href: "#parent"
 {% block bodyEnd %}
 <script src="/govuk-frontend/all.js"></script>
 <script>window.GOVUKFrontend.initAll()</script>
-<script type="text/javascript" src="/js/accessible-autocomplete.min.js"></script>
-<script type="text/javascript" src="/js/manage-orgs.js"></script>
+  <script type="text/javascript" src="/js/main-bundle.js"></script>
 {% endblock %}

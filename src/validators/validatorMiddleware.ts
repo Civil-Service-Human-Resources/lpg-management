@@ -1,8 +1,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {plainToInstance, ClassConstructor} from 'class-transformer'
-import {validate} from 'class-validator'
-import {ValidationErrorMapper} from '../learning-catalogue/validator/validationErrorMapper'
 import {getLogger} from '../utils/logger'
+import {validateAndMapErrors} from './util'
 
 const logger = getLogger("ValidationMiddleware")
 
@@ -24,10 +23,9 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 		logger.debug(`Validating request body ${JSON.stringify(req.body)} against class ${opts.dtoClass.name}`)
 		const output: any = plainToInstance(opts.dtoClass, req.body)
 		if (req.body !== undefined) {
-			const validationErrors = await validate(output, { skipMissingProperties: false })
-			if (validationErrors.length > 0) {
-				logger.debug(validationErrors)
-				const errors = ValidationErrorMapper.map(validationErrors)
+			const errors = await validateAndMapErrors(output)
+			if (errors !== undefined) {
+				logger.debug(errors)
 				Object.keys(errors.fields).forEach(k => {
 					const v = errors.fields[k]
 					if (v.length > 1) {

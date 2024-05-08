@@ -6,9 +6,9 @@ import {OrganisationalUnitService} from '../csrs/service/organisationalUnitServi
 import {RestServiceConfig} from '../lib/http/restServiceConfig'
 import {Auth} from '../identity/auth'
 
-export function buildReportService(restConfig: RestServiceConfig, auth: Auth, courseService: CourseService,
+export function buildReportService(restServiceConfig: RestServiceConfig, auth: Auth, courseService: CourseService,
 								   organisationalUnitService: OrganisationalUnitService): ReportService {
-	const oauth = new OauthRestService(restConfig, auth)
+	const oauth = new OauthRestService(restServiceConfig, auth)
 	const client = new ReportServiceClient(oauth)
 	return new ReportService(client, courseService, organisationalUnitService)
 }

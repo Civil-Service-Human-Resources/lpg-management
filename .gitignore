@@ -3,7 +3,7 @@
 .env
 .idea
 .sessions
-dist/
+/dist/
 node_modules/
 pyhome/
 src/management-ui/assets/styles/main.css

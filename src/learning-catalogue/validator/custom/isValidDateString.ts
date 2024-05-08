@@ -10,7 +10,6 @@ export function IsValidDateString(validationOptions?: ValidationOptions) {
 			constraints: [],
 			validator: {
 				validate(value: any, args: ValidationArguments) {
-					console.log(value)
 					return moment(value, 'YYYY-MM-DD', true).isValid()
 				},
 			},

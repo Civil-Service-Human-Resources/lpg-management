@@ -19,7 +19,6 @@ class TestController extends Controller {
 		return [
 			getRequest("/get",() => {}),
 			postRequestWithBody("/post", (req, res, next) => {
-				console.log("POST")
 				res.send(200)
 			},{
 				dtoClass: String,

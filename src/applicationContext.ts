@@ -46,11 +46,7 @@ import {BookingFactory} from './learner-record/model/factory/bookingFactory'
 import {Booking} from './learner-record/model/booking'
 import {ReportingController} from './controllers/reportingController'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
-import {ReportServiceConfig} from './report-service/reportServiceConfig'
 import {ReportService} from './report-service'
-import {DateStartEndCommand} from './controllers/command/dateStartEndCommand'
-import {DateStartEnd} from './learning-catalogue/model/dateStartEnd'
-import {DateStartEndFactory} from './learning-catalogue/model/factory/dateStartEndFactory'
 import {SkillsController} from './controllers/skills/skillsController'
 import {AudienceService} from './lib/audienceService'
 import {QuestionFactory} from './controllers/skills/questionFactory'
@@ -113,10 +109,7 @@ export class ApplicationContext {
 	csrsService: CsrsService
 	dateRangeCommandFactory: DateRangeCommandFactory
 	dateRangeCommandValidator: Validator<DateRangeCommand>
-	dateStartEndCommandValidator: Validator<DateStartEndCommand>
-	dateStartEndValidator: Validator<DateStartEnd>
 	dateRangeFactory: DateRangeFactory
-	dateStartEndFactory: DateStartEndFactory
 	dateRangeValidator: Validator<DateRange>
 	cslServiceConfig: RestServiceConfig
 	cslService: CslServiceClient
@@ -136,7 +129,6 @@ export class ApplicationContext {
 	searchController: SearchController
 	reportingController: ReportingController
 	organisationalUnitService: OrganisationalUnitService
-	reportServiceConfig: ReportServiceConfig
 	reportService: ReportService
 	skillsController: SkillsController
 	audienceService: AudienceService
@@ -272,9 +264,7 @@ export class ApplicationContext {
 		this.eventValidator = new Validator<Event>(this.eventFactory)
 
 		this.dateRangeCommandFactory = new DateRangeCommandFactory()
-		this.dateStartEndFactory = new DateStartEndFactory()
 		this.dateRangeCommandValidator = new Validator<DateRangeCommand>(this.dateRangeCommandFactory)
-		this.dateStartEndValidator = new Validator<DateStartEnd>(this.dateStartEndFactory)
 		this.dateRangeFactory = new DateRangeFactory()
 		this.dateRangeValidator = new Validator<DateRange>(this.dateRangeFactory)
 
@@ -333,7 +323,7 @@ export class ApplicationContext {
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
-		this.reportingController = new ReportingController(this.reportService, this.dateStartEndCommandFactory, this.dateStartEndCommandValidator, this.dateStartEndValidator, this.csrsService, this.organisationalUnitService)
+		this.reportingController = new ReportingController(this.reportService, this.csrsService, this.organisationalUnitService)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 
