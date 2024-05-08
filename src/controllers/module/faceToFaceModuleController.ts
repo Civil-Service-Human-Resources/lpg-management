@@ -89,7 +89,7 @@ export class FaceToFaceModuleController {
 				module.title = data.title
 				module.description = data.description
 				module.cost = data.cost
-				module.optional = data.isOptional || false
+				module.optional = data.optional || false
 
 				await this.learningCatalogue
 					.updateModule(course.id, module)
