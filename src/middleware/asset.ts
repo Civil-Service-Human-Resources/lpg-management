@@ -1,7 +1,8 @@
-import * as serveStatic from 'serve-static'
 const appRoot = require('app-root-path')
 import {Middleware} from './middleware'
 import {Express} from 'express'
+
+const serveStatic = require('serve-static')
 
 export class AssetMiddleware extends Middleware {
 

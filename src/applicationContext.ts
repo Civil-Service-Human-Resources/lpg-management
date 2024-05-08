@@ -29,7 +29,6 @@ import {Audience} from './learning-catalogue/model/audience'
 import {CourseService} from './lib/courseService'
 import {CsrsService} from './csrs/service/csrsService'
 import {YoutubeService} from './youtube/youtubeService'
-import {YoutubeConfig} from './youtube/youtubeConfig'
 import {OauthRestService} from './lib/http/oauthRestService'
 import {CacheService} from './lib/cacheService'
 import {DateRangeCommand} from './controllers/command/dateRangeCommand'
@@ -100,7 +99,6 @@ export class ApplicationContext {
 	fileController: FileController
 	pagination: Pagination
 	youtubeService: YoutubeService
-	youtubeConfig: YoutubeConfig
 	faceToFaceController: FaceToFaceModuleController
 	eventController: EventController
 	mediaConfig: RestServiceConfig
@@ -238,8 +236,7 @@ export class ApplicationContext {
 
 		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
 
-		this.youtubeConfig = new YoutubeConfig(config.YOUTUBE.timeout)
-		this.youtubeService = new YoutubeService(this.youtubeConfig, this.auth, config.YOUTUBE.api_key)
+		this.youtubeService = new YoutubeService(createConfig({url: '', timeout: config.YOUTUBE.timeout}), this.auth, config.YOUTUBE.api_key)
 		this.audienceFactory = new AudienceFactory()
 		this.eventFactory = new EventFactory()
 		this.moduleFactory = new ModuleFactory()

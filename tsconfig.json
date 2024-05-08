@@ -16,6 +16,7 @@
     "preserveConstEnums": true,
     "pretty": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "target": "ESNext"
