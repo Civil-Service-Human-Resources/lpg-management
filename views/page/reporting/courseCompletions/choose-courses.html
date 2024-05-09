@@ -19,14 +19,16 @@
     <form method="post" action="/reporting/course-completions/choose-courses">
         <div class="govuk-form-group">
         {% set requiredLearningOptions = pageModel.requiredLearningList %}
-        {% set requiredLearningOptions = requiredLearningOptions.concat({
-            "divider": "or"
-        }) %}
-        {% set requiredLearningOptions = requiredLearningOptions.concat({
-            "value": "all",
-            "text": "All required learning",
-            "behaviour": "exclusive"
-        }) %}
+        {% if pageModel.requiredLearningList > 1 %}
+            {% set requiredLearningOptions = requiredLearningOptions.concat({
+                "divider": "or"
+            }) %}
+            {% set requiredLearningOptions = requiredLearningOptions.concat({
+                "value": "all",
+                "text": "All required learning",
+                "behaviour": "exclusive"
+            }) %}
+        {% endif %}
         <input type='hidden' name='allRequiredLearning' value='{{ pageModel.allRequiredLearning }}'>
       {% set requiredHtml %}
         {{ govukCheckboxes({
