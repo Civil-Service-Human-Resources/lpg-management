@@ -6,8 +6,8 @@
 /dist/
 node_modules/
 pyhome/
-views/assets/styles/main.css
-views/assets/styles/main.css.map
+*.css
+*.css.map
 yarn.lock
 files
 data.json
