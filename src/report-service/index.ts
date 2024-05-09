@@ -4,6 +4,8 @@ import {CourseService} from 'lib/courseService'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
 import {Report} from '../controllers/reporting/Report'
 import {BasicCourse, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
+import {GetCourseAggregationParameters} from './model/getCourseAggregationParameters'
+import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 
 export class ReportService {
 
@@ -40,5 +42,10 @@ export class ReportService {
 	async validateCourseSelections(courseIds: string[]) {
 		const allCourseIds = (await this.courseService.getCourseDropdown()).map(c => c.value)
 		return courseIds.every(id => allCourseIds.includes(id))
+	}
+
+	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters): Promise<CourseCompletionsGraphModel> {
+		const graph = await this.client.getCourseCompletionsAggregationsChart(params)
+		return new CourseCompletionsGraphModel(graph)
 	}
 }

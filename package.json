@@ -91,6 +91,7 @@
 		"browserify": "^17.0.0",
 		"chai": "4.1.2",
 		"chai-as-promised": "7.1.1",
+		"chartjs": "^0.3.24",
 		"concurrently": "^8.2.2",
 		"cucumber": "4.2.1",
 		"daemonize-process": "1.0.9",
