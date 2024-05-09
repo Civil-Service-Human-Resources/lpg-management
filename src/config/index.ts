@@ -25,7 +25,7 @@ function set<T>(defaultValue: T, envValues: Record<string, T> = {}): T {
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
-export const APPLICATIONINSIGHTS_CONNECTION_STRING = env.APPLICATIONINSIGHTS_CONNECTION_STRING
+export const APPLICATIONINSIGHTS_CONNECTION_STRING = "InstrumentationKey=f145ec38-8811-4f72-9a82-64f0a4a5652f;IngestionEndpoint=https://uksouth-0.in.applicationinsights.azure.com/;LiveEndpoint=https://uksouth.livediagnostics.monitor.azure.com/"
 
 export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.local.learn.civilservice.gov.uk/lpgdevcontent'
 

@@ -5,7 +5,7 @@
 	"main": "server",
 	"scripts": {
 		"clean": "rimraf dist",
-		"sass": "sass views/assets/styles/main.scss dist/views/assets/styles/main.css --style compressed",
+		"sass": "sass views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
 		"test": "npm run compile && find dist -name '*Test.js' | xargs ./node_modules/nyc/bin/nyc.js --reporter=text --reporter=html ./node_modules/mocha/bin/mocha",
 		"test:ts": "nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
 		"compile": "tsc",
@@ -13,7 +13,7 @@
 		"dev": "nodemon src/server.ts",
 		"js": "browserify views/assets/js/main.js -o views/assets/js/main-bundle.js",
 		"watch-js": "watchify views/assets/js/main.js -o views/assets/js/main-bundle.js -v",
-		"watch-sass": "sass -w views/assets/styles/ dist/views/assets/styles/ --style compressed",
+		"watch-sass": "sass -w views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
 		"start": "npm run clean && npm run build && node dist/build/src/server.js",
 		"start:dev": "concurrently \"npm run dev\" \"npm run watch-js\" \"npm run watch-sass\""
 	},
@@ -87,7 +87,7 @@
 		"@types/sinon-express-mock": "1.3.5",
 		"@types/superagent": "4.1.10",
 		"@types/supertest": "^2.0.11",
-		"accessible-autocomplete": "file:views/assets/js/accessible-autocomplete-multiselect",
+		"accessible-autocomplete-multiselect": "file:views/assets/js/accessible-autocomplete-multiselect",
 		"browserify": "^17.0.0",
 		"chai": "4.1.2",
 		"chai-as-promised": "7.1.1",

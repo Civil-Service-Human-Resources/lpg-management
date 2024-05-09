@@ -1,4 +1,4 @@
-const accessibleAutocomplete = require('accessible-autocomplete')
+const accessibleAutocomplete = require('accessible-autocomplete-multiselect')
 
 if (document.querySelector('#courseSearch') !== null) {
 	accessibleAutocomplete.enhanceSelectElement({

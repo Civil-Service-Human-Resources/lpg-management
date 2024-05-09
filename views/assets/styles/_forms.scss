@@ -411,6 +411,11 @@
 	display: inline-block;
 }
 
+.autocomplete__wrapper {
+	display: inline-block;
+	width: 440px;
+}
+
 .autocomplete-wrapper--courses {
 	.govuk-input {
 		height: 15rem;
@@ -421,9 +426,11 @@
 	}
 }
 
-.autocomplete__wrapper {
-	display: inline-block;
-	width: 440px;
+.autocomplete-wrapper--full-width {
+	.autocomplete__wrapper {
+		display: inline-block;
+		width: 100%;
+	}
 }
 
 .button-blue-organisations {

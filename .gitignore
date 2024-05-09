@@ -6,8 +6,8 @@
 /dist/
 node_modules/
 pyhome/
-src/management-ui/assets/styles/main.css
-src/ui/assets/styles/main.css
+*.css
+*.css.*
 yarn.lock
 files
 data.json
