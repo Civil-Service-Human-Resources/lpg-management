@@ -39,14 +39,14 @@ describe('courseCompletionsController tests', () => {
 
 	describe('Select courses tests', () => {
 		describe('Without session', () => {
-			// it('Should redirect when there are no organisationIds in the session', async () => {
-			// 	const res = await session(app)
-			// 		.get("/reporting/course-completions/choose-courses")
-			// 		.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
-			// 		.send()
-			// 	expect(res.status).to.eql(302)
-			// 	expect(res.headers['location']).to.eql("/reporting/course-completions/choose-organisation")
-			// })
+			it('Should redirect when there are no organisationIds in the session', async () => {
+				const res = await session(app)
+					.get("/reporting/course-completions/choose-courses")
+					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
+					.send()
+				expect(res.status).to.eql(302)
+				expect(res.headers['location']).to.eql("/reporting/course-completions/choose-organisation")
+			})
 		})
 		describe('With session', () => {
 			const subApp = createSubApp()
