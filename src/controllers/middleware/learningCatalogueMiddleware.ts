@@ -3,10 +3,13 @@ import moment = require('moment')
 import {Course} from '../../learning-catalogue/model/course'
 import {LearningCatalogue} from '../../learning-catalogue'
 import {Audience} from '../../learning-catalogue/model/audience'
+import {CsrsService} from '../../csrs/service/csrsService'
 
 export interface LearningCatalogueMiddlewareSettings {
 	getModule: boolean,
-	getAudience?: boolean
+	audience?: {
+		csrsService: CsrsService
+	}
 }
 
 export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMiddlewareSettings,
@@ -40,12 +43,17 @@ export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMidd
 			}
 		})
 	}
-	if (settings.getAudience) {
+	const audienceSettings = settings.audience
+	if (audienceSettings !== undefined) {
 		router.param('audienceId', async (req: Request, res: Response, next: NextFunction, audienceId: string) => {
 			if (res.locals.course && res.locals.course.audiences) {
 				const audience = res.locals.course.audiences.find((audience: Audience) => audience.id == audienceId)
 				if (audience) {
+					const codeToNameMap  = await audienceSettings.csrsService.getDepartmentCodeToNameMapping()
 					res.locals.audience = audience
+					res.locals.audienceDepartmentsAsNames = (audience.departments || [])
+						.map((d: string) => codeToNameMap[d])
+						.sort()
 					next()
 				}
 			}

@@ -44,7 +44,7 @@ export class AudienceController {
 	}
 
 	private configurePathParametersProcessing() {
-		applyLearningCatalogueMiddleware({getModule: false, getAudience: true}, this.router, this.learningCatalogue)
+		applyLearningCatalogueMiddleware({getModule: false, audience: {csrsService: this.csrsService}}, this.router, this.learningCatalogue)
 	}
 
 	private setRouterPaths() {
