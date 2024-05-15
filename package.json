@@ -13,7 +13,7 @@
 		"dev": "nodemon src/server.ts",
 		"js": "esbuild views/assets/js/main.js --bundle --minify --sourcemap --outfile=views/assets/js/main-bundle.js",
 		"watch-js": "npm run js -- --watch",
-		"watch-sass": "sass -w views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
+		"watch-sass": "sass --watch views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
 		"start": "npm run clean && npm run build && node dist/build/src/server.js",
 		"start:dev": "concurrently \"npm run dev\" \"npm run watch-js\" \"npm run watch-sass\""
 	},

@@ -5,7 +5,7 @@
     {% set chartHtml %}
         <h2 class="govuk-heading-s">Chart</h2>
         <div class="govuk-!-padding-bottom-8">
-            <canvas data-chart='canvas' id="{{ id }}"></canvas>
+            <canvas class='chart' tabindex="0" data-chart='canvas' id="{{ id }}"></canvas>
         </div>
     {% endset -%}
     {{ govukTabs({

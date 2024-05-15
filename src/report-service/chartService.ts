@@ -1,7 +1,7 @@
 import {ChartjsConfig} from './model/chartjsConfig'
 import {ChartJsXAxisSettings} from './model/chartJsXAxisSettings'
 import {Dayjs, ManipulateType} from 'dayjs'
-import {DataPoint} from './model/dataPoint'
+import {DataPoint, NumericDataPoint} from './model/dataPoint'
 import dayjs = require('dayjs')
 import * as utc from 'dayjs/plugin/utc'
 import * as timezone from 'dayjs/plugin/timezone'
@@ -25,7 +25,7 @@ export class ChartService {
 	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: DataPoint[]): ChartjsConfig {
 		const dayDiff = startDate.diff(endDate, 'day')
 		let xAxisSettings
-		let labels
+		let labels: number[]
 		if (dayDiff <= 1) {
 			labels = this.buildLabels(startDate, endDate, 1, 'hour')
 			xAxisSettings = new ChartJsXAxisSettings("hour", "ha")
@@ -40,12 +40,21 @@ export class ChartService {
 			xAxisSettings = new ChartJsXAxisSettings("month", "d MMMM yyyy")
 		}
 		console.log(rawData)
-		const convertedData = rawData.map(dataPoint => {
+		const tableData: Map<number, number> = new Map(rawData.map(dataPoint => {
 			const splitDateTz = dataPoint.x.split("Z")
 			const timeZone = splitDateTz[1]
 				.replaceAll("[", "")
 				.replaceAll("]", "")
-			return new DataPoint(dayjs.tz(splitDateTz[0], timeZone).valueOf().toString(), dataPoint.y)
+			return [dayjs.tz(splitDateTz[0], timeZone).valueOf(), dataPoint.y]
+		}))
+		const convertedData = labels.map(l => {
+			let x = l
+			let y = 0
+			const tableDataPoint = tableData.get(l)
+			if (tableDataPoint !== undefined) {
+				y = tableDataPoint
+			}
+			return new NumericDataPoint(x, y)
 		})
 		return new ChartjsConfig(convertedData, labels, xAxisSettings)
 	}

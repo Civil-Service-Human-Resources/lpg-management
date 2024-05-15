@@ -7,16 +7,8 @@ for (const chart of charts) {
 	const chartOptionsTag = chart.querySelector("[data-chart='settings']");
 	const chartCanvasTag = chart.querySelector("[data-chart='canvas']");
 	if (chartOptionsTag != null && chartCanvasTag != null) {
-		console.log("Building chart")
 		const options = JSON.parse(chartOptionsTag.innerHTML)
-		console.log(options)
-		options.data = options.data.map(dataPoint => {
-			return {
-				y: Number(dataPoint.y),
-				x: Number(dataPoint.x)
-			}
-		})
-		var c = new Chart(
+		let chart = new Chart(
 			chartCanvasTag,
 			{
 				type: 'line',
@@ -28,13 +20,31 @@ for (const chart of charts) {
 							data: options.data,
 							borderColor: "#1d70b8",
 							backgroundColor: "#1d70b8",
-							borderWidth: 1
+							borderWidth: 1,
+							spanGaps: true
 						}
 					]
 				},
 				responsive: true,
-				maintainAspectRatio: false,
+				maintainAspectRatio: true,
 				options: {
+					hover: {
+						mode: 'nearest', // show tooltip for the nearest data point
+						intersect: false // do not require the mouse to intersect the data point
+					},
+					tooltips: {
+						mode: 'nearest', // show tooltip for the nearest data point
+						intersect: false, // do not require the mouse to intersect the data point
+						callbacks: {
+							label: function(tooltipItem, data) {
+								return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + '%'; // customize tooltip label
+							}
+						}
+					},
+					focus: {
+						mode: 'nearest', // enable keyboard navigation for the nearest data point
+						intersect: false // do not require the keyboard to intersect the data point
+					},
 					scales: {
 						y: {
 							beginAtZero: true,
@@ -57,6 +67,37 @@ for (const chart of charts) {
 				}
 			}
 		)
-		console.log(c)
+
+		console.log('Adding event listener')
+		chartCanvasTag.addEventListener("keydown", (e) => {
+			let currentlyActiveIndex
+			let currentlyActivePlotPoint = chart.getActiveElements()[0]
+
+			if(currentlyActivePlotPoint === undefined){
+				currentlyActiveIndex = 0
+			} else {
+				currentlyActiveIndex = currentlyActivePlotPoint.index
+
+				if(e.key === "ArrowLeft"){
+					currentlyActiveIndex--
+
+					if(currentlyActiveIndex < 0){
+						currentlyActiveIndex = 0
+					}
+				}
+				else if(e.key === "ArrowRight"){
+					currentlyActiveIndex++
+
+					if(currentlyActiveIndex > chart.data.datasets[0].data.length-1){
+						currentlyActiveIndex = chart.data.datasets[0].data.length-1
+					}
+
+				}
+			}
+
+			chart.setActiveElements([{ datasetIndex: 0, index: currentlyActiveIndex }])
+			chart.tooltip.setActiveElements([{ datasetIndex: 0, index: currentlyActiveIndex }])
+			chart.update()
+		})
 	}
 }
