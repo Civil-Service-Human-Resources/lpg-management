@@ -1,15 +1,22 @@
 {% from "tabs/macro.njk" import govukTabs %}
 
-<script>
-	const data = []
-
-    {% for row in moduleRecord %}
-		data.push({month, completionCount})
-    {% endfor %}
-</script>
-
-<div>
-    <div id='{{ chartId }}'>
-
-    </div>
+<div class='chart-container'>
+    <script data-chart='settings' type="json">{{settings|dump|safe}}</script>
+    {% set chartHtml %}
+        <h2 class="govuk-heading-s">Chart</h2>
+        <div class="govuk-!-padding-bottom-8">
+            <canvas data-chart='canvas' id="{{ id }}"></canvas>
+        </div>
+    {% endset -%}
+    {{ govukTabs({
+        items: [
+            {
+                label: "Chart",
+                id: "chart",
+                panel: {
+                    html: chartHtml
+                }
+            }
+        ]
+    }) }}
 </div>

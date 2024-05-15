@@ -7,6 +7,7 @@ import {plainToInstance} from 'class-transformer'
 import {Controller} from '../controller'
 import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
+import {GetCourseAggregationParameters} from '../../report-service/model/getCourseAggregationParameters'
 
 export class CourseCompletionsController extends Controller {
 
@@ -55,7 +56,12 @@ export class CourseCompletionsController extends Controller {
 
 	public renderReport() {
 		return async (request: Request, response: Response) => {
-			response.render('page/reporting/courseCompletions/report')
+			const session = fetchCourseCompletionSessionObject(request)!
+			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(GetCourseAggregationParameters.createForDay(
+				session.courseIds!, session!.allOrganisationIds!.map(n => n.toString())
+			))
+			response.render('page/reporting/courseCompletions/report', {pageModel,
+				backButton: '/reporting/course-completions/choose-courses'})
 		}
 	}
 

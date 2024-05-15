@@ -1,9 +1,7 @@
-import {CourseCompletionAggregationChart} from '../../../report-service/model/courseCompletionAggregationChart'
+import {ChartjsConfig} from '../../../report-service/model/chartjsConfig'
 
 export class CourseCompletionsGraphModel {
-	public chart: CourseCompletionAggregationChart
-
-	constructor(chart: CourseCompletionAggregationChart) {
+	constructor(public chart: ChartjsConfig) {
 		this.chart = chart
 	}
 }

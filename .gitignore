@@ -8,6 +8,7 @@ node_modules/
 pyhome/
 *.css
 *.css.map
+*.js.map
 yarn.lock
 files
 data.json

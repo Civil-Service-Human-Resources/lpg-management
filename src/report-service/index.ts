@@ -6,11 +6,14 @@ import {Report} from '../controllers/reporting/Report'
 import {BasicCourse, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
 import {GetCourseAggregationParameters} from './model/getCourseAggregationParameters'
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
+import {CslServiceClient} from '../csl-service/client'
+import {ChartService} from './chartService'
 
 export class ReportService {
 
 	constructor(private client: ReportServiceClient, private courseService: CourseService,
-				private organisationalUnitService: OrganisationalUnitService) {
+				private organisationalUnitService: OrganisationalUnitService, private cslService: CslServiceClient,
+				private chartService: ChartService) {
 	}
 
 	async getReport(reportType: Report, dateRange: DateStartEnd): Promise<Buffer> {
@@ -45,7 +48,8 @@ export class ReportService {
 	}
 
 	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters): Promise<CourseCompletionsGraphModel> {
-		const graph = await this.client.getCourseCompletionsAggregationsChart(params)
-		return new CourseCompletionsGraphModel(graph)
+		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
+		const chartJsConfig = this.chartService.buildChart(params.getStartDateAsDayJs(), params.getEndDateAsDayJs(), chart.chart)
+		return new CourseCompletionsGraphModel(chartJsConfig)
 	}
 }
