@@ -3,6 +3,9 @@ import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm'
 
 const charts = document.getElementsByClassName('chart-container')
 
+const options = JSON.parse(document.querySelector("[data-chart='settings']").innerHTML)
+
+
 for (const chart of charts) {
 	const chartOptionsTag = chart.querySelector("[data-chart='settings']");
 	const chartCanvasTag = chart.querySelector("[data-chart='canvas']");
@@ -10,6 +13,12 @@ for (const chart of charts) {
 		console.log("Building chart")
 		const options = JSON.parse(chartOptionsTag.innerHTML)
 		console.log(options)
+		options.data = options.data.map(dataPoint => {
+			return {
+				y: Number(dataPoint.y),
+				x: Number(dataPoint.x)
+			}
+		})
 		var c = new Chart(
 			chartCanvasTag,
 			{

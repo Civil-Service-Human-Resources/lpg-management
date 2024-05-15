@@ -1,8 +1,8 @@
 import {ChartJsXAxisSettings} from './chartJsXAxisSettings'
-import {NumberedDataPoint} from './dataPoint'
+import {DataPoint} from './dataPoint'
 
 export class ChartjsConfig {
-	constructor(public data: NumberedDataPoint[], public labels: number[],
+	constructor(public data: DataPoint[], public labels: number[],
 				public xAxisSettings: ChartJsXAxisSettings) {
 	}
 }

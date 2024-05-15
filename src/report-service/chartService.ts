@@ -1,7 +1,7 @@
 import {ChartjsConfig} from './model/chartjsConfig'
 import {ChartJsXAxisSettings} from './model/chartJsXAxisSettings'
 import {Dayjs, ManipulateType} from 'dayjs'
-import {DataPoint, NumberedDataPoint} from './model/dataPoint'
+import {DataPoint} from './model/dataPoint'
 import dayjs = require('dayjs')
 import * as utc from 'dayjs/plugin/utc'
 import * as timezone from 'dayjs/plugin/timezone'
@@ -45,7 +45,7 @@ export class ChartService {
 			const timeZone = splitDateTz[1]
 				.replaceAll("[", "")
 				.replaceAll("]", "")
-			return new NumberedDataPoint(dayjs.tz(splitDateTz[0], timeZone).valueOf().toString(), dataPoint.y)
+			return new DataPoint(dayjs.tz(splitDateTz[0], timeZone).valueOf().toString(), dataPoint.y)
 		})
 		return new ChartjsConfig(convertedData, labels, xAxisSettings)
 	}
