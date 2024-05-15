@@ -75,7 +75,8 @@ export const COURSE_CATALOGUE = set({
 })
 
 export const HTTP_SETTINGS = set({
-	global_enable_detail_logs: Boolean(env.GLOBAL_ENABLE_DETAILED_HTTP_LOGS || false)
+	globalEnableDetailLogs: Boolean(env.GLOBAL_ENABLE_DETAILED_HTTP_LOGS || false),
+	requestLogging: Boolean(env.REQUEST_LOGGING || false)
 })
 
 export const LEARNER_RECORD = set({
