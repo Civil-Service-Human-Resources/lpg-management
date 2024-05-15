@@ -19,7 +19,7 @@
     <form method="post" action="/reporting/course-completions/choose-courses">
         <div class="govuk-form-group">
         {% set requiredLearningOptions = pageModel.requiredLearningList %}
-        {% if pageModel.requiredLearningList > 1 %}
+        {% if pageModel.requiredLearningList | length > 1 %}
             {% set requiredLearningOptions = requiredLearningOptions.concat({
                 "divider": "or"
             }) %}
