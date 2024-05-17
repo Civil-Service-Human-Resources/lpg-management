@@ -22,6 +22,9 @@ export class ChooseCoursesModel {
 	@IsNotEmpty({
 		message: 'reporting.course_completions.validation.requiredLearningSelection',
 	})
+	@ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_COURSES, {
+		message: 'reporting.course_completions.validation.maximumCourses',
+	})
 	@Transform(({value}) => {
 		if (typeof value === "string") {
 			return [value]

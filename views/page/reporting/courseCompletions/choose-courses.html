@@ -82,9 +82,10 @@
         ]
       }) }}
         </div>
-      {{ govukButton({
-        text: "Continue"
-      }) }}
+        {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: true
+        }) }}
     </form>
   </div>
 </div>
