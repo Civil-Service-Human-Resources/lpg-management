@@ -43,7 +43,7 @@ describe('reportingController tests', () => {
 					})
 				expect(res.status).to.eql(302)
 			})
-			it('Should validate incorrect date parameters', async () => {
+			it('Should validate start date is before end date', async () => {
 				const res = await request(app)
 					.post("/reporting/booking-information")
 					.set({"roles": 'ORGANISATION_REPORTER'})
