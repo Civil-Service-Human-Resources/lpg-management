@@ -49,7 +49,6 @@ export class ReportService {
 
 	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters): Promise<CourseCompletionsGraphModel> {
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
-		// const chartJsConfig = this.chartService.buildChart(params.getStartDateAsDayJs(), params.getEndDateAsDayJs(), chart.chart)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
 		return new CourseCompletionsGraphModel(chartJsConfig)
 	}

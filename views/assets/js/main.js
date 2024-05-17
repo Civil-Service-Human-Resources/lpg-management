@@ -1,3 +1,3 @@
 require('./course-dropdown')
 require('./manage-orgs.js')
-require('./chart')
+require('./chart/main')
