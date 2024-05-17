@@ -86,7 +86,8 @@ export const LEARNER_RECORD = set({
 
 export const CSL_SERVICE = set({
 	url: env.CSL_SERVICE_URL || 'http://localhost:9003',
-	timeout: Number(env.CSL_SERVICE_TIMEOUT_MS)
+	timeout: Number(env.CSL_SERVICE_TIMEOUT_MS),
+	detailedLogs: Boolean(env.CSL_SERVICE_DETAILED_LOGS || false)
 })
 
 export const REGISTRY_SERVICE = set({

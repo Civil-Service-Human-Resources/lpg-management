@@ -1,7 +1,13 @@
-import {ChartjsConfig} from '../../../report-service/model/chartjsConfig'
+import { MinimalChartJsConfig} from '../../../report-service/model/chartjsConfig'
+
+// export class CourseCompletionsGraphModel {
+// 	constructor(public chart: ChartjsConfig) {
+// 		this.chart = chart
+// 	}
+// }
 
 export class CourseCompletionsGraphModel {
-	constructor(public chart: ChartjsConfig) {
+	constructor(public chart: MinimalChartJsConfig) {
 		this.chart = chart
 	}
 }

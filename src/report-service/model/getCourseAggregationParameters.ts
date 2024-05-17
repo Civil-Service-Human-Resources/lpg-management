@@ -10,9 +10,9 @@ export class GetCourseAggregationParameters {
 				public gradeIds?: string[]) { }
 
 	static createForDay(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const endDate = dayjs().format('YYYY-MM-DDTHH:mm:ssZ')
-		const startDate = dayjs().set('hours', 0).set('minutes', 0).set('second', 0).format('YYYY-MM-DDTHH:mm:ssZ')
-		return new GetCourseAggregationParameters(startDate, endDate, courseIds, organisationIds, 'HOUR')
+		const startDate = dayjs()
+		const endDate = startDate.add(1, 'day')
+		return new GetCourseAggregationParameters(startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), courseIds, organisationIds, 'HOUR')
 	}
 
 	getStartDateAsDayJs() {
