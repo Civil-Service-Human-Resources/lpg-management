@@ -1,17 +1,17 @@
 import {Auth} from '../identity/auth'
 import {YoutubeRestService} from './youtubeRestService'
-import {YoutubeConfig} from './youtubeConfig'
 import {DateTime} from '../lib/dateTime'
 import { getLogger } from '../utils/logger'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 export class YoutubeService {
 	logger = getLogger('YoutubeService')
-	youtubeConfig: YoutubeConfig
+	youtubeConfig: RestServiceConfig
 	_restService: YoutubeRestService
 	api_key: String
 	public auth: Auth
 
-	constructor(youtubeConfig: YoutubeConfig, auth: Auth, api_key: String) {
+	constructor(youtubeConfig: RestServiceConfig, auth: Auth, api_key: String) {
 		this.youtubeConfig = youtubeConfig
 		this.auth = auth
 		this.api_key = api_key

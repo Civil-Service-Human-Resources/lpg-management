@@ -74,6 +74,10 @@ export const COURSE_CATALOGUE = set({
 	timeout: Number(env.COURSE_CATALOGUE_TIMEOUT_MS)
 })
 
+export const HTTP_SETTINGS = set({
+	global_enable_detail_logs: Boolean(env.GLOBAL_ENABLE_DETAILED_HTTP_LOGS || false)
+})
+
 export const LEARNER_RECORD = set({
 	url: env.LEARNER_RECORD_URL || 'http://localhost:9000',
 	timeout: Number(env.LEARNER_RECORD_TIMEOUT_MS)
@@ -90,16 +94,18 @@ export const REGISTRY_SERVICE = set({
 })
 
 export const REPORT_SERVICE = set({
+	detailedLogs: Boolean(env.REPORT_SERVICE_DETAILED_LOGS) || false,
 	url: env.REPORT_SERVICE_URL || 'http://localhost:9004',
-	map: {
-		'booking-information': '/bookings',
-	},
 	timeout: Number(env.REPORT_SERVICE_TIMEOUT_MS)
 })
 
 export const CACHE = {
 	TTL_SECONDS: 3600,
 	CHECK_PERIOD_SECONDS: 600,
+}
+
+export const REPORTING = {
+	COURSE_COMPLETIONS_MAX_COURSES: Number(env.REPORTING_COURSE_COMPLETIONS_MAX_COURSES || 10)
 }
 
 export const SERVER_TIMEOUT_MS = Number(env.SERVER_TIMEOUT_MS) || 240000

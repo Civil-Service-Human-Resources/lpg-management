@@ -4,20 +4,20 @@ import * as sinon from 'sinon'
 import {expect} from 'chai'
 import {Auth} from '../../../src/identity/auth'
 import {YoutubeService} from '../../../src/youtube/youtubeService'
-import {YoutubeConfig} from '../../../src/youtube/youtubeConfig'
 import {YoutubeRestService} from '../../../src/youtube/youtubeRestService'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 chai.use(sinonChai)
 
 describe('Youtube Service Test', function() {
 	let youtubeService: YoutubeService
-	let youtubeConfig: YoutubeConfig
+	let youtubeConfig: RestServiceConfig
 	let _restService: YoutubeRestService
 	let auth: Auth
 	let youtubeResponse: any
 
 	beforeEach(() => {
-		youtubeConfig = <YoutubeConfig>{}
+		youtubeConfig = <RestServiceConfig>{}
 		_restService = <YoutubeRestService>{}
 		auth = <Auth>{}
 

@@ -2,7 +2,7 @@ import {NextFunction, Request, Response, Router} from 'express'
 import {Route} from './route'
 import * as winston from 'winston'
 import {getLogger} from '../utils/logger'
-import {Role} from '../identity/identity'
+import {CompoundRoleBase} from '../identity/identity'
 import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
 
 export abstract class Controller {
@@ -26,7 +26,7 @@ export abstract class Controller {
 		return []
 	}
 
-	protected getRequiredRoles(): Role[] {
+	protected getRequiredRoles(): CompoundRoleBase[] {
 		return []
 	}
 
@@ -37,15 +37,15 @@ export abstract class Controller {
 	private applyRoleRestrictions() {
 		const requiredRoles = this.getRequiredRoles()
 		if (requiredRoles.length > 0) {
-			this.logger.debug(`Restricting controller to roles: [${requiredRoles}]`)
+			this.logger.debug(`Restricting controller to roles: [${requiredRoles.map(rr => rr.getDescription())}]`)
 			this.router.use(roleCheckMiddleware(requiredRoles))
 		}
 	}
 
 	public buildRouter = (): Router => {
 		this.logger.debug(`Registering controller '${this.controllerName}'`)
-		this.applyRoleRestrictions()
 		const controllerMiddleware = this.getControllerMiddleware()
+		this.applyRoleRestrictions()
 		if (controllerMiddleware.length > 0) {
 			this.logger.debug(`Registering ${controllerMiddleware.length} controller middleware`)
 			this.router.use(controllerMiddleware)

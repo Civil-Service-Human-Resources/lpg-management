@@ -1,3 +1,5 @@
+const accessibleAutocomplete = require('./accessible-autocomplete.min')
+
 var selectEl = document.querySelector('#parent')
 accessibleAutocomplete.enhanceSelectElement({
 	selectElement: selectEl,

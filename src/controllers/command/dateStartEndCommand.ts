@@ -1,6 +1,4 @@
 import {IsNotEmpty} from 'class-validator'
-import moment = require('moment')
-import {DateStartEnd} from '../../learning-catalogue/model/dateStartEnd'
 
 export class DateStartEndCommand {
 	@IsNotEmpty({
@@ -39,11 +37,11 @@ export class DateStartEndCommand {
 	})
 	endYear: string
 
-	asDateRange() {
-		const dateRange = new DateStartEnd()
-		dateRange.startDate = moment([this.startYear, +this.startMonth - 1, this.startDay]).format('YYYY-MM-DD')
-		dateRange.endDate = moment([this.endYear, +this.endMonth - 1, this.endDay]).format('YYYY-MM-DD')
+	getStartDate(): string {
+		return `${this.startYear}-${+this.startMonth-1}-${this.startDay}`
+	}
 
-		return dateRange
+	getEndDate(): string {
+		return `${this.endYear}-${+this.endMonth-1}-${this.endDay}`
 	}
 }

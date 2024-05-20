@@ -9,6 +9,7 @@ import * as config from '../../config'
 import * as fileType from '../../lib/fileType'
 import {OauthRestService} from 'lib/http/oauthRestService'
 import {CourseService} from 'lib/courseService'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 export class FileController {
@@ -39,33 +40,7 @@ export class FileController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		let course: any
-
-		this.router.param('courseId', async (req, res, next, courseId) => {
-			course = await this.learningCatalogue.getCourse(courseId)
-			if (course) {
-				res.locals.course = course
-				next()
-			} else {
-				res.sendStatus(404)
-			}
-		})
-		this.router.param('moduleId', async (req, res, next, moduleId) => {
-			if (course) {
-				const module = this.courseService.getModuleByModuleId(course, moduleId)
-				if (module) {
-					const duration = moment.duration(module.duration, 'seconds')
-					res.locals.module = module
-					res.locals.module.hours = duration.hours()
-					res.locals.module.minutes = duration.minutes()
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			} else {
-				res.sendStatus(404)
-			}
-		})
+		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/module-file/:moduleId?', xss(), this.getFile('file'))
 		this.router.get('/content-management/courses/:courseId/module-elearning/:moduleId?', xss(), this.getFile('elearning'))
 		this.router.get('/content-management/courses/:courseId/module-mp4/:moduleId?', xss(), this.getFile('video'))

@@ -1,6 +1,8 @@
 import {IsFutureDate} from '../validator/custom/isFutureDate'
 import {IsDate, IsNotEmpty, MaxLength} from 'class-validator'
 import {Duration} from 'moment'
+import {Transform} from 'class-transformer'
+import * as moment from 'moment'
 
 export class Audience {
 	id: string
@@ -27,6 +29,10 @@ export class Audience {
 		groups: ['all', 'audience.all', 'audience.type'],
 		message: 'audience.validation.type.empty',
 	})
+
+	@Transform(({value}) => {
+		return 	Audience.Type[value as keyof typeof Audience.Type]
+	})
 	type: Audience.Type
 
 	@IsFutureDate({
@@ -39,6 +45,9 @@ export class Audience {
 	})
 	requiredBy?: Date
 
+	@Transform(({value}) => {
+		return value ? moment.duration(value) : undefined
+	})
 	frequency?: Duration
 
 	eventId?: string

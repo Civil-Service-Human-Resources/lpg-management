@@ -1,77 +1,53 @@
-import { NextFunction, Request, Response, Router } from 'express'
-import { ReportService } from '../report-service'
-import moment = require('moment')
-import { DateStartEndCommandFactory } from './command/factory/dateStartEndCommandFactory'
-import { DateStartEndCommand } from './command/dateStartEndCommand'
-import { DateStartEnd } from '../learning-catalogue/model/dateStartEnd'
-import { Validator } from '../learning-catalogue/validator/validator'
-import { PlaceholderDate } from '../learning-catalogue/model/placeholderDate'
-import { CsrsService } from 'src/csrs/service/csrsService'
-import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
-import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
+import {Request, Response, Router} from 'express'
+import {ReportService} from '../report-service'
+import {CsrsService} from 'src/csrs/service/csrsService'
+import {OrganisationalUnitService} from 'src/csrs/service/organisationalUnitService'
+import {OrganisationalUnit} from '../../src/csrs/model/organisationalUnit'
+import {CourseCompletionsSession} from './reporting/model/courseCompletionsSession'
+import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './reporting/utils'
+
 const { xss } = require('express-xss-sanitizer')
 
 
 export class ReportingController {
 	router: Router
 	reportService: ReportService
-	dateStartEndCommandFactory: DateStartEndCommandFactory
-	dateStartEndCommandValidator: Validator<DateStartEndCommand>
-	dateStartEndValidator: Validator<DateStartEnd>
 	csrsService: CsrsService
 	organisationalUnitService: OrganisationalUnitService
 
 	constructor(
 		reportService: ReportService,
-		dateStartEndCommandFactory: DateStartEndCommandFactory,
-		dateStartEndCommandValidator: Validator<DateStartEndCommand>,
-		dateStartEndValidator: Validator<DateStartEnd>,
 		csrsService: CsrsService,
 		organisationalUnitService: OrganisationalUnitService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
 		this.reportService = reportService
-		this.dateStartEndCommandFactory = dateStartEndCommandFactory
-		this.dateStartEndCommandValidator = dateStartEndCommandValidator
-		this.dateStartEndValidator = dateStartEndValidator
 		this.csrsService = csrsService
 		this.organisationalUnitService = organisationalUnitService
 	}
 
 	private configureRouterPaths() {
-		this.router.get('/reporting', xss(), this.getReports())
-
-		this.router.post('/reporting/booking-information', xss(), this.generateReportBookingInformation())
-		this.router.post('/reporting/learner-record', xss(), this.generateReportLearnerRecord())
-
 		this.router.get('/reporting/course-completions/choose-organisation', xss(), this.getChooseOrganisationPage())
 		this.router.post('/reporting/course-completions/choose-organisation', xss(), this.submitOrganisationSelection())
-	}
-
-	getReports() {
-		return async (request: Request, response: Response) => {
-			response.render('page/reporting/index', {
-				placeholder: new PlaceholderDate(),
-			})
-		}
 	}
 
 	getChooseOrganisationPage() {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
-			
+
 			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
 				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
-				response.render('page/reporting/choose-organisation', {
+				response.render('page/reporting/courseCompletions/choose-organisation', {
 					firstOrganisationOption: {
 						name: organisationChoices.directOrganisation.name,
 						id: organisationChoices.directOrganisation.id
 					},
 					organisationListForTypeAhead: organisationChoices.typeaheadOrganisations,
-					showTypeaheadOption: userCanAccessMultipleOrganisations
+					showTypeaheadOption: userCanAccessMultipleOrganisations,
+					backButton: '/reporting'
 				})
 			}
 			else {
@@ -83,26 +59,25 @@ export class ReportingController {
 
 	submitOrganisationSelection() {
 		return async (request: Request, response: Response) => {
+			const session = fetchCourseCompletionSessionObject(request) || new CourseCompletionsSession()
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisation
-			let selectedCourseIds = request.body.courseIds
 
 			if (selectedOrganisationId === "other") {
 				selectedOrganisationId = request.body.organisationId
 			}
 
 			if (selectedOrganisationId) {
-				let organisationIdsForReporting = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
-				request.session!.selectedOrganisationIds = organisationIdsForReporting
-				request.session!.selectedCourseIds = selectedCourseIds	
-
 				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanAccessReportingForOrganisation(currentUser, selectedOrganisationId)) {
-					if (selectedCourseIds !== undefined) {
-						response.redirect(`/reporting/course-completions`)
-					}
-					else {
-						response.redirect(`/reporting/course-completions/choose-courses`)
-					}
+					session.selectedOrganisationId = +selectedOrganisationId
+					session.allOrganisationIds = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
+					saveCourseCompletionSessionObject(session, request, async () => {
+						if (session.hasSelectedCourses()) {
+							response.redirect(`/reporting/course-completions`)
+						} else {
+							response.redirect(`/reporting/course-completions/choose-courses`)
+						}
+					})
 
 				}
 				else {
@@ -117,87 +92,6 @@ export class ReportingController {
 				return request.session!.save(() => {
 					response.redirect('/reporting/course-completions/choose-organisation')
 				})
-			}
-		}
-	}
-
-	generateReportBookingInformation() {
-		return async (request: Request, response: Response, next: NextFunction) => {
-			const reportType = 'Booking_information_'
-			const filename = reportType.concat(moment().toISOString())
-
-			let data = {
-				...request.body,
-			}
-
-			const dateRangeCommand: DateStartEndCommand = this.dateStartEndCommandFactory.create(data)
-			const dateRange: DateStartEnd = dateRangeCommand.asDateRange()
-
-			const errors = await this.dateStartEndValidator.check(dateRange)
-			if (errors.size) {
-				request.session!.sessionFlash = { errors }
-				request.session!.save(() => {
-					response.redirect(`/reporting`)
-				})
-			} else {
-				try {
-					await this.reportService
-						.getReportBookingInformation(dateRange)
-						.then(report => {
-							response.writeHead(200, {
-								'Content-type': 'text/csv',
-								'Content-disposition': `attachment;filename=${filename}.csv`,
-								'Content-length': report.length,
-							})
-							response.end(Buffer.from(report, 'binary'))
-						})
-						.catch(error => {
-							next(error)
-						})
-				} catch (error) {
-					throw new Error(error)
-				}
-			}
-		}
-	}
-
-	generateReportLearnerRecord() {
-		return async (request: Request, response: Response, next: NextFunction) => {
-			const reportType = 'Learner_record_'
-			const filename = reportType.concat(moment().toISOString())
-
-			let data = {
-				...request.body,
-			}
-
-			const dateRangeCommand: DateStartEndCommand = this.dateStartEndCommandFactory.create(data)
-			const dateRange: DateStartEnd = dateRangeCommand.asDateRange()
-
-			const errors = await this.dateStartEndValidator.check(dateRange)
-
-			if (errors.size) {
-				request.session!.sessionFlash = { errors }
-				request.session!.save(() => {
-					response.redirect(`/reporting`)
-				})
-			} else {
-				try {
-					await this.reportService
-						.getReportLearnerRecord(dateRange)
-						.then(report => {
-							response.writeHead(200, {
-								'Content-type': 'text/csv',
-								'Content-disposition': `attachment;filename=${filename}.csv`,
-								'Content-length': report.length,
-							})
-							response.end(Buffer.from(report, 'binary'))
-						})
-						.catch(error => {
-							next(error)
-						})
-				} catch (error) {
-					throw new Error(error)
-				}
 			}
 		}
 	}
@@ -221,10 +115,10 @@ export class ReportingController {
 			.getOrgWithChildren(organisationId)
 
 		let allChildren: OrganisationalUnit[] | undefined = organisationWithChildren ? this.getAllChildOrganisations(organisationWithChildren) : undefined
-				
+
 		let childOrganisationIds = allChildren ? allChildren.map(child => child.id) : [organisationId]
 		childOrganisationIds = [...new Set(childOrganisationIds)]
-		
+
 		return childOrganisationIds
 	}
 

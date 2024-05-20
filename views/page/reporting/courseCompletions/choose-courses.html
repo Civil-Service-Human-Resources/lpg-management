@@ -1,0 +1,101 @@
+{% from "../../../component/reporting/macro.njk" import reporting with context %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "select/macro.njk" import govukSelect %}
+{% from "button/macro.njk" import govukButton %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.reporting.course_completions.title }} - {{ i18n.proposition_name }}{% endblock %}
+{% block content %}
+    {% set errors = sessionFlash.errors %}
+    {{ errorSummary(errors.fields, true) }}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-m">Reporting</span>
+    <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
+    <form method="post" action="/reporting/course-completions/choose-courses">
+        <div class="govuk-form-group">
+        {% set requiredLearningOptions = pageModel.requiredLearningList %}
+        {% if pageModel.requiredLearningList | length > 1 %}
+            {% set requiredLearningOptions = requiredLearningOptions.concat({
+                "divider": "or"
+            }) %}
+            {% set requiredLearningOptions = requiredLearningOptions.concat({
+                "value": "all",
+                "text": "All required learning",
+                "behaviour": "exclusive"
+            }) %}
+        {% endif %}
+        <input type='hidden' name='allRequiredLearning' value='{{ pageModel.allRequiredLearning }}'>
+      {% set requiredHtml %}
+        {{ govukCheckboxes({
+          name: "requiredLearning",
+          classes: "govuk-checkboxes--small",
+          fieldset: {
+            legend: {
+              text: "Required learning"
+            }
+          },
+          items: requiredLearningOptions
+        }) }}
+      {% endset -%}
+      {% set courseSearch %}
+        <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
+          <label class="govuk-label" for="courseSearch">All courses</label>
+          <div id="subject-hint" class="govuk-hint">
+              <span id="course-completions-js-hint" class='hidden'>Start typing to filter available courses.</span> You can select up to {{ pageModel.maxCoursesSelection}} courses.
+          </div>
+          <select id="courseSearch" name="courseSearch" class="govuk-input" aria-labelledby="courseSearch" multiple>
+              {% for course in pageModel.courseSearchList %}
+                  <option {% if  (pageModel.courseSearch or []).indexOf(course.value) > -1 %}selected{% endif %} value={{ course.value }}>{{ course.text }}</option>
+              {% endfor %}
+          </select>
+        </div>
+      {% endset -%}
+      {{ govukRadios({
+        name: "learning",
+        fieldset: {
+          legend: {
+            text: "What courses would you like to report on?",
+            classes: "govuk-fieldset__legend--s"
+          }
+        },
+        items: [
+          {
+            value: "requiredLearning",
+            text: "Required learning for " + pageModel.userDepartment,
+            conditional: {
+                html: requiredHtml
+            },
+            checked: true
+          },
+          {
+              value: "courseSearch",
+              text: "Search for courses",
+              conditional: {
+                  html: courseSearch
+              }
+          }
+        ]
+      }) }}
+        </div>
+        {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: true
+        }) }}
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script>
+		document.getElementById("course-completions-js-hint").className = ""
+    </script>
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script type="text/javascript" src="/js/main-bundle.js"></script>
+{% endblock %}

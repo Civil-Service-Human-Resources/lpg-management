@@ -36,6 +36,16 @@ export class OrganisationalUnit implements CacheableObject {
 	@Type(() => Domain)
 	domains: Domain[] = []
 
+	getFormattedName() {
+		const names = [this.name]
+		let currentParent = this.parent
+		while (currentParent) {
+			names.unshift(currentParent.name)
+			currentParent = currentParent.parent
+		}
+		return names.join(" | ")
+	}
+
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
 		this.abbreviation = pageModel.abbreviation
 		this.code = pageModel.code

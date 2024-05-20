@@ -8,6 +8,7 @@ import {CourseService} from 'lib/courseService'
 import {LinkModule} from '../../learning-catalogue/model/linkModule'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../../utils/logger'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -33,33 +34,7 @@ export class LinkModuleController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		let course: any
-
-		this.router.param('courseId', async (req, res, next, courseId) => {
-			course = await this.learningCatalogue.getCourse(courseId)
-			if (course) {
-				res.locals.course = course
-				next()
-			} else {
-				res.sendStatus(404)
-			}
-		})
-		this.router.param('moduleId', async (req, res, next, moduleId) => {
-			if (course) {
-				const module = this.courseService.getModuleByModuleId(course, moduleId)
-				if (module) {
-					const duration = moment.duration(module.duration, 'seconds')
-					res.locals.module = module
-					res.locals.module.hours = duration.hours()
-					res.locals.module.minutes = duration.minutes()
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			} else {
-				res.sendStatus(404)
-			}
-		})
+		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.addLinkModule()))
 		this.router.get('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.addLinkModule()))
 		this.router.post('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.setLinkModule()))
