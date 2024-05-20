@@ -8,4 +8,4 @@ COPY views ./views
 
 EXPOSE 3005
 
-CMD ["node", "dist/build/src/server.js"]
+CMD ["node", "dist/server.js"]
