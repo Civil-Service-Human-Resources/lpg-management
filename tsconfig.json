@@ -9,7 +9,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "outDir": "./dist/build",
+    "outDir": "./dist",
     "paths": {
       "lib/*": ["src/lib/*"]
     },
@@ -21,5 +21,5 @@
     "strictNullChecks": true,
     "target": "ESNext"
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["./src/**/*"]
 }
