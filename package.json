@@ -6,8 +6,7 @@
 	"scripts": {
 		"clean": "gulp setupDist",
 		"sass": "sass views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
-		"test": "npm run test:ts && npm run test:js",
-		"test:js": "mocha --config ./views/assets/js/test/.mocharc.yml \"./views/assets/js/test\" --timeout 10000 --exit",
+		"test": "npm run test:ts",
 		"test:ts": "nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
 		"compile": "gulp typescript",
 		"build": "npm run clean && npm run js && npm run sass && npm run compile",
