@@ -9,6 +9,7 @@ pyhome/
 *.css
 *.css.map
 *.js.map
+/views/assets/js/main-bundle.min.js
 yarn.lock
 files
 data.json
