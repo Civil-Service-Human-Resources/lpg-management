@@ -1,7 +1,7 @@
 {% from "tabs/macro.njk" import govukTabs %}
 {% from "table/macro.njk" import govukTable %}
 
-<div class='chart-container'>
+<div class='chart-container govuk-visually-hidden'>
     <script data-chart='settings' type="json">{{settings|dump|safe}}</script>
     {% set chartHtml %}
         <h2 class="govuk-heading-s">Chart</h2>
@@ -12,7 +12,6 @@
         {{ govukTable({
             firstCellIsHeader: true,
             caption: table.caption,
-            captionClasses: "govuk-table__caption--s",
             head: table.headings,
             rows: table.rows
         }) }}
@@ -36,3 +35,6 @@
         ]
     }) }}
 </div>
+<noscript>
+    {{ tableHtml | safe }}
+</noscript>

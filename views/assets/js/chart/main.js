@@ -7,6 +7,7 @@ for (const chartElem of charts) {
 	const chartOptionsTag = chartElem.querySelector("[data-chart='settings']");
 	const chartCanvasTag = chartElem.querySelector("[data-chart='canvas']");
 	if (chartOptionsTag != null && chartCanvasTag != null) {
+		chartElem.classList.remove("govuk-visually-hidden")
 		const w = chartElem.getBoundingClientRect()
 		chartElem.width = w.width
 		chartElem.height = w.height
