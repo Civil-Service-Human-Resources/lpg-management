@@ -3,6 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "../../../component/chart/macro.njk" import renderChart %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "table/macro.njk" import govukTable %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends "../../../component/Page.njk" %}
@@ -14,6 +15,12 @@
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
     {{ renderChart("course-completions", pageModel.table, pageModel.chart) }}
+    <h2 class='govuk-heading-m'>Course breakdown</h2>
+      {{ govukTable({
+        firstCellIsHeader: true,
+        head: courseBreakdown.headings,
+        rows: courseBreakdown.rows
+      }) }}
   </div>
 </div>
 {% endblock %}

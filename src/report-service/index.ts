@@ -52,6 +52,8 @@ export class ReportService {
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
 		const tableModel = this.chartService.buildTableFromChartData(chartJsConfig,
 			"Number of completions", "Completions")
+		// const courseIdsToTitles = this.courseService.getCourseTitlesForIds(Array.from(chart.courseBreakdown.keys()))
+		// const courseBreajddawdfasfkjnhsadfkun
 		return new CourseCompletionsGraphModel(chartJsConfig, tableModel)
 	}
 }

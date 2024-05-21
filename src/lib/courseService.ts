@@ -13,6 +13,15 @@ export class CourseService {
 		this.learningCatalogue = learningCatalogue
 	}
 
+	async getCourseTitlesForIds(courseIds: string[]): Promise<Map<string, string>> {
+		return new Map((await this.learningCatalogue.getCourseTypeAhead()).typeahead
+			.filter(c => courseIds.includes(c.value))
+			.map(c => {
+				return [c.value, c.text]
+			}
+		))
+	}
+
 	async getCourseDropdown() {
 		return (await this.learningCatalogue.getCourseTypeAhead()).typeahead
 	}
