@@ -1,12 +1,21 @@
 {% from "tabs/macro.njk" import govukTabs %}
+{% from "table/macro.njk" import govukTable %}
 
 <div class='chart-container'>
     <script data-chart='settings' type="json">{{settings|dump|safe}}</script>
     {% set chartHtml %}
         <h2 class="govuk-heading-s">Chart</h2>
-        <div class="govuk-!-padding-bottom-8">
-            <canvas class='chart' tabindex="0" data-chart='canvas' id="{{ id }}"></canvas>
-        </div>
+        <canvas class='chart' tabindex="0" data-chart='canvas' id="{{ id }}"></canvas>
+    {% endset -%}
+    {% set tableHtml %}
+        <h2 class="govuk-heading-s">Table</h2>
+        {{ govukTable({
+            firstCellIsHeader: true,
+            caption: table.caption,
+            captionClasses: "govuk-table__caption--s",
+            head: table.headings,
+            rows: table.rows
+        }) }}
     {% endset -%}
     {{ govukTabs({
         items: [
@@ -15,6 +24,13 @@
                 id: "chart",
                 panel: {
                     html: chartHtml
+                }
+            },
+            {
+                label: "Table",
+                id: "table",
+                    panel: {
+                    html: tableHtml
                 }
             }
         ]

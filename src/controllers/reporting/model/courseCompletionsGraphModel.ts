@@ -1,7 +1,6 @@
 import { ChartjsConfig} from '../../../report-service/model/chartjsConfig'
+import {TablePageModel} from './tablePageModel'
 
 export class CourseCompletionsGraphModel {
-	constructor(public chart: ChartjsConfig) {
-		this.chart = chart
-	}
+	constructor(public chart: ChartjsConfig, public table: TablePageModel) { }
 }

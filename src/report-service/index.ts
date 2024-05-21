@@ -8,6 +8,7 @@ import {GetCourseAggregationParameters} from './model/getCourseAggregationParame
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 import {CslServiceClient} from '../csl-service/client'
 import {ChartService} from './chartService'
+import {TablePageModel} from '../controllers/reporting/model/tablePageModel'
 
 export class ReportService {
 
@@ -50,6 +51,11 @@ export class ReportService {
 	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters): Promise<CourseCompletionsGraphModel> {
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
-		return new CourseCompletionsGraphModel(chartJsConfig)
+		const tableModel = new TablePageModel(
+	"Number of completions", [{text: chartJsConfig.xAxisSettings.tableHeader}, {text: "Completions"}],
+			chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString()}])
+		)
+		console.log(tableModel)
+		return new CourseCompletionsGraphModel(chartJsConfig, tableModel)
 	}
 }
