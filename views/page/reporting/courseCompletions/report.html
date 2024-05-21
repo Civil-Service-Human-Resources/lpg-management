@@ -13,7 +13,14 @@
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
-    {{ renderChart("course-completions", pageModel.table, pageModel.chart) }}
+    {% set table = {
+      "caption": "Number of completions",
+      "headings": [
+        {"text": pageModel.chart.xAxisSettings.tableHeader}, {"text": "Completions"}
+      ],
+      "rows": pageModel.table
+    } %}
+    {{ renderChart("course-completions", table, pageModel.chart) }}
   </div>
 </div>
 {% endblock %}

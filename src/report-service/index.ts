@@ -50,8 +50,7 @@ export class ReportService {
 	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters): Promise<CourseCompletionsGraphModel> {
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
-		const tableModel = this.chartService.buildTableFromChartData(chartJsConfig,
-			"Number of completions", "Completions")
+		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString()}])
 		return new CourseCompletionsGraphModel(chartJsConfig, tableModel)
 	}
 }
