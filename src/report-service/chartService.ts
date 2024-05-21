@@ -4,6 +4,7 @@ import {Dayjs} from 'dayjs'
 import {Increment} from './model/incremement'
 import {XAxisSettings} from './model/xAxisSettings'
 import {ConfigSettings} from './model/configSettings'
+import {TablePageModel} from '../controllers/reporting/model/tablePageModel'
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
@@ -16,6 +17,13 @@ export class ChartService {
 
 	getTimezonedDayJs(...obj: any[]) {
 		return dayjs(...obj).tz()
+	}
+
+	buildTableFromChartData(chartJSConfig: ChartjsConfig, caption: string, countColumnHeader: string): TablePageModel {
+		return new TablePageModel(
+			caption, [{text: chartJSConfig.xAxisSettings.tableHeader}, {text: countColumnHeader}],
+			chartJSConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString()}])
+		)
 	}
 
 	buildLabels(startDate: Dayjs, endDate: Dayjs, increment: Increment) {
