@@ -1,2 +1,0 @@
-# import 'reflect-metadata'
-require: 'esbuild-runner/register'

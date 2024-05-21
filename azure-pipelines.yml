@@ -37,7 +37,7 @@ steps:
     displayName: 'Test'
     inputs:
       command: 'custom'
-      customCommand: 'run test'
+      customCommand: 'run test:ts'
 
   - task: Npm@1
     displayName: 'Build'
