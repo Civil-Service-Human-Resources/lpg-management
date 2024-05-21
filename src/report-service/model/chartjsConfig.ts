@@ -1,6 +1,8 @@
-import {DataPoint} from './dataPoint'
+import {PageModelDataPoint} from './dataPoint'
+import {XAxisSettings} from './xAxisSettings'
 
 export class ChartjsConfig {
-	constructor(public startDate: string, public endDate: string, public data: DataPoint[]) {
+	constructor(public labels: number[], public xAxisSettings: XAxisSettings,
+				public data: PageModelDataPoint[]) {
 	}
 }

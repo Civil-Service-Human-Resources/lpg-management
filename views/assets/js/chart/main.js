@@ -1,11 +1,5 @@
 import Chart from 'chart.js/auto'
 import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm'
-import {
-	buildLabels,
-	convertRawDataToTable, formatRawConfig,
-	getConfigurationSettings,
-	mapLabelsToDataTable,
-} from './funcs'
 
 const charts = document.getElementsByClassName('chart-container')
 
@@ -13,21 +7,17 @@ for (const chart of charts) {
 	const chartOptionsTag = chart.querySelector("[data-chart='settings']");
 	const chartCanvasTag = chart.querySelector("[data-chart='canvas']");
 	if (chartOptionsTag != null && chartCanvasTag != null) {
-		const rawConfig = formatRawConfig(JSON.parse(chartOptionsTag.innerHTML))
-		const config = getConfigurationSettings(rawConfig.startDate, rawConfig.endDate)
-		const labels = buildLabels(config.startDate, config.endDate, config.increment)
-		const tableData = convertRawDataToTable(rawConfig.rawData)
-		const data = mapLabelsToDataTable(labels, tableData)
+		const config = JSON.parse(chartOptionsTag.innerHTML)
 		let chart = new Chart(
 			chartCanvasTag,
 			{
 				type: 'line',
 				data: {
-					labels,
+					labels: config.labels,
 					datasets: [
 						{
 							label: '# of courses completed',
-							data: data,
+							data: config.data,
 							borderColor: "#1d70b8",
 							backgroundColor: "#1d70b8",
 							borderWidth: 1,

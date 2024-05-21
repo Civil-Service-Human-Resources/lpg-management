@@ -23,6 +23,10 @@ function set<T>(defaultValue: T, envValues: Record<string, T> = {}): T {
 	return val
 }
 
+function getBoolean(rawValue: string) {
+	return rawValue !== undefined ? rawValue === 'true' : false
+}
+
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
 export const APPLICATIONINSIGHTS_CONNECTION_STRING = env.APPLICATIONINSIGHTS_CONNECTION_STRING
@@ -71,12 +75,13 @@ export const YOUTUBE = set({
 
 export const COURSE_CATALOGUE = set({
 	url: env.COURSE_CATALOGUE_URL || 'http://localhost:9001',
-	timeout: Number(env.COURSE_CATALOGUE_TIMEOUT_MS)
+	timeout: Number(env.COURSE_CATALOGUE_TIMEOUT_MS),
+	detailedLogs: getBoolean(env.COURSE_CATALOGUE_DETAILED_LOGS)
 })
 
 export const HTTP_SETTINGS = set({
-	globalEnableDetailLogs: Boolean(env.GLOBAL_ENABLE_DETAILED_HTTP_LOGS || false),
-	requestLogging: Boolean(env.REQUEST_LOGGING || false)
+	globalEnableDetailLogs: getBoolean(env.GLOBAL_ENABLE_DETAILED_HTTP_LOGS),
+	requestLogging: getBoolean(env.REQUEST_LOGGING)
 })
 
 export const LEARNER_RECORD = set({
@@ -87,7 +92,7 @@ export const LEARNER_RECORD = set({
 export const CSL_SERVICE = set({
 	url: env.CSL_SERVICE_URL || 'http://localhost:9003',
 	timeout: Number(env.CSL_SERVICE_TIMEOUT_MS),
-	detailedLogs: Boolean(env.CSL_SERVICE_DETAILED_LOGS || false)
+	detailedLogs: getBoolean(env.CSL_SERVICE_DETAILED_LOGS)
 })
 
 export const REGISTRY_SERVICE = set({
@@ -96,7 +101,7 @@ export const REGISTRY_SERVICE = set({
 })
 
 export const REPORT_SERVICE = set({
-	detailedLogs: Boolean(env.REPORT_SERVICE_DETAILED_LOGS) || false,
+	detailedLogs: getBoolean(env.REPORT_SERVICE_DETAILED_LOGS),
 	url: env.REPORT_SERVICE_URL || 'http://localhost:9004',
 	timeout: Number(env.REPORT_SERVICE_TIMEOUT_MS)
 })

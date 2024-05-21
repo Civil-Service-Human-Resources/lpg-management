@@ -12,7 +12,7 @@
 		"compile": "gulp typescript",
 		"build": "npm run clean && npm run js && npm run sass && npm run compile",
 		"dev": "nodemon src/server.ts",
-		"js": "esbuild views/assets/js/main.js --bundle --minify --sourcemap --outfile=views/assets/js/main-bundle.js",
+		"js": "esbuild views/assets/js/main.js --bundle --minify --sourcemap --outfile=views/assets/js/main-bundle.min.js",
 		"watch-js": "npm run js -- --watch",
 		"watch-sass": "sass --watch views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
 		"start": "node dist/server.js",

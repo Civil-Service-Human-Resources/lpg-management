@@ -80,6 +80,7 @@ export class CourseCompletionsController extends Controller {
 			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
 			const courseIds = pageModel.getCourseIdsFromSelection()
 			if (!await this.reportService.validateCourseSelections(courseIds)) {
+				this.logger.debug("Course selections were invalid")
 				const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
 				request.session!.sessionFlash = {
 					error,
