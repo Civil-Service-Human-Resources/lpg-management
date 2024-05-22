@@ -1,7 +1,7 @@
 import {ChartjsConfig} from './model/chartjsConfig'
 import {DataPoint, PageModelDataPoint} from './model/dataPoint'
 import {Dayjs} from 'dayjs'
-import {Increment} from './model/incremement'
+import {Increment} from './model/increment'
 import {XAxisSettings} from './model/xAxisSettings'
 import {ConfigSettings} from './model/configSettings'
 var dayjs = require('dayjs')

@@ -1,5 +1,5 @@
 import {Dayjs} from 'dayjs'
-import {Increment} from './incremement'
+import {Increment} from './increment'
 import {XAxisSettings} from './xAxisSettings'
 
 export class ConfigSettings {
