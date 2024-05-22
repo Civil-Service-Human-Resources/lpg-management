@@ -1,17 +1,11 @@
-FROM node:16.17
+FROM node:16.17-alpine
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /workspace/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
-
-RUN npm install
-
-# Bundle app source
-COPY . .
+COPY node_modules ./node_modules
+COPY dist ./dist
+COPY views ./views
 
 EXPOSE 3005
-CMD [ "npm", "start" ]
+
+CMD ["node", "dist/server.js"]

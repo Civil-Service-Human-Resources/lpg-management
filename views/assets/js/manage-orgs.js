@@ -1,9 +1,11 @@
 const accessibleAutocomplete = require('./accessible-autocomplete.min')
 
 var selectEl = document.querySelector('#parent')
-accessibleAutocomplete.enhanceSelectElement({
-	selectElement: selectEl,
-})
+if (selectEl !== null) {
+	accessibleAutocomplete.enhanceSelectElement({
+		selectElement: selectEl,
+	})
+}
 
 var queryStringParameters = window.location.search
 var previouslySubmitted = queryStringParameters.length > 0

@@ -22,8 +22,7 @@ export class JsonRestService {
 		this._http.interceptors.request.use((conf: AxiosRequestConfig) => {
 			const req = conf
 			if (config.detailedLogs) {
-				console.log("Logging detailed logs")
-				let logMsg = `Outgoing ${req.method} request to ${req.url}`
+				let logMsg = `Outgoing ${req.method} request to ${config.url}${req.url}`
 				if (req.data) {
 					const stringedData = JSON.stringify(req.data)
 					logMsg += ` Data: ${stringedData}`

@@ -1,0 +1,22 @@
+{% from "tabs/macro.njk" import govukTabs %}
+
+<div class='chart-container'>
+    <script data-chart='settings' type="json">{{settings|dump|safe}}</script>
+    {% set chartHtml %}
+        <h2 class="govuk-heading-s">Chart</h2>
+        <div class="govuk-!-padding-bottom-8">
+            <canvas class='chart' tabindex="0" data-chart='canvas' id="{{ id }}"></canvas>
+        </div>
+    {% endset -%}
+    {{ govukTabs({
+        items: [
+            {
+                label: "Chart",
+                id: "chart",
+                panel: {
+                    html: chartHtml
+                }
+            }
+        ]
+    }) }}
+</div>

@@ -25,4 +25,5 @@ export class ReportServiceClient {
 	async getReportLearnerRecord(dateRange: DateStartEnd): Promise<string> {
 		return await this.getReport(this.MODULES_URL, dateRange)
 	}
+
 }

@@ -1,7 +1,7 @@
 import {HTTP_SETTINGS} from '../../config/index'
 import {RestServiceConfig} from '../../lib/http/restServiceConfig'
 
-const globalDetailedLogs = HTTP_SETTINGS.global_enable_detail_logs
+const globalDetailedLogs = HTTP_SETTINGS.globalEnableDetailLogs
 
 export function createConfig(rawSettings: {url: string, timeout: number, detailedLogs?: boolean}) {
 	const useDetailedLogs = globalDetailedLogs ? globalDetailedLogs : rawSettings.detailedLogs || false

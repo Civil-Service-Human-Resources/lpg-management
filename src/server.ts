@@ -41,7 +41,7 @@ const reportService = buildReportService(createConfig({
 	url: config.REPORT_SERVICE.url,
 	timeout: config.REPORT_SERVICE.timeout,
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
-}), ctx.auth, ctx.courseService, ctx.organisationalUnitService)
+}), ctx.auth, ctx.courseService, ctx.organisationalUnitService, ctx.cslService)
 
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
