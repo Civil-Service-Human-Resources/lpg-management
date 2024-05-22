@@ -1,7 +1,7 @@
 var dayjs = require('dayjs')
 import {expect} from 'chai'
 import {ChartService} from '../../../src/report-service/chartService'
-import {Increment} from '../../../src/report-service/model/incremement'
+import {Increment} from '../../../src/report-service/model/increment'
 
 describe('ChartJS implementation tests', () => {
 	const chartService = new ChartService()
