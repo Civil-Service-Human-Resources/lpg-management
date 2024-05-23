@@ -4,6 +4,7 @@ import {Type} from 'class-transformer'
 export class Chart {
 	@Type(() => DataPoint)
 	public chart: DataPoint[];
+	@Type(() => Map)
 	public courseBreakdown: Map<string, number>;
 	public total: number;
 
