@@ -3,10 +3,15 @@ import 'chartjs-adapter-dayjs-4/dist/chartjs-adapter-dayjs-4.esm'
 
 const charts = document.getElementsByClassName('chart-container')
 
-for (const chart of charts) {
-	const chartOptionsTag = chart.querySelector("[data-chart='settings']");
-	const chartCanvasTag = chart.querySelector("[data-chart='canvas']");
+for (const chartElem of charts) {
+	const chartOptionsTag = chartElem.querySelector("[data-chart='settings']");
+	const chartCanvasTag = chartElem.querySelector("[data-chart='canvas']");
 	if (chartOptionsTag != null && chartCanvasTag != null) {
+		chartElem.classList.remove("hidden")
+		const w = chartElem.getBoundingClientRect()
+		chartElem.width = w.width
+		chartElem.height = w.height
+		chartElem.position = "relative"
 		const config = JSON.parse(chartOptionsTag.innerHTML)
 		let chart = new Chart(
 			chartCanvasTag,
@@ -26,7 +31,7 @@ for (const chart of charts) {
 					]
 				},
 				responsive: true,
-				maintainAspectRatio: true,
+				maintainAspectRatio: false,
 				options: {
 					hover: {
 						mode: 'nearest',
