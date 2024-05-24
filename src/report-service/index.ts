@@ -51,16 +51,10 @@ export class ReportService {
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
 		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString()}])
-		const courseBreakdown: {text: string}[][] = []
-		const courseIdMap = await this.courseService.getCourseTitlesForIds(params.courseIds)
-		courseIdMap.forEach((title, id) => {
-			const count = chart.courseBreakdown.get(id)
-			courseBreakdown.push([
-				{text: title}, {text: (count !== undefined ? count : 0).toString()}
-			])
-		})
 		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
-		courseBreakdown.sort((a, b) => { return collator.compare(a[0].text, b[0].text!)})
+		const courseBreakdown = Array.from(chart.courseBreakdown).map(([title, count]) => {
+			return [{text: title}, {text: count.toString()}]
+		}).sort((a, b) => { return collator.compare(a[0].text, b[0].text!)})
 		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString()}])
 		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown)
 	}
