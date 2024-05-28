@@ -4,6 +4,7 @@
 {% from "../../../component/chart/macro.njk" import renderChart %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "table/macro.njk" import govukTable %}
 
 {% extends "../../../component/Page.njk" %}
 
@@ -21,6 +22,12 @@
       "rows": pageModel.table
     } %}
     {{ renderChart("course-completions", table, pageModel.chart) }}
+    <h2 class='govuk-heading-m'>Course breakdown</h2>
+    {{ govukTable({
+      firstCellIsHeader: true,
+      head: [{text: "Course Title"}, {text: "Completions", classes: "govuk-!-width-one-quarter"}],
+      rows: pageModel.courseBreakdown
+    }) }}
   </div>
 </div>
 {% endblock %}
