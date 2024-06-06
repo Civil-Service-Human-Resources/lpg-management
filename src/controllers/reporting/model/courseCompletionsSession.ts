@@ -1,5 +1,5 @@
 export class CourseCompletionsSession {
-	constructor(public selectedOrganisationId?: number, public allOrganisationIds?: number[], public courseIds?: string[]) { }
+	constructor(public selectedOrganisationId?: number, public allOrganisationIds?: number[], public courseIds?: string[], public chartData?: {text: string}[][]) { }
 
 	hasSelectedOrganisations() {
 		return this.selectedOrganisationId !== undefined &&

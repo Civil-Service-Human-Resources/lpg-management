@@ -7,6 +7,7 @@ import {CourseCompletionsController} from '../../../../src/controllers/reporting
 import {BasicCourse, ChooseCoursesModel} from '../../../../src/controllers/reporting/model/chooseCoursesModel'
 import {CourseCompletionsSession} from '../../../../src/controllers/reporting/model/courseCompletionsSession'
 import {REPORTING} from '../../../../src/config'
+import * as moment from 'moment'
 
 describe('courseCompletionsController tests', () => {
 	let reportService: sinon.SinonStubbedInstance<ReportService> = sinon.createStubInstance(ReportService)
@@ -143,7 +144,50 @@ describe('courseCompletionsController tests', () => {
 				expect(res.status).to.eql(302)
 				expect(res.headers['location']).to.eql("/reporting/course-completions")
 			})
+
+			describe('Download chart as CSV', () => {
+				it('should download a CSV file', async () => {
+					const momentIsoStringStub = sinon.stub(moment.prototype, 'toISOString').returns('2024-06-06T11_08_50.592Z')
+		
+					const res = await session(app)
+					.post("/reporting/course-completions/chart-csv")
+					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
+						.send()
+		
+					expect(res.status).to.eql(200)
+					expect(res.type).to.eql('text/csv')
+					expect(res.headers['content-disposition']).to.contain(`attachment;filename=course-completions-2024-06-06T11_08_50.592Z.csv`)
+		
+					momentIsoStringStub.restore()
+				})
+
+				it('should throw Unauthorised if chart CSV requested without a role', async () => {
+					const res = await session(app)
+					.post("/reporting/course-completions/chart-csv")
+						.send()
+
+					expect(res.status).to.eql(401)
+				})
+
+				it('getCsvContentFromChartData returns the CSV text correctly from chart data', () => {
+					const chartData: {text: string} [][] = [
+						[{text: "1AM"}, {text: "0"}],
+						[{text: "2AM"}, {text: "1"}],
+						[{text: "3AM"}, {text: "2"}]
+					]
+
+					const expectedCSV = `"time","completions"
+"1AM",0
+"2AM",1
+"3AM",2`
+					const actualCSV = controller.getCsvContentFromChartData(chartData)
+
+					expect(actualCSV).to.be.eql(expectedCSV)
+				})
+			})
+			
 		})
+		
 	})
 
 })
