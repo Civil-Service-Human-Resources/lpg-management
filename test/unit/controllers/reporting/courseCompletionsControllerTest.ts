@@ -168,22 +168,6 @@ describe('courseCompletionsController tests', () => {
 
 					expect(res.status).to.eql(401)
 				})
-
-				it('getCsvContentFromChartData returns the CSV text correctly from chart data', () => {
-					const chartData: {text: string} [][] = [
-						[{text: "1AM"}, {text: "0"}],
-						[{text: "2AM"}, {text: "1"}],
-						[{text: "3AM"}, {text: "2"}]
-					]
-
-					const expectedCSV = `"time","completions"
-"1AM",0
-"2AM",1
-"3AM",2`
-					const actualCSV = controller.getCsvContentFromChartData(chartData)
-
-					expect(actualCSV).to.be.eql(expectedCSV)
-				})
 			})
 			
 		})

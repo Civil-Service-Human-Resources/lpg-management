@@ -10,6 +10,7 @@ import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} f
 import {GetCourseAggregationParameters} from '../../report-service/model/getCourseAggregationParameters'
 import moment = require('moment')
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
+import { getCsvContentFromData } from 'src/utils/dataToCsv'
 
 export class CourseCompletionsController extends Controller {
 
@@ -109,29 +110,17 @@ export class CourseCompletionsController extends Controller {
 	public downloadDataAsCsv(){
 		return async (request: Request, response: Response) => {
 			const session: CourseCompletionsSession | undefined = fetchCourseCompletionSessionObject(request)
+			
 			const chartData: {text: string}[][] | undefined = session?.chartData
-
-			const csvContent: string | undefined = chartData ? this.getCsvContentFromChartData(chartData) : undefined
+			const fields = [
+				{name: "time", type: "text"},
+				{name: "completions", type: "number"}
+			]
+			const csvContent = chartData ? getCsvContentFromData(chartData, fields) : ""
 			
 			response.writeHead(200, this.getCsvResponseHeaders())
 			response.end(csvContent)
 		}
-	}
-
-	public getCsvContentFromChartData(chartData: {text: string}[][]){
-		const csvLines = chartData.map((row: any) => {
-			const time = row[0].text
-			const completions = row[1].text
-
-			const csvLine = `"${time}",${completions}`
-			return csvLine
-		})
-
-		csvLines?.unshift(`"time","completions"`)
-
-		const csvContent: string | undefined = csvLines?.join("\n")
-
-		return csvContent
 	}
 
 	private getCsvResponseHeaders(){
