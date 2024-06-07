@@ -8,9 +8,9 @@ import {Controller} from '../controller'
 import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
 import {GetCourseAggregationParameters} from '../../report-service/model/getCourseAggregationParameters'
-import moment = require('moment')
+import * as moment from 'moment'
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
-import { getCsvContentFromData } from 'src/utils/dataToCsv'
+import { getCsvContentFromData } from '../../utils/dataToCsv'
 
 export class CourseCompletionsController extends Controller {
 
