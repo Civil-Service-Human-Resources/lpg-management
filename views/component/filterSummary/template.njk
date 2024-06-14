@@ -1,0 +1,19 @@
+{% from "./filterSummaryRow/macro.njk" import filterSummaryRow %}
+
+{% macro rows(rows) %}
+    <div class='filter-summary__rows'>
+        {% for row in rows %}
+            {{ filterSummaryRow(row["summaryText"], row["tags"], row['submitUrl'], row['changeLink'], row['changeText']) }}
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+<div class='filter-summary__container'>
+    {% if options['submitUrl'] %}
+        <form action='{{ options['submitUrl'] }}' method='post'>
+            {{ rows(options['rows']) }}
+        </form>
+    {% else %}
+        {{ rows(options['rows']) }}
+    {% endif %}
+</div>
