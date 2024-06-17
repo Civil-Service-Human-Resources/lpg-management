@@ -64,12 +64,12 @@ export class CourseCompletionsController extends Controller {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
 			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(GetCourseAggregationParameters.createForDay(
-				session.courseIds!, session!.allOrganisationIds!.map(n => n.toString())
-			))
-			
+				session.getCourseIds(), session!.allOrganisationIds!.map(n => n.toString())
+			), session)
+
 			session.chartData = pageModel.table
 			saveCourseCompletionSessionObject(session, request, () => {})
-			
+
 			response.render('page/reporting/courseCompletions/report', {pageModel,
 				backButton: '/reporting/course-completions/choose-courses'})
 		}
@@ -89,7 +89,8 @@ export class CourseCompletionsController extends Controller {
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
 			const courseIds = pageModel.getCourseIdsFromSelection()
-			if (!await this.reportService.validateCourseSelections(courseIds)) {
+			const selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
+			if (selectedCourses.length !== courseIds.length) {
 				this.logger.debug("Course selections were invalid")
 				const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
 				request.session!.sessionFlash = {
@@ -100,7 +101,7 @@ export class CourseCompletionsController extends Controller {
 				})
 			}
 			const session = fetchCourseCompletionSessionObject(request)!
-			session.courseIds = courseIds
+			session.courses = selectedCourses
 			saveCourseCompletionSessionObject(session, request, async () => {
 				response.redirect('/reporting/course-completions')
 			})
@@ -110,14 +111,14 @@ export class CourseCompletionsController extends Controller {
 	public downloadDataAsCsv(){
 		return async (request: Request, response: Response) => {
 			const session: CourseCompletionsSession | undefined = fetchCourseCompletionSessionObject(request)
-			
+
 			const chartData: {text: string}[][] | undefined = session?.chartData
 			const fields = [
 				{name: "time", type: "text"},
 				{name: "completions", type: "number"}
 			]
 			const csvContent = chartData ? getCsvContentFromData(chartData, fields) : ""
-			
+
 			response.writeHead(200, this.getCsvResponseHeaders())
 			response.end(csvContent)
 		}

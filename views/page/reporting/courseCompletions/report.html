@@ -27,7 +27,7 @@
     <h2 class='govuk-heading-m'>Course breakdown</h2>
     {{ govukTable({
       firstCellIsHeader: true,
-      head: [{text: "Course Title"}, {text: "Completions", classes: "govuk-!-width-one-quarter"}],
+      head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
       rows: pageModel.courseBreakdown
     }) }}
 

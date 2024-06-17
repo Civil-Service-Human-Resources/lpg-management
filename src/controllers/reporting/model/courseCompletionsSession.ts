@@ -1,5 +1,5 @@
 export class CourseCompletionsSession {
-	constructor(public selectedOrganisationId?: number, public allOrganisationIds?: number[], public courseIds?: string[], public chartData?: {text: string}[][]) { }
+	constructor(public selectedOrganisationId?: number, public allOrganisationIds?: number[], public courses?: {name: string, id: string}[], public chartData?: {text: string}[][]) { }
 
 	hasSelectedOrganisations() {
 		return this.selectedOrganisationId !== undefined &&
@@ -8,6 +8,10 @@ export class CourseCompletionsSession {
 	}
 
 	hasSelectedCourses() {
-		return this.courseIds !== undefined && this.courseIds.length > 0
+		return this.courses !== undefined && this.courses.length > 0
+	}
+
+	getCourseIds() {
+		return (this.courses || []).map(course => course.id)
 	}
 }

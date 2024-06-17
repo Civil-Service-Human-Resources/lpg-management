@@ -12,9 +12,9 @@ export class ChooseCoursesModel {
 	@Exclude()
 	public userDepartment: string;
 	@Exclude()
-	public requiredLearningList: BasicCourse[]
+	public requiredLearningList: BasicCoursePageModel[]
 	@Exclude()
-	public courseSearchList: BasicCourse[]
+	public courseSearchList: BasicCoursePageModel[]
 
 	// input attributes
 	public learning: string
@@ -51,7 +51,8 @@ export class ChooseCoursesModel {
 	})
 	public courseSearch: string[]
 
-	constructor(userDepartment: string, requiredLearningList: BasicCourse[] = [], courseSearchList: BasicCourse[] = []) {
+	constructor(userDepartment: string, requiredLearningList: BasicCoursePageModel[] = [],
+				courseSearchList: BasicCoursePageModel[] = []) {
 		this.userDepartment = userDepartment
 		this.requiredLearningList = requiredLearningList
 		this.allRequiredLearning = requiredLearningList.map(c => c.value).join(",")
@@ -71,6 +72,6 @@ export class ChooseCoursesModel {
 
 }
 
-export class BasicCourse {
+export class BasicCoursePageModel {
 	constructor(public value: string, public text: string) {}
 }
