@@ -19,7 +19,6 @@
 }
 
 .filter-summary__tag {
-  font-family: "GDS Transport", arial, sans-serif;
   border: 1px solid black;
   background: #f3f2f1;
   color: black;
@@ -27,7 +26,6 @@
   @include govuk-responsive-margin(1, "top");
   @include govuk-responsive-margin(1, "bottom");
   @include govuk-responsive-margin(1, "right");
-  /*   border: 1px black solid; */
   border-radius: 0.3rem;
 
   button {
