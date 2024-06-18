@@ -24,7 +24,8 @@ export enum Role {
 	MANAGE_CALL_OFF_PO = 'MANAGE_CALL_OFF_PO',
 	ORGANISATION_REPORTER = 'ORGANISATION_REPORTER',
 	PROFESSION_MANAGER = 'PROFESSION_MANAGER',
-	PROFESSION_REPORTER = 'PROFESSION_REPORTER'
+	PROFESSION_REPORTER = 'PROFESSION_REPORTER',
+	MVP_REPORTER = 'MVP_REPORTER'
 }
 
 export class Identity {
@@ -74,6 +75,10 @@ export class Identity {
 			Role.PROFESSION_MANAGER,
 			Role.PROFESSION_REPORTER
 		])
+	}
+
+	isMVPReporter() {
+		return this.hasRole(Role.MVP_REPORTER) && (this.isOrganisationReporter() || this.isCshrReporter())
 	}
 
 	hasEventViewingRole() {
@@ -143,6 +148,12 @@ export class Identity {
 
 	hasLearningArchive() {
 		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
+	}
+
+	isReporter() {
+		return this.isCshrReporter() || this.isProfessionReporter() ||
+			this.isOrganisationReporter() || this.isKPMGSupplierReporter() ||
+			this.isKornferrySupplierReporter();
 	}
 
 	isLearner() {

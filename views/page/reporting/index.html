@@ -15,6 +15,17 @@
             <h1 class="govuk-heading-l">Reporting</h1>
             <div class="reports-container">
                 <ul class="list">
+                    {% if identity.isMVPReporter() %}
+                        <li class="course list-details u--border--bgrey">
+                            <div class="course-details">
+                                <h2 class="govuk-heading-m">Course completions dashboard</h2>
+                                <div class="govuk-body no-margin">
+                                    <p>View a summary of total completed learning for your department.</p>
+                                    <p><a href='/reporting/course-completions/choose-organisation'>Course completions dashboard</a></p>
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
                     <li class="course list-details">
                         <div class="course-details">
                             <h2 class="govuk-heading-m">Booking information</h2>
@@ -25,6 +36,7 @@
                                 <li><p>cancellations (shows the reason, such as capacity issues, course not run or payment not accepted)</p></li>
                             </ul>
                         </div>
+                    </li>
                     <li class="course list-details u--border--bgrey">
                         <form action="/reporting/booking-information" method="post">
                             {{ govukDateInput({
@@ -115,7 +127,6 @@
                             }) }}
                         </form>
                     </li>
-                    </li>
                     <li class="course list-details u--border--bgrey">
                         <div class="course-details">
                             <h2 class="govuk-heading-m">Learning record information</h2>
@@ -126,6 +137,7 @@
                             <p>The availability of this information depends on your level of reporting access.</p>
                             </div>
                         </div>
+                    </li>
                     <li class="course list-details u--border--bgrey">
                         <form action="/reporting/learner-record" method="post">
                             {{ govukDateInput({
@@ -215,7 +227,6 @@
                                 preventDoubleClick: true
                             }) }}
                         </form>
-                    </li>
                     </li>
                 </ul>
             </div>
