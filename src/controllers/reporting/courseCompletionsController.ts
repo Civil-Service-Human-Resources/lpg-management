@@ -45,6 +45,7 @@ export class CourseCompletionsController extends Controller {
 	protected getRoutes(): Route[] {
 		return [
 			getRequest('/', this.renderReport(), [this.checkForCourseIdsInSessionMiddleware()]),
+			postRequest('/', this.updateReportFilters(), [this.checkForCourseIdsInSessionMiddleware()]),
 			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
 			postRequestWithBody('/choose-courses', this.chooseCourses(),
 				{
@@ -54,9 +55,7 @@ export class CourseCompletionsController extends Controller {
 						path: '/reporting/course-completions/choose-courses'
 					}
 				}, [this.checkForOrgIdsInSessionMiddleware()]),
-
-			postRequest("/chart-csv", this.downloadDataAsCsv())
-
+			postRequest("/chart-csv", this.downloadDataAsCsv()),
 		]
 	}
 
@@ -72,6 +71,27 @@ export class CourseCompletionsController extends Controller {
 
 			response.render('page/reporting/courseCompletions/report', {pageModel,
 				backButton: '/reporting/course-completions/choose-courses'})
+		}
+	}
+
+	private removeValuesFromSession(request: Request) {
+		const session = fetchCourseCompletionSessionObject(request)!
+		const remove = (request.query["remove"] || "") as string
+		if (remove !== "") {
+			if (remove.startsWith("courseId")) {
+				const courseIdToRemove = remove.split(",")[1]
+				session.courses = session.courses!.filter(course => course.id !== courseIdToRemove)
+			}
+		}
+		return session
+	}
+
+	public updateReportFilters() {
+		return async (request: Request, response: Response) => {
+			const session = this.removeValuesFromSession(request)
+			return saveCourseCompletionSessionObject(session, request, () => {
+				return response.redirect('/reporting/course-completions')
+			})
 		}
 	}
 

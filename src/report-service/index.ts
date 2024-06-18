@@ -62,7 +62,7 @@ export class ReportService {
 		}).sort((a, b) => { return collator.compare(a[0].text, b[0].text!)})
 		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString(), format: "numeric"}])
 		const organisationalUnit = await this.organisationalUnitService.getOrganisation(parseInt(params.organisationIds[0]))
-		const coursesFilterSummary = CourseFilterSummaryRow.create(session.courses!.map(course => course.name))
+		const coursesFilterSummary = CourseFilterSummaryRow.create(session.courses!)
 		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]), coursesFilterSummary)
 		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary)
 	}

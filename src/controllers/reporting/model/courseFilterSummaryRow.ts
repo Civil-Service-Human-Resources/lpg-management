@@ -7,7 +7,9 @@ export class CourseFilterSummaryRow extends FilterSummaryRow {
 			"/reporting/course-completions/choose-courses", "Change courses")
 	}
 
-	public static create(courseNames: string[]): CourseFilterSummaryRow {
-		return new CourseFilterSummaryRow(courseNames.map(name => new CourseFilterSummaryTag(name)))
+	public static create(courses: {name: string, id: string}[]): CourseFilterSummaryRow {
+		const tags = courses.map(course => new CourseFilterSummaryTag(course.name, course.id))
+		tags[0].preText = undefined
+		return new CourseFilterSummaryRow(tags)
 	}
 }
