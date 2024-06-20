@@ -2,6 +2,7 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
 {% from "../../../component/chart/macro.njk" import renderChart %}
+{% from "../../../component/expander/macro.njk" import expander %}
 {% from "../../../component/filterSummary/macro.njk" import filterSummary %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
@@ -12,14 +13,39 @@
 {% block pageTitle %}{{ i18n.reporting.course_completions.title }} - {{ i18n.proposition_name }}{% endblock %}
 {% block content %}
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class='govuk-grid-column-full'>
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
+  </div>
+  <div class="govuk-grid-column-one-third">
+    <h2 class='govuk-heading-m'>Filter</h2>
+    <form method='post'>
+      {{ govukButton({
+        text: "Apply filters",
+        preventDoubleClick: true
+      }) }}
+      {% set dateHtml %}
+        {{ govukRadios({
+          classes: "govuk-radios--small",
+          name: "timePeriod",
+          items: [
+            {
+              value: "today",
+              text: "Today",
+              checked: pageModel.filters.timePeriod == "today"
+            }
+          ]
+        }) }}
+      {% endset %}
+      {{ expander("Date", dateHtml) }}
+    </form>
+  </div>
+  <div class="govuk-grid-column-two-thirds">
     {{ filterSummary(pageModel.selectedFilters) }}
     {% set table = {
       "caption": "Number of completions",
       "headings": [
-        {"text": pageModel.chart.xAxisSettings.tableHeader}, {"text": "Completions"}
+        {"text": pageModel.chart.xAxisSettings.tableHeader}, {"text": "Completions", format: "numeric"}
       ],
       "rows": pageModel.table
     } %}

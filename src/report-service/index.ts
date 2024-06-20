@@ -12,6 +12,8 @@ import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organ
 import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFilterSummary'
 import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
 import {CourseFilterSummaryRow} from '../controllers/reporting/model/courseFilterSummaryRow'
+import {CourseCompletionsFilterModel} from '../controllers/reporting/model/courseCompletionsFilterModel'
+import {DateFilterSummaryRow} from '../controllers/reporting/model/dateFilterSummaryRow'
 
 export class ReportService {
 
@@ -52,10 +54,11 @@ export class ReportService {
 			.filter(course => courseIds.includes(course.id))
 	}
 
-	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters, session: CourseCompletionsSession): Promise<CourseCompletionsGraphModel> {
+	async getCourseCompletionsReportGraphPage(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession): Promise<CourseCompletionsGraphModel> {
+		const params = GetCourseAggregationParameters.createFromFilterPageModel(pageModel, session)
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
-		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString()}])
+		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString(), format: "numeric"}])
 		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
 		const courseBreakdown = Array.from(chart.courseBreakdown).map(([title, count]) => {
 			return [{text: title}, {text: count.toString(), format: "numeric"}]
@@ -63,8 +66,9 @@ export class ReportService {
 		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString(), format: "numeric"}])
 		const organisationalUnit = await this.organisationalUnitService.getOrganisation(parseInt(params.organisationIds[0]))
 		const coursesFilterSummary = CourseFilterSummaryRow.create(session.courses!)
-		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]), coursesFilterSummary)
-		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary)
+		const dateFilterSummary = DateFilterSummaryRow.createForSinglePeriod(pageModel.getTimePeriod())
+		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]), coursesFilterSummary, dateFilterSummary)
+		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary, pageModel)
 	}
 
 }

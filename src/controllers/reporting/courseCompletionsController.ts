@@ -7,10 +7,10 @@ import {plainToInstance} from 'class-transformer'
 import {Controller} from '../controller'
 import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
-import {GetCourseAggregationParameters} from '../../report-service/model/getCourseAggregationParameters'
 import * as moment from 'moment'
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
 import { getCsvContentFromData } from '../../utils/dataToCsv'
+import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 
 export class CourseCompletionsController extends Controller {
 
@@ -62,9 +62,7 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(GetCourseAggregationParameters.createForDay(
-				session.getCourseIds(), session!.allOrganisationIds!.map(n => n.toString())
-			), session)
+			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(new CourseCompletionsFilterModel(), session)
 
 			session.chartData = pageModel.table
 			saveCourseCompletionSessionObject(session, request, () => {})
