@@ -45,7 +45,13 @@ export class CourseCompletionsController extends Controller {
 	protected getRoutes(): Route[] {
 		return [
 			getRequest('/', this.renderReport(), [this.checkForCourseIdsInSessionMiddleware()]),
-			postRequest('/', this.updateReportFilters(), [this.checkForCourseIdsInSessionMiddleware()]),
+			postRequestWithBody('/', this.updateReportFilters(), {
+				dtoClass: CourseCompletionsFilterModel,
+				onError: {
+					behaviour: BehaviourOnError.REDIRECT,
+					path: '/reporting/course-completions/choose-courses'
+				}
+			}, [this.checkForCourseIdsInSessionMiddleware()]),
 			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
 			postRequestWithBody('/choose-courses', this.chooseCourses(),
 				{
@@ -86,9 +92,12 @@ export class CourseCompletionsController extends Controller {
 
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
+			const filterPageModel = plainToInstance(CourseCompletionsFilterModel, response.locals.input as CourseCompletionsFilterModel)
 			const session = this.removeValuesFromSession(request)
+			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
 			return saveCourseCompletionSessionObject(session, request, () => {
-				return response.redirect('/reporting/course-completions')
+				return response.render('page/reporting/courseCompletions/report', {pageModel,
+					backButton: '/reporting/course-completions/choose-courses'})
 			})
 		}
 	}
