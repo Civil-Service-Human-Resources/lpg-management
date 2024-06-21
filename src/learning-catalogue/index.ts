@@ -12,8 +12,7 @@ import {Auth} from '../identity/auth'
 import {OauthRestService} from '../lib/http/oauthRestService'
 import {CslServiceClient} from '../csl-service/client'
 import {CourseTypeAheadCache} from './courseTypeaheadCache'
-import {BasicCourse} from '../controllers/reporting/model/chooseCoursesModel'
-import {CourseTypeAhead} from './courseTypeAhead'
+import {BasicCourse, CourseTypeAhead} from './courseTypeAhead'
 import {RestServiceConfig} from 'lib/http/restServiceConfig'
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>

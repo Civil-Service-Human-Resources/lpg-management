@@ -239,6 +239,10 @@ ul.bullet {
 	font-size: $font-normal;
 }
 
+.no-wrap {
+	white-space: nowrap;
+}
+
 @media screen and (min-width: $tablet-small) {
 	.govuk-input,
 	.govuk-textarea {

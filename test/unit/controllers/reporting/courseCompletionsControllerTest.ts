@@ -4,7 +4,7 @@ import {ReportService} from '../../../../src/report-service'
 const session = require('supertest-session')
 import {expect} from 'chai'
 import {CourseCompletionsController} from '../../../../src/controllers/reporting/courseCompletionsController'
-import {BasicCourse, ChooseCoursesModel} from '../../../../src/controllers/reporting/model/chooseCoursesModel'
+import {BasicCoursePageModel, ChooseCoursesModel} from '../../../../src/controllers/reporting/model/chooseCoursesModel'
 import {CourseCompletionsSession} from '../../../../src/controllers/reporting/model/courseCompletionsSession'
 import {REPORTING} from '../../../../src/config'
 import * as moment from 'moment'
@@ -56,9 +56,9 @@ describe('courseCompletionsController tests', () => {
 				next()
 			}).use(app)
 			reportService.getChooseCoursePage.withArgs(1).resolves(new ChooseCoursesModel('department', [
-				new BasicCourse('1', 'course 1'),
-				new BasicCourse('2', 'course 2'),
-				new BasicCourse('3', 'course 3')
+				new BasicCoursePageModel('1', 'course 1'),
+				new BasicCoursePageModel('2', 'course 2'),
+				new BasicCoursePageModel('3', 'course 3')
 			]))
 
 			describe('Validation', () => {
@@ -74,7 +74,7 @@ describe('courseCompletionsController tests', () => {
 				})
 
 				it('Should validate valid course IDs', async () => {
-					reportService.validateCourseSelections.withArgs(['course1']).resolves(false)
+					reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([])
 					const res = await session(subApp)
 						.post("/reporting/course-completions/choose-courses")
 						.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -99,12 +99,16 @@ describe('courseCompletionsController tests', () => {
 
 				it('Should validate limit on number of selected courses', async () => {
 					const numberOfCoursesToGenerate = REPORTING.COURSE_COMPLETIONS_MAX_COURSES + 1
+					const generatedCourses = []
+					for (let i = 0; i < numberOfCoursesToGenerate; i++) {
+						generatedCourses.push(`id${i}`)
+					}
 					const res = await session(subApp)
 						.post("/reporting/course-completions/choose-courses")
 						.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
 						.send({
 							learning: 'courseSearch',
-							courseSearch: [Array(numberOfCoursesToGenerate).keys()].map(i => 'id' + i)
+							courseSearch: generatedCourses
 						})
 					expect(res.status).to.eql(302)
 					expect(res.headers['location']).to.eql("/reporting/course-completions/choose-courses")
@@ -120,7 +124,7 @@ describe('courseCompletionsController tests', () => {
 			})
 
 			it('Should successfully redirect with correct required learning selections', async () => {
-				reportService.validateCourseSelections.withArgs(['course1']).resolves(true)
+				reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
 				const res = await session(subApp)
 					.post("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -133,7 +137,7 @@ describe('courseCompletionsController tests', () => {
 			})
 
 			it('Should successfully redirect with correct course search selections', async () => {
-				reportService.validateCourseSelections.withArgs(['course1']).resolves(true)
+				reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
 				const res = await session(subApp)
 					.post("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -148,16 +152,16 @@ describe('courseCompletionsController tests', () => {
 			describe('Download chart as CSV', () => {
 				it('should download a CSV file', async () => {
 					const momentIsoStringStub = sinon.stub(moment.prototype, 'toISOString').returns('2024-06-06T11_08_50.592Z')
-		
+
 					const res = await session(app)
 					.post("/reporting/course-completions/chart-csv")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
 						.send()
-		
+
 					expect(res.status).to.eql(200)
 					expect(res.type).to.eql('text/csv')
 					expect(res.headers['content-disposition']).to.contain(`attachment;filename=course-completions-2024-06-06T11_08_50.592Z.csv`)
-		
+
 					momentIsoStringStub.restore()
 				})
 
@@ -169,9 +173,9 @@ describe('courseCompletionsController tests', () => {
 					expect(res.status).to.eql(401)
 				})
 			})
-			
+
 		})
-		
+
 	})
 
 })

@@ -1,5 +1,7 @@
 {% macro renderFilterSummaryTag(tag, submitUrl) %}
-    <input type="hidden" name="{{tag["formName"]}}" id="{{tag["formName"]}}-{{tag["formValue"]}}" value="{{tag["formValue"]}}">
+    {% if tag["shouldSubmit"] %}
+        <input type="hidden" name="{{tag["formName"]}}" id="{{tag["formName"]}}-{{tag["formValue"]}}" value="{{tag["formValue"]}}">
+    {% endif %}
     {% if tag["preText"] %}
         <span class="filter-summary__tag-pretext">{{tag["preText"]}}</span>
     {% endif %}

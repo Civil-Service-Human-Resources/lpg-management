@@ -14,8 +14,7 @@ import {Audience} from '../../../src/learning-catalogue/model/audience'
 import {CslServiceClient} from '../../../src/csl-service/client'
 import {RestServiceConfig} from '../../../src/lib/http/restServiceConfig'
 import {CourseTypeAheadCache} from '../../../src/learning-catalogue/courseTypeaheadCache'
-import {CourseTypeAhead} from '../../../src/learning-catalogue/courseTypeAhead'
-import {BasicCourse} from '../../../src/controllers/reporting/model/chooseCoursesModel'
+import {BasicCourse, CourseTypeAhead} from '../../../src/learning-catalogue/courseTypeAhead'
 import {plainToInstance} from 'class-transformer'
 
 chai.use(chaiAsPromised)

@@ -3,13 +3,15 @@ import {ReportServiceClient} from './reportServiceClient'
 import {CourseService} from 'lib/courseService'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
 import {Report} from '../controllers/reporting/Report'
-import {BasicCourse, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
+import {BasicCoursePageModel, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
 import {GetCourseAggregationParameters} from './model/getCourseAggregationParameters'
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 import {CslServiceClient} from '../csl-service/client'
 import {ChartService} from './chartService'
 import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
 import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFilterSummary'
+import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
+import {CourseFilterSummaryRow} from '../controllers/reporting/model/courseFilterSummaryRow'
 
 export class ReportService {
 
@@ -35,31 +37,33 @@ export class ReportService {
 
 	async getChooseCoursePage(selectedOrganisationId: number): Promise<ChooseCoursesModel> {
 		const userOrganisation = (await this.organisationalUnitService.getOrganisation(selectedOrganisationId, true))
-		const allCourses = await this.courseService.getCourseDropdown()
+		const allCourses = (await this.courseService.getCourseDropdown())
+			.map(course => new BasicCoursePageModel(course.id, course.name))
 		const hierarchy = await this.organisationalUnitService.getOrgHierarchy(userOrganisation.id)
 		const departmentCodes = hierarchy.map(o => o.code)
 		const requiredLearningResponse = await this.courseService.getRequiredLearning(departmentCodes)
-		const requiredLearning: BasicCourse[] = requiredLearningResponse.results
-			.map(c => new BasicCourse(c.id, c.title))
+		const requiredLearning: BasicCoursePageModel[] = requiredLearningResponse.results
+			.map(c => new BasicCoursePageModel(c.id, c.title))
 		return new ChooseCoursesModel(userOrganisation.getFormattedName(), requiredLearning, allCourses)
 	}
 
-	async validateCourseSelections(courseIds: string[]) {
-		const allCourseIds = (await this.courseService.getCourseDropdown()).map(c => c.value)
-		return courseIds.every(id => allCourseIds.includes(id))
+	async fetchCoursesWithIds(courseIds: string[]) {
+		return (await this.courseService.getCourseDropdown())
+			.filter(course => courseIds.includes(course.id))
 	}
 
-	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters): Promise<CourseCompletionsGraphModel> {
+	async getCourseCompletionsReportGraphPage(params: GetCourseAggregationParameters, session: CourseCompletionsSession): Promise<CourseCompletionsGraphModel> {
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
 		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString()}])
 		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
 		const courseBreakdown = Array.from(chart.courseBreakdown).map(([title, count]) => {
-			return [{text: title}, {text: count.toString()}]
+			return [{text: title}, {text: count.toString(), format: "numeric"}]
 		}).sort((a, b) => { return collator.compare(a[0].text, b[0].text!)})
-		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString()}])
+		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString(), format: "numeric"}])
 		const organisationalUnit = await this.organisationalUnitService.getOrganisation(parseInt(params.organisationIds[0]))
-		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]))
+		const coursesFilterSummary = CourseFilterSummaryRow.create(session.courses!)
+		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]), coursesFilterSummary)
 		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary)
 	}
 
