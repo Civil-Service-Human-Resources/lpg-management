@@ -8,7 +8,8 @@
     </div>
 {% endmacro %}
 
-<div class='filter-summary__container'>
+<section class='filter-summary__container'>
+    <h2 class='govuk-visually-hidden'>Selected filters</h2>
     {% if options['submitUrl'] %}
         <form action='{{ options['submitUrl'] }}' method='post'>
             {{ rows(options['rows']) }}
@@ -16,4 +17,4 @@
     {% else %}
         {{ rows(options['rows']) }}
     {% endif %}
-</div>
+</section>
