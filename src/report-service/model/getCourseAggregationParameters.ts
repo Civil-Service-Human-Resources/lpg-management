@@ -19,8 +19,8 @@ export class GetCourseAggregationParameters {
 	}
 
 	static createForPastSevenDays(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const endDate = dayjs()
-		const startDate = endDate.subtract(7, 'day')
+		const endDate = dayjs().add(1, 'day')
+		const startDate = dayjs().subtract(7, 'day')
 		return new GetCourseAggregationParameters(startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), courseIds, organisationIds, 'DAY')
 	}
 

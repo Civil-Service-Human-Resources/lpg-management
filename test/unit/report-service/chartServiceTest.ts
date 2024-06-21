@@ -90,32 +90,19 @@ describe('ChartJS implementation tests', () => {
 		})
 	})
 	describe('mapLabelsToDataTable tests', () => {
-		it('should map a datatable to labels, including 0 values, inclusively', function() {
+		it('should map a datatable to labels, including 0 values', function() {
 			const tableData = new Map([
 				[1, 10],
 				[3, 30]
 			])
 			const labels = [1, 2, 3, 4, 5]
-			const result = chartService.mapLabelsToDataPoints(labels, tableData, true)
+			const result = chartService.mapLabelsToDataPoints(labels, tableData)
 			expect(result.length).to.eql(5)
 			expect(result[0]).to.eql({x: 1, y: 10})
 			expect(result[1]).to.eql({x: 2, y: 0})
 			expect(result[2]).to.eql({x: 3, y: 30})
 			expect(result[3]).to.eql({x: 4, y: 0})
 			expect(result[4]).to.eql({x: 5, y: 0})
-		})
-		it('should map a datatable to labels, including 0 values, exclusively', function() {
-			const tableData = new Map([
-				[1, 10],
-				[3, 30]
-			])
-			const labels = [1, 2, 3, 4, 5]
-			const result = chartService.mapLabelsToDataPoints(labels, tableData, false)
-			expect(result.length).to.eql(4)
-			expect(result[0]).to.eql({x: 1, y: 10})
-			expect(result[1]).to.eql({x: 2, y: 0})
-			expect(result[2]).to.eql({x: 3, y: 30})
-			expect(result[3]).to.eql({x: 4, y: 0})
 		})
 	})
 })

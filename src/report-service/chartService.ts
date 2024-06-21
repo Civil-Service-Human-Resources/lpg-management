@@ -27,6 +27,7 @@ export class ChartService {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
 			labels.push(nextLabel.valueOf())
 		}
+		labels.pop()
 		return labels
 	}
 
@@ -40,12 +41,12 @@ export class ChartService {
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
 			inclusive = false
-		} else if (dayDiff <= 7) {
+		} else if (dayDiff <= 8) {
 			increment = new Increment(1, 'day')
 			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
 		} else if (dayDiff <= 30) {
 			increment = new Increment(1, 'week')
-			xAxisSettings = new XAxisSettings("Week commencing", "Do MMMM yyyy", "week")
+			xAxisSettings = new XAxisSettings("Week commencing", "Do MMMM YYYY", "week")
 		} else {
 			increment = new Increment(1, 'month')
 			xAxisSettings = new XAxisSettings("Month", "MMMM yyyy", "month")
@@ -65,8 +66,8 @@ export class ChartService {
 		}))
 	}
 
-	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>, inclusive: boolean) {
-		return labels.slice(0, inclusive ? labels.length : labels.length-1)
+	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>) {
+		return labels
 			.map(l => {
 				let x = l
 				let y = 0
@@ -84,7 +85,7 @@ export class ChartService {
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)
-		const dataPoints = this.mapLabelsToDataPoints(labels, tableData, config.inclusive)
+		const dataPoints = this.mapLabelsToDataPoints(labels, tableData)
 		const noJSData = dataPoints.map(dp => {
 			const label = this.getTimezonedDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
 			return new DataPoint(label, dp.y)
