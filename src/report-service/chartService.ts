@@ -7,7 +7,9 @@ import {ConfigSettings} from './model/configSettings'
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
+var advancedFormat = require("dayjs/plugin/advancedFormat");
 
+dayjs.extend(advancedFormat);
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Europe/London')
@@ -25,7 +27,6 @@ export class ChartService {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
 			labels.push(nextLabel.valueOf())
 		}
-		console.log(labels)
 		return labels
 	}
 
@@ -33,22 +34,24 @@ export class ChartService {
 		const dayDiff = endDate.diff(startDate, 'day')
 		let increment
 		let xAxisSettings
+		let inclusive = true
 		if (dayDiff <= 1) {
 			endDate = this.getTimezonedDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
+			inclusive = false
 		} else if (dayDiff <= 7) {
 			increment = new Increment(1, 'day')
-			xAxisSettings = new XAxisSettings("Date", "ddd d MMMM", "day")
+			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
 		} else if (dayDiff <= 30) {
 			increment = new Increment(1, 'week')
-			xAxisSettings = new XAxisSettings("Week commencing", "d MMMM yyyy", "week")
+			xAxisSettings = new XAxisSettings("Week commencing", "Do MMMM yyyy", "week")
 		} else {
 			increment = new Increment(1, 'month')
 			xAxisSettings = new XAxisSettings("Month", "MMMM yyyy", "month")
 		}
 		return new ConfigSettings(
-			startDate, endDate, increment, xAxisSettings
+			startDate, endDate, inclusive, increment, xAxisSettings
 		)
 	}
 
@@ -62,8 +65,8 @@ export class ChartService {
 		}))
 	}
 
-	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>) {
-		return labels.slice(0, labels.length-1)
+	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>, inclusive: boolean) {
+		return labels.slice(0, inclusive ? labels.length : labels.length-1)
 			.map(l => {
 				let x = l
 				let y = 0
@@ -81,8 +84,7 @@ export class ChartService {
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)
-		const dataPoints = this.mapLabelsToDataPoints(labels, tableData)
-		console.log(dataPoints)
+		const dataPoints = this.mapLabelsToDataPoints(labels, tableData, config.inclusive)
 		const noJSData = dataPoints.map(dp => {
 			const label = this.getTimezonedDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
 			return new DataPoint(label, dp.y)

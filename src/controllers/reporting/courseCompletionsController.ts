@@ -68,13 +68,12 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(new CourseCompletionsFilterModel(), session)
-
-			session.chartData = pageModel.table
-			saveCourseCompletionSessionObject(session, request, () => {})
-
-			response.render('page/reporting/courseCompletions/report', {pageModel,
-				backButton: '/reporting/course-completions/choose-courses'})
+			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(new CourseCompletionsFilterModel(), session)
+			console.log(pageData)
+			return saveCourseCompletionSessionObject(pageData.session, request, () => {
+				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel,
+					backButton: '/reporting/course-completions/choose-courses'})
+			})
 		}
 	}
 
@@ -94,12 +93,14 @@ export class CourseCompletionsController extends Controller {
 		return async (request: Request, response: Response) => {
 			const filterPageModel = plainToInstance(CourseCompletionsFilterModel, response.locals.input as CourseCompletionsFilterModel)
 			const session = this.removeValuesFromSession(request, filterPageModel)
-			return saveCourseCompletionSessionObject(session, request, async () => {
-				if (!session.hasSelectedCourses()) {
+			if (!session.hasSelectedCourses()) {
+				return saveCourseCompletionSessionObject(session, request, async () => {
 					return response.redirect('/reporting/course-completions/choose-courses')
-				}
-				const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
-				return response.render('page/reporting/courseCompletions/report', {pageModel,
+				})
+			}
+			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
+			return saveCourseCompletionSessionObject(pageData.session, request, async () => {
+				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel,
 					backButton: '/reporting/course-completions/choose-courses'})
 			})
 		}

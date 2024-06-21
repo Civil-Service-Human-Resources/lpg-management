@@ -57,7 +57,6 @@ export class ReportingController extends Controller {
 			const dateRange: DateStartEndCommand = response.locals.input
 			const startEnd = new DateStartEnd(dateRange.getStartDate(), dateRange.getEndDate())
 			const errors = await validateAndMapErrors(startEnd)
-			console.log(errors)
 			if (errors !== undefined) {
 				request.session!.sessionFlash = {
 					errors,

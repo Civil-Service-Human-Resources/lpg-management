@@ -54,10 +54,9 @@ export class ReportService {
 			.filter(course => courseIds.includes(course.id))
 	}
 
-	async getCourseCompletionsReportGraphPage(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession): Promise<CourseCompletionsGraphModel> {
+	async getCourseCompletionsReportGraphPage(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {
 		const params = GetCourseAggregationParameters.createFromFilterPageModel(pageModel, session)
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
-		console.log(chart)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
 		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString(), format: "numeric"}])
 		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
@@ -69,7 +68,12 @@ export class ReportService {
 		const coursesFilterSummary = CourseFilterSummaryRow.create(session.courses!)
 		const dateFilterSummary = DateFilterSummaryRow.createForSinglePeriod(pageModel.getTimePeriod())
 		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]), coursesFilterSummary, dateFilterSummary)
-		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary, pageModel)
+		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary, pageModel)
+		session.chartData = graphPageModel.table
+		return {
+			pageModel: graphPageModel,
+			session
+		}
 	}
 
 }
