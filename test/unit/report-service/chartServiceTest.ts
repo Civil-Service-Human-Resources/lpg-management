@@ -59,7 +59,7 @@ describe('ChartJS implementation tests', () => {
 			expect(result.endDate).to.eql(endDate)
 			expect(result.increment.amount).to.eql(1)
 			expect(result.increment.unit).to.eql("week")
-			expect(result.xAxisSettings.tooltipFormat).to.eql("Do MMMM yyyy")
+			expect(result.xAxisSettings.tooltipFormat).to.eql("[Week commencing] Do MMMM yyyy")
 			expect(result.xAxisSettings.unit).to.eql("week")
 		})
 		it('Should get correct settings for 2 months difference', () => {

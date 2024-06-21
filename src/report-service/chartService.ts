@@ -46,7 +46,7 @@ export class ChartService {
 			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
 		} else if (dayDiff <= 30) {
 			increment = new Increment(1, 'week')
-			xAxisSettings = new XAxisSettings("Week commencing", "Do MMMM YYYY", "week")
+			xAxisSettings = new XAxisSettings("Week commencing", "[Week commencing] Do MMMM YYYY", "week")
 		} else {
 			increment = new Increment(1, 'month')
 			xAxisSettings = new XAxisSettings("Month", "MMMM yyyy", "month")
