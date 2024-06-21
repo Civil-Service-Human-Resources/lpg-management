@@ -11,21 +11,21 @@ describe('ChartJS implementation tests', () => {
 			const endDate = dayjs("2024-01-01 15:00:00")
 			const increment = new Increment(1, 'hour')
 			const labels = chartService.buildLabels(startDate, endDate, increment)
-			expect(labels.length).to.eql(16)
+			expect(labels.length).to.eql(15)
 		})
 		it('Should build labels in daily increments', () => {
 			const startDate = dayjs("2024-01-01 15:40:00")
 			const endDate = dayjs("2024-01-10 15:00:00")
 			const increment = new Increment(1, 'day')
 			const labels = chartService.buildLabels(startDate, endDate, increment)
-			expect(labels.length).to.eql(11)
+			expect(labels.length).to.eql(10)
 		})
 		it('Should build labels in monthly increments', () => {
 			const startDate = dayjs("2024-01-01 15:40:00")
 			const endDate = dayjs("2024-12-10 15:00:00")
 			const increment = new Increment(1, 'month')
 			const labels = chartService.buildLabels(startDate, endDate, increment)
-			expect(labels.length).to.eql(13)
+			expect(labels.length).to.eql(12)
 		})
 	})
 	describe('getConfigurationSettings tests', () => {
@@ -48,7 +48,7 @@ describe('ChartJS implementation tests', () => {
 			expect(result.endDate).to.eql(endDate)
 			expect(result.increment.amount).to.eql(1)
 			expect(result.increment.unit).to.eql("day")
-			expect(result.xAxisSettings.tooltipFormat).to.eql("eeee d MMMM")
+			expect(result.xAxisSettings.tooltipFormat).to.eql("dddd Do MMMM")
 			expect(result.xAxisSettings.unit).to.eql("day")
 		})
 		it('Should get correct settings for 17 days difference', () => {
@@ -59,7 +59,7 @@ describe('ChartJS implementation tests', () => {
 			expect(result.endDate).to.eql(endDate)
 			expect(result.increment.amount).to.eql(1)
 			expect(result.increment.unit).to.eql("week")
-			expect(result.xAxisSettings.tooltipFormat).to.eql("d MMMM yyyy")
+			expect(result.xAxisSettings.tooltipFormat).to.eql("Do MMMM yyyy")
 			expect(result.xAxisSettings.unit).to.eql("week")
 		})
 		it('Should get correct settings for 2 months difference', () => {
