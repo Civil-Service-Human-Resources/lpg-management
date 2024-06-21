@@ -2,6 +2,7 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
 {% from "../../../component/chart/macro.njk" import renderChart %}
+{% from "../../../component/filterSummary/macro.njk" import filterSummary %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "table/macro.njk" import govukTable %}
@@ -14,6 +15,7 @@
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
+    {{ filterSummary(pageModel.selectedFilters) }}
     {% set table = {
       "caption": "Number of completions",
       "headings": [
@@ -28,6 +30,7 @@
       head: [{text: "Course Title"}, {text: "Completions", classes: "govuk-!-width-one-quarter"}],
       rows: pageModel.courseBreakdown
     }) }}
+
   </div>
 </div>
 {% endblock %}

@@ -8,6 +8,8 @@ import {GetCourseAggregationParameters} from './model/getCourseAggregationParame
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 import {CslServiceClient} from '../csl-service/client'
 import {ChartService} from './chartService'
+import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
+import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFilterSummary'
 
 export class ReportService {
 
@@ -56,6 +58,9 @@ export class ReportService {
 			return [{text: title}, {text: count.toString()}]
 		}).sort((a, b) => { return collator.compare(a[0].text, b[0].text!)})
 		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString()}])
-		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown)
+		const organisationalUnit = await this.organisationalUnitService.getOrganisation(parseInt(params.organisationIds[0]))
+		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]))
+		return new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary)
 	}
+
 }
