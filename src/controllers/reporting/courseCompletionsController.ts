@@ -49,7 +49,7 @@ export class CourseCompletionsController extends Controller {
 				dtoClass: CourseCompletionsFilterModel,
 				onError: {
 					behaviour: BehaviourOnError.REDIRECT,
-					path: '/reporting/course-completions/choose-courses'
+					path: '/reporting/course-completions'
 				}
 			}, [this.checkForCourseIdsInSessionMiddleware()]),
 			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
@@ -61,7 +61,7 @@ export class CourseCompletionsController extends Controller {
 						path: '/reporting/course-completions/choose-courses'
 					}
 				}, [this.checkForOrgIdsInSessionMiddleware()]),
-			postRequest("/chart-csv", this.downloadDataAsCsv()),
+			postRequest("/chart-csv", this.downloadDataAsCsv())
 		]
 	}
 
@@ -78,9 +78,9 @@ export class CourseCompletionsController extends Controller {
 		}
 	}
 
-	private removeValuesFromSession(request: Request) {
+	private removeValuesFromSession(request: Request, filterPageModel: CourseCompletionsFilterModel) {
 		const session = fetchCourseCompletionSessionObject(request)!
-		const remove = (request.query["remove"] || "") as string
+		const remove = (filterPageModel.remove || request.query["remove"] || "") as string
 		if (remove !== "") {
 			if (remove.startsWith("courseId")) {
 				const courseIdToRemove = remove.split(",")[1]
@@ -93,9 +93,12 @@ export class CourseCompletionsController extends Controller {
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
 			const filterPageModel = plainToInstance(CourseCompletionsFilterModel, response.locals.input as CourseCompletionsFilterModel)
-			const session = this.removeValuesFromSession(request)
-			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
-			return saveCourseCompletionSessionObject(session, request, () => {
+			const session = this.removeValuesFromSession(request, filterPageModel)
+			return saveCourseCompletionSessionObject(session, request, async () => {
+				if (!session.hasSelectedCourses()) {
+					return response.redirect('/reporting/course-completions/choose-courses')
+				}
+				const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
 				return response.render('page/reporting/courseCompletions/report', {pageModel,
 					backButton: '/reporting/course-completions/choose-courses'})
 			})

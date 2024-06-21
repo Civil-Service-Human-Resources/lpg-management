@@ -3,7 +3,7 @@ import {DashboardTimePeriod} from './dashboardTimePeriod'
 
 export class DateFilterSummaryTag extends FilterSummaryTag {
 	constructor(public period: string, public periodValue: string) {
-		super(period, "timePeriod", periodValue)
+		super(period, "timePeriod", periodValue, undefined, false, true)
 	}
 
 	public static createForTimePeriod(timePeriod: DashboardTimePeriod) {
