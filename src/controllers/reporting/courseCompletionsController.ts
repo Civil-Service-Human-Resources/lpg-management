@@ -99,7 +99,6 @@ export class CourseCompletionsController extends Controller {
 					return response.redirect('/reporting/course-completions/choose-courses')
 				}
 				const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
-				console.log(pageModel)
 				return response.render('page/reporting/courseCompletions/report', {pageModel,
 					backButton: '/reporting/course-completions/choose-courses'})
 			})

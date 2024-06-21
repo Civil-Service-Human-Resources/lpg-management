@@ -2,7 +2,6 @@
  * Progressive enhancement for the filter tag widget.
  *
  * This allows submitting 'dismissible' elements without altering the querystring
- * @type {HTMLCollectionOf<Element>}
  */
 
 function createHiddenTag(name, value) {
