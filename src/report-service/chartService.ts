@@ -25,6 +25,7 @@ export class ChartService {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
 			labels.push(nextLabel.valueOf())
 		}
+		console.log(labels)
 		return labels
 	}
 
@@ -38,7 +39,7 @@ export class ChartService {
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
 		} else if (dayDiff <= 7) {
 			increment = new Increment(1, 'day')
-			xAxisSettings = new XAxisSettings("Date", "eeee d MMMM", "day")
+			xAxisSettings = new XAxisSettings("Date", "ddd d MMMM", "day")
 		} else if (dayDiff <= 30) {
 			increment = new Increment(1, 'week')
 			xAxisSettings = new XAxisSettings("Week commencing", "d MMMM yyyy", "week")
@@ -81,6 +82,7 @@ export class ChartService {
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)
 		const dataPoints = this.mapLabelsToDataPoints(labels, tableData)
+		console.log(dataPoints)
 		const noJSData = dataPoints.map(dp => {
 			const label = this.getTimezonedDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
 			return new DataPoint(label, dp.y)

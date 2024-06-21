@@ -57,6 +57,7 @@ export class ReportService {
 	async getCourseCompletionsReportGraphPage(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession): Promise<CourseCompletionsGraphModel> {
 		const params = GetCourseAggregationParameters.createFromFilterPageModel(pageModel, session)
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
+		console.log(chart)
 		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.chart)
 		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString(), format: "numeric"}])
 		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })

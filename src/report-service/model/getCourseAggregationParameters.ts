@@ -1,6 +1,7 @@
 import dayjs = require('dayjs')
 import {CourseCompletionsFilterModel} from '../../controllers/reporting/model/courseCompletionsFilterModel'
 import {CourseCompletionsSession} from '../../controllers/reporting/model/courseCompletionsSession'
+import {DashboardTimePeriodEnum} from '../../controllers/reporting/model/dashboardTimePeriod'
 
 export class GetCourseAggregationParameters {
 	constructor(public startDate: string,
@@ -17,8 +18,18 @@ export class GetCourseAggregationParameters {
 		return new GetCourseAggregationParameters(startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), courseIds, organisationIds, 'HOUR')
 	}
 
+	static createForPastSevenDays(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
+		const endDate = dayjs()
+		const startDate = endDate.subtract(7, 'day')
+		return new GetCourseAggregationParameters(startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), courseIds, organisationIds, 'DAY')
+	}
+
 	static createFromFilterPageModel(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession) {
-		return GetCourseAggregationParameters.createForDay(session.getCourseIds(), session.allOrganisationIds!.map(n => n.toString()))
+		const organisationIds = session.allOrganisationIds!.map(n => n.toString())
+		if (pageModel.getTimePeriod().type === DashboardTimePeriodEnum.PAST_SEVEN_DAYS) {
+			return GetCourseAggregationParameters.createForPastSevenDays(session.getCourseIds(), organisationIds)
+		}
+		return GetCourseAggregationParameters.createForDay(session.getCourseIds(), organisationIds)
 	}
 
 	getStartDateAsDayJs() {
