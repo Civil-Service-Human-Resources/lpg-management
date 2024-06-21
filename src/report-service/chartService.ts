@@ -35,12 +35,10 @@ export class ChartService {
 		const dayDiff = endDate.diff(startDate, 'day')
 		let increment
 		let xAxisSettings
-		let inclusive = true
 		if (dayDiff <= 1) {
 			endDate = this.getTimezonedDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
-			inclusive = false
 		} else if (dayDiff <= 8) {
 			increment = new Increment(1, 'day')
 			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
@@ -52,7 +50,7 @@ export class ChartService {
 			xAxisSettings = new XAxisSettings("Month", "MMMM yyyy", "month")
 		}
 		return new ConfigSettings(
-			startDate, endDate, inclusive, increment, xAxisSettings
+			startDate, endDate, increment, xAxisSettings
 		)
 	}
 
