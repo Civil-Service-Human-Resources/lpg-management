@@ -55,7 +55,7 @@ export class CourseCompletionsController extends Controller {
 						path: '/reporting/course-completions/choose-courses'
 					}
 				}, [this.checkForOrgIdsInSessionMiddleware()]),
-			postRequest("/chart-csv", this.downloadDataAsCsv()),
+			postRequest("/chart-csv", this.downloadDataAsCsv())
 		]
 	}
 
