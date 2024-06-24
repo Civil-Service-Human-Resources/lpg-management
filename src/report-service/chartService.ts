@@ -13,8 +13,6 @@ export class ChartService {
 
 	buildLabels(startDate: Dayjs, endDate: Dayjs, increment: Increment) {
 		let nextLabel = startDate.set('hour', 0).set('minute', 0).set('second', 0)
-		console.log(nextLabel)
-		console.log(endDate)
 		let labels = [nextLabel.valueOf()]
 		while (nextLabel.isBefore(endDate)) {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
@@ -59,7 +57,6 @@ export class ChartService {
 	}
 
 	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>) {
-		console.log(tableData)
 		return labels
 			.map(l => {
 				let x = l
@@ -75,8 +72,6 @@ export class ChartService {
 	buildChart(rawStartDate: string, rawEndDate: string, rawData: DataPoint[]): ChartjsConfig {
 		const startDate = getFrontendDayJs(rawStartDate)
 		const endDate = getFrontendDayJs(rawEndDate)
-		console.log(startDate)
-		console.log(endDate)
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)
