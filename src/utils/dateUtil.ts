@@ -6,9 +6,10 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 
 export function getFrontendDayJs(obj?: any) {
+	const tz = 'Europe/London'
 	if (obj) {
-		return dayjs.tz(obj, 'Europe/London')
+		return dayjs.tz(obj, tz)
 	} else {
-		return dayjs().tz('Europe/London')
+		return dayjs().tz(tz)
 	}
 }
