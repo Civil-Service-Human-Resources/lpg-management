@@ -69,7 +69,6 @@ export class CourseCompletionsController extends Controller {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(new CourseCompletionsFilterModel(), session)
-			console.log(pageData)
 			return saveCourseCompletionSessionObject(pageData.session, request, () => {
 				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel,
 					backButton: '/reporting/course-completions/choose-courses'})

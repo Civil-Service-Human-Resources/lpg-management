@@ -4,24 +4,17 @@ import {Dayjs} from 'dayjs'
 import {Increment} from './model/increment'
 import {XAxisSettings} from './model/xAxisSettings'
 import {ConfigSettings} from './model/configSettings'
+import {getFrontendDayJs} from '../utils/dateUtil'
 var dayjs = require('dayjs')
-var utc = require('dayjs/plugin/utc')
-var timezone = require('dayjs/plugin/timezone')
 var advancedFormat = require("dayjs/plugin/advancedFormat");
 
 dayjs.extend(advancedFormat);
-dayjs.extend(utc)
-dayjs.extend(timezone)
-dayjs.tz.setDefault('Europe/London')
-
 export class ChartService {
-
-	getTimezonedDayJs(...obj: any[]) {
-		return dayjs(...obj).tz()
-	}
 
 	buildLabels(startDate: Dayjs, endDate: Dayjs, increment: Increment) {
 		let nextLabel = startDate.set('hour', 0).set('minute', 0).set('second', 0)
+		console.log(nextLabel)
+		console.log(endDate)
 		let labels = [nextLabel.valueOf()]
 		while (nextLabel.isBefore(endDate)) {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
@@ -36,7 +29,7 @@ export class ChartService {
 		let increment
 		let xAxisSettings
 		if (dayDiff <= 1) {
-			endDate = this.getTimezonedDayJs().set('minute', 0).set('second', 0)
+			endDate = getFrontendDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
 		} else if (dayDiff <= 8) {
@@ -57,14 +50,16 @@ export class ChartService {
 	convertRawDataToTable(rawData: DataPoint[]) {
 		return new Map(rawData.map(dataPoint => {
 			const splitDateTz = dataPoint.x.split("Z")
-			const timeZone = splitDateTz[1]
-				.replaceAll("[", "")
-				.replaceAll("]", "")
-			return [this.getTimezonedDayJs(splitDateTz[0], timeZone).valueOf(), dataPoint.y]
+			// const timeZone = splitDateTz[1]
+			// 	.replaceAll("[", "")
+			// 	.replaceAll("]", "")
+			// return [this.getTimezonedDayJs(splitDateTz[0], timeZone).valueOf(), dataPoint.y]
+			return [getFrontendDayJs(splitDateTz[0]).valueOf(), dataPoint.y]
 		}))
 	}
 
 	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>) {
+		console.log(tableData)
 		return labels
 			.map(l => {
 				let x = l
@@ -78,14 +73,16 @@ export class ChartService {
 	}
 
 	buildChart(rawStartDate: string, rawEndDate: string, rawData: DataPoint[]): ChartjsConfig {
-		const startDate = this.getTimezonedDayJs(rawStartDate)
-		const endDate = this.getTimezonedDayJs(rawEndDate)
+		const startDate = getFrontendDayJs(rawStartDate)
+		const endDate = getFrontendDayJs(rawEndDate)
+		console.log(startDate)
+		console.log(endDate)
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)
 		const dataPoints = this.mapLabelsToDataPoints(labels, tableData)
 		const noJSData = dataPoints.map(dp => {
-			const label = this.getTimezonedDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
+			const label = getFrontendDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
 			return new DataPoint(label, dp.y)
 		})
 		return new ChartjsConfig(labels, config.xAxisSettings, dataPoints, noJSData)
