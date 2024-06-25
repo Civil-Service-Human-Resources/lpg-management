@@ -9,6 +9,8 @@ var dayjs = require('dayjs')
 var advancedFormat = require("dayjs/plugin/advancedFormat");
 
 dayjs.extend(advancedFormat);
+import {getFrontendDayJs, getServerDayJs} from '../utils/dateUtil'
+
 export class ChartService {
 
 	buildLabels(startDate: Dayjs, endDate: Dayjs, increment: Increment) {
@@ -27,7 +29,7 @@ export class ChartService {
 		let increment
 		let xAxisSettings
 		if (dayDiff <= 1) {
-			endDate = getFrontendDayJs().set('minute', 0).set('second', 0)
+			endDate = getServerDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
 		} else if (dayDiff <= 8) {
@@ -48,11 +50,7 @@ export class ChartService {
 	convertRawDataToTable(rawData: DataPoint[]) {
 		return new Map(rawData.map(dataPoint => {
 			const splitDateTz = dataPoint.x.split("Z")
-			// const timeZone = splitDateTz[1]
-			// 	.replaceAll("[", "")
-			// 	.replaceAll("]", "")
-			// return [this.getTimezonedDayJs(splitDateTz[0], timeZone).valueOf(), dataPoint.y]
-			return [getFrontendDayJs(splitDateTz[0]).valueOf(), dataPoint.y]
+			return [getServerDayJs(splitDateTz[0]).valueOf(), dataPoint.y]
 		}))
 	}
 
@@ -65,7 +63,7 @@ export class ChartService {
 				if (tableDataPoint !== undefined) {
 					y = tableDataPoint
 				}
-				return new PageModelDataPoint(x, y)
+				return new PageModelDataPoint(getFrontendDayJs(x).valueOf(), y)
 			})
 	}
 

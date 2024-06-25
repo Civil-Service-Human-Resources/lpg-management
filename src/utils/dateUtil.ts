@@ -5,8 +5,15 @@ var timezone = require('dayjs/plugin/timezone')
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
+export function getServerDayJs(obj?: any) {
+	return getTzDayJs('UTC', obj)
+}
+
 export function getFrontendDayJs(obj?: any) {
-	const tz = 'Europe/London'
+	return getTzDayJs('Europe/London', obj)
+}
+
+export function getTzDayJs(tz: string, obj?: any) {
 	if (obj) {
 		return dayjs.tz(obj, tz)
 	} else {
