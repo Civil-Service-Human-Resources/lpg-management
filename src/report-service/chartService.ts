@@ -67,9 +67,7 @@ export class ChartService {
 			})
 	}
 
-	buildChart(rawStartDate: string, rawEndDate: string, rawData: DataPoint[]): ChartjsConfig {
-		const startDate = getFrontendDayJs(rawStartDate)
-		const endDate = getFrontendDayJs(rawEndDate)
+	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: DataPoint[]): ChartjsConfig {
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)
