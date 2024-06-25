@@ -27,7 +27,7 @@ export class ChartService {
 			endDate = getServerDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
-		} else if (dayDiff <= 7) {
+		} else if (dayDiff <= 8) {
 			increment = new Increment(1, 'day')
 			xAxisSettings = new XAxisSettings("Date", "eeee d MMMM", "day")
 		} else if (dayDiff <= 30) {
@@ -62,9 +62,7 @@ export class ChartService {
 			})
 	}
 
-	buildChart(rawStartDate: string, rawEndDate: string, rawData: DataPoint[]): ChartjsConfig {
-		const startDate = getFrontendDayJs(rawStartDate)
-		const endDate = getFrontendDayJs(rawEndDate)
+	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: DataPoint[]): ChartjsConfig {
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
 		const tableData = this.convertRawDataToTable(rawData)

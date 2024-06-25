@@ -30,6 +30,6 @@ export class CslServiceClient {
 	}
 
 	async getCourseCompletionsAggregationsChart(params: GetCourseAggregationParameters): Promise<Chart> {
-		return plainToInstance(Chart, (await this._http.postWithoutFollowing<Chart>(this.COURSE_COMPLETIONS_AGGREGATIONS_URL, params)).data)
+		return plainToInstance(Chart, (await this._http.postWithoutFollowing<Chart>(this.COURSE_COMPLETIONS_AGGREGATIONS_URL, params.getAsApiParams())).data)
 	}
 }
