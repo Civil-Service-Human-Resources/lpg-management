@@ -7,10 +7,10 @@ import {plainToInstance} from 'class-transformer'
 import {Controller} from '../controller'
 import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
-import {GetCourseAggregationParameters} from '../../report-service/model/getCourseAggregationParameters'
 import * as moment from 'moment'
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
 import { getCsvContentFromData } from '../../utils/dataToCsv'
+import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 
 export class CourseCompletionsController extends Controller {
 
@@ -45,7 +45,13 @@ export class CourseCompletionsController extends Controller {
 	protected getRoutes(): Route[] {
 		return [
 			getRequest('/', this.renderReport(), [this.checkForCourseIdsInSessionMiddleware()]),
-			postRequest('/', this.updateReportFilters(), [this.checkForCourseIdsInSessionMiddleware()]),
+			postRequestWithBody('/', this.updateReportFilters(), {
+				dtoClass: CourseCompletionsFilterModel,
+				onError: {
+					behaviour: BehaviourOnError.REDIRECT,
+					path: '/reporting/course-completions'
+				}
+			}, [this.checkForCourseIdsInSessionMiddleware()]),
 			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
 			postRequestWithBody('/choose-courses', this.chooseCourses(),
 				{
@@ -62,9 +68,7 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(GetCourseAggregationParameters.createForDay(
-				session.getCourseIds(), session!.allOrganisationIds!.map(n => n.toString())
-			), session)
+			const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(new CourseCompletionsFilterModel(), session)
 
 			session.chartData = pageModel.table
 			saveCourseCompletionSessionObject(session, request, () => {})
@@ -74,9 +78,9 @@ export class CourseCompletionsController extends Controller {
 		}
 	}
 
-	private removeValuesFromSession(request: Request) {
+	private removeValuesFromSession(request: Request, filterPageModel: CourseCompletionsFilterModel) {
 		const session = fetchCourseCompletionSessionObject(request)!
-		const remove = (request.query["remove"] || "") as string
+		const remove = (filterPageModel.remove || request.query["remove"] || "") as string
 		if (remove !== "") {
 			if (remove.startsWith("courseId")) {
 				const courseIdToRemove = remove.split(",")[1]
@@ -88,9 +92,15 @@ export class CourseCompletionsController extends Controller {
 
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
-			const session = this.removeValuesFromSession(request)
-			return saveCourseCompletionSessionObject(session, request, () => {
-				return response.redirect('/reporting/course-completions')
+			const filterPageModel = plainToInstance(CourseCompletionsFilterModel, response.locals.input as CourseCompletionsFilterModel)
+			const session = this.removeValuesFromSession(request, filterPageModel)
+			return saveCourseCompletionSessionObject(session, request, async () => {
+				if (!session.hasSelectedCourses()) {
+					return response.redirect('/reporting/course-completions/choose-courses')
+				}
+				const pageModel = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
+				return response.render('page/reporting/courseCompletions/report', {pageModel,
+					backButton: '/reporting/course-completions/choose-courses'})
 			})
 		}
 	}

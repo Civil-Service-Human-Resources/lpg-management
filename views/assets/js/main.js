@@ -1,3 +1,5 @@
 require('./course-dropdown')
 require('./manage-orgs.js')
 require('./chart/main')
+require('./expander/main')
+require('./filter-summary')
