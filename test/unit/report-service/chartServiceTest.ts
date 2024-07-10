@@ -77,12 +77,12 @@ describe('ChartJS implementation tests', () => {
 	describe('convertRawDataToTable tests', () => {
 		it('should convert timezoned date strings into an epoch datatable', function() {
 			const rawDataPoints = [
-				{x: "2024-01-01T10:00:00Z[UTC]", y: 10},
-				{x: "2024-01-03T10:00:00Z[UTC]", y: 20},
-				{x: "2024-01-04T10:00:00Z[UTC]", y: 30},
-				{x: "2024-01-07T10:00:00Z[UTC]", y: 40}
+				{x: "2024-01-01T10:00:00", y: 10},
+				{x: "2024-01-03T10:00:00", y: 20},
+				{x: "2024-01-04T10:00:00", y: 30},
+				{x: "2024-01-07T10:00:00", y: 40}
 			]
-			const result = chartService.convertRawDataToTable(rawDataPoints)
+			const result = chartService.convertRawDataToTable(rawDataPoints, 'hour')
 			expect(result.get(1704103200000)).to.eql(10)
 			expect(result.get(1704276000000)).to.eql(20)
 			expect(result.get(1704362400000)).to.eql(30)
