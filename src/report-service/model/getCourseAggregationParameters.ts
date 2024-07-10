@@ -1,13 +1,19 @@
-import dayjs = require('dayjs')
 import {CourseCompletionsFilterModel} from '../../controllers/reporting/model/courseCompletionsFilterModel'
 import {CourseCompletionsSession} from '../../controllers/reporting/model/courseCompletionsSession'
 import {getFrontendDayJs} from '../../utils/dateUtil'
 import {Dayjs} from 'dayjs'
+var dayjs = require('dayjs')
+var utc = require('dayjs/plugin/utc')
+var timezone = require('dayjs/plugin/timezone')
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 import {DashboardTimePeriodEnum} from '../../controllers/reporting/model/dashboardTimePeriod'
 
 export class GetCourseAggregationParameters {
 	constructor(public startDate: Dayjs,
 				public endDate: Dayjs,
+				public timezone: string,
 				public courseIds: string[],
 				public organisationIds: string[],
 				public binDelimiter: string,
@@ -17,13 +23,19 @@ export class GetCourseAggregationParameters {
 	static createForDay(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
 		const startDate = getFrontendDayJs().startOf('day')
 		const endDate = startDate.add(25, 'hours')
-		return new GetCourseAggregationParameters(startDate, endDate, courseIds, organisationIds, 'HOUR')
+		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'HOUR')
 	}
 
 	static createForPastSevenDays(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const endDate = dayjs().add(1, 'day')
-		const startDate = dayjs().subtract(7, 'day')
-		return new GetCourseAggregationParameters(startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), courseIds, organisationIds, 'DAY')
+		const startDate = getFrontendDayJs().startOf('day').subtract(7, 'day')
+		const endDate = startDate.add(8, 'day')
+		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')
+	}
+
+	static createFromDates(startDate: Dayjs, endDate: Dayjs, courseIds: string[], organisationIds: string[],
+						   binDelimiter: string) {
+		const offsetInHours = startDate.utcOffset() / 60
+		return new GetCourseAggregationParameters(startDate, endDate, `+${offsetInHours}`, courseIds, organisationIds, binDelimiter)
 	}
 
 	static createFromFilterPageModel(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession) {
@@ -36,8 +48,9 @@ export class GetCourseAggregationParameters {
 
 	public getAsApiParams() {
 		return {
-			startDate: this.startDate.toISOString().split("T")[0],
-			endDate: this.endDate.toISOString().split("T")[0],
+			startDate: (this.startDate as any).utc().format('YYYY-MM-DDTHH:mm:ss'),
+			endDate: (this.endDate as any).utc().format('YYYY-MM-DDTHH:mm:ss'),
+			timezone: this.timezone,
 			courseIds: this.courseIds,
 			organisationIds: this.organisationIds,
 			binDelimiter: this.binDelimiter,

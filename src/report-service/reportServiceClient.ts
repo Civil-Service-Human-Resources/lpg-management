@@ -1,7 +1,10 @@
 import {OauthRestService} from 'lib/http/oauthRestService'
 import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
+import {getLogger} from '../utils/logger'
 
 export class ReportServiceClient {
+
+	private logger = getLogger('ReportServiceClient')
 
 	constructor(private readonly _http: OauthRestService) {}
 
@@ -9,13 +12,12 @@ export class ReportServiceClient {
 	private MODULES_URL = "/modules"
 
 	private async getReport(url: string, dateRange: DateStartEnd) {
-		return await this._http.getWithAuthAndConfig(url,
-			{
-				params: {
-					from: dateRange.startDate,
-					to: dateRange.endDate
-				}
-			})
+		const params = {
+			from: dateRange.startDate,
+			to: dateRange.endDate
+		}
+		this.logger.info(`Generating report request for URL: ${url} and params: ${JSON.stringify(params)}`)
+		return await this._http.getWithAuthAndConfig(url, {params})
 	}
 
 	async getReportBookingInformation(dateRange: DateStartEnd): Promise<string> {

@@ -2,6 +2,7 @@ import {DataPoint} from './dataPoint'
 import {Type} from 'class-transformer'
 
 export class Chart {
+	public timezone: string
 	@Type(() => DataPoint)
 	public chart: DataPoint[];
 	@Type(() => Map)
