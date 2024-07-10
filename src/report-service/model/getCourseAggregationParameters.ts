@@ -59,11 +59,4 @@ export class GetCourseAggregationParameters {
 		}
 	}
 
-	getStartDateAsDayJs() {
-		return dayjs(this.startDate)
-	}
-
-	getEndDateAsDayJs() {
-		return dayjs(this.endDate)
-	}
 }

@@ -33,7 +33,7 @@ export class ChartService {
 		let increment
 		let xAxisSettings
 		if (dayDiff <= 1) {
-			endDate = dayjs().set('minute', 0).set('second', 0)
+			endDate = getFrontendDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
 		} else if (dayDiff <= 8) {
@@ -54,7 +54,7 @@ export class ChartService {
 
 	convertRawDataToTable(rawData: DataPoint[], unit: ManipulateType) {
 		return new Map(rawData.map(dataPoint => {
-			let dayObject = dayjs(dataPoint.x)
+			let dayObject = getFrontendDayJs(dataPoint.x)
 			if (unit !== 'hour') {
 				dayObject = dayObject.startOf('day')
 			}
