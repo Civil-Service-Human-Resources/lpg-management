@@ -24,7 +24,7 @@ export class ChartService {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
 			labels.push(nextLabel.valueOf())
 		}
-		if (increment.unit === 'hour') {
+		if (['hour', 'month'].includes(increment.unit)) {
 			labels.pop()
 		}
 		return labels
@@ -44,7 +44,7 @@ export class ChartService {
 			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
 		} else {
 			increment = new Increment(1, 'month')
-			xAxisSettings = new XAxisSettings("Month", "MMMM yyyy", "month")
+			xAxisSettings = new XAxisSettings("Month", "MMMM YYYY", "month")
 		}
 		return new ConfigSettings(
 			startDate, endDate, increment, xAxisSettings

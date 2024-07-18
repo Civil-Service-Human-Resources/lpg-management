@@ -2,13 +2,14 @@ import {CourseCompletionsFilterModel} from '../../controllers/reporting/model/co
 import {CourseCompletionsSession} from '../../controllers/reporting/model/courseCompletionsSession'
 import {getFrontendDayJs} from '../../utils/dateUtil'
 import {Dayjs} from 'dayjs'
+import {DashboardTimePeriodEnum} from '../../controllers/reporting/model/dashboardTimePeriod'
+
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
-import {DashboardTimePeriodEnum} from '../../controllers/reporting/model/dashboardTimePeriod'
 
 export class GetCourseAggregationParameters {
 	constructor(public startDate: Dayjs,
@@ -38,6 +39,12 @@ export class GetCourseAggregationParameters {
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')
 	}
 
+	static createForPastYear(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
+		const endDate = getFrontendDayJs().startOf('day')
+		const startDate = endDate.subtract(1, 'year').startOf('month')
+		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'MONTH')
+	}
+
 	static createFromDates(startDate: Dayjs, endDate: Dayjs, courseIds: string[], organisationIds: string[],
 						   binDelimiter: string) {
 		const offsetInHours = startDate.utcOffset() / 60
@@ -46,10 +53,10 @@ export class GetCourseAggregationParameters {
 
 	static createFromFilterPageModel(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession) {
 		const organisationIds = session.allOrganisationIds!.map(n => n.toString())
-		if (pageModel.getTimePeriod().type === DashboardTimePeriodEnum.PAST_SEVEN_DAYS) {
-			return GetCourseAggregationParameters.createForPastSevenDays(session.getCourseIds(), organisationIds)
-		} else if (pageModel.getTimePeriod().type === DashboardTimePeriodEnum.PAST_MONTH) {
-			return GetCourseAggregationParameters.createForPastMonth(session.getCourseIds(), organisationIds)
+		switch (pageModel.getTimePeriod().type) {
+			case DashboardTimePeriodEnum.PAST_SEVEN_DAYS: return GetCourseAggregationParameters.createForPastSevenDays(session.getCourseIds(), organisationIds)
+			case DashboardTimePeriodEnum.PAST_MONTH: return GetCourseAggregationParameters.createForPastMonth(session.getCourseIds(), organisationIds)
+			case DashboardTimePeriodEnum.PAST_YEAR: return GetCourseAggregationParameters.createForPastYear(session.getCourseIds(), organisationIds)
 		}
 		return GetCourseAggregationParameters.createForDay(session.getCourseIds(), organisationIds)
 	}
