@@ -21,20 +21,20 @@ export class GetCourseAggregationParameters {
 				public gradeIds?: string[]) { }
 
 	static createForDay(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const startDate = getFrontendDayJs().startOf('day')
-		const endDate = getFrontendDayJs()
+		const endDate = getFrontendDayJs().add(1, 'day').startOf('day')
+		const startDate = endDate.subtract(24, 'hours')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'HOUR')
 	}
 
 	static createForPastSevenDays(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const endDate = getFrontendDayJs().startOf('day')
-		const startDate = endDate.subtract(7, 'day')
+		const endDate = getFrontendDayJs().endOf('day')
+		const startDate = getFrontendDayJs().startOf('day').subtract(7, 'day')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')
 	}
 
 	static createForPastMonth(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const endDate = getFrontendDayJs().startOf('day')
-		const startDate = endDate.subtract(1, 'month')
+		const endDate = getFrontendDayJs().endOf('day')
+		const startDate = getFrontendDayJs().startOf('day').subtract(1, 'month')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')
 	}
 
