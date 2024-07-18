@@ -24,7 +24,6 @@ export class ChartService {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
 			labels.push(nextLabel.valueOf())
 		}
-		labels.pop()
 		return labels
 	}
 
@@ -36,13 +35,10 @@ export class ChartService {
 			endDate = getFrontendDayJs().set('minute', 0).set('second', 0)
 			increment = new Increment(1, 'hour')
 			xAxisSettings = new XAxisSettings("Time", "hA", "hour")
-		} else if (dayDiff <= 8) {
+		} else if (dayDiff <= 31) {
 			endDate = endDate.startOf('day')
 			increment = new Increment(1, 'day')
 			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
-		} else if (dayDiff <= 30) {
-			increment = new Increment(1, 'week')
-			xAxisSettings = new XAxisSettings("Week commencing", "[Week commencing] Do MMMM YYYY", "week")
 		} else {
 			increment = new Increment(1, 'month')
 			xAxisSettings = new XAxisSettings("Month", "MMMM yyyy", "month")

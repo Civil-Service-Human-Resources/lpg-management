@@ -20,12 +20,14 @@
     {% endset -%}
     {% set tableHtml %}
         <h2 class="govuk-heading-s">Table</h2>
-        {{ govukTable({
-            firstCellIsHeader: true,
-            caption: table.caption,
-            head: table.headings,
-            rows: table.rows
-        }) }}
+        <div class='scroll-panel'>
+            {{ govukTable({
+                firstCellIsHeader: true,
+                caption: table.caption,
+                head: table.headings,
+                rows: table.rows
+            }) }}
+        </div>
     {% endset -%}
     {{ govukTabs({
         items: [
