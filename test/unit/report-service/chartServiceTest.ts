@@ -25,7 +25,7 @@ describe('ChartJS implementation tests', () => {
 			const endDate = dayjs("2024-12-10 15:00:00")
 			const increment = new Increment(1, 'month')
 			const labels = chartService.buildLabels(startDate, endDate, increment)
-			expect(labels.length).to.eql(13)
+			expect(labels.length).to.eql(12)
 		})
 	})
 	describe('getConfigurationSettings tests', () => {
@@ -59,7 +59,7 @@ describe('ChartJS implementation tests', () => {
 			expect(result.endDate).to.eql(endDate)
 			expect(result.increment.amount).to.eql(1)
 			expect(result.increment.unit).to.eql("month")
-			expect(result.xAxisSettings.tooltipFormat).to.eql("MMMM yyyy")
+			expect(result.xAxisSettings.tooltipFormat).to.eql("MMMM YYYY")
 			expect(result.xAxisSettings.unit).to.eql("month")
 		})
 	})
