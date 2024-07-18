@@ -40,7 +40,7 @@ export class GetCourseAggregationParameters {
 	}
 
 	static createForPastYear(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const endDate = getFrontendDayJs().startOf('day')
+		const endDate = getFrontendDayJs().endOf('day')
 		const startDate = endDate.subtract(1, 'year').startOf('month')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'MONTH')
 	}
