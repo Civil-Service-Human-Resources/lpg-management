@@ -21,14 +21,20 @@ export class GetCourseAggregationParameters {
 				public gradeIds?: string[]) { }
 
 	static createForDay(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		const startDate = getFrontendDayJs().startOf('day')
-		const endDate = startDate.add(25, 'hours')
+		const endDate = getFrontendDayJs().add(1, 'day').startOf('day')
+		const startDate = endDate.subtract(24, 'hours')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'HOUR')
 	}
 
 	static createForPastSevenDays(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
+		const endDate = getFrontendDayJs().endOf('day')
 		const startDate = getFrontendDayJs().startOf('day').subtract(7, 'day')
-		const endDate = startDate.add(8, 'day')
+		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')
+	}
+
+	static createForPastMonth(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
+		const endDate = getFrontendDayJs().endOf('day')
+		const startDate = getFrontendDayJs().startOf('day').subtract(1, 'month')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')
 	}
 
@@ -42,6 +48,8 @@ export class GetCourseAggregationParameters {
 		const organisationIds = session.allOrganisationIds!.map(n => n.toString())
 		if (pageModel.getTimePeriod().type === DashboardTimePeriodEnum.PAST_SEVEN_DAYS) {
 			return GetCourseAggregationParameters.createForPastSevenDays(session.getCourseIds(), organisationIds)
+		} else if (pageModel.getTimePeriod().type === DashboardTimePeriodEnum.PAST_MONTH) {
+			return GetCourseAggregationParameters.createForPastMonth(session.getCourseIds(), organisationIds)
 		}
 		return GetCourseAggregationParameters.createForDay(session.getCourseIds(), organisationIds)
 	}
