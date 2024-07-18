@@ -48,7 +48,7 @@ describe('ChartJS implementation tests', () => {
 			expect(result.endDate).to.eql(endDate)
 			expect(result.increment.amount).to.eql(1)
 			expect(result.increment.unit).to.eql("day")
-			expect(result.xAxisSettings.tooltipFormat).to.eql("eeee d MMMM")
+			expect(result.xAxisSettings.tooltipFormat).to.eql("dddd Do MMMM")
 			expect(result.xAxisSettings.unit).to.eql("day")
 		})
 		it('Should get correct settings for 17 days difference', () => {
@@ -59,7 +59,7 @@ describe('ChartJS implementation tests', () => {
 			expect(result.endDate).to.eql(endDate)
 			expect(result.increment.amount).to.eql(1)
 			expect(result.increment.unit).to.eql("week")
-			expect(result.xAxisSettings.tooltipFormat).to.eql("d MMMM yyyy")
+			expect(result.xAxisSettings.tooltipFormat).to.eql("[Week commencing] Do MMMM YYYY")
 			expect(result.xAxisSettings.unit).to.eql("week")
 		})
 		it('Should get correct settings for 2 months difference', () => {
@@ -77,12 +77,12 @@ describe('ChartJS implementation tests', () => {
 	describe('convertRawDataToTable tests', () => {
 		it('should convert timezoned date strings into an epoch datatable', function() {
 			const rawDataPoints = [
-				{x: "2024-01-01T10:00:00Z[UTC]", y: 10},
-				{x: "2024-01-03T10:00:00Z[UTC]", y: 20},
-				{x: "2024-01-04T10:00:00Z[UTC]", y: 30},
-				{x: "2024-01-07T10:00:00Z[UTC]", y: 40}
+				{x: "2024-01-01T10:00:00", y: 10},
+				{x: "2024-01-03T10:00:00", y: 20},
+				{x: "2024-01-04T10:00:00", y: 30},
+				{x: "2024-01-07T10:00:00", y: 40}
 			]
-			const result = chartService.convertRawDataToTable(rawDataPoints)
+			const result = chartService.convertRawDataToTable(rawDataPoints, 'hour')
 			expect(result.get(1704103200000)).to.eql(10)
 			expect(result.get(1704276000000)).to.eql(20)
 			expect(result.get(1704362400000)).to.eql(30)
@@ -97,10 +97,12 @@ describe('ChartJS implementation tests', () => {
 			])
 			const labels = [1, 2, 3, 4, 5]
 			const result = chartService.mapLabelsToDataPoints(labels, tableData)
+			expect(result.length).to.eql(5)
 			expect(result[0]).to.eql({x: 1, y: 10})
 			expect(result[1]).to.eql({x: 2, y: 0})
 			expect(result[2]).to.eql({x: 3, y: 30})
 			expect(result[3]).to.eql({x: 4, y: 0})
+			expect(result[4]).to.eql({x: 5, y: 0})
 		})
 	})
 })

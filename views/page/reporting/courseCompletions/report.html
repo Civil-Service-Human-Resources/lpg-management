@@ -33,11 +33,16 @@
               value: "today",
               text: "Today",
               checked: pageModel.filters.timePeriod == "today"
+            },
+            {
+              value: "past-seven-days",
+              text: "Past seven days",
+              checked: pageModel.filters.timePeriod == "past-seven-days"
             }
           ]
         }) }}
       {% endset %}
-      {{ expander("Date", dateHtml) }}
+      {{ expander("Date", dateHtml, true) }}
     </form>
   </div>
   <div class="govuk-grid-column-two-thirds">

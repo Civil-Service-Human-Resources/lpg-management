@@ -28,6 +28,7 @@
   @include govuk-responsive-margin(1, "right");
   border-radius: 0.3rem;
   position: relative;
+  display: inline-block;
 }
 
 .filter-summary__tag--dismiss {
@@ -68,10 +69,6 @@
 .filter-summary__tags-summary {
   @include govuk-responsive-margin(2, "right");
   font-weight: 700;
-}
-
-.filter-summary__tag-pretext {
-  @include govuk-responsive-margin(1, "right");
 }
 
 .filter-summary__changeLink {

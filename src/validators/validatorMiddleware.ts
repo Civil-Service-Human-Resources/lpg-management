@@ -56,6 +56,7 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 					res.render(opts.onError.path, {errors, form: req.body})
 				}
 			} else {
+				logger.debug('Request body is valid')
 				res.locals.input = output;
 				next();
 			}

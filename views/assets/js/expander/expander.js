@@ -74,7 +74,6 @@ window.GOVUK.Modules = window.GOVUK.Modules || {};
 	}
 
 	Expander.prototype.toggleContent = function (e) {
-		console.log("Toggling")
 		if (this.$toggleButton.getAttribute('aria-expanded') === 'false') {
 			this.$toggleButton.setAttribute('aria-expanded', true)
 			this.$content.classList.add('expander__content--visible')
