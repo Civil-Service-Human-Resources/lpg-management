@@ -21,16 +21,12 @@ export class GetCourseAggregationParameters {
 				public gradeIds?: string[]) { }
 
 	static createForDay(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		// const startDate = getFrontendDayJs().startOf('day')
-		// const endDate = startDate.add(25, 'hours')
+		const startDate = getFrontendDayJs().startOf('day')
 		const endDate = getFrontendDayJs()
-		const startDate = endDate.startOf('day')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'HOUR')
 	}
 
 	static createForPastSevenDays(courseIds: string[], organisationIds: string[]): GetCourseAggregationParameters {
-		// const startDate = getFrontendDayJs().startOf('day').subtract(7, 'day')
-		// const endDate = startDate.add(8, 'day')
 		const endDate = getFrontendDayJs().startOf('day')
 		const startDate = endDate.subtract(7, 'day')
 		return GetCourseAggregationParameters.createFromDates(startDate, endDate, courseIds, organisationIds, 'DAY')

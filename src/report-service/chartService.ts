@@ -24,6 +24,9 @@ export class ChartService {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
 			labels.push(nextLabel.valueOf())
 		}
+		if (increment.unit === 'hour') {
+			labels.pop()
+		}
 		return labels
 	}
 
