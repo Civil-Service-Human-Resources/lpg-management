@@ -243,6 +243,12 @@ ul.bullet {
 	white-space: nowrap;
 }
 
+.scroll-panel {
+	overflow-y: scroll;
+	max-height: 50vh;
+	@include govuk-responsive-padding(4, "right");
+}
+
 @media screen and (min-width: $tablet-small) {
 	.govuk-input,
 	.govuk-textarea {
