@@ -22,6 +22,7 @@ export class ChartService {
 		let labels = [nextLabel.valueOf()]
 		while (nextLabel.isBefore(endDate)) {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
+			console.log(nextLabel)
 			labels.push(nextLabel.valueOf())
 		}
 		if (['hour', 'month'].includes(increment.unit)) {

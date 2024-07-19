@@ -16,9 +16,11 @@ export function getFrontendDayJs(obj?: any) {
 }
 
 export function getTzDayJs(tz: string, obj?: any) {
+	let dayObject
 	if (obj) {
-		return dayjs.tz(obj, tz)
+		dayObject = dayjs.tz(obj, tz)
 	} else {
-		return dayjs().tz(tz)
+		dayObject = dayjs().tz(tz)
 	}
+	return dayjs(dayObject).utcOffset(dayObject.utcOffset())
 }
