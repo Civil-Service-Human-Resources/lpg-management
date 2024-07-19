@@ -22,5 +22,5 @@ export function getTzDayJs(tz: string, obj?: any) {
 	} else {
 		dayObject = dayjs().tz(tz)
 	}
-	return dayjs(dayObject).utcOffset(dayObject.utcOffset())
+	return dayjs(dayObject).utcOffset(dayObject.utcOffset() / 60)
 }
