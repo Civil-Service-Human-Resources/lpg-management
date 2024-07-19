@@ -15,4 +15,13 @@ export class Chart {
 		this.total = total
 	}
 
+	public getChartData(delimiter: string) {
+		if (delimiter !== 'HOUR') {
+			this.chart.forEach(dataPoint => {
+				dataPoint.x = dataPoint.x.split("T")[0]
+			})
+		}
+		return this.chart
+	}
+
 }

@@ -1,28 +1,20 @@
 import {ChartjsConfig} from './model/chartjsConfig'
 import {DataPoint, PageModelDataPoint} from './model/dataPoint'
-import {Dayjs, ManipulateType} from 'dayjs'
+import {Dayjs} from 'dayjs'
 import {Increment} from './model/increment'
 import {XAxisSettings} from './model/xAxisSettings'
 import {ConfigSettings} from './model/configSettings'
-import {getFrontendDayJs} from '../utils/dateUtil'
-var dayjs = require('dayjs')
-var utc = require('dayjs/plugin/utc')
-var timezone = require('dayjs/plugin/timezone')
-
-var advancedFormat = require("dayjs/plugin/advancedFormat");
-
-dayjs.extend(advancedFormat);
-dayjs.extend(utc)
-dayjs.extend(timezone)
+import {getDayJsRawValue, getFrontendDayJs} from '../utils/dateUtil'
 
 export class ChartService {
 
 	buildLabels(startDate: Dayjs, endDate: Dayjs, increment: Increment) {
+		const format = increment.isDate() ? "YYYY-MM-DD" : "YYYY-MM-DDTHH:mm:ss"
 		let nextLabel = startDate.startOf('day')
-		let labels = [nextLabel.valueOf()]
+		let labels = [nextLabel.format(format)]
 		while (nextLabel.isBefore(endDate)) {
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
-			labels.push(nextLabel.valueOf())
+			labels.push( nextLabel.format(format))
 		}
 		if (['hour', 'month'].includes(increment.unit)) {
 			labels.pop()
@@ -51,17 +43,10 @@ export class ChartService {
 		)
 	}
 
-	convertRawDataToTable(rawData: DataPoint[], unit: ManipulateType) {
-		return new Map(rawData.map(dataPoint => {
-			let dayObject = dayjs(dataPoint.x)
-			if (unit !== 'hour') {
-				dayObject = dayObject.startOf('day')
-			}
-			return [dayObject.valueOf(), dataPoint.y]
+	mapLabelsToDataPoints(labels: string[], dataPoints: DataPoint[]) {
+		const tableData = new Map(dataPoints.map(dataPoint => {
+			return [dataPoint.x, dataPoint.y]
 		}))
-	}
-
-	mapLabelsToDataPoints(labels: number[], tableData: Map<number, number>) {
 		return labels
 			.map(l => {
 				let x = l
@@ -70,20 +55,20 @@ export class ChartService {
 				if (tableDataPoint !== undefined) {
 					y = tableDataPoint
 				}
-				return new PageModelDataPoint(x, y)
+				return new DataPoint(x, y)
 			})
 	}
 
 	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: DataPoint[]): ChartjsConfig {
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
-		const tableData = this.convertRawDataToTable(rawData, config.increment.unit)
-		const dataPoints = this.mapLabelsToDataPoints(labels, tableData)
+		const dataPoints = this.mapLabelsToDataPoints(labels, rawData)
 		const noJSData = dataPoints.map(dp => {
 			const label = getFrontendDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
 			return new DataPoint(label, dp.y)
 		})
-		return new ChartjsConfig(labels, config.xAxisSettings, dataPoints, noJSData)
+		return new ChartjsConfig(labels.map(l => getDayJsRawValue(l)), config.xAxisSettings,
+			dataPoints.map(dataPoint => new PageModelDataPoint(getDayJsRawValue(dataPoint.x), dataPoint.y)), noJSData)
 	}
 
 }

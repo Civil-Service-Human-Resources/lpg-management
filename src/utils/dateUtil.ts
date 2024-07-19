@@ -1,26 +1,24 @@
+import {Dayjs} from 'dayjs'
+
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
+var advancedFormat = require("dayjs/plugin/advancedFormat");
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
+dayjs.extend(advancedFormat)
 
 export const defaultFeTimezone = 'Europe/London'
+const offset = dayjs().tz(defaultFeTimezone).utcOffset()
 
-export function getServerDayJs(obj?: any) {
-	return getTzDayJs('UTC', obj)
-}
-
-export function getFrontendDayJs(obj?: any) {
-	return getTzDayJs(defaultFeTimezone, obj)
-}
-
-export function getTzDayJs(tz: string, obj?: any) {
-	let dayObject
+export function getFrontendDayJs(obj?: any): Dayjs {
 	if (obj) {
-		dayObject = dayjs.tz(obj, tz)
-	} else {
-		dayObject = dayjs().tz(tz)
+		return dayjs(obj).utcOffset(offset)
 	}
-	return dayjs(dayObject).utcOffset(dayObject.utcOffset() / 60)
+	return dayjs().utcOffset(offset)
+}
+
+export function getDayJsRawValue(obj: any) {
+	return getFrontendDayJs(obj).valueOf()
 }

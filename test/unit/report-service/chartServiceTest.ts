@@ -1,5 +1,6 @@
 var dayjs = require('dayjs')
 import {expect} from 'chai'
+import {DataPoint} from '../../../src/report-service/model/dataPoint'
 import {ChartService} from '../../../src/report-service/chartService'
 import {Increment} from '../../../src/report-service/model/increment'
 
@@ -63,35 +64,20 @@ describe('ChartJS implementation tests', () => {
 			expect(result.xAxisSettings.unit).to.eql("month")
 		})
 	})
-	describe('convertRawDataToTable tests', () => {
-		it('should convert timezoned date strings into an epoch datatable', function() {
-			const rawDataPoints = [
-				{x: "2024-01-01T10:00:00", y: 10},
-				{x: "2024-01-03T10:00:00", y: 20},
-				{x: "2024-01-04T10:00:00", y: 30},
-				{x: "2024-01-07T10:00:00", y: 40}
-			]
-			const result = chartService.convertRawDataToTable(rawDataPoints, 'hour')
-			expect(result.get(1704103200000)).to.eql(10)
-			expect(result.get(1704276000000)).to.eql(20)
-			expect(result.get(1704362400000)).to.eql(30)
-			expect(result.get(1704621600000)).to.eql(40)
-		})
-	})
 	describe('mapLabelsToDataTable tests', () => {
 		it('should map a datatable to labels, including 0 values', function() {
-			const tableData = new Map([
-				[1, 10],
-				[3, 30]
-			])
-			const labels = [1, 2, 3, 4, 5]
-			const result = chartService.mapLabelsToDataPoints(labels, tableData)
+			const dataPoints = [
+				new DataPoint("1", 10),
+				new DataPoint("3", 30)
+			]
+			const labels = ["1", "2", "3", "4", "5"]
+			const result = chartService.mapLabelsToDataPoints(labels, dataPoints)
 			expect(result.length).to.eql(5)
-			expect(result[0]).to.eql({x: 1, y: 10})
-			expect(result[1]).to.eql({x: 2, y: 0})
-			expect(result[2]).to.eql({x: 3, y: 30})
-			expect(result[3]).to.eql({x: 4, y: 0})
-			expect(result[4]).to.eql({x: 5, y: 0})
+			expect(result[0]).to.eql({x: "1", y: 10})
+			expect(result[1]).to.eql({x: "2", y: 0})
+			expect(result[2]).to.eql({x: "3", y: 30})
+			expect(result[3]).to.eql({x: "4", y: 0})
+			expect(result[4]).to.eql({x: "5", y: 0})
 		})
 	})
 })
