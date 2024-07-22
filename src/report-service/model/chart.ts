@@ -24,4 +24,13 @@ export class Chart {
 		return this.chart
 	}
 
+	public getChartDataAsMap(delimiter: string) {
+		const map = new Map<string, number>()
+		this.chart.forEach(dataPoint => {
+			const key = delimiter !== 'HOUR' ? dataPoint.x.split("T")[0] : dataPoint.x
+			map.set(key, dataPoint.y)
+		})
+		return map
+	}
+
 }

@@ -9,16 +9,11 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 
-export const defaultFeTimezone = 'Europe/London'
-const offset = dayjs().tz(defaultFeTimezone).utcOffset()
+dayjs.tz.setDefault("UTC")
 
 export function getFrontendDayJs(obj?: any): Dayjs {
 	if (obj) {
-		return dayjs(obj).utcOffset(offset)
+		return dayjs(obj)
 	}
-	return dayjs().utcOffset(offset)
-}
-
-export function getDayJsRawValue(obj: any) {
-	return getFrontendDayJs(obj).valueOf()
+	return dayjs()
 }

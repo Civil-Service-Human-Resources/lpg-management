@@ -1,25 +1,25 @@
 import {ChartjsConfig} from './model/chartjsConfig'
-import {DataPoint, PageModelDataPoint} from './model/dataPoint'
+import {DataPoint} from './model/dataPoint'
 import {Dayjs} from 'dayjs'
 import {Increment} from './model/increment'
 import {XAxisSettings} from './model/xAxisSettings'
 import {ConfigSettings} from './model/configSettings'
-import {getDayJsRawValue, getFrontendDayJs} from '../utils/dateUtil'
+import {getFrontendDayJs} from '../utils/dateUtil'
 
 export class ChartService {
 
-	buildLabels(startDate: Dayjs, endDate: Dayjs, increment: Increment) {
+	buildGraphDataPoints(startDate: Dayjs, endDate: Dayjs, increment: Increment,
+						 rawData: Map<string, number>): DataPoint[] {
 		const format = increment.isDate() ? "YYYY-MM-DD" : "YYYY-MM-DDTHH:mm:ss"
 		let nextLabel = startDate.startOf('day')
-		let labels = [nextLabel.format(format)]
-		while (nextLabel.isBefore(endDate)) {
+		let dataPoints: DataPoint[] = []
+		while (!nextLabel.isAfter(endDate)) {
+			const label = nextLabel.format(format)
+			const value = rawData.get(label) || 0
+			dataPoints.push(new DataPoint(label, value))
 			nextLabel = nextLabel.add(increment.amount, increment.unit)
-			labels.push( nextLabel.format(format))
 		}
-		if (['hour', 'month'].includes(increment.unit)) {
-			labels.pop()
-		}
-		return labels
+		return dataPoints
 	}
 
 	getConfigurationSettings(startDate: Dayjs, endDate: Dayjs) {
@@ -43,32 +43,25 @@ export class ChartService {
 		)
 	}
 
-	mapLabelsToDataPoints(labels: string[], dataPoints: DataPoint[]) {
-		const tableData = new Map(dataPoints.map(dataPoint => {
-			return [dataPoint.x, dataPoint.y]
-		}))
-		return labels
-			.map(l => {
-				let x = l
-				let y = 0
-				const tableDataPoint = tableData.get(l)
-				if (tableDataPoint !== undefined) {
-					y = tableDataPoint
-				}
-				return new DataPoint(x, y)
-			})
-	}
-
-	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: DataPoint[]): ChartjsConfig {
+	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: Map<string, number>): ChartjsConfig {
 		const config = this.getConfigurationSettings(startDate, endDate)
-		const labels = this.buildLabels(config.startDate, config.endDate, config.increment)
-		const dataPoints = this.mapLabelsToDataPoints(labels, rawData)
-		const noJSData = dataPoints.map(dp => {
-			const label = getFrontendDayJs(dp.x).format(config.xAxisSettings.tooltipFormat)
+		const dataPoints = this.buildGraphDataPoints(config.startDate, config.endDate, config.increment, rawData)
+		console.log(JSON.stringify(dataPoints))
+		const dayJsDataPoints = dataPoints.map(dataPont => {
+			console.log((getFrontendDayJs(dataPont.x) as any))
+			return {
+				x: (getFrontendDayJs(dataPont.x) as any),
+				y: dataPont.y
+			}
+		})
+		const noJSData = dayJsDataPoints.map(dp => {
+			const label = dp.x.format(config.xAxisSettings.tooltipFormat)
 			return new DataPoint(label, dp.y)
 		})
-		return new ChartjsConfig(labels.map(l => getDayJsRawValue(l)), config.xAxisSettings,
-			dataPoints.map(dataPoint => new PageModelDataPoint(getDayJsRawValue(dataPoint.x), dataPoint.y)), noJSData)
+		const conf =  new ChartjsConfig(dataPoints.map(dp => dp.x), config.xAxisSettings,
+			dataPoints, noJSData)
+		console.log(JSON.stringify(conf))
+		return conf
 	}
 
 }
