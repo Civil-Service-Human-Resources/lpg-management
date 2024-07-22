@@ -8,12 +8,13 @@ import {getFrontendDayJs} from '../utils/dateUtil'
 
 export class ChartService {
 
-	buildGraphDataPoints(startDate: Dayjs, endDate: Dayjs, increment: Increment,
+	buildGraphDataPoints(config: ConfigSettings,
 						 rawData: Map<string, number>): DataPoint[] {
+		const increment = config.increment
 		const format = increment.isDate() ? "YYYY-MM-DD" : "YYYY-MM-DDTHH:mm:ss"
-		let nextLabel = startDate.startOf('day')
+		let nextLabel = config.startDate.startOf('day')
 		let dataPoints: DataPoint[] = []
-		while (!nextLabel.isAfter(endDate)) {
+		while (!nextLabel.isAfter(config.endDate)) {
 			const label = nextLabel.format(format)
 			const value = rawData.get(label) || 0
 			dataPoints.push(new DataPoint(label, value))
@@ -46,7 +47,7 @@ export class ChartService {
 
 	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: Map<string, number>): ChartjsConfig {
 		const config = this.getConfigurationSettings(startDate, endDate)
-		const dataPoints = this.buildGraphDataPoints(config.startDate, config.endDate, config.increment, rawData)
+		const dataPoints = this.buildGraphDataPoints(config, rawData)
 		console.log(JSON.stringify(dataPoints))
 		const dayJsDataPoints = dataPoints.map(dataPont => {
 			console.log((getFrontendDayJs(dataPont.x) as any))

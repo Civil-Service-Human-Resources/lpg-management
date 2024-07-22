@@ -9,7 +9,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 
-dayjs.tz.setDefault("UTC")
+dayjs.tz.setDefault("Europe/London")
 
 export function getFrontendDayJs(obj?: any): Dayjs {
 	if (obj) {
