@@ -1,7 +1,10 @@
+import {ConfigSettings} from '../../../src/report-service/model/configSettings'
+
 var dayjs = require('dayjs')
 import {expect} from 'chai'
 import {ChartService} from '../../../src/report-service/chartService'
 import {Increment} from '../../../src/report-service/model/increment'
+import {XAxisSettings} from '../../../src/report-service/model/xAxisSettings'
 
 describe('ChartJS implementation tests', () => {
 	const chartService = new ChartService()
@@ -15,7 +18,8 @@ describe('ChartJS implementation tests', () => {
 			rawData.set("2024-01-01T05:00:00", 1)
 			rawData.set("2024-01-01T07:00:00", 20)
 			rawData.set("2024-01-01T08:00:00", 30)
-			const data = chartService.buildGraphDataPoints(startDate, endDate, increment, rawData)
+			const config = new ConfigSettings(startDate, endDate, increment, new XAxisSettings("", "", ""))
+			const data = chartService.buildGraphDataPoints(config, rawData)
 			expect(data.length).to.eql(9)
 			expect(data[0].x).to.eql("2024-01-01T00:00:00")
 			expect(data[0].y).to.eql(0)
@@ -45,7 +49,8 @@ describe('ChartJS implementation tests', () => {
 			rawData.set("2024-01-02", 1)
 			rawData.set("2024-01-04", 20)
 			rawData.set("2024-01-05", 30)
-			const data = chartService.buildGraphDataPoints(startDate, endDate, increment, rawData)
+			const config = new ConfigSettings(startDate, endDate, increment, new XAxisSettings("", "", ""))
+			const data = chartService.buildGraphDataPoints(config, rawData)
 			expect(data.length).to.eql(7)
 			expect(data[0].x).to.eql("2024-01-01")
 			expect(data[0].y).to.eql(10)
@@ -70,7 +75,8 @@ describe('ChartJS implementation tests', () => {
 			rawData.set("2024-02-01", 10)
 			rawData.set("2024-05-01", 1)
 			rawData.set("2024-06-01", 20)
-			const data = chartService.buildGraphDataPoints(startDate, endDate, increment, rawData)
+			const config = new ConfigSettings(startDate, endDate, increment, new XAxisSettings("", "", ""))
+			const data = chartService.buildGraphDataPoints(config, rawData)
 			expect(data.length).to.eql(6)
 			expect(data[0].x).to.eql("2024-01-01")
 			expect(data[0].y).to.eql(0)
