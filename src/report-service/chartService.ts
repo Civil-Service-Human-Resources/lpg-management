@@ -35,6 +35,7 @@ export class ChartService {
 			increment = new Increment(1, 'day')
 			xAxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
 		} else {
+			endDate = endDate.startOf('day')
 			increment = new Increment(1, 'month')
 			xAxisSettings = new XAxisSettings("Month", "MMMM YYYY", "month")
 		}
