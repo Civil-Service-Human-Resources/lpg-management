@@ -8,12 +8,12 @@ var advancedFormat = require("dayjs/plugin/advancedFormat");
 dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
+const tz = "Europe/London"
 
-dayjs.tz.setDefault("Europe/London")
 
 export function getFrontendDayJs(obj?: any): Dayjs {
 	if (obj) {
-		return dayjs(obj)
+		return dayjs(obj).tz(tz)
 	}
-	return dayjs()
+	return dayjs().tz(tz)
 }

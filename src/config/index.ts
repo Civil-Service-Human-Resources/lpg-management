@@ -96,6 +96,7 @@ export const CSL_SERVICE = set({
 })
 
 export const REGISTRY_SERVICE = set({
+
 	url: env.REGISTRY_SERVICE_URL || 'http://localhost:9002',
 	timeout: Number(env.REGISTRY_SERVICE_TIMEOUT_MS)
 })
@@ -116,3 +117,5 @@ export const REPORTING = {
 }
 
 export const SERVER_TIMEOUT_MS = Number(env.SERVER_TIMEOUT_MS) || 240000
+// Azure's servers are all in UTC, so to ensure parity between dev environment and cloud, set the server TZ to UTC
+export const SERVER_DEFAULT_TZ = env.SERVER_DEFAULT_TZ || 'UTC'

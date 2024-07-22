@@ -1,5 +1,6 @@
 /* tslint:disable:no-var-requires */
 import * as config from './config'
+process.env.TZ = config.SERVER_DEFAULT_TZ
 export const appInsights = require('applicationinsights')
 appInsights.setup(config.APPLICATIONINSIGHTS_CONNECTION_STRING)
 .setAutoCollectConsole(true)

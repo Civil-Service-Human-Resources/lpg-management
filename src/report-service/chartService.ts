@@ -48,11 +48,10 @@ export class ChartService {
 	buildChart(startDate: Dayjs, endDate: Dayjs, rawData: Map<string, number>): ChartjsConfig {
 		const config = this.getConfigurationSettings(startDate, endDate)
 		const dataPoints = this.buildGraphDataPoints(config, rawData)
-		console.log(JSON.stringify(dataPoints))
 		const dayJsDataPoints = dataPoints.map(dataPont => {
-			console.log((getFrontendDayJs(dataPont.x) as any))
+			const FEDayJs = getFrontendDayJs(dataPont.x)
 			return {
-				x: (getFrontendDayJs(dataPont.x) as any),
+				x: FEDayJs,
 				y: dataPont.y
 			}
 		})
@@ -62,7 +61,6 @@ export class ChartService {
 		})
 		const conf =  new ChartjsConfig(dataPoints.map(dp => dp.x), config.xAxisSettings,
 			dataPoints, noJSData)
-		console.log(JSON.stringify(conf))
 		return conf
 	}
 
