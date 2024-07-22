@@ -96,7 +96,6 @@ export const CSL_SERVICE = set({
 })
 
 export const REGISTRY_SERVICE = set({
-
 	url: env.REGISTRY_SERVICE_URL || 'http://localhost:9002',
 	timeout: Number(env.REGISTRY_SERVICE_TIMEOUT_MS)
 })
