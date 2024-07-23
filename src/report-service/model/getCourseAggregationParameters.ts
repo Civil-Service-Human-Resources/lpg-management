@@ -62,8 +62,6 @@ export class GetCourseAggregationParameters {
 	}
 
 	public getAsApiParams() {
-		console.log(this.startDate)
-		console.log(this.endDate)
 		return {
 			startDate: (this.startDate as any).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			endDate: (this.endDate as any).utc().format('YYYY-MM-DDTHH:mm:ss'),

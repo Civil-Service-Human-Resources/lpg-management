@@ -11,6 +11,8 @@ import * as moment from 'moment'
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
 import { getCsvContentFromData } from '../../utils/dataToCsv'
 import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
+import {COURSE_COMPLETIONS_FEEDBACK} from '../../config'
+import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 
 export class CourseCompletionsController extends Controller {
 
@@ -42,6 +44,17 @@ export class CourseCompletionsController extends Controller {
 		}
 	}
 
+	private feedbackBannerMiddleware() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			response.locals.feedbackBanner = { message: COURSE_COMPLETIONS_FEEDBACK.MESSAGE }
+			next()
+		}
+	}
+
+	protected getControllerMiddleware(): ((req: Request, res: Response, next: NextFunction) => void)[] {
+		return [...super.getControllerMiddleware(), this.feedbackBannerMiddleware()]
+	}
+
 	protected getRoutes(): Route[] {
 		return [
 			getRequest('/', this.renderReport(), [this.checkForCourseIdsInSessionMiddleware()]),
@@ -61,8 +74,18 @@ export class CourseCompletionsController extends Controller {
 						path: '/reporting/course-completions/choose-courses'
 					}
 				}, [this.checkForOrgIdsInSessionMiddleware()]),
-			postRequest("/chart-csv", this.downloadDataAsCsv())
+			postRequest("/chart-csv", this.downloadDataAsCsv()),
+			getRequest("/feedback", this.feedback())
 		]
+	}
+
+	public feedback() {
+		return async (request: Request, response: Response) => {
+			let currentUser = request.user!
+			this.logger.info(`User ${currentUser.uid} submitting reporting feedback`)
+			const currentUserDepartment = currentUser.organisationalUnit! as OrganisationalUnit
+			response.redirect(`${COURSE_COMPLETIONS_FEEDBACK.URL}?department=${currentUserDepartment.name}`)
+		}
 	}
 
 	public renderReport() {

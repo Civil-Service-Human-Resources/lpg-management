@@ -2,6 +2,12 @@ import 'reflect-metadata'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 
+export const COURSE_COMPLETIONS_FEEDBACK = {
+	MESSAGE: "The new reporting dashboard service is currently in private beta. " || process.env.COURSE_COMPLETIONS_FEEDBACK_MESSAGE,
+	URL: "#" || process.env.COURSE_COMPLETIONS_FEEDBACK_URL
+}
+
+
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
