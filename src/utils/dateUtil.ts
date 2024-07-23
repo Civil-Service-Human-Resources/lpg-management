@@ -1,24 +1,19 @@
+import {Dayjs} from 'dayjs'
+
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
+var advancedFormat = require("dayjs/plugin/advancedFormat");
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
+dayjs.extend(advancedFormat)
+const tz = "Europe/London"
 
-export const defaultFeTimezone = 'Europe/London'
 
-export function getServerDayJs(obj?: any) {
-	return getTzDayJs('UTC', obj)
-}
-
-export function getFrontendDayJs(obj?: any) {
-	return getTzDayJs(defaultFeTimezone, obj)
-}
-
-export function getTzDayJs(tz: string, obj?: any) {
+export function getFrontendDayJs(obj?: any): Dayjs {
 	if (obj) {
-		return dayjs.tz(obj, tz)
-	} else {
-		return dayjs().tz(tz)
+		return dayjs(obj).tz(tz)
 	}
+	return dayjs().tz(tz)
 }

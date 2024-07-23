@@ -5,4 +5,8 @@ export class Increment {
 		this.amount = amount
 		this.unit = unit
 	}
+
+	public isDate() {
+		return (this.unit !== 'hour')
+	}
 }
