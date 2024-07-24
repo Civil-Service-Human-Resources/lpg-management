@@ -81,9 +81,8 @@ export class CourseCompletionsController extends Controller {
 
 	public feedback() {
 		return async (request: Request, response: Response) => {
-			let currentUser = request.user!
-			this.logger.info(`User ${currentUser.uid} submitting reporting feedback`)
-			const currentUserDepartment = currentUser.organisationalUnit! as OrganisationalUnit
+			const currentUserDepartment = request.user!.organisationalUnit! as OrganisationalUnit
+			this.logger.info(`User in department "${currentUserDepartment.name}" submitting reporting feedback`)
 			response.redirect(`${COURSE_COMPLETIONS_FEEDBACK.URL}?department=${currentUserDepartment.name}`)
 		}
 	}
