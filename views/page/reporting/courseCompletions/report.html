@@ -10,6 +10,8 @@
 
 {% extends "../../../component/Page.njk" %}
 
+{% set backButton = "/reporting/course-completions/choose-courses" %}
+
 {% block pageTitle %}{{ i18n.reporting.course_completions.title }} - {{ i18n.proposition_name }}{% endblock %}
 {% block nav %}
   {{ super() }}
@@ -41,22 +43,22 @@
             {
               value: "today",
               text: "Today",
-              checked: pageModel.filters.timePeriod == "today"
+              checked: pageModel.timePeriod == "today"
             },
             {
               value: "past-seven-days",
               text: "Past seven days",
-              checked: pageModel.filters.timePeriod == "past-seven-days"
+              checked: pageModel.timePeriod == "past-seven-days"
             },
             {
               value: "past-month",
               text: "Past month",
-              checked: pageModel.filters.timePeriod == "past-month"
+              checked: pageModel.timePeriod == "past-month"
             },
             {
               value: "past-year",
               text: "Past year",
-              checked: pageModel.filters.timePeriod == "past-year"
+              checked: pageModel.timePeriod == "past-year"
             }
           ]
         }) }}
@@ -80,7 +82,33 @@
       head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
       rows: pageModel.courseBreakdown
     }) }}
-
+    {% if identity.hasMvpExport() %}
+    {% set downloadUrl = '/reporting/course-completions/download-source-data' %}
+      <div class='course-completions-report'>
+        <h2 class='govuk-heading-m'>Download source data</h2>
+        <p class='govuk-body'>
+          The data used to generate this graph can be requested for download (CSV).
+        </p>
+        <div class='course-completions-report__panel'>
+          {% if pageModel.hasRequestedReport %}
+            <p class='govuk-body'>
+              {{ i18n.reporting.course_completions.report_download.success_message }}
+            </p>
+          {% else %}
+            <form class='course-completions-report__form' action='{{ downloadUrl }}' method='POST'>
+              {{ govukButton({
+                text: "Request report (CSV)",
+                preventDoubleClick: true,
+                classes: "course-completions-report__button",
+                attributes: {
+                  "data-submiturl": downloadUrl + "/js"
+                }
+              }) }}
+            </form>
+          {% endif %}
+        {% endif %}
+        </div>
+      </div>
   </div>
 </div>
 {% endblock %}

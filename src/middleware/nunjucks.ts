@@ -52,6 +52,9 @@ export class NunjucksMiddleware extends Middleware {
 			.addFilter('parseOrganisation', function(organisationalUnits: OrganisationalUnit[], code: string) {
 				return organisationalUnits.find(o => o.code === code)
 			})
+			.addFilter('startsWith', (str: string, searchString: string) => {
+				return str.startsWith(searchString)
+			})
 
 		app.set('view engine', 'html')
     }

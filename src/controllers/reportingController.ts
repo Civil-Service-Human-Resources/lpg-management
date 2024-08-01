@@ -3,7 +3,6 @@ import {ReportService} from '../report-service'
 import {CsrsService} from 'src/csrs/service/csrsService'
 import {OrganisationalUnitService} from 'src/csrs/service/organisationalUnitService'
 import {OrganisationalUnit} from '../../src/csrs/model/organisationalUnit'
-import {CourseCompletionsSession} from './reporting/model/courseCompletionsSession'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './reporting/utils'
 
 const { xss } = require('express-xss-sanitizer')
@@ -47,7 +46,6 @@ export class ReportingController {
 					},
 					organisationListForTypeAhead: organisationChoices.typeaheadOrganisations,
 					showTypeaheadOption: userCanAccessMultipleOrganisations,
-					backButton: '/reporting'
 				})
 			}
 			else {
@@ -59,7 +57,7 @@ export class ReportingController {
 
 	submitOrganisationSelection() {
 		return async (request: Request, response: Response) => {
-			const session = fetchCourseCompletionSessionObject(request) || new CourseCompletionsSession()
+			const session = fetchCourseCompletionSessionObject(request)
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisation
 
@@ -68,8 +66,9 @@ export class ReportingController {
 			}
 
 			if (selectedOrganisationId) {
-				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && await this.userCanAccessReportingForOrganisation(currentUser, selectedOrganisationId)) {
-					session.selectedOrganisationId = +selectedOrganisationId
+				const organisation = (await this.csrsService.getOrganisationalUnitsForUser(currentUser)).find(o => o.id === parseInt(selectedOrganisationId))
+				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && organisation !== undefined) {
+					session.selectedOrganisation = {name: organisation.name, id: organisation.id.toString()}
 					session.allOrganisationIds = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
 					saveCourseCompletionSessionObject(session, request, async () => {
 						if (session.hasSelectedCourses()) {
@@ -101,13 +100,6 @@ export class ReportingController {
 			directOrganisation: user.organisationalUnit,
 			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
 		}
-	}
-
-	async userCanAccessReportingForOrganisation(user: any, organisationId: any) {
-		let organisationalUnitsForUser = await this.csrsService.getOrganisationalUnitsForUser(user)
-		let organisationIdsForUser = organisationalUnitsForUser.map(org => org.id)
-		let userCanAccessOrganisation = organisationIdsForUser.includes(parseInt(organisationId))
-		return userCanAccessOrganisation
 	}
 
 	async getOrganisationWithAllChildren(organisationId: number): Promise<number[]> {
