@@ -30,7 +30,7 @@ export enum Role {
 	MVP_REPORTER = 'MVP_REPORTER',
 	SUPER_REPORTER = 'SUPER_REPORTER',
 	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION',
-	MVP_REPORT_EXPORT = 'MVP_REPORT_EXPORT'
+	REPORT_EXPORT = 'REPORT_EXPORT'
 }
 
 export enum CompoundRole {
@@ -103,7 +103,7 @@ export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER, Role.PROFESSION
 Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER))
 
 export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
-export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.MVP_REPORT_EXPORT))
+export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
 
 export class Identity {
 
