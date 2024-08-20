@@ -8,6 +8,7 @@
 
 {% block pageTitle %}Reporting - Choose organisation - {{i18n['proposition_name'] }}{% endblock %}
 
+{% set backButton = "/reporting" %}
 {% block content %}
 
 {% set typeAheadHtml %}
@@ -45,7 +46,7 @@ href: "#parent"
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-m">Reporting</span>
-    <h1 class="govuk-heading-l">Select organisation</h1>
+    <h1 class="govuk-heading-l">Completed learning</h1>
       <form action="/reporting/course-completions/choose-organisation" method="post">
     <div class="govuk-form-group">
 

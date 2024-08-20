@@ -8,6 +8,8 @@
 
 {% extends "../../../component/Page.njk" %}
 
+{% set backButton = "/reporting/course-completions/choose-organisation" %}
+
 {% block pageTitle %}{{ i18n.reporting.course_completions.title }} - {{ i18n.proposition_name }}{% endblock %}
 {% block content %}
     {% set errors = sessionFlash.errors %}

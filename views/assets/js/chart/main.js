@@ -18,7 +18,7 @@ for (const chartElem of charts) {
 			{
 				type: 'line',
 				data: {
-					labels: config.labels,
+					labels: config.data.map(dp => dp.x),
 					datasets: [
 						{
 							label: '# of courses completed',

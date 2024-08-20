@@ -4,22 +4,20 @@ import {CourseService} from 'lib/courseService'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
 import {Report} from '../controllers/reporting/Report'
 import {BasicCoursePageModel, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
-import {GetCourseAggregationParameters} from './model/getCourseAggregationParameters'
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 import {CslServiceClient} from '../csl-service/client'
-import {ChartService} from './chartService'
-import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
-import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFilterSummary'
 import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
-import {CourseFilterSummaryRow} from '../controllers/reporting/model/courseFilterSummaryRow'
-import {CourseCompletionsFilterModel} from '../controllers/reporting/model/courseCompletionsFilterModel'
-import {DateFilterSummaryRow} from '../controllers/reporting/model/dateFilterSummaryRow'
+import {ReportParameterFactory} from './model/course-completions/reportParameterFactory'
+import {Chart} from './model/chart'
+import {RequestCourseCompletionExportRequestResponse} from './model/requestCourseCompletionExportRequestResponse'
+import {ReportServicePageModelService} from './reportServicePageModelService'
 
 export class ReportService {
 
 	constructor(private client: ReportServiceClient, private courseService: CourseService,
 				private organisationalUnitService: OrganisationalUnitService, private cslService: CslServiceClient,
-				private chartService: ChartService) {
+				private reportServicePageModelService: ReportServicePageModelService,
+				private reportParameterFactory: ReportParameterFactory) {
 	}
 
 	async getReport(reportType: Report, dateRange: DateStartEnd): Promise<Buffer> {
@@ -54,21 +52,23 @@ export class ReportService {
 			.filter(course => courseIds.includes(course.id))
 	}
 
-	async getCourseCompletionsReportGraphPage(pageModel: CourseCompletionsFilterModel, session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {
-		const params = GetCourseAggregationParameters.createFromFilterPageModel(pageModel, session)
+	async getCourseCompletionsReportGraphPage(session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {
+		const params = this.reportParameterFactory.generateCourseAggregationsParams(session)
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
-		const chartJsConfig = this.chartService.buildChart(params.startDate, params.endDate, chart.getChartDataAsMap(params.binDelimiter))
-		const tableModel = chartJsConfig.noJSChart.map(dp => [{text: dp.x}, {text: dp.y.toString(), format: "numeric"}])
-		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
-		const courseBreakdown = Array.from(chart.courseBreakdown).map(([title, count]) => {
-			return [{text: title}, {text: count.toString(), format: "numeric"}]
-		}).sort((a, b) => { return collator.compare(a[0].text, b[0].text!)})
-		courseBreakdown.push([{text: "Total"}, {text: chart.total.toString(), format: "numeric"}])
-		const organisationalUnit = await this.organisationalUnitService.getOrganisation(parseInt(params.organisationIds[0]))
-		const coursesFilterSummary = CourseFilterSummaryRow.create(session.courses!)
-		const dateFilterSummary = DateFilterSummaryRow.createForSinglePeriod(pageModel.getTimePeriod())
-		const filterSummary = new ReportingFilterSummary(OrganisationFilterSummaryRow.create([organisationalUnit.name]), coursesFilterSummary, dateFilterSummary)
-		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary, pageModel)
+		return await this.buildPageModelFromChart(chart, session)
+	}
+
+	async submitExportRequest(session: CourseCompletionsSession): Promise<RequestCourseCompletionExportRequestResponse> {
+		const params = this.reportParameterFactory.generateReportRequestParams(session)
+		return await this.cslService.postCourseCompletionsExportRequest(params)
+	}
+
+	private async buildPageModelFromChart(chart: Chart, session: CourseCompletionsSession) {
+		const chartJsConfig = this.reportServicePageModelService.buildCourseCompletionsChart(chart)
+		const tableModel = this.reportServicePageModelService.buildNoJSTable(chartJsConfig.noJSChart)
+		const courseBreakdown = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
+		const filterSummary = this.reportServicePageModelService.buildReportingFilterSummary(session.courses!, session.timePeriod, session.selectedOrganisation!)
+		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary, session.timePeriod.formValue, chart.hasRequest)
 		session.chartData = graphPageModel.table
 		return {
 			pageModel: graphPageModel,

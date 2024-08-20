@@ -5,7 +5,7 @@ import {ChooseCoursesModel} from './model/chooseCoursesModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {Controller} from '../controller'
-import {CompoundRoleBase, mvpReportingRole} from '../../identity/identity'
+import {CompoundRoleBase, mvpExportRole, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
 import * as moment from 'moment'
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
@@ -13,6 +13,7 @@ import { getCsvContentFromData } from '../../utils/dataToCsv'
 import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 import {COURSE_COMPLETIONS_FEEDBACK} from '../../config'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
+import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 
 export class CourseCompletionsController extends Controller {
 
@@ -75,7 +76,13 @@ export class CourseCompletionsController extends Controller {
 					}
 				}, [this.checkForOrgIdsInSessionMiddleware()]),
 			postRequest("/chart-csv", this.downloadDataAsCsv()),
-			getRequest("/feedback", this.feedback())
+			getRequest("/feedback", this.feedback()),
+			postRequest("/download-source-data", this.submitExportRequestNoJs(), [
+				roleCheckMiddleware(mvpExportRole.compoundRoles)
+			]),
+			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
+				roleCheckMiddleware(mvpExportRole.compoundRoles)
+			])
 		]
 	}
 
@@ -90,10 +97,11 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(new CourseCompletionsFilterModel(), session)
+			const filterModel = new CourseCompletionsFilterModel()
+			filterModel.timePeriod = session.timePeriod.formValue
+			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
 			return saveCourseCompletionSessionObject(pageData.session, request, () => {
-				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel,
-					backButton: '/reporting/course-completions/choose-courses'})
+				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel})
 			})
 		}
 	}
@@ -110,19 +118,39 @@ export class CourseCompletionsController extends Controller {
 		return session
 	}
 
+	private async submitExportRequest(request: Request, response: Response) {
+		const session = fetchCourseCompletionSessionObject(request)!
+		return await this.reportService.submitExportRequest(session)
+	}
+
+	public submitExportRequestNoJs() {
+		return async (request: Request, response: Response) => {
+			await this.submitExportRequest(request, response)
+			return response.redirect('/reporting/course-completions')
+		}
+	}
+
+	public submitExportRequestJs() {
+		return async (request: Request, response: Response) => {
+			await this.submitExportRequest(request, response)
+			response.status(200)
+			return response.send()
+		}
+	}
+
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
 			const filterPageModel = plainToInstance(CourseCompletionsFilterModel, response.locals.input as CourseCompletionsFilterModel)
 			const session = this.removeValuesFromSession(request, filterPageModel)
+			session.updateWithFilterPageModel(filterPageModel)
 			if (!session.hasSelectedCourses()) {
 				return saveCourseCompletionSessionObject(session, request, async () => {
 					return response.redirect('/reporting/course-completions/choose-courses')
 				})
 			}
-			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(filterPageModel, session)
+			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
 			return saveCourseCompletionSessionObject(pageData.session, request, async () => {
-				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel,
-					backButton: '/reporting/course-completions/choose-courses'})
+				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel})
 			})
 		}
 	}
@@ -130,10 +158,9 @@ export class CourseCompletionsController extends Controller {
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const selectedOrganisation = session.selectedOrganisationId!
-			const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
-			response.render('page/reporting/courseCompletions/choose-courses', {pageModel,
-				backButton: '/reporting/course-completions/choose-organisation'})
+			const selectedOrganisation = session.selectedOrganisation!.id
+			const pageModel = await this.reportService.getChooseCoursePage(parseInt(selectedOrganisation))
+			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
 	}
 

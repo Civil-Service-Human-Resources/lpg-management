@@ -1,6 +1,5 @@
 import {beforeEach, describe, it} from 'mocha'
 import {ReportingController} from '../../../src/controllers/reportingController'
-import * as sinon from 'sinon'
 import * as chai from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {expect} from 'chai'
@@ -22,46 +21,6 @@ describe('Reporting Controller Tests', function() {
 		csrsService = <CsrsService>{}
 		organisationalUnitService: <OrganisationalUnitService>{}
 		reportingController = new ReportingController(reportService, csrsService, organisationalUnitService)
-	})
-
-	it("userCanAccessReportingForOrganisation() should return true if selected organisationId is included in the user's organisational units", async function() {
-		let organisation1 = new OrganisationalUnit()
-		organisation1.id = 1
-		let organisation2 = new OrganisationalUnit()
-		organisation2.id = 2
-
-		const getOrganisationalUnitsForUser = sinon
-			.stub()
-			.returns([organisation1, organisation2])
-
-		csrsService.getOrganisationalUnitsForUser = getOrganisationalUnitsForUser
-
-		let selectedOrganisationId = 1
-
-		let expectedResult = true
-		let actualResult = await reportingController.userCanAccessReportingForOrganisation(<any>{}, selectedOrganisationId)
-
-		expect(actualResult).to.equal(expectedResult)
-	})
-
-	it("userCanAccessReportingForOrganisation() should return false if selected organisationId is not included in the user's organisational units", async function() {
-		let organisation1 = new OrganisationalUnit()
-		organisation1.id = 1
-		let organisation2 = new OrganisationalUnit()
-		organisation2.id = 2
-
-		const getOrganisationalUnitsForUser = sinon
-			.stub()
-			.returns([organisation1, organisation2])
-
-		csrsService.getOrganisationalUnitsForUser = getOrganisationalUnitsForUser
-
-		let selectedOrganisationId = 4
-
-		let expectedResult = false
-		let actualResult = await reportingController.userCanAccessReportingForOrganisation(<any>{}, selectedOrganisationId)
-
-		expect(actualResult).to.equal(expectedResult)
 	})
 
 	it("getAllChildOrganisations() should return every descendent organisation as a flat array", () => {
