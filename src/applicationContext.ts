@@ -59,7 +59,6 @@ import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacity
 import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
 import { OrganisationalUnitClient } from './csrs/client/organisationalUnitClient'
 import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
-import { createClient } from 'redis'
 import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceClient} from './csl-service/client'
@@ -68,6 +67,7 @@ import { CivilServantProfileService } from './csrs/service/civilServantProfileSe
 import {CourseTypeAheadCache} from './learning-catalogue/courseTypeaheadCache'
 import {RestServiceConfig} from './lib/http/restServiceConfig'
 import {createConfig} from './lib/http/restServiceConfigFactory'
+import {client} from './lib/redis'
 
 export class ApplicationContext {
 
@@ -182,14 +182,8 @@ export class ApplicationContext {
 
 		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
 
-		const courseCacheRedis = createClient({
-			auth_pass: config.ORG_REDIS.password,
-			host: config.ORG_REDIS.host,
-			no_ready_check: true,
-			port: config.ORG_REDIS.port,
-		})
 		this.courseTypeaheadCache = new CourseTypeAheadCache(
-			courseCacheRedis, config.ORG_REDIS.ttl_seconds
+			client, config.COURSE_REDIS.ttl_seconds
 		)
 		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslService, this.courseTypeaheadCache)
 
@@ -208,17 +202,11 @@ export class ApplicationContext {
 
 		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
 
-		const organisationalUnitCacheRedis = createClient({
-			auth_pass: config.ORG_REDIS.password,
-			host: config.ORG_REDIS.host,
-			no_ready_check: true,
-			port: config.ORG_REDIS.port,
-		})
 		this.organisationalUnitCache = new OrganisationalUnitCache(
-			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+			client, config.ORG_REDIS.ttl_seconds
 		)
 		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
-			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+			client, config.ORG_REDIS.ttl_seconds
 		)
 		this.csrsConfig = createConfig(config.REGISTRY_SERVICE)
 		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))

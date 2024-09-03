@@ -49,10 +49,9 @@ export const AUTHENTICATION = set({
 	callbackUrl: env.CALLBACK_URL || 'http://localhost:3005',
 	timeout: Number(env.AUTHENTICATION_SERVICE_TIMEOUT_MS),
 	endpoints: set({
-		token: env.OAUTH_TOKEN_ENDPOINT || '/oauth/token',
-		authorization: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth/authorize',
-		resolve: env.AUTHENTICATION_SERVICE_RESOLVE_ENDPOINT || '/oauth/resolve',
-		logout: env.AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT || '/oauth/logout',
+		token: env.OAUTH_TOKEN_ENDPOINT || '/oauth2/token',
+		authorization: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth2/authorize',
+		logout: env.AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT || '/logout',
 	}),
 })
 
@@ -60,13 +59,15 @@ export const REDIS = set({
 	host: env.REDIS_HOST || 'localhost',
 	password: env.REDIS_PASSWORD || '',
 	port: +(env.REDIS_PORT || '6379'),
+	keyPrefix: env.REDIS_KEY_PREFIX || 'csl_frontend'
 })
 
 export const ORG_REDIS = set({
-	host: env.ORG_REDIS_HOST || 'localhost',
-	password: env.ORG_REDIS_PASSWORD || '',
-	port: +(env.ORG_REDIS_PORT || '6379'),
 	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
+})
+
+export const COURSE_REDIS = set({
+	ttl_seconds: +(env.COURSE_REDIS_TTL_SECONDS || '604800')
 })
 
 export const REQUEST_TIMEOUT_MS = Number(env.REQUEST_TIMEOUT_MS)
