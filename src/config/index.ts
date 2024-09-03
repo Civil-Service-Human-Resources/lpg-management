@@ -59,7 +59,7 @@ export const REDIS = set({
 	host: env.REDIS_HOST || 'localhost',
 	password: env.REDIS_PASSWORD || '',
 	port: +(env.REDIS_PORT || '6379'),
-	keyPrefix: env.REDIS_KEY_PREFIX || 'csl_frontend'
+	keyPrefix: env.REDIS_KEY_PREFIX || 'csl_frontend_'
 })
 
 export const ORG_REDIS = set({
