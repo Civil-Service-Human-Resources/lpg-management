@@ -8,8 +8,8 @@ import {CourseService} from 'lib/courseService'
 import {LinkModule} from '../../learning-catalogue/model/linkModule'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../../utils/logger'
+const xss = require('xss')
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
-const { xss } = require('express-xss-sanitizer')
 
 
 export class LinkModuleController {
@@ -35,10 +35,10 @@ export class LinkModuleController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.addLinkModule()))
-		this.router.get('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.addLinkModule()))
-		this.router.post('/content-management/courses/:courseId/module-link', xss(), asyncHandler(this.setLinkModule()))
-		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', xss(), asyncHandler(this.updateLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.addLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link', asyncHandler(this.addLinkModule()))
+		this.router.post('/content-management/courses/:courseId/module-link', asyncHandler(this.setLinkModule()))
+		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.updateLinkModule()))
 	}
 
 	public addLinkModule() {
@@ -90,8 +90,8 @@ export class LinkModuleController {
 			const course = res.locals.course
 
 			let module: LinkModule = res.locals.module
-			module.title = req.body.title
-			module.description = req.body.description
+			module.title = xss(req.body.title)
+			module.description = xss(req.body.description)
 			module.url = req.body.url
 			module.optional = req.body.optional
 			module.associatedLearning = req.body.associatedLearning
