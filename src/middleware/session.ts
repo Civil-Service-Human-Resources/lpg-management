@@ -5,8 +5,7 @@ import {AppConfig} from '../config/appConfig'
 import {RedisStore} from 'connect-redis'
 import * as cookieParser from 'cookie-parser'
 import * as connectRedis from 'connect-redis'
-import * as redis from 'redis'
-import * as config from '../config'
+import {client} from '../lib/redis'
 
 export class SessionMiddleware extends Middleware {
     apply(app: Express): void {
@@ -33,14 +32,8 @@ export class SessionMiddleware extends Middleware {
 export const buildSessionMiddleware = () => {
 	const appConfig = new AppConfig()
 	const RedisStore = connectRedis(session)
-	const redisClient = redis.createClient({
-		auth_pass: config.REDIS.password,
-		host: config.REDIS.host,
-		no_ready_check: true,
-		port: config.REDIS.port,
-	})
 	const redisStore = new RedisStore({
-		client: redisClient,
+		client,
 	})
 	return new SessionMiddleware(appConfig, redisStore)
 }

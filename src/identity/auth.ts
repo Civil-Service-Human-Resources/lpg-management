@@ -7,6 +7,7 @@ import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
 import { CivilServantProfileService } from '../../src/csrs/service/civilServantProfileService'
+import {jwtDecode} from 'jwt-decode'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -74,12 +75,13 @@ export class Auth {
 	verify() {
 		return async (accessToken: string, refreshToken: string, profile: any, cb: oauth2.VerifyCallback) => {
 			try {
-				const identityDetails = await this.identityService.getDetails(accessToken)
+				const token = jwtDecode(accessToken) as any
+				const identityDetails = new Identity(token.user_name, token.email, token.authorities, accessToken)
 
 				let civilServantProfile = await this.civilServantProfileService.getProfile(accessToken)
-				
+
 				identityDetails.organisationalUnit = civilServantProfile.organisationalUnit
-				
+
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
@@ -123,10 +125,10 @@ export class Auth {
 	deserializeUser() {
 		return async (data: string, done: any) => {
 			let jsonResponse = JSON.parse(data)
-			
+
 			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
 			user.organisationalUnit = jsonResponse.organisationalUnit
-			
+
 			done(null, user)
 		}
 	}
