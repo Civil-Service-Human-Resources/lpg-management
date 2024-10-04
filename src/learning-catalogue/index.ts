@@ -40,6 +40,10 @@ export class LearningCatalogue {
 		this.courseTypeaheadCache = courseTypeaheadCache
 	}
 
+	async listPublishedCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
+		return await this._courseService.listAllWithPagination(`/courses?page=${page}&size=${size}&visibility=PRIVATE&status=Published`)
+	}
+
 	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
 		return await this._courseService.listAllWithPagination(`/courses/management?page=${page}&size=${size}&visibility=PRIVATE`)
 	}
@@ -54,20 +58,18 @@ export class LearningCatalogue {
 		let typeahead = await this.courseTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			typeahead = await this.refreshTypeahead()
-		} else {
-			await this.courseTypeaheadCache.setTypeahead(typeahead)
 		}
 		return typeahead
 	}
 
-	async fetchAllCourses(): Promise<Course[]> {
+	async fetchAllPublishedCourses(): Promise<Course[]> {
 		const courses: Course[] = []
-		const response = await this.listCourses(0, 1)
+		const response = await this.listPublishedCourses(0, 1)
 		if (response.totalResults >= 1) {
 			const totalPages = Math.ceil(response.totalResults / 200)
 			const requests: any[] = []
 			for (let page = 0; page < totalPages; page++) {
-				requests.push(this.listCourses(page, 200)
+				requests.push(this.listPublishedCourses(page, 200)
 					.then((data) => {
 						courses.push(...data.results)
 					}))
@@ -78,7 +80,7 @@ export class LearningCatalogue {
 	}
 
 	private async refreshTypeahead() {
-		const courses = await this.fetchAllCourses()
+		const courses = await this.fetchAllPublishedCourses()
 		const typeahead = CourseTypeAhead.createAndSort(courses.map(c => new BasicCourse(c.id, c.title)))
 		await this.courseTypeaheadCache.setTypeahead(typeahead)
 		return typeahead
