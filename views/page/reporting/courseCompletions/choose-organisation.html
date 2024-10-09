@@ -1,0 +1,95 @@
+{% from "../../../component/reporting/macro.njk" import reporting with context %}
+{% from "radios/macro.njk" import govukRadios %}
+{% from "select/macro.njk" import govukSelect %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../../../component/Page.njk" %}
+
+{% block pageTitle %}Reporting - Choose organisation - {{i18n['proposition_name'] }}{% endblock %}
+
+{% set backButton = "/reporting" %}
+{% block content %}
+
+{% set typeAheadHtml %}
+
+<div class="govuk-form-group">
+  <label class="govuk-label" for="parent">
+    Organisation
+  </label>
+  <div class="autocomplete-wrapper autocomplete-wrapper--full-width">
+
+    <select class="autocomplete__organisations" name="organisationId" id="parent">
+      <option value="" selected></option>
+      {% for organisation in organisationListForTypeAhead %}
+      <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+{% endset -%}
+
+{% if sessionFlash.errors %}
+{{ govukErrorSummary({
+titleText: "There is a problem",
+errorList: [
+{
+text: sessionFlash.errors[0],
+href: "#parent"
+}
+]
+}) }}
+{% endif %}
+
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-m">Reporting</span>
+    <h1 class="govuk-heading-l">Completed learning</h1>
+      <form action="/reporting/course-completions/choose-organisation" method="post">
+    <div class="govuk-form-group">
+
+        {% set radioItems = [
+        {
+        value: firstOrganisationOption.id,
+        text: firstOrganisationOption.name,
+        checked: true
+        }
+        ] %}
+
+        {% if showTypeaheadOption %}
+        {% set radioItems = (radioItems.push({
+        value: "other",
+        text: "Other organisation",
+        conditional: {
+        html: typeAheadHtml
+        }
+        }), radioItems) %}
+        {% endif %}
+
+        {{ govukRadios({
+        name: "organisation",
+        fieldset: {
+        legend: {
+        text: "Which organisation would you like to report on?",
+              classes: "govuk-fieldset__legend--s"
+        }
+        },
+        items: radioItems
+        }) }}
+    </div>
+          {{ govukButton({
+          text: "Continue",
+          preventDoubleClick: true
+          }) }}
+      </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+<script src="/govuk-frontend/all.js"></script>
+<script>window.GOVUKFrontend.initAll()</script>
+  <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+{% endblock %}

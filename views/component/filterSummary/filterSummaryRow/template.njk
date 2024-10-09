@@ -1,0 +1,26 @@
+{% macro renderFilterSummaryTag(tag, submitUrl) %}
+    <div class='filter-summary__tag-container'>
+        {% if tag["shouldSubmit"] %}
+            <input type="hidden" name="{{tag["formName"]}}" id="{{tag["formName"]}}-{{tag["formValue"]}}" value="{{tag["formValue"]}}">
+        {% endif %}
+        {% if tag["preText"] %}
+            <span class="filter-summary__tag-pretext">{{tag["preText"]}}</span>
+        {% endif %}
+        <div class="filter-summary__tag {% if tag['dismissable'] %}filter-summary__tag--dismiss{% endif %}">
+            <span>{{ tag["tagText"] }}</span>
+            {% if tag["dismissable"] %}<button formaction="{{ submitUrl }}?remove={{tag["formName"]}},{{tag["formValue"]}}" aria-label="Press Enter or Space to remove {{tag["tagText"]}}" type="submit">✕</button>{% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+<div class="filter-summary__row">
+    <div class="filter-summary__tags">
+        <span class="filter-summary__tags-summary">{{ summaryText }}</span>
+        {% for tag in tags %}
+            {{ renderFilterSummaryTag(tag, submitUrl) }}
+        {% endfor %}
+    </div>
+    {% if changeLink %}
+        <a class='govuk-link filter-summary__changeLink' href="{{changeLink}}">{% if changeText %}{{ changeText }}{% else %}Change{% endif %}</a>
+    {% endif %}
+</div>

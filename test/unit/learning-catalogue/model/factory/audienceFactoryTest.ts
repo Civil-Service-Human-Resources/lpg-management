@@ -37,7 +37,7 @@ describe('AudienceFactory tests', () => {
 		expect(result.departments).to.eql(departments)
 		expect(result.grades).to.eql(grades)
 		expect(result.interests).to.eql(interests)
-		expect(result.requiredBy).to.equal(requiredBy)
+		expect(result.requiredBy!.toISOString()).to.eql(requiredBy.toISOString())
 		expect(result.type).to.equal(Audience.Type.OPEN)
 		expect(result.frequency!.toString()).to.equal(frequency.toString())
 		expect(result.eventId).to.equal(eventId)

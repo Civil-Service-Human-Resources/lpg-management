@@ -2,6 +2,7 @@ import {NextFunction, Request, Response, Router} from 'express'
 import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactory'
 import {LearningCatalogue} from '../../learning-catalogue'
 import { getLogger } from '../../utils/logger'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 export class ModuleController {
@@ -19,15 +20,7 @@ export class ModuleController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		this.router.param('courseId', async (req, res, next, courseId) => {
-			const course = await this.learningCatalogue.getCourse(courseId)
-			if (course) {
-				res.locals.course = course
-				next()
-			} else {
-				res.sendStatus(404)
-			}
-		})
+		applyLearningCatalogueMiddleware({getModule: false}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/add-module', xss(), this.addModule())
 		this.router.post('/content-management/courses/:courseId/add-module', xss(), this.setModule())
 		this.router.get('/content-management/courses/:courseId/:moduleId/delete', xss(), this.deleteModule())

@@ -1,14 +1,7 @@
 import {Course} from './model/course'
 import {DefaultPageResults} from './model/defaultPageResults'
 import {Module} from './model/module'
-import {LearningCatalogueConfig} from './learningCatalogueConfig'
-import {LearningProvider} from './model/learningProvider'
-import {CancellationPolicy} from './model/cancellationPolicy'
-import {TermsAndConditions} from './model/termsAndConditions'
 import {EntityService} from './service/entityService'
-import {LearningProviderFactory} from './model/factory/learningProviderFactory'
-import {CancellationPolicyFactory} from './model/factory/cancellationPolicyFactory'
-import {TermsAndConditionsFactory} from './model/factory/termsAndConditionsFactory'
 import {CourseFactory} from './model/factory/courseFactory'
 import {ModuleFactory} from './model/factory/moduleFactory'
 import {AudienceFactory} from './model/factory/audienceFactory'
@@ -18,19 +11,20 @@ import {Audience} from './model/audience'
 import {Auth} from '../identity/auth'
 import {OauthRestService} from '../lib/http/oauthRestService'
 import {CslServiceClient} from '../csl-service/client'
-
+import {CourseTypeAheadCache} from './courseTypeaheadCache'
+import {BasicCourse, CourseTypeAhead} from './courseTypeAhead'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
 	private _moduleService: EntityService<Module>
 	private _courseService: EntityService<Course>
 	private _audienceService: EntityService<Audience>
-	private _learningProviderService: EntityService<LearningProvider>
-	private _cancellationPolicyService: EntityService<CancellationPolicy>
-	private _termsAndConditionsService: EntityService<TermsAndConditions>
 	private _restService: OauthRestService
 	private _cslService: CslServiceClient
+	private courseTypeaheadCache: CourseTypeAheadCache
 
-	constructor(config: LearningCatalogueConfig, auth: Auth, cslService: CslServiceClient) {
+	constructor(config: RestServiceConfig, auth: Auth, cslService: CslServiceClient,
+				courseTypeaheadCache: CourseTypeAheadCache) {
 		this._restService = new OauthRestService(config, auth)
 
 		this._eventService = new EntityService<Event>(this._restService, new EventFactory())
@@ -41,13 +35,9 @@ export class LearningCatalogue {
 
 		this._audienceService = new EntityService<Audience>(this._restService, new AudienceFactory())
 
-		this._learningProviderService = new EntityService<LearningProvider>(this._restService, new LearningProviderFactory())
-
-		this._cancellationPolicyService = new EntityService<CancellationPolicy>(this._restService, new CancellationPolicyFactory())
-
-		this._termsAndConditionsService = new EntityService<TermsAndConditions>(this._restService, new TermsAndConditionsFactory())
-
 		this._cslService = cslService
+
+		this.courseTypeaheadCache = courseTypeaheadCache
 	}
 
 	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
@@ -60,13 +50,63 @@ export class LearningCatalogue {
 		)
 	}
 
+	async getCourseTypeAhead(): Promise<CourseTypeAhead> {
+		let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			typeahead = await this.refreshTypeahead()
+		} else {
+			await this.courseTypeaheadCache.setTypeahead(typeahead)
+		}
+		return typeahead
+	}
+
+	async fetchAllCourses(): Promise<Course[]> {
+		const courses: Course[] = []
+		const response = await this.listCourses(0, 1)
+		if (response.totalResults >= 1) {
+			const totalPages = Math.ceil(response.totalResults / 200)
+			const requests: any[] = []
+			for (let page = 0; page < totalPages; page++) {
+				requests.push(this.listCourses(page, 200)
+					.then((data) => {
+						courses.push(...data.results)
+					}))
+			}
+			await Promise.all(requests)
+		}
+		return courses
+	}
+
+	private async refreshTypeahead() {
+		const courses = await this.fetchAllCourses()
+		const typeahead = CourseTypeAhead.createAndSort(courses.map(c => new BasicCourse(c.id, c.title)))
+		await this.courseTypeaheadCache.setTypeahead(typeahead)
+		return typeahead
+	}
+
 	async createCourse(course: Course): Promise<Course> {
-		return this._courseService.create('/courses/', course)
+		course = await this._courseService.create('/courses/', course)
+		let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.addCourse(course)
+			await this.courseTypeaheadCache.setTypeahead(typeahead)
+		}
+		return course
 	}
 
 	async updateCourse(course: Course): Promise<Course> {
 		await this._cslService.clearCourseCache(course.id)
-		return this._courseService.update(`/courses/${course.id}`, course)
+		course = await this._courseService.update(`/courses/${course.id}`, course)
+			let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.updateCourse(course)
+			await this.courseTypeaheadCache.setTypeahead(typeahead)
+		}
+		return course
 	}
 
 	async publishCourse(course: Course): Promise<Course> {
@@ -76,11 +116,23 @@ export class LearningCatalogue {
 
 	async archiveCourse(course: Course): Promise<Course> {
 		await this._cslService.clearCourseCache(course.id)
-		return this._courseService.update(`/courses/${course.id}/archive`, course)
+		await this._courseService.update(`/courses/${course.id}/archive`, course)
+		let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.removeCourse(course.id)
+			await this.courseTypeaheadCache.setTypeahead(typeahead)
+		}
+		return course
 	}
 
 	async getCourse(courseId: string): Promise<Course> {
 		return this._courseService.get(`/courses/${courseId}`)
+	}
+
+	async getRequiredLearning(departmentCodes: string[]): Promise<DefaultPageResults<Course>> {
+		return await this._courseService.listAllWithPagination(`/courses?mandatory=true&department=${departmentCodes}`)
 	}
 
 	async createModule(courseId: string, module: Module): Promise<Module> {
@@ -135,50 +187,6 @@ export class LearningCatalogue {
 		return this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
 	}
 
-	async listLearningProviders(page: number = 0, size: number = 10): Promise<DefaultPageResults<LearningProvider>> {
-		return await this._learningProviderService.listAllWithPagination(`/learning-providers?page=${page}&size=${size}`)
-	}
-
-	async getLearningProvider(learningProviderId: string): Promise<LearningProvider> {
-		return this._learningProviderService.get(`/learning-providers/${learningProviderId}`)
-	}
-
-	async createLearningProvider(learningProvider: LearningProvider): Promise<LearningProvider> {
-		return this._learningProviderService.create('/learning-providers/', learningProvider)
-	}
-
-	async getCancellationPolicy(learningProviderId: string, cancellationPolicyId: string): Promise<CancellationPolicy> {
-		return this._cancellationPolicyService.get(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`)
-	}
-
-	async createCancellationPolicy(learningProviderId: string, cancellationPolicy: CancellationPolicy): Promise<CancellationPolicy> {
-		return this._cancellationPolicyService.create(`/learning-providers/${learningProviderId}/cancellation-policies`, cancellationPolicy)
-	}
-
-	async updateCancellationPolicy(learningProviderId: string, cancellationPolicy: CancellationPolicy): Promise<CancellationPolicy> {
-		return this._cancellationPolicyService.update(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicy.id}`, cancellationPolicy)
-	}
-
-	async deleteCancellationPolicy(learningProviderId: string, cancellationPolicyId: string): Promise<void> {
-		return this._cancellationPolicyService.delete(`/learning-providers/${learningProviderId}/cancellation-policies/${cancellationPolicyId}`)
-	}
-
-	async getTermsAndConditions(learningProviderId: string, termsAndConditionsId: string): Promise<TermsAndConditions> {
-		return this._termsAndConditionsService.get(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
-	}
-
-	async createTermsAndConditions(learningProviderId: string, termsAndConditions: TermsAndConditions): Promise<TermsAndConditions> {
-		return this._termsAndConditionsService.create(`/learning-providers/${learningProviderId}/terms-and-conditions`, termsAndConditions)
-	}
-
-	async updateTermsAndConditions(learningProviderId: string, termsAndConditions: TermsAndConditions): Promise<TermsAndConditions> {
-		return this._termsAndConditionsService.update(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditions.id}`, termsAndConditions)
-	}
-
-	async deleteTermsAndConditions(learningProviderId: string, termsAndConditionsId: string): Promise<void> {
-		return this._termsAndConditionsService.delete(`/learning-providers/${learningProviderId}/terms-and-conditions/${termsAndConditionsId}`)
-	}
-
 	set courseService(value: EntityService<Course>) {
 		this._courseService = value
 	}
@@ -195,15 +203,4 @@ export class LearningCatalogue {
 		this._audienceService = value
 	}
 
-	set learningProviderService(value: EntityService<LearningProvider>) {
-		this._learningProviderService = value
-	}
-
-	set cancellationPolicyService(value: EntityService<CancellationPolicy>) {
-		this._cancellationPolicyService = value
-	}
-
-	set termsAndConditionsService(value: EntityService<TermsAndConditions>) {
-		this._termsAndConditionsService = value
-	}
 }

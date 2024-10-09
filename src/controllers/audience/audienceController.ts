@@ -11,6 +11,7 @@ import {DateTime} from '../../lib/dateTime'
 import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -43,8 +44,7 @@ export class AudienceController {
 	}
 
 	private configurePathParametersProcessing() {
-		this.router.param('courseId', this.courseService.findCourseByCourseIdAndAssignToResponseLocalsOrReturn404())
-		this.router.param('audienceId', this.audienceService.findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404())
+		applyLearningCatalogueMiddleware({getModule: false, audience: {csrsService: this.csrsService}}, this.router, this.learningCatalogue)
 	}
 
 	private setRouterPaths() {
@@ -114,7 +114,6 @@ export class AudienceController {
 			const selectedOrganisations = res.locals.audience.departments
 
 			let organisations: OrganisationalUnitTypeAhead = await this.csrsService.listOrganisationalUnitsForTypehead()
-
 			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations.typeahead, selectedOrganisations: selectedOrganisations})
 		}
 	}

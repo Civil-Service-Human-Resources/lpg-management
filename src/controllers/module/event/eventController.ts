@@ -24,6 +24,7 @@ import { getLogger } from '../../../utils/logger'
 import * as EmailValidator from 'email-validator'
 import {CslServiceClient} from '../../../csl-service/client'
 import {CancelBookingDto} from '../../../csl-service/model/CancelBookingDto'
+import {applyLearningCatalogueMiddleware} from '../../middleware/learningCatalogueMiddleware'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -79,15 +80,7 @@ export class EventController implements FormController {
 				}
 			})
 		)
-
-		this.router.param(
-			'courseId',
-			asyncHandler(async (req: Request, res: Response, next: NextFunction, courseId: string) => {
-				const date = new Date(Date.now())
-				res.locals.exampleYear = date.getFullYear() + 1
-				next()
-			})
-		)
+		applyLearningCatalogueMiddleware({getModule: false}, this.router, this.learningCatalogue)
 
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.getLocation()))
 

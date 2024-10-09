@@ -6,7 +6,7 @@ import {Validator} from '../../learning-catalogue/validator/validator'
 import {YoutubeService} from '../../youtube/youtubeService'
 import * as asyncHandler from 'express-async-handler'
 import {CourseService} from 'lib/courseService'
-import moment = require('moment')
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 
 export class YoutubeModuleController {
@@ -31,39 +31,7 @@ export class YoutubeModuleController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
-		let course: any
-		this.router.param(
-			'courseId',
-			asyncHandler(async (req: Request, res: Response, next: NextFunction, courseId: string) => {
-				course = await this.learningCatalogue.getCourse(courseId)
-
-				if (course) {
-					res.locals.course = course
-					next()
-				} else {
-					res.sendStatus(404)
-				}
-			})
-		)
-
-		this.router.param(
-			'moduleId',
-			asyncHandler(async (req: Request, res: Response, next: NextFunction, moduleId: string) => {
-				if (course) {
-					const module = await this.courseService.getModuleByModuleId(course, moduleId)
-					if (module) {
-						const duration = moment.duration(module.duration, 'seconds')
-						res.locals.module = module
-						res.locals.module.hours = duration.hours()
-						res.locals.module.minutes = duration.minutes()
-						next()
-					} else {
-						res.sendStatus(404)
-					}
-				}
-			})
-		)
-
+		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/module-youtube/:moduleId?', xss(), asyncHandler(this.getModule()))
 		this.router.post('/content-management/courses/:courseId/module-youtube/', xss(), asyncHandler(this.setModule()))
 		this.router.post('/content-management/courses/:courseId/module-youtube/:moduleId', xss(), asyncHandler(this.updateModule()))

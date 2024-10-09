@@ -9,16 +9,17 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
-    "outDir": "./dist/build",
+    "outDir": "./dist",
     "paths": {
       "lib/*": ["src/lib/*"]
     },
     "preserveConstEnums": true,
     "pretty": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "target": "ESNext"
   },
-  "include": ["src/**/*", "test/**/*"]
+  "include": ["./src/**/*"]
 }

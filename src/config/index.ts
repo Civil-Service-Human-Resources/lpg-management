@@ -2,6 +2,11 @@ import 'reflect-metadata'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
 
+export const COURSE_COMPLETIONS_FEEDBACK = {
+	MESSAGE: process.env.COURSE_COMPLETIONS_FEEDBACK_MESSAGE || "",
+	URL: process.env.COURSE_COMPLETIONS_FEEDBACK_URL || "#"
+}
+
 export const ENV = process.env.NODE_ENV || 'development'
 
 if (ENV === 'development') {
@@ -21,6 +26,10 @@ function set<T>(defaultValue: T, envValues: Record<string, T> = {}): T {
 		return defaultValue
 	}
 	return val
+}
+
+function getBoolean(rawValue: string) {
+	return rawValue !== undefined ? rawValue === 'true' : false
 }
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
@@ -71,7 +80,13 @@ export const YOUTUBE = set({
 
 export const COURSE_CATALOGUE = set({
 	url: env.COURSE_CATALOGUE_URL || 'http://localhost:9001',
-	timeout: Number(env.COURSE_CATALOGUE_TIMEOUT_MS)
+	timeout: Number(env.COURSE_CATALOGUE_TIMEOUT_MS),
+	detailedLogs: getBoolean(env.COURSE_CATALOGUE_DETAILED_LOGS)
+})
+
+export const HTTP_SETTINGS = set({
+	globalEnableDetailLogs: getBoolean(env.GLOBAL_ENABLE_DETAILED_HTTP_LOGS),
+	requestLogging: getBoolean(env.REQUEST_LOGGING)
 })
 
 export const LEARNER_RECORD = set({
@@ -81,7 +96,8 @@ export const LEARNER_RECORD = set({
 
 export const CSL_SERVICE = set({
 	url: env.CSL_SERVICE_URL || 'http://localhost:9003',
-	timeout: Number(env.CSL_SERVICE_TIMEOUT_MS)
+	timeout: Number(env.CSL_SERVICE_TIMEOUT_MS),
+	detailedLogs: getBoolean(env.CSL_SERVICE_DETAILED_LOGS)
 })
 
 export const REGISTRY_SERVICE = set({
@@ -90,10 +106,8 @@ export const REGISTRY_SERVICE = set({
 })
 
 export const REPORT_SERVICE = set({
+	detailedLogs: getBoolean(env.REPORT_SERVICE_DETAILED_LOGS),
 	url: env.REPORT_SERVICE_URL || 'http://localhost:9004',
-	map: {
-		'booking-information': '/bookings',
-	},
 	timeout: Number(env.REPORT_SERVICE_TIMEOUT_MS)
 })
 
@@ -102,4 +116,10 @@ export const CACHE = {
 	CHECK_PERIOD_SECONDS: 600,
 }
 
+export const REPORTING = {
+	COURSE_COMPLETIONS_MAX_COURSES: Number(env.REPORTING_COURSE_COMPLETIONS_MAX_COURSES || 10)
+}
+
 export const SERVER_TIMEOUT_MS = Number(env.SERVER_TIMEOUT_MS) || 240000
+// Azure's servers are all in UTC, so to ensure parity between dev environment and cloud, set the server TZ to UTC
+export const SERVER_DEFAULT_TZ = env.SERVER_DEFAULT_TZ || 'UTC'

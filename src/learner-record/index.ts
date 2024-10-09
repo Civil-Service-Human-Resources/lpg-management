@@ -1,5 +1,4 @@
 import {OauthRestService} from '../lib/http/oauthRestService'
-import {LearnerRecordConfig} from './learnerRecordConfig'
 import {Auth} from '../identity/auth'
 import {Invite} from './model/invite'
 import {InviteFactory} from './model/factory/inviteFactory'
@@ -7,6 +6,7 @@ import {Booking} from './model/booking'
 import {BookingFactory} from './model/factory/bookingFactory'
 import {Event} from '../learning-catalogue/model/event'
 import { getLogger } from '../utils/logger'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 export class LearnerRecord {
 	logger = getLogger('LearnerRecord')
@@ -14,7 +14,7 @@ export class LearnerRecord {
 	private _inviteFactory: InviteFactory
 	private _bookingFactory: BookingFactory
 
-	constructor(config: LearnerRecordConfig, auth: Auth, bookingFactory: BookingFactory, inviteFactory: InviteFactory) {
+	constructor(config: RestServiceConfig, auth: Auth, bookingFactory: BookingFactory, inviteFactory: InviteFactory) {
 		this._restService = new OauthRestService(config, auth)
 
 		this._bookingFactory = bookingFactory

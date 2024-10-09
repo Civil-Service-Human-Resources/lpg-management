@@ -2,6 +2,10 @@ import { Request, Response, NextFunction } from 'express'
 import {validateEndpoint, ValidationOptions} from '../validators/validatorMiddleware'
 const { xss } = require('express-xss-sanitizer')
 import * as asyncHandler from 'express-async-handler'
+import {HTTP_SETTINGS} from '../config'
+import {getLogger} from '../utils/logger'
+
+const logger = getLogger('route')
 
 export enum Method {
 	GET = 'GET',
@@ -17,6 +21,17 @@ export interface Route {
 	localMiddleware: ((req: Request, res: Response, next: NextFunction) => void)[]
 }
 
+const requestLoggingMiddleware = () => {
+	return (req: Request, res: Response, next: NextFunction) => {
+		let msg = `${req.method} request to ${req.originalUrl}`
+		if (req.method === 'POST') {
+			msg += ` body: ${JSON.stringify(req.body)}`
+		}
+		logger.debug(msg)
+		return next()
+	}
+}
+
 export const basicRequest = (path: string,
 							 method: Method,
 							 handler: (req: Request, res: Response, next: NextFunction) => void,
@@ -25,6 +40,9 @@ export const basicRequest = (path: string,
 	const localMiddleware = [xss(), ...middleware]
 	if (isAsync) {
 		handler = asyncHandler(handler)
+	}
+	if (HTTP_SETTINGS.requestLogging) {
+		localMiddleware.push(requestLoggingMiddleware())
 	}
 	return {
 		path,

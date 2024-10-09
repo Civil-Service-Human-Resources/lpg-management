@@ -5,18 +5,18 @@ import * as chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
 
 import {expect} from 'chai'
-import {LearningCatalogueConfig} from '../../../../src/learning-catalogue/learningCatalogueConfig'
 import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import * as sinonChai from 'sinon-chai'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
 
 describe('OAuthRestService tests', () => {
 	let http: AxiosInstance
-	let config = new LearningCatalogueConfig('http://example.org', 60000)
+	let config = new RestServiceConfig('http://example.org', 60000)
 	let auth: Auth
 	let restService: OauthRestService
 	let headers: {}
@@ -25,7 +25,7 @@ describe('OAuthRestService tests', () => {
 			defaults: {},
 		}
 		auth = <Auth>{}
-		auth.currentUser = new Identity('user123', [], 'access123')
+		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123')
 
 		restService = new OauthRestService(config, auth)
 		restService.http = http

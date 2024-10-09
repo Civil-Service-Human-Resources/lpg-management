@@ -5,18 +5,18 @@ import * as chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
 
 import {expect} from 'chai'
-import {LearningCatalogueConfig} from '../../../src/learning-catalogue/learningCatalogueConfig'
 import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../src/identity/identity'
 import * as sinonChai from 'sinon-chai'
 import {YoutubeRestService} from '../../../src/youtube/youtubeRestService'
+import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
 
 describe('YoutubeRestService tests', () => {
 	let http: AxiosInstance
-	let config = new LearningCatalogueConfig('http://example.org', 60000)
+	let config = new RestServiceConfig('http://example.org', 60000)
 	let auth: Auth
 	let restService: YoutubeRestService
 	let headers: {}
@@ -25,7 +25,7 @@ describe('YoutubeRestService tests', () => {
 			defaults: {},
 		}
 		auth = <Auth>{}
-		auth.currentUser = new Identity('user123', [], 'access123')
+		auth.currentUser = new Identity('user123', 'user@domain.com', [], 'access123')
 
 		restService = new YoutubeRestService(config, auth)
 		restService.http = http

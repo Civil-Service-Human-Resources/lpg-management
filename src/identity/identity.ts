@@ -1,3 +1,5 @@
+import { OrganisationalUnit } from "src/csrs/model/organisationalUnit"
+
 export enum Role {
 	LEARNER = 'LEARNER',
 	ORGANISATION_MANAGER = 'ORGANISATION_MANAGER',
@@ -25,17 +27,96 @@ export enum Role {
 	ORGANISATION_REPORTER = 'ORGANISATION_REPORTER',
 	PROFESSION_MANAGER = 'PROFESSION_MANAGER',
 	PROFESSION_REPORTER = 'PROFESSION_REPORTER',
-	MVP_REPORTER = 'MVP_REPORTER'
+	MVP_REPORTER = 'MVP_REPORTER',
+	SUPER_REPORTER = 'SUPER_REPORTER',
+	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION',
+	REPORT_EXPORT = 'REPORT_EXPORT'
 }
+
+export enum CompoundRole {
+	ANY,
+	ALL
+}
+
+export abstract class CompoundRoleBase {
+	constructor(public roles: Role[]) { }
+
+	public abstract checkRoles(userRoles: string[]): boolean
+	public abstract getType(): CompoundRole
+	public abstract getDescription(): string
+}
+
+export class AnyOfCompoundRole extends CompoundRoleBase {
+	public checkRoles(userRoles: string[]): boolean {
+		return this.roles.some(r => userRoles.includes(r))
+	}
+
+	getType(): CompoundRole {
+		return CompoundRole.ANY
+	}
+
+	getDescription(): string {
+		return `ANY of the following roles: ${this.roles}`
+	}
+}
+
+export const Any = (...roles: Role[]) => {
+	return new AnyOfCompoundRole(roles)
+}
+
+export const All = (...roles: Role[]) => {
+	return new AllOfCompoundRole(roles)
+}
+
+export class AllOfCompoundRole extends CompoundRoleBase {
+	public checkRoles(userRoles: string[]): boolean {
+		return this.roles.every(r => userRoles.includes(r))
+	}
+
+	getType(): CompoundRole {
+		return CompoundRole.ALL
+	}
+
+	getDescription(): string {
+		return `ALL of the following roles: ${this.roles}.`
+	}
+}
+
+export class UserRole {
+	public compoundRoles: CompoundRoleBase[]
+	constructor(...compoundRoles: CompoundRoleBase[]) {
+		this.compoundRoles = compoundRoles
+	}
+
+	public checkRoles(userRoles: string[]): boolean {
+		let authorised = true
+		for (const compoundRole of this.compoundRoles) {
+			if (!compoundRole.checkRoles(userRoles)) {
+				authorised = false
+			}
+		}
+		return authorised
+	}
+}
+
+export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
+Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER))
+
+export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
+export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
 
 export class Identity {
 
 	readonly uid: string
+	readonly username: string
 	readonly roles: string[]
 	readonly accessToken: string
+	organisationalUnit?: OrganisationalUnit
 
-	constructor(uid: string, roles: string[], accessToken: string) {
+
+	constructor(uid: string, username: string, roles: string[], accessToken: string) {
 		this.uid = uid
+		this.username = username
 		this.roles = roles
 		this.accessToken = accessToken
 	}
@@ -79,6 +160,10 @@ export class Identity {
 
 	isMVPReporter() {
 		return this.hasRole(Role.MVP_REPORTER) && (this.isOrganisationReporter() || this.isCshrReporter())
+	}
+
+	hasMvpExport() {
+		return mvpExportRole.checkRoles(this.roles)
 	}
 
 	hasEventViewingRole() {
@@ -150,10 +235,12 @@ export class Identity {
 		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
 	}
 
+	isRole(role: UserRole) {
+		return role.checkRoles(this.roles)
+	}
+
 	isReporter() {
-		return this.isCshrReporter() || this.isProfessionReporter() ||
-			this.isOrganisationReporter() || this.isKPMGSupplierReporter() ||
-			this.isKornferrySupplierReporter();
+		return this.isRole(reporterRole)
 	}
 
 	isLearner() {
@@ -169,7 +256,7 @@ export class Identity {
 	}
 
 	isOrganisationReporter() {
-		return this.hasRole('ORGANISATION_REPORTER')
+		return this.hasRole(Role.ORGANISATION_REPORTER)
 	}
 
 	isKPMGSupplierReporter() {
@@ -182,5 +269,13 @@ export class Identity {
 
 	isSkillsManagerOrSuperUser() {
 		return this.hasRole(Role.SKILLS_MANAGER) || this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter() || this.isProfessionReporter()
+	}
+
+	isSuperReporter(){
+		return this.hasRole(Role.SUPER_REPORTER)
+	}
+
+	isUnrestrictedOrganisation() {
+		return this.hasRole(Role.UNRESTRICTED_ORGANISATION)
 	}
 }

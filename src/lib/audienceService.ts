@@ -1,4 +1,3 @@
-import {NextFunction, Request, Response} from 'express'
 import {Audience} from '../learning-catalogue/model/audience'
 import {CsrsService} from '../csrs/service/csrsService'
 // import {Duration} from "moment"
@@ -8,30 +7,6 @@ export class AudienceService {
 
 	constructor(csrsService: CsrsService) {
 		this.csrsService = csrsService
-	}
-
-	/* istanbul ignore next */
-	findAudienceByAudienceIdAndAssignToResponseLocalsOrReturn404() {
-		return async (req: Request, res: Response, next: NextFunction, audienceId: string) => {
-			if (res.locals.course && res.locals.course.audiences) {
-				const audience: Audience = res.locals.course.audiences.find((audience: Audience) => audience.id == audienceId)
-				if (audience) {
-					const codeToNameMap  = await this.csrsService.getDepartmentCodeToNameMapping()
-					res.locals.audience = audience
-					res.locals.audienceDepartmentsAsNames = (audience.departments || [])
-						.map(d => codeToNameMap[d])
-						.sort()
-					next()
-				}
-			}
-			if (!res.locals.audience) {
-				res.sendStatus(404)
-			}
-		}
-	}
-
-	public getDefaults(request: Request) {
-		return ''
 	}
 
 	async getAudienceName(audience: Audience) {

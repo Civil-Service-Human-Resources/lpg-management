@@ -2,8 +2,17 @@ import {OauthRestService} from 'lib/http/oauthRestService'
 import {CancelBookingDto} from './model/CancelBookingDto'
 import {plainToInstance} from 'class-transformer'
 import {EventResponse} from './model/EventResponse'
+import {Chart} from '../report-service/model/chart'
+import {CreateReportRequestParams} from '../report-service/model/course-completions/createReportRequestParams'
+import {GetCourseCompletionParameters} from '../report-service/model/course-completions/getCourseCompletionParameters'
+import {
+	RequestCourseCompletionExportRequestResponse
+} from '../report-service/model/requestCourseCompletionExportRequestResponse'
 
 export class CslServiceClient {
+
+	private COURSE_COMPLETIONS_AGGREGATIONS_URL = "/admin/reporting/course-completions/generate-graph"
+	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/request-source-data"
 
 	constructor(private readonly _http: OauthRestService) { }
 
@@ -23,5 +32,13 @@ export class CslServiceClient {
 			`/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/approve_booking`,
 			null)
 		return plainToInstance(EventResponse, response.data)
+	}
+
+	async getCourseCompletionsAggregationsChart(params: GetCourseCompletionParameters): Promise<Chart> {
+		return plainToInstance(Chart, (await this._http.postWithoutFollowing<Chart>(this.COURSE_COMPLETIONS_AGGREGATIONS_URL, params.getAsApiParams())).data)
+	}
+
+	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {
+		return plainToInstance(RequestCourseCompletionExportRequestResponse, (await this._http.postWithoutFollowing<RequestCourseCompletionExportRequestResponse>(this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL, params.getAsApiParams())).data)
 	}
 }
