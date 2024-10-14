@@ -79,6 +79,7 @@ export class Auth {
 				let civilServantProfile = await this.civilServantProfileService.getProfile(accessToken)
 				
 				identityDetails.organisationalUnit = civilServantProfile.organisationalUnit
+				identityDetails.fullName = civilServantProfile.fullName
 				
 				cb(null, identityDetails)
 			} catch (e) {

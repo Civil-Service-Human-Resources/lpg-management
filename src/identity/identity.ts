@@ -112,6 +112,7 @@ export class Identity {
 	readonly roles: string[]
 	readonly accessToken: string
 	organisationalUnit?: OrganisationalUnit
+	fullName?: string
 
 
 	constructor(uid: string, username: string, roles: string[], accessToken: string) {
