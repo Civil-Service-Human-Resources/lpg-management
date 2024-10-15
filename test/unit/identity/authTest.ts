@@ -203,7 +203,7 @@ describe('Auth tests', function() {
 
 	it('should deserialize json to identity', () => {
 		const deserializeCallback = auth.deserializeUser()
-		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token", "organisationalUnit": {"id": 1, "name": "Org1", "children": [], "domains": []}}'
+		const data: string = '{"uid": "abc123", "username": "user@domain.com", "fullName": "A User", "roles": ["role1"], "accessToken": "access-token", "organisationalUnit": {"id": 1, "name": "Org1", "children": [], "domains": []}}'
 		
 		let organisationalUnit = new OrganisationalUnit()
 		organisationalUnit.id = 1
@@ -211,6 +211,7 @@ describe('Auth tests', function() {
 
 		const identity: Identity = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
 		identity.organisationalUnit = organisationalUnit
+		identity.fullName = "A User"
 
 		const doneCallback = sinon.stub()
 
