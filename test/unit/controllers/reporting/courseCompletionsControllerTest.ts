@@ -52,7 +52,7 @@ describe('courseCompletionsController tests', () => {
 		describe('With session', () => {
 			const subApp = createSubApp()
 			subApp.all('*', (req, res, next) => {
-				req.session!.courseCompletions = new CourseCompletionsSession("userEmail", "userId",
+				req.session!.courseCompletions = new CourseCompletionsSession("userEmail", "full name", "userId",
 					{id: "1", name: "Org"},[1])
 				next()
 			}).use(app)

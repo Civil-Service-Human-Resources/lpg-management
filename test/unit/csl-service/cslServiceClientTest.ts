@@ -88,13 +88,14 @@ describe('CslServiceClient', function() {
 
 				}
 			})
-			const params = new CreateReportRequestParams("userId", "userEmail",
+			const params = new CreateReportRequestParams("userId", "full name", "userEmail",
 				timePeriod, ["course1"], ["org1"])
 			const expUrl = `/admin/reporting/course-completions/request-source-data`
 			await client.postCourseCompletionsExportRequest(params)
 			expect(restService.postWithoutFollowing).to.have.been.calledOnceWith(expUrl,
 				{
 					userId: "userId",
+					fullName: "full name",
 					userEmail: "userEmail",
 					startDate: "2024-10-10T10:00:00",
 					endDate: "2024-10-10T10:00:00",

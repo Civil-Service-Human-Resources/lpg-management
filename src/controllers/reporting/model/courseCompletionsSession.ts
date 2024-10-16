@@ -5,12 +5,12 @@ export class CourseCompletionsSession {
 
 	public timePeriod: DashboardTimePeriod = TODAY
 
-	constructor(public userEmail: string, public userUid: string, public selectedOrganisation?: {name: string, id: string},
+	constructor(public userEmail: string, public fullName: string, public userUid: string, public selectedOrganisation?: {name: string, id: string},
 				public allOrganisationIds?: number[], public courses?: {name: string, id: string}[],
 				public chartData?: {text: string}[][]) { }
 
 	static create(userDetails: any) {
-		return new CourseCompletionsSession(userDetails.username, userDetails.uid)
+		return new CourseCompletionsSession(userDetails.username, userDetails.fullName, userDetails.uid)
 	}
 
 	hasSelectedOrganisations() {
