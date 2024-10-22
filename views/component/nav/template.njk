@@ -7,7 +7,6 @@
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/suggestions-for-you">Suggestions for you</a>
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/learning-record">Learning record</a>
             <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/profile">Profile</a>
-            <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/skills">Skills</a>
             {% if identity.hasAnyAdminRole() %}
                 <a class="nav-item govuk-link {% if originalUrl === '/content-management' %}active{% endif %}" href="/content-management">Admin</a>
             {% endif %}
