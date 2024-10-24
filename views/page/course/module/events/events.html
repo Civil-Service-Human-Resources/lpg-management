@@ -18,7 +18,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new event</p>
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Event date and time</h2>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n['event_add_title'] }}</h2>
             <p class="govuk-body">This event is for the <strong>{{ module.title }}</strong> module on the <strong>{{ course.title }}</strong> course.</p>
 
             {% if event.dateRanges and event.dateRanges.length > 0 %}
