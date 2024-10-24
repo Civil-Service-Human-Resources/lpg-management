@@ -17,7 +17,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <p class="govuk-body form-header govuk-!-font-size-24">Add a new event</p>
-            <h2 class="govuk-heading-m govuk-!-font-size-36">Event location and availability</h2>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n['event_add_location'] }}</h2>
             <p class="govuk-body">This event is for the {{ module.title }} module on the {{ course.title }} course</p>
 
             <form class="govuk-form" action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/location/{{event.id}}" method="post">
