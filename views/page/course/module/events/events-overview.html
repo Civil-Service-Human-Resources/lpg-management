@@ -7,7 +7,7 @@
 
 {% extends "../../../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n['event_overview'] }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}} - {{ i18n['event_overview'] }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
 {% set backButton = "/content-management/courses/" + course.id + "/overview" %}
