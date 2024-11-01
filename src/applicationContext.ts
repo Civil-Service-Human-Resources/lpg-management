@@ -1,7 +1,6 @@
 import * as config from './config'
 import {HomeController} from './controllers/homeController'
 import axios, {AxiosInstance} from 'axios'
-import {IdentityService} from './identity/identityService'
 import {Auth} from './identity/auth'
 import * as passport from 'passport'
 import {AuthConfig} from './identity/authConfig'
@@ -59,7 +58,6 @@ import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacity
 import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
 import { OrganisationalUnitClient } from './csrs/client/organisationalUnitClient'
 import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
-import { createClient } from 'redis'
 import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
 import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceClient} from './csl-service/client'
@@ -68,12 +66,13 @@ import { CivilServantProfileService } from './csrs/service/civilServantProfileSe
 import {CourseTypeAheadCache} from './learning-catalogue/courseTypeaheadCache'
 import {RestServiceConfig} from './lib/http/restServiceConfig'
 import {createConfig} from './lib/http/restServiceConfigFactory'
+import {redisClient} from './lib/redis'
+import {ProfileCache} from './csrs/profileCache'
 
 export class ApplicationContext {
 
 	controllers: Controller[] = []
 
-	identityService: IdentityService
 	auth: Auth
 	identityConfig: RestServiceConfig
 	axiosInstance: AxiosInstance
@@ -118,6 +117,7 @@ export class ApplicationContext {
 	bookingValidator: Validator<Booking>
 	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
 	organisationalUnitPageModelValidator: Validator<OrganisationalUnitPageModel>
+	profileCache: ProfileCache
 	organisationalUnitCache: OrganisationalUnitCache
 	organisationalUnitTypeaheadCache: OrganisationalUnitTypeaheadCache
 	organisationalUnitClient: OrganisationalUnitClient
@@ -154,8 +154,11 @@ export class ApplicationContext {
 			timeout: config.REQUEST_TIMEOUT_MS,
 		})
 
-		this.identityService = new IdentityService(this.axiosInstance)
-		this.civilServantProfileService = new CivilServantProfileService(this.axiosInstance)
+		this.profileCache = new ProfileCache(
+			redisClient, config.PROFILE_REDIS.ttl_seconds
+		)
+
+		this.civilServantProfileService = new CivilServantProfileService(this.axiosInstance, this.profileCache)
 
 		this.auth = new Auth(
 			new AuthConfig(
@@ -165,10 +168,10 @@ export class ApplicationContext {
 				config.AUTHENTICATION.callbackUrl,
 				config.AUTHENTICATION_PATH,
 				config.AUTHENTICATION.endpoints.authorization,
-				config.AUTHENTICATION.endpoints.token
+				config.AUTHENTICATION.endpoints.token,
+				config.AUTHENTICATION.endpoints.logout
 			),
 			passport,
-			this.identityService,
 			this.civilServantProfileService
 		)
 
@@ -182,15 +185,7 @@ export class ApplicationContext {
 
 		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
 
-		const courseCacheRedis = createClient({
-			auth_pass: config.ORG_REDIS.password,
-			host: config.ORG_REDIS.host,
-			no_ready_check: true,
-			port: config.ORG_REDIS.port,
-		})
-		this.courseTypeaheadCache = new CourseTypeAheadCache(
-			courseCacheRedis, config.ORG_REDIS.ttl_seconds
-		)
+		this.courseTypeaheadCache = new CourseTypeAheadCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslService, this.courseTypeaheadCache)
 
 		this.courseFactory = new CourseFactory()
@@ -208,17 +203,12 @@ export class ApplicationContext {
 
 		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
 
-		const organisationalUnitCacheRedis = createClient({
-			auth_pass: config.ORG_REDIS.password,
-			host: config.ORG_REDIS.host,
-			no_ready_check: true,
-			port: config.ORG_REDIS.port,
-		})
 		this.organisationalUnitCache = new OrganisationalUnitCache(
-			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+			redisClient, config.ORG_REDIS.ttl_seconds
 		)
+
 		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
-			organisationalUnitCacheRedis, config.ORG_REDIS.ttl_seconds
+			redisClient, config.ORG_REDIS.ttl_seconds
 		)
 		this.csrsConfig = createConfig(config.REGISTRY_SERVICE)
 		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))
@@ -283,7 +273,6 @@ export class ApplicationContext {
 			this.dateRangeCommandValidator,
 			this.dateRangeValidator,
 			this.dateRangeCommandFactory,
-			this.identityService,
 			this.cslService
 		)
 

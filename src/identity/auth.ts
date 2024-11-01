@@ -1,12 +1,13 @@
 import {NextFunction, Request, Response, Handler} from 'express'
 import {PassportStatic} from 'passport'
-import {IdentityService} from './identityService'
 import * as oauth2 from 'passport-oauth2'
-import {Identity} from './identity'
+import * as jwt from 'jsonwebtoken'
+import {createIdentity, Identity, IdentityDetails} from './identity'
 import {AuthConfig} from './authConfig'
 import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
-import { CivilServantProfileService } from '../../src/csrs/service/civilServantProfileService'
+import {plainToInstance} from 'class-transformer'
+import {CivilServantProfileService} from '../csrs/service/civilServantProfileService'
 
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
@@ -15,16 +16,14 @@ export class Auth {
 	logger = getLogger('Auth')
 	config: AuthConfig
 	passportStatic: PassportStatic
-	identityService: IdentityService
 	civilServantProfileService: CivilServantProfileService
 	currentUser: Identity
 	@EnvValue('LPG_UI_URL')
 	public lpgUiUrl: String
 
-	constructor(config: AuthConfig, passportStatic: PassportStatic, identityService: IdentityService, civilServantProfileService: CivilServantProfileService) {
+	constructor(config: AuthConfig, passportStatic: PassportStatic, civilServantProfileService: CivilServantProfileService) {
 		this.config = config
 		this.passportStatic = passportStatic
-		this.identityService = identityService
 		this.civilServantProfileService = civilServantProfileService
 	}
 
@@ -39,6 +38,7 @@ export class Auth {
 		app.use(this.checkAuthenticatedAndAssignCurrentUser())
 		app.use(this.addToResponseLocals())
 		app.use(this.hasAdminRole())
+		app.use(this.logOutMiddleware())
 	}
 
 	initialize(): Handler {
@@ -61,9 +61,9 @@ export class Auth {
 
 			},
 			this.verify()
-			
+
 		)
-		
+
 		this.passportStatic.use(strategy)
 
 		this.passportStatic.serializeUser((user: any, done: any) => {
@@ -76,13 +76,8 @@ export class Auth {
 	verify() {
 		return async (accessToken: string, refreshToken: string, profile: any, cb: oauth2.VerifyCallback) => {
 			try {
-				const identityDetails = await this.identityService.getDetails(accessToken)
-
-				let civilServantProfile = await this.civilServantProfileService.getProfile(accessToken)
-				
-				identityDetails.organisationalUnit = civilServantProfile.organisationalUnit
-				identityDetails.fullName = civilServantProfile.fullName
-				
+				const token = jwt.decode(accessToken) as any
+				const identityDetails = new IdentityDetails(token.user_name, token.email, token.authorities, accessToken)
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
@@ -93,13 +88,29 @@ export class Auth {
 
 	checkAuthenticatedAndAssignCurrentUser() {
 		return (req: Request, res: Response, next: NextFunction) => {
+			console.log("checkAuthenticatedAndAssignCurrentUser")
 			if (req.isAuthenticated()) {
 				this.currentUser = req.user as Identity
 				return next()
 			}
 
 			res.cookie(this.REDIRECT_COOKIE_NAME, req.originalUrl)
-			res.redirect(this.config.authenticationPath)
+			return this.passportStatic.authenticate('oauth2', {
+				failureFlash: true,
+				failureRedirect: '/',
+			})(req, res, next)
+		}
+	}
+
+	logOutMiddleware() {
+		return async (req: Request, res: Response, next: NextFunction) => {
+			const user = req.user as Identity
+			if (user.managementShouldLogout) {
+				console.log("Log out flag found")
+				await this.logout()(req, res)
+			} else {
+				next()
+			}
 		}
 	}
 
@@ -125,13 +136,21 @@ export class Auth {
 
 	deserializeUser() {
 		return async (data: string, done: any) => {
-			let jsonResponse = JSON.parse(data)			
-			
-			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
-			user.organisationalUnit = jsonResponse.organisationalUnit
-			user.fullName = jsonResponse.fullName
-			
-			done(null, user)
+			console.log("Deserialize")
+			let identity: IdentityDetails
+			try {
+				identity = plainToInstance(IdentityDetails, JSON.parse(data) as IdentityDetails)
+				const csrsProfile = await this.civilServantProfileService.getProfile(identity.uid, identity.accessToken)
+				if (!csrsProfile.managementLoggedIn) {
+					csrsProfile.managementLoggedIn = true
+					await this.civilServantProfileService.updateProfileCache(csrsProfile)
+				}
+				const user = createIdentity(identity, csrsProfile)
+				done(null, user)
+			} catch (error) {
+				this.logger.error(`Problem deserializing: ${error}`)
+				done(error, undefined)
+			}
 		}
 	}
 
@@ -153,18 +172,10 @@ export class Auth {
 						this.logger.error('Rejecting non-admin user ' + req.user.uid + ' with IP '
 							+ req.ip + ' from page ' + req.originalUrl)
 					}
-					try {
-						this.identityService.logout(req!.user!.accessToken)
-						req.logout()
-						res.cookie(this.REDIRECT_COOKIE_NAME, this.lpgUiUrl)
-						res.locals.lpgUiUrl = this.lpgUiUrl
-						return res.redirect(this.lpgUiUrl.toString())
-					} catch (e) {
-						this.logger.warn(`Error logging user out`, e)
-						res.cookie(this.REDIRECT_COOKIE_NAME, this.lpgUiUrl)
-						res.locals.lpgUiUrl = this.lpgUiUrl
-						return res.redirect(this.lpgUiUrl.toString())
-					}
+					req.logout()
+					res.cookie(this.REDIRECT_COOKIE_NAME, this.lpgUiUrl)
+					res.locals.lpgUiUrl = this.lpgUiUrl
+					return res.redirect(this.lpgUiUrl.toString())
 				}
 			} else {
 				res.cookie(this.REDIRECT_COOKIE_NAME, this.lpgUiUrl)
@@ -177,20 +188,12 @@ export class Auth {
 	logout() {
 		return async (req: Request, res: Response) => {
 			if (req.isAuthenticated()) {
-				try {
-					await this.identityService.logout(req!.user!.accessToken)
-					req.logout()
-					res.locals.lpgUiUrl = this.lpgUiUrl
-					return res.redirect(this.lpgUiUrl.toString())
-				} catch (e) {
-					this.logger.warn(`Error logging user out`, e)
-					res.cookie(this.REDIRECT_COOKIE_NAME, this.lpgUiUrl)
-					res.locals.lpgUiUrl = this.lpgUiUrl
-					return res.redirect(this.lpgUiUrl.toString())
-				}
+				const user: Identity = plainToInstance(Identity, req.user)
+				const redirectTo = user.uiLoggedIn ? `${this.lpgUiUrl}/sign-out` : this.config.getLogoutEndpoint()
+				await this.civilServantProfileService.removeProfileFromCache(user.uid)
+				req.logout()
+				return res.redirect(redirectTo)
 			} else {
-				res.cookie(this.REDIRECT_COOKIE_NAME, this.lpgUiUrl)
-				res.locals.lpgUiUrl = this.lpgUiUrl
 				return res.redirect(this.lpgUiUrl.toString())
 			}
 		}
