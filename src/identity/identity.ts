@@ -1,4 +1,5 @@
 import { OrganisationalUnit } from "src/csrs/model/organisationalUnit"
+import {Profile} from '../csrs/model/profile'
 
 export enum Role {
 	LEARNER = 'LEARNER',
@@ -105,22 +106,30 @@ Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_R
 export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
 
+export class IdentityDetails {
+	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
+}
+
+export function createIdentity(identityDetails: IdentityDetails, profile: Profile) {
+	return new Identity(identityDetails.uid, identityDetails.username, identityDetails.roles, identityDetails.accessToken,
+		profile.managementLoggedIn, profile.managementShouldLogout, profile.uiLoggedIn, profile.uiShouldLogout,
+		profile.organisationalUnit, profile.fullName)
+
+}
+
 export class Identity {
 
-	readonly uid: string
-	readonly username: string
-	readonly roles: string[]
-	readonly accessToken: string
-	organisationalUnit?: OrganisationalUnit
-	fullName?: string
-
-
-	constructor(uid: string, username: string, roles: string[], accessToken: string) {
-		this.uid = uid
-		this.username = username
-		this.roles = roles
-		this.accessToken = accessToken
-	}
+	constructor(
+	public readonly uid: string,
+	public readonly username: string,
+	public readonly roles: string[],
+	public readonly accessToken: string,
+	public managementLoggedIn: boolean = false,
+	public managementShouldLogout: boolean = false,
+	public uiLoggedIn: boolean = false,
+	public uiShouldLogout: boolean = false,
+	public organisationalUnit?: OrganisationalUnit,
+	public fullName?: string,) { }
 
 	hasRole(role: string) {
 		return this.roles && this.roles.indexOf(role) > -1
