@@ -5,7 +5,7 @@ import {AppConfig} from '../config/appConfig'
 import {RedisStore} from 'connect-redis'
 import * as cookieParser from 'cookie-parser'
 import * as connectRedis from 'connect-redis'
-import {redisClient} from 'lib/redis'
+import {redisClient} from '../lib/redis'
 
 export class SessionMiddleware extends Middleware {
     apply(app: Express): void {
