@@ -9,6 +9,8 @@ import { getLogger } from '../utils/logger'
 import {plainToInstance} from 'class-transformer'
 import {CivilServantProfileService} from '../csrs/service/civilServantProfileService'
 
+const logger = getLogger("Auth")
+
 export class Auth {
 	readonly REDIRECT_COOKIE_NAME: string = 'redirectTo'
 	readonly HTTP_UNAUTHORISED: number = 401
@@ -19,7 +21,7 @@ export class Auth {
 	civilServantProfileService: CivilServantProfileService
 	currentUser: Identity
 	@EnvValue('LPG_UI_URL')
-	public lpgUiUrl: String
+	public lpgUiUrl: string
 
 	constructor(config: AuthConfig, passportStatic: PassportStatic, civilServantProfileService: CivilServantProfileService) {
 		this.config = config
@@ -89,7 +91,12 @@ export class Auth {
 	checkAuthenticatedAndAssignCurrentUser() {
 		return (req: Request, res: Response, next: NextFunction) => {
 			if (req.isAuthenticated()) {
-				this.currentUser = req.user as Identity
+				const user = req.user as Identity
+				if (!user.isProfileComplete()) {
+					logger.info(`User ${user.username} hasn't completed profile setup - redirecting to UI`)
+					return res.redirect(this.lpgUiUrl)
+				}
+				this.currentUser = user
 				return next()
 			}
 
