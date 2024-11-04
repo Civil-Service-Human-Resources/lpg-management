@@ -131,6 +131,10 @@ export class Identity {
 	public organisationalUnit?: OrganisationalUnit,
 	public fullName?: string,) { }
 
+	isProfileComplete() {
+		return this.fullName && this.organisationalUnit
+	}
+
 	hasRole(role: string) {
 		return this.roles && this.roles.indexOf(role) > -1
 	}
