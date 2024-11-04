@@ -88,7 +88,6 @@ export class Auth {
 
 	checkAuthenticatedAndAssignCurrentUser() {
 		return (req: Request, res: Response, next: NextFunction) => {
-			console.log("checkAuthenticatedAndAssignCurrentUser")
 			if (req.isAuthenticated()) {
 				this.currentUser = req.user as Identity
 				return next()
@@ -106,7 +105,6 @@ export class Auth {
 		return async (req: Request, res: Response, next: NextFunction) => {
 			const user = req.user as Identity
 			if (user.managementShouldLogout) {
-				console.log("Log out flag found")
 				await this.logout()(req, res)
 			} else {
 				next()
@@ -191,8 +189,9 @@ export class Auth {
 				const user: Identity = plainToInstance(Identity, req.user)
 				const redirectTo = user.uiLoggedIn ? `${this.lpgUiUrl}/sign-out` : this.config.getLogoutEndpoint()
 				await this.civilServantProfileService.removeProfileFromCache(user.uid)
-				req.logout()
-				return res.redirect(redirectTo)
+				return req.session!.destroy(() => {
+					res.redirect(redirectTo)
+				})
 			} else {
 				return res.redirect(this.lpgUiUrl.toString())
 			}
