@@ -5,7 +5,6 @@ import {Auth} from './identity/auth'
 import * as passport from 'passport'
 import {AuthConfig} from './identity/authConfig'
 import {LearningCatalogue} from './learning-catalogue'
-import {EnvValue} from 'ts-json-properties'
 import {CourseController} from './controllers/courseController'
 import {CourseFactory} from './learning-catalogue/model/factory/courseFactory'
 import {NextFunction, Request, Response} from 'express'
@@ -139,12 +138,7 @@ export class ApplicationContext {
 	questionValidator: Validator<Question>
 	civilServantProfileService: CivilServantProfileService
 
-
-	@EnvValue('LPG_UI_URL')
-	public lpgUiUrl: String
-
-	@EnvValue('FEEDBACK_URL')
-	public feedbackUrl: String
+	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -172,7 +166,8 @@ export class ApplicationContext {
 				config.AUTHENTICATION.endpoints.logout
 			),
 			passport,
-			this.civilServantProfileService
+			this.civilServantProfileService,
+			this.lpgUiUrl
 		)
 
 		this.identityConfig = createConfig({
@@ -319,7 +314,6 @@ export class ApplicationContext {
 		return (req: Request, res: Response, next: NextFunction) => {
 			res.locals.originalUrl = req.originalUrl
 			res.locals.lpgUiUrl = this.lpgUiUrl
-			res.locals.feedbackUrl = this.feedbackUrl
 			res.locals.sessionFlash = req.session!.sessionFlash
 
 			delete req.session!.sessionFlash

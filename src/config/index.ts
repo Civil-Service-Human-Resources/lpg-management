@@ -42,6 +42,10 @@ export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 
 export const LOGGING_LEVEL = env.LOGGING_LEVEL
 
+export const FRONTEND = set({
+	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001'
+})
+
 export const AUTHENTICATION = set({
 	clientId: env.OAUTH_CLIENT_ID || 'a5881544-6159-4d2f-9b51-8c47ce97454d',
 	clientSecret: env.OAUTH_CLIENT_SECRET || 'test',

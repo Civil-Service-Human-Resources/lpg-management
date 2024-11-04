@@ -12,6 +12,7 @@ import {AuthConfig} from '../../../src/identity/authConfig'
 import {Identity} from '../../../src/identity/identity'
 import { CivilServantProfileService } from 'src/csrs/service/civilServantProfileService'
 import {Profile} from '../../../src/csrs/model/profile'
+import {OrganisationalUnit} from '../../../src/csrs/model/organisationalUnit'
 
 chai.use(sinonChai)
 
@@ -32,7 +33,7 @@ describe('Auth tests', function() {
 	beforeEach(() => {
 		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath, logoutPath)
 
-		auth = new Auth(config, passportStatic, civilServantProfileService)
+		auth = new Auth(config, passportStatic, civilServantProfileService, "lpgui")
 	})
 
 	it('should return next function if user is authenticated', function() {
@@ -41,12 +42,33 @@ describe('Auth tests', function() {
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
 		request.isAuthenticated = sinon.stub().returns(true)
+		const user = new Identity("uid", "username", [], "access-token")
+		user.organisationalUnit = new OrganisationalUnit()
+		user.fullName = "FullName"
+		request.user = user
 
 		const next: NextFunction = sinon.stub()
 
 		authenticate(request, response, next)
 
 		expect(next).to.have.been.calledOnce
+	})
+
+	it('should redirect if the user has not completed their profile', function() {
+		const authenticate: (request: Request, response: Response, next: NextFunction) => void = auth.checkAuthenticatedAndAssignCurrentUser()
+
+		const response: Response = mockRes()
+		const request: Request = <Request>{}
+		request.isAuthenticated = sinon.stub().returns(true)
+		const user = new Identity("uid", "username", [], "access-token")
+		user.fullName = "FullName"
+		request.user = user
+
+		const next: NextFunction = sinon.stub()
+
+		authenticate(request, response, next)
+
+		expect(response.redirect).to.have.been.calledOnceWith("lpgui")
 	})
 
 	it('should call passportStatic initialize', function() {

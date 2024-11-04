@@ -4,7 +4,6 @@ import * as oauth2 from 'passport-oauth2'
 import * as jwt from 'jsonwebtoken'
 import {createIdentity, Identity, IdentityDetails} from './identity'
 import {AuthConfig} from './authConfig'
-import {EnvValue} from 'ts-json-properties'
 import { getLogger } from '../utils/logger'
 import {plainToInstance} from 'class-transformer'
 import {CivilServantProfileService} from '../csrs/service/civilServantProfileService'
@@ -16,18 +15,13 @@ export class Auth {
 	readonly HTTP_UNAUTHORISED: number = 401
 
 	logger = getLogger('Auth')
-	config: AuthConfig
-	passportStatic: PassportStatic
-	civilServantProfileService: CivilServantProfileService
 	currentUser: Identity
-	@EnvValue('LPG_UI_URL')
-	public lpgUiUrl: string
 
-	constructor(config: AuthConfig, passportStatic: PassportStatic, civilServantProfileService: CivilServantProfileService) {
-		this.config = config
-		this.passportStatic = passportStatic
-		this.civilServantProfileService = civilServantProfileService
-	}
+	constructor(
+		private config: AuthConfig,
+		private passportStatic: PassportStatic,
+		private civilServantProfileService: CivilServantProfileService,
+		private lpgUiUrl: string) { }
 
 	configure(app: any) {
 		app.use(this.initialize())
