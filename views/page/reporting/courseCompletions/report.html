@@ -2,7 +2,6 @@
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
 {% from "../../../component/chart/macro.njk" import renderChart %}
-{% from "../../../component/expander/macro.njk" import expander %}
 {% from "../../../component/filterSummary/macro.njk" import filterSummary %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
@@ -29,41 +28,44 @@
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
   </div>
   <div class="govuk-grid-column-one-third">
-    <h2 class='govuk-heading-m'>Filter</h2>
     <form method='post'>
+      {{ govukRadios({
+        classes: "govuk-radios--small",
+        name: "timePeriod",
+        fieldset: {
+          legend: {
+            html: "<h2>Filter by date</h2>",
+            classes: "govuk-heading-m"
+          }
+        },
+        items: [
+          {
+            value: "today",
+            text: "Today",
+            checked: pageModel.timePeriod == "today"
+          },
+          {
+            value: "past-seven-days",
+            text: "Past seven days",
+            checked: pageModel.timePeriod == "past-seven-days"
+          },
+          {
+            value: "past-month",
+            text: "Past month",
+            checked: pageModel.timePeriod == "past-month"
+          },
+          {
+            value: "past-year",
+            text: "Past year",
+            checked: pageModel.timePeriod == "past-year"
+          }
+        ]
+      }) }}
+
       {{ govukButton({
         text: "Apply filters",
         preventDoubleClick: true
       }) }}
-      {% set dateHtml %}
-        {{ govukRadios({
-          classes: "govuk-radios--small",
-          name: "timePeriod",
-          items: [
-            {
-              value: "today",
-              text: "Today",
-              checked: pageModel.timePeriod == "today"
-            },
-            {
-              value: "past-seven-days",
-              text: "Past seven days",
-              checked: pageModel.timePeriod == "past-seven-days"
-            },
-            {
-              value: "past-month",
-              text: "Past month",
-              checked: pageModel.timePeriod == "past-month"
-            },
-            {
-              value: "past-year",
-              text: "Past year",
-              checked: pageModel.timePeriod == "past-year"
-            }
-          ]
-        }) }}
-      {% endset %}
-      {{ expander("Date", dateHtml, true) }}
     </form>
   </div>
   <div class="govuk-grid-column-two-thirds">
