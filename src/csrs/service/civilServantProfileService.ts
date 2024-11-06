@@ -12,22 +12,21 @@ export class CivilServantProfileService {
 	constructor(private http: AxiosInstance,
 				private readonly profileCache: ProfileCache){ }
 
-    async getProfile(uid: string, accessToken: string){
-		console.log("Getting profile")
-		let profile = await this.profileCache.get(uid)
-		if (!profile) {
-			const response = await this.http.post("/civilServants/me/login", null,
-				{
+	async loginAndFetchProfile(accessToken: string) {
+		const response = await this.http.post("/civilServants/me/login", null,
+			{
 				baseURL: config.REGISTRY_SERVICE.url,
 				headers: {
 					Authorization: `Bearer ${accessToken}`
 				}})
-			console.log(accessToken)
-			profile = plainToInstance(Profile, response.data as Profile)
-			console.log("Setting profile to cache")
-			await this.profileCache.setObject(profile)
+		return plainToInstance(Profile, response.data as Profile)
+	}
+
+    async getProfile(uid: string, accessToken: string){
+		let profile = await this.profileCache.get(uid)
+		if (!profile) {
+			profile = await this.fetchNewProfile(accessToken)
 		}
-		console.log("Returning profile")
 		return profile
     }
 
@@ -40,4 +39,9 @@ export class CivilServantProfileService {
 		await this.profileCache.setObject(profile)
 	}
 
+	async fetchNewProfile(accessToken: string) {
+		const profile = await this.loginAndFetchProfile(accessToken)
+		await this.updateProfileCache(profile)
+		return profile
+	}
 }

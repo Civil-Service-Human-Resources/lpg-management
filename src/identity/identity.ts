@@ -112,7 +112,7 @@ export class IdentityDetails {
 
 export function createIdentity(identityDetails: IdentityDetails, profile: Profile) {
 	return new Identity(identityDetails.uid, identityDetails.username, identityDetails.roles, identityDetails.accessToken,
-		profile.managementLoggedIn, profile.managementShouldLogout, profile.uiLoggedIn, profile.uiShouldLogout,
+		profile.managementLoggedIn, profile.managementShouldLogout, profile.uiLoggedIn, profile.uiShouldLogout, profile.shouldRefresh,
 		profile.organisationalUnit, profile.fullName)
 
 }
@@ -128,8 +128,19 @@ export class Identity {
 	public managementShouldLogout: boolean = false,
 	public uiLoggedIn: boolean = false,
 	public uiShouldLogout: boolean = false,
+	public shouldRefresh: boolean = false,
 	public organisationalUnit?: OrganisationalUnit,
 	public fullName?: string,) { }
+
+	updateWithProfile(profile: Profile) {
+		this.managementLoggedIn = profile.managementLoggedIn
+		this.managementShouldLogout = profile.managementShouldLogout
+		this.uiLoggedIn = profile.uiLoggedIn
+		this.uiShouldLogout = profile.uiShouldLogout
+		this.shouldRefresh = profile.shouldRefresh
+		this.organisationalUnit = profile.organisationalUnit
+		this.fullName = profile.fullName
+	}
 
 	isProfileComplete() {
 		return this.fullName && this.organisationalUnit

@@ -74,6 +74,7 @@ export class Auth {
 			try {
 				const token = jwt.decode(accessToken) as any
 				const identityDetails = new IdentityDetails(token.user_name, token.email, token.authorities, accessToken)
+				await this.civilServantProfileService.fetchNewProfile(accessToken)
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
@@ -105,7 +106,11 @@ export class Auth {
 	logOutMiddleware() {
 		return async (req: Request, res: Response, next: NextFunction) => {
 			const user = req.user as Identity
-			if (user.managementShouldLogout) {
+			 if (user.shouldRefresh) {
+				const profile = await this.civilServantProfileService.fetchNewProfile(user.accessToken)
+				user.updateWithProfile(profile)
+				req.user = user
+			} else if (user.managementShouldLogout) {
 				await this.logout()(req, res)
 			} else {
 				next()
@@ -135,7 +140,6 @@ export class Auth {
 
 	deserializeUser() {
 		return async (data: string, done: any) => {
-			console.log("Deserialize")
 			let identity: IdentityDetails
 			try {
 				identity = plainToInstance(IdentityDetails, JSON.parse(data) as IdentityDetails)
