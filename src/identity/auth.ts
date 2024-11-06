@@ -74,7 +74,6 @@ export class Auth {
 			try {
 				const token = jwt.decode(accessToken) as any
 				const identityDetails = new IdentityDetails(token.user_name, token.email, token.authorities, accessToken)
-				await this.civilServantProfileService.fetchNewProfile(accessToken)
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
