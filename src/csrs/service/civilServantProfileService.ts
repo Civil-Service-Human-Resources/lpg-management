@@ -12,7 +12,7 @@ export class CivilServantProfileService {
 	constructor(private http: AxiosInstance,
 				private readonly profileCache: ProfileCache){ }
 
-	async loginAndFetchProfile(accessToken: string) {
+	private async loginAndFetchProfile(accessToken: string) {
 		const response = await this.http.post("/civilServants/me/login", null,
 			{
 				baseURL: config.REGISTRY_SERVICE.url,

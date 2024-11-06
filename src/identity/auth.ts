@@ -74,6 +74,10 @@ export class Auth {
 			try {
 				const token = jwt.decode(accessToken) as any
 				const identityDetails = new IdentityDetails(token.user_name, token.email, token.authorities, accessToken)
+				const csrsProfile = await this.civilServantProfileService.getProfile(identityDetails.uid, identityDetails.accessToken)
+				if (csrsProfile.shouldRefresh) {
+					await this.civilServantProfileService.fetchNewProfile(identityDetails.accessToken)
+				}
 				cb(null, identityDetails)
 			} catch (e) {
 				this.logger.warn(`Error retrieving user profile information`, e)
@@ -105,11 +109,7 @@ export class Auth {
 	logOutMiddleware() {
 		return async (req: Request, res: Response, next: NextFunction) => {
 			const user = req.user as Identity
-			 if (user.shouldRefresh) {
-				const profile = await this.civilServantProfileService.fetchNewProfile(user.accessToken)
-				user.updateWithProfile(profile)
-				req.user = user
-			} else if (user.managementShouldLogout) {
+			 if (user.managementShouldLogout) {
 				await this.logout()(req, res)
 			} else {
 				next()
