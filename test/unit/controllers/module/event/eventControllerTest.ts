@@ -15,7 +15,6 @@ import {DateRangeCommand} from '../../../../../src/controllers/command/dateRange
 import {DateRangeCommandFactory} from '../../../../../src/controllers/command/factory/dateRangeCommandFactory'
 import {Venue} from '../../../../../src/learning-catalogue/model/venue'
 import {LearnerRecord} from '../../../../../src/learner-record'
-import {IdentityService} from '../../../../../src/identity/identityService'
 import {InviteFactory} from '../../../../../src/learner-record/model/factory/inviteFactory'
 import {Invite} from '../../../../../src/learner-record/model/invite'
 import {Booking} from '../../../../../src/learner-record/model/booking'
@@ -37,7 +36,6 @@ describe('EventController', function() {
 	let dateRangeCommandValidator: Validator<DateRangeCommand>
 	let dateRangeValidator: Validator<DateRange>
 	let dateRangeCommandFactory: DateRangeCommandFactory
-	let identityService: IdentityService
 	let cslService: CslServiceClient
 	let next: NextFunction
 	let error: Error
@@ -52,7 +50,6 @@ describe('EventController', function() {
 		dateRangeCommandValidator = <Validator<DateRangeCommand>>{}
 		dateRangeValidator = <Validator<DateRange>>{}
 		dateRangeCommandFactory = <DateRangeCommandFactory>{}
-		identityService = <IdentityService>{}
 		cslService = <CslServiceClient>{}
 
 		eventController = new EventController(
@@ -65,7 +62,6 @@ describe('EventController', function() {
 			dateRangeCommandValidator,
 			dateRangeValidator,
 			dateRangeCommandFactory,
-			identityService,
 			cslService
 		)
 
