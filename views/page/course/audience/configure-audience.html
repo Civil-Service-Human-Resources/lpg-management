@@ -22,89 +22,115 @@
         {% else %}
             <p class="govuk-body">Your audience has not been configured</strong></p>
         {% endif %}
-        <div class="audience-container">
-            <div class="flex-container u--border--bgrey">
-                <div class="audience-content">
-                    <p class="govuk-body">Organisation</p>
-                    {% if audience.departments and audience.departments.length > 0 %}
-                        <p class="audience-type no-margin">{{ audienceDepartmentsAsNames | join(', ') }}</p>
-                    {% else %}
-                        <p class="unset">No organisations have been added</p>
-                    {% endif %}
-                </div>
-                <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" class="govuk-link audience-link">{{ 'Edit' if (audience.departments and audience.departments.length > 0) else 'Add'}}<span class="hidden"> organisations</span></a>
+        
+        <dl class="govuk-summary-list">
+            <div class="govuk-summary-list__row">
+              <dt class="govuk-summary-list__key">
+                Organisation
+              </dt>
+              <dd class="govuk-summary-list__value">
+                {% if audience.departments and audience.departments.length > 0 %}
+                    {{ audienceDepartmentsAsNames | join(', ') }}
+                {% else %}
+                    No organisations have been added
+                {% endif %}
+              </dd>
+              <dd class="govuk-summary-list__actions">
+                <a class="govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation">{{ 'Edit' if (audience.departments and audience.departments.length > 0) else 'Add'}} <span class="govuk-visually-hidden"> organisations</span></a>
+              </dd>
             </div>
-            <div class="flex-container u--border--bgrey">
-                <div class="audience-content">
-                    <p class="govuk-body">Area of work</p>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Area of work
+                </dt>
+                <dd class="govuk-summary-list__value">
                     {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
-                        <p class="audience-type no-margin">{{ audience.areasOfWork | join(', ') | default("Area of work unset", true) }}</p>
+                        {{ audience.areasOfWork | join(', ') | default("Area of work unset", true) }}
                     {% else %}
-                        <p class="unset">No areas of work have been added</p>
+                        No areas of work have been added
                     {% endif %}
-                </div>
-                {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
-                    <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post" class="audience-link">
-                        <button class="govuk-link linkish-button delete-audience-configuration-link">Delete</button>
-                    </form>
-                {% else %}
-                    <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add<span class="hidden"> area of work</span></a>
-                {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                    {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
+                        <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post" class="audience-link">
+                            <button class="govuk-link linkish-button delete-audience-configuration-link" aria-label="Delete area of work" role="link">Delete</button>
+                        </form>
+                    {% else %}
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work" class="govuk-link audience-link">Add<span class="govuk-visually-hidden"> area of work</span></a>
+                    {% endif %}
+                </dd>
             </div>
-            <div class="flex-container u--border--bgrey">
-                <div class="audience-content">
-                    <p class="govuk-body">Core learning</p>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Core learning
+                </dt>
+                <dd class="govuk-summary-list__value">
                     {% if audience.interests.length > 0 %}
-                        <p class="audience-type no-margin">{{ audience.interests | join(", ") | default("Core learning unset", true) }}</p>
+                        {{ audience.interests | join(", ") | default("Core learning unset", true) }}
                     {% else %}
-                        <p class="unset">No core learning has been added {{event.id}}</p>
+                        No core learning has been added {{event.id}}
                     {% endif %}
-                </div>
-                {% if audience.interests.length > 0 %}
-                    <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/core-learning/delete" method="post" class="audience-link"><button class="govuk-link linkish-button">Delete</button></form>
-                {% else %}
-                    <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-core-learning" class="govuk-link audience-link">Add<span class="hidden"> learning</span></a>
-                {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                    {% if audience.interests.length > 0 %}
+                        <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/core-learning/delete" method="post" class="audience-link"><button class="govuk-link linkish-button" aria-label="Delete core learning" role="link">Delete</button></form>
+                    {% else %}
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-core-learning" class="govuk-link audience-link">Add <span class="govuk-visually-hidden"> core learning</span></a>
+                    {% endif %}
+                </dd>
             </div>
-            <div class="flex-container u--border--bgrey">
-                <div class="audience-content">
-                    <p class="govuk-body">Grades</p>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                  Grades
+                </dt>
+                <dd class="govuk-summary-list__value">
                     {% if audience.grades and audience.grades.length > 0 %}
-                        <p class="audience-type no-margin">{{ audience.grades | jsonpath(gradeCodeToName) | join(', ') }}</p>
+                        {{ audience.grades | jsonpath(gradeCodeToName) | join(', ') }}
                     {% else %}
-                        <p class="unset">No grades have been added</p>
+                        No grades have been added
                     {% endif %}
-                </div>
-                {% if audience.grades and audience.grades.length > 0 %}
-                    <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades/delete" method="post" class="audience-link">
-                        <button class="govuk-link linkish-button">Delete</button>
-                    </form>
-                {% else %}
-                    <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" class="govuk-link audience-link">Add<span class="hidden"> grades</span></a>
-                {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                    {% if audience.grades and audience.grades.length > 0 %}
+                        <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades/delete" method="post" class="audience-link">
+                            <button class="govuk-link linkish-button" aria-label="Delete grades" role="link">Delete</button>
+                        </form>
+                    {% else %}
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" class="govuk-link audience-link">Add <span class="govuk-visually-hidden">grades</span></a>
+                    {% endif %}
+                </dd>
             </div>
-            <div class="flex-container u--border--bgrey">
-                <div class="audience-content">
-                    <p class="govuk-body">Required learning</p>
+
+            <div class="govuk-summary-list__row">
+                <dt class="govuk-summary-list__key">
+                    Required learning
+                </dt>
+                <dd class="govuk-summary-list__value">
                     {% if audience.requiredBy %}
-                        <p class="audience-type no-margin">Deadline: {{ requiredBy.toDateString() if audience.requiredBy }}</p>
+                        <div>Deadline: {{ requiredBy.toDateString() if audience.requiredBy }}</div>
                     {% endif %}
                     {% if audience.frequency %}
-                        <p class="audience-type no-margin">Occurs every: {{ audience.frequency.years() + " years " if audience.frequency.years() > 0 }} {{ audience.frequency.months() + " months" if audience.frequency.months() > 0 }}</p>
+                        <div>Occurs every: {{ audience.frequency.years() + " years " if audience.frequency.years() > 0 }} {{ audience.frequency.months() + " months" if audience.frequency.months() > 0 }}</div>
                     {% endif %}
                     {% if not audience.frequency and not audience.requiredBy %}
-                        <p class="unset">No required learning has been added</p>
+                        No required learning has been added
                     {% endif %}
-                </div>
-                {% if audience.requiredBy or audience.frequency %}
-                    <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/required-learning/delete" method="post" class="audience-link">
-                        <button class="govuk-link linkish-button">Delete</button>
-                    </form>
-                {% else %}
-                    <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/required-learning" class="govuk-link audience-link">Add<span class="hidden"> required learning</span></a>
-                {% endif %}
+                </dd>
+                <dd class="govuk-summary-list__actions">
+                    {% if audience.requiredBy or audience.frequency %}
+                        <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/required-learning/delete" method="post" class="audience-link">
+                            <button class="govuk-link linkish-button" aria-label="Delete required learning" role="link">Delete</button>
+                        </form>
+                    {% else %}
+                        <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/required-learning" class="govuk-link audience-link">Add <span class="govuk-visually-hidden">required learning</span></a>
+                    {% endif %}
+                </dd>
             </div>
-        </div>
+          </dl>
+
         <div class="button-container">
             {{ govukButton({
                 href: "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/delete",
