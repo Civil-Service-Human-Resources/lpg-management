@@ -3,6 +3,7 @@ import {CourseCompletionsSession} from './model/courseCompletionsSession'
 import {plainToInstance} from 'class-transformer'
 
 export function fetchCourseCompletionSessionObject(req: Request): CourseCompletionsSession {
+	
 	const completionsSession = req.session!.courseCompletions
 	return completionsSession ? plainToInstance(CourseCompletionsSession,
 		completionsSession as CourseCompletionsSession) : CourseCompletionsSession.create(req.user)

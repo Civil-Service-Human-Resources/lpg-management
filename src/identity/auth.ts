@@ -61,7 +61,9 @@ export class Auth {
 
 			},
 			this.verify()
+			
 		)
+		
 		this.passportStatic.use(strategy)
 
 		this.passportStatic.serializeUser((user: any, done: any) => {
@@ -79,6 +81,7 @@ export class Auth {
 				let civilServantProfile = await this.civilServantProfileService.getProfile(accessToken)
 				
 				identityDetails.organisationalUnit = civilServantProfile.organisationalUnit
+				identityDetails.fullName = civilServantProfile.fullName
 				
 				cb(null, identityDetails)
 			} catch (e) {
@@ -122,10 +125,11 @@ export class Auth {
 
 	deserializeUser() {
 		return async (data: string, done: any) => {
-			let jsonResponse = JSON.parse(data)
+			let jsonResponse = JSON.parse(data)			
 			
 			let user = new Identity(jsonResponse.uid, jsonResponse.username, jsonResponse.roles, jsonResponse.accessToken)
 			user.organisationalUnit = jsonResponse.organisationalUnit
+			user.fullName = jsonResponse.fullName
 			
 			done(null, user)
 		}

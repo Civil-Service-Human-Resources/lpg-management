@@ -26,8 +26,8 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course else i18n.course.text.addNew}}</h1>
-            <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.text.details}}</h2>
+            <h1 class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course.description else i18n.course.text.addNew}}</h1>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n.course.pageTitle.addCourseDetails}}</h2>
             <form action="/content-management/courses/details/{{ course.id }}" method="post" class="course-form">
                 {% if course.id %}
                 <input type="hidden" name="id" value="{{ form.id|default(course.id) }}">
