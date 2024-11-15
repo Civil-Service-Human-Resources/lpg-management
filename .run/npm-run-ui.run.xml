@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="npm run-ui" type="NodeJSConfigurationType" path-to-js-file="$PROJECT_DIR$/dist/build/src/server.js" working-dir="$PROJECT_DIR$/dist/views">
+  <configuration default="false" name="npm-run-ui" type="NodeJSConfigurationType" path-to-node="$USER_HOME$/.nvm/versions/node/v16.17.0/bin/node" path-to-js-file="server.js" working-dir="$PROJECT_DIR$/dist/">
     <envs>
       <env name="APPLICATIONINSIGHTS_CONNECTION_STRING" value="app_insight_conn_str" />
       <env name="AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT" value="/oauth/logout" />
@@ -11,12 +11,16 @@
       <env name="CONTENT_URL" value="http://cdn.develop.learn.civilservice.gov.uk/lpgdevcontent" />
       <env name="COURSE_CATALOGUE_TIMEOUT_MS" value="60000" />
       <env name="COURSE_CATALOGUE_URL" value="http://localhost:9001" />
+      <env name="CSL_SERVICE_DETAILED_LOGS" value="true" />
       <env name="CSL_SERVICE_TIMEOUT_MS" value="60000" />
       <env name="CSL_SERVICE_URL" value="http://localhost:9003" />
       <env name="FEEDBACK_URL" value="http://localhost:3001/feedback" />
+      <env name="GLOBAL_ENABLE_DETAILED_HTTP_LOGS" value="false" />
       <env name="LEARNER_RECORD_TIMEOUT_MS" value="60000" />
       <env name="LEARNER_RECORD_URL" value="http://localhost:9000" />
       <env name="LOGGING_LEVEL" value="DEBUG" />
+      <env name="LPG_MANAGEMENT_SERVER" value="http://localhost:3005" />
+      <env name="LPG_MANAGEMENT_URL" value="http://localhost:3005" />
       <env name="LPG_UI_URL" value="http://localhost:3001" />
       <env name="OAUTH_AUTHORIZATION_ENDPOINT" value="/oauth/authorize" />
       <env name="OAUTH_CLIENT_ID" value="8fbd4ae2-2db3-44c7-9544-88e80255b56e" />
@@ -33,6 +37,7 @@
       <env name="REGISTRY_SERVICE_URL" value="http://localhost:9002" />
       <env name="REPORT_SERVICE_TIMEOUT_MS" value="60000" />
       <env name="REPORT_SERVICE_URL" value="http://localhost:9004" />
+      <env name="REQUEST_LOGGING" value="true" />
       <env name="REQUEST_TIMEOUT_MS" value="60000" />
       <env name="SERVER_TIMEOUT_MS" value="60000" />
       <env name="YOUTUBE_API_KEY" value="youtube_api_key" />

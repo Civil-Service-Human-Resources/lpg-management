@@ -165,8 +165,8 @@
 		"text": {
 			"code": "Organisation code",
 			"name": "Organisation name",
-			"abbreviation": "Organisation abbreviation",
-			"parent": "Parent"
+			"abbreviation": "Organisation abbreviation (optional)",
+			"parent": "Parent (optional)"
 		},
 		"title": {
 			"manageOrganisations": "Manage organisations",
