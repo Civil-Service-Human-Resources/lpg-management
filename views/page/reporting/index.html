@@ -44,8 +44,7 @@
                                 name: "bookingStartDate",
                                 fieldset: {
                                     legend: {
-                                        text: "Start date",
-                                        isPageHeading: true,
+                                        html: "<h3 class='govuk-fieldset__heading'>Booking information start date</h3>",
                                         classes: "govuk-fieldset__legend--s"
                                     }
                                 },
@@ -85,8 +84,7 @@
                                 name: "bookingEndDate",
                                 fieldset: {
                                     legend: {
-                                        text: "End date",
-                                        isPageHeading: true,
+                                        html: "<h3 class='govuk-fieldset__heading'>Booking information end date</h3>",
                                         classes: "govuk-fieldset__legend--s"
                                     }
                                 },
@@ -121,7 +119,7 @@
                             }) }}
 
                             {{ govukButton({
-                                text: "Download report",
+                                text: "Download booking information report",
                                 classes: "button-blue left-aligned",
                                 preventDoubleClick: true
                             }) }}
@@ -145,9 +143,8 @@
                                 name: "learningRecordStartDate",
                                 fieldset: {
                                     legend: {
-                                    text: "Start date",
-                                    isPageHeading: true,
-                                    classes: "govuk-fieldset__legend--s"
+                                        html: "<h3 class='govuk-fieldset__heading'>Learning record information start date</h3>",
+                                        classes: "govuk-fieldset__legend--s"
                                 }
                                 },
                                 hint: {
@@ -186,8 +183,7 @@
                                     name: "learningRecordEndDate",
                                     fieldset: {
                                     legend: {
-                                        text: "End date",
-                                        isPageHeading: true,
+                                        html: "<h3 class='govuk-fieldset__heading'>Learning record information end date</h3>",
                                         classes: "govuk-fieldset__legend--s"
                                     }
                                     },
@@ -222,7 +218,7 @@
                             }) }}
 
                             {{ govukButton({
-                                text: "Download report",
+                                text: "Download learning record information report",
                                 classes: "button-blue left-aligned",
                                 preventDoubleClick: true
                             }) }}
