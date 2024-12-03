@@ -138,10 +138,7 @@ export class Auth {
 			let identity: IdentityDetails
 			try {
 				identity = plainToInstance(IdentityDetails, JSON.parse(data) as IdentityDetails)
-				let csrsProfile = await this.civilServantProfileService.getProfile(identity.uid, identity.accessToken)
-				if (csrsProfile.shouldRefresh) {
-					csrsProfile = await this.civilServantProfileService.fetchNewProfile(identity.accessToken)
-				}
+				const csrsProfile = await this.civilServantProfileService.getProfile(identity.uid, identity.accessToken)
 				if (!csrsProfile.managementLoggedIn) {
 					csrsProfile.managementLoggedIn = true
 					await this.civilServantProfileService.updateProfileCache(csrsProfile)
