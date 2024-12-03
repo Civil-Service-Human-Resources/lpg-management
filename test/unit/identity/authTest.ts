@@ -8,24 +8,17 @@ import {expect} from 'chai'
 import {PassportStatic} from 'passport'
 import {Strategy} from 'passport-oauth2'
 import {Auth} from '../../../src/identity/auth'
-import {IdentityService} from '../../../src/identity/identityService'
 import {AuthConfig} from '../../../src/identity/authConfig'
 import {Identity} from '../../../src/identity/identity'
-import { CivilServant } from '../../../src/csrs/model/civilServant'
-import { CsrsService } from '../../../src/csrs/service/csrsService'
-import { OauthRestService } from 'lib/http/oauthRestService'
-import { CacheService } from 'lib/cacheService'
-import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
-import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 import { CivilServantProfileService } from 'src/csrs/service/civilServantProfileService'
+import {Profile} from '../../../src/csrs/model/profile'
+import {OrganisationalUnit} from '../../../src/csrs/model/organisationalUnit'
 
 chai.use(sinonChai)
 
 describe('Auth tests', function() {
 	let auth: Auth
 	let passportStatic: PassportStatic = <PassportStatic>{}
-	let identityService: IdentityService = <IdentityService>{}
-	let csrsService: CsrsService = new CsrsService(<OauthRestService>{}, <CacheService>{}, <OrganisationalUnitService>{})
 	let civilServantProfileService: CivilServantProfileService = <CivilServantProfileService>{}
 
 	const clientId = 'clientId'
@@ -35,11 +28,12 @@ describe('Auth tests', function() {
 	const authenticationPath = 'authentication-path'
 	const authorizationPath = 'authorization-path'
 	const authTokenPath = 'authToken-path'
+	const logoutPath = 'logout-path'
 
 	beforeEach(() => {
-		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath)
+		const config = new AuthConfig(clientId, clientSecret, authenticationServiceUrl, callbackUrl, authenticationPath, authorizationPath, authTokenPath, logoutPath)
 
-		auth = new Auth(config, passportStatic, identityService, civilServantProfileService)
+		auth = new Auth(config, passportStatic, civilServantProfileService, "lpgui")
 	})
 
 	it('should return next function if user is authenticated', function() {
@@ -48,6 +42,10 @@ describe('Auth tests', function() {
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
 		request.isAuthenticated = sinon.stub().returns(true)
+		const user = new Identity("uid", "username", [], "access-token")
+		user.organisationalUnit = new OrganisationalUnit()
+		user.fullName = "FullName"
+		request.user = user
 
 		const next: NextFunction = sinon.stub()
 
@@ -56,25 +54,21 @@ describe('Auth tests', function() {
 		expect(next).to.have.been.calledOnce
 	})
 
-	it('should return redirect if user is not authenticated', function() {
-		const originalUrl = 'original-url'
-
+	it('should redirect if the user has not completed their profile', function() {
 		const authenticate: (request: Request, response: Response, next: NextFunction) => void = auth.checkAuthenticatedAndAssignCurrentUser()
 
 		const response: Response = mockRes()
 		const request: Request = <Request>{}
+		request.isAuthenticated = sinon.stub().returns(true)
+		const user = new Identity("uid", "username", [], "access-token")
+		user.fullName = "FullName"
+		request.user = user
+
 		const next: NextFunction = sinon.stub()
-
-		request.isAuthenticated = sinon.stub().returns(false)
-		request.originalUrl = originalUrl
-
-		response.cookie = sinon.stub()
-		response.redirect = sinon.stub()
 
 		authenticate(request, response, next)
 
-		expect(response.cookie).to.have.been.calledOnceWith('redirectTo', originalUrl)
-		expect(response.redirect).to.have.been.calledOnceWith(authenticationPath)
+		expect(response.redirect).to.have.been.calledOnceWith("lpgui")
 	})
 
 	it('should call passportStatic initialize', function() {
@@ -98,22 +92,6 @@ describe('Auth tests', function() {
 
 		const accessToken = 'access-token'
 		const identity: Identity = <Identity>sinon.createStubInstance(Identity)
-		const getDetails = sinon
-			.stub()
-			.withArgs(accessToken)
-			.returns(identity)
-
-		const getCivilServant = sinon
-			.stub()
-			.returns(<CivilServant>sinon.createStubInstance(CivilServant))
-
-		const getProfile = sinon
-			.stub()
-			.returns(<any>{})
-	
-		identityService.getDetails = getDetails
-		csrsService.getCivilServant = getCivilServant
-		civilServantProfileService.getProfile = getProfile
 
 		const passportCallback = sinon.stub()
 
@@ -129,12 +107,6 @@ describe('Auth tests', function() {
 
 		const error: Error = new Error('Test Error')
 
-		const getDetails = sinon
-			.stub()
-			.withArgs(accessToken)
-			.throws(error)
-
-		identityService.getDetails = getDetails
 		const passportCallback = sinon.stub()
 
 		verifyCallback(accessToken, 'refresh-token', null, passportCallback).then(function() {
@@ -201,23 +173,43 @@ describe('Auth tests', function() {
 		expect(passportStatic.use).to.have.been.calledOnce
 	})
 
-	it('should deserialize json to identity', () => {
+	it('should deserialize json to identity when user has logged in already', () => {
 		const deserializeCallback = auth.deserializeUser()
-		const data: string = '{"uid": "abc123", "username": "user@domain.com", "fullName": "A User", "roles": ["role1"], "accessToken": "access-token", "organisationalUnit": {"id": 1, "name": "Org1", "children": [], "domains": []}}'
-		
-		let organisationalUnit = new OrganisationalUnit()
-		organisationalUnit.id = 1
-		organisationalUnit.name = "Org1"
+		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token"}'
+		const profile = new Profile()
+		profile.managementLoggedIn = true
+		civilServantProfileService.getProfile = sinon.stub().resolves(profile)
 
-		const identity: Identity = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
-		identity.organisationalUnit = organisationalUnit
-		identity.fullName = "A User"
+		deserializeCallback(data, (error: any, user: Identity) => {
+			expect(error!).to.be.null
+			expect(user!.uid).to.eql("abc123")
+			expect(user!.username).to.eql("user@domain.com")
+			expect(user!.roles[0]).to.eql("role1")
+			expect(user!.accessToken).to.eql("access-token")
+		})
 
-		const doneCallback = sinon.stub()
+	})
 
-		deserializeCallback(data, doneCallback)
+	it('should deserialize json to identity when user has not logged in already', () => {
+		const deserializeCallback = auth.deserializeUser()
+		const data: string = '{"uid": "abc123", "username": "user@domain.com", "roles": ["role1"], "accessToken": "access-token"}'
 
-		expect(doneCallback).to.have.been.calledOnceWith(null, identity)
+		const profile = new Profile()
+		profile.managementLoggedIn = false
+		civilServantProfileService.getProfile = sinon.stub().resolves(profile)
+		const updateProfileCacheStub = sinon.stub().resolves()
+		civilServantProfileService.updateProfileCache = updateProfileCacheStub
+
+		deserializeCallback(data, (error: any, user: Identity) => {
+			expect(error!).to.be.null
+			expect(user!.uid).to.eql("abc123")
+			expect(user!.username).to.eql("user@domain.com")
+			expect(user!.roles[0]).to.eql("role1")
+			expect(user!.accessToken).to.eql("access-token")
+			expect(user!.managementLoggedIn).to.eql(true)
+			expect(updateProfileCacheStub).to.have.been.calledOnceWith(profile)
+		})
+
 	})
 
 	it('should add authentication and identity to response locals', function() {
@@ -228,6 +220,9 @@ describe('Auth tests', function() {
 		const next: NextFunction = sinon.stub()
 		request.isAuthenticated = sinon.stub().returns(true)
 		request.user = new Identity('abc123', 'user@domain.com', ['role1'], 'access-token')
+
+		const profile = new Profile()
+		civilServantProfileService.getProfile = sinon.stub().resolves(profile)
 
 		addToResponseLocals(request, response, next)
 

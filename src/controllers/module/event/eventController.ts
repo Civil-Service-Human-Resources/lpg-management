@@ -10,7 +10,6 @@ import {DateRangeCommand} from '../../command/dateRangeCommand'
 import {DateRange} from '../../../learning-catalogue/model/dateRange'
 import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFactory'
 import {DateTime} from '../../../lib/dateTime'
-import {IdentityService} from '../../../identity/identityService'
 import {LearnerRecord} from '../../../learner-record'
 import {InviteFactory} from '../../../learner-record/model/factory/inviteFactory'
 import * as config from '../../../config'
@@ -43,7 +42,6 @@ export class EventController implements FormController {
 		public dateRangeCommandValidator: Validator<DateRangeCommand>,
 		public dateRangeValidator: Validator<DateRange>,
 		public dateRangeCommandFactory: DateRangeCommandFactory,
-		public identityService: IdentityService,
 		public cslService: CslServiceClient
 	) {
 		this.router = Router()

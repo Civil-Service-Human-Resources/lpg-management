@@ -42,6 +42,10 @@ export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 
 export const LOGGING_LEVEL = env.LOGGING_LEVEL
 
+export const FRONTEND = set({
+	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001'
+})
+
 export const AUTHENTICATION = set({
 	clientId: env.OAUTH_CLIENT_ID || 'a5881544-6159-4d2f-9b51-8c47ce97454d',
 	clientSecret: env.OAUTH_CLIENT_SECRET || 'test',
@@ -51,22 +55,23 @@ export const AUTHENTICATION = set({
 	endpoints: set({
 		token: env.OAUTH_TOKEN_ENDPOINT || '/oauth2/token',
 		authorization: env.OAUTH_AUTHORIZATION_ENDPOINT || '/oauth2/authorize',
-		resolve: env.AUTHENTICATION_SERVICE_RESOLVE_ENDPOINT || '/identity/resolve',
 		logout: env.AUTHENTICATION_SERVICE_LOGOUT_ENDPOINT || '/logout',
 	}),
 })
 
 export const REDIS = set({
 	host: env.REDIS_HOST || 'localhost',
+	keyPrefix: env.REDIS_KEY_PREFIX || 'csl_frontend_',
 	password: env.REDIS_PASSWORD || '',
 	port: +(env.REDIS_PORT || '6379'),
 })
 
 export const ORG_REDIS = set({
-	host: env.ORG_REDIS_HOST || 'localhost',
-	password: env.ORG_REDIS_PASSWORD || '',
-	port: +(env.ORG_REDIS_PORT || '6379'),
 	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
+})
+
+export const PROFILE_REDIS = set({
+	ttl_seconds: +(env.PROFILE_REDIS_TTL || '604800'),
 })
 
 export const REQUEST_TIMEOUT_MS = Number(env.REQUEST_TIMEOUT_MS)

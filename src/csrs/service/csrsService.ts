@@ -208,8 +208,7 @@ export class CsrsService {
 		return organisationsForTypeahead
 	}
 
-	userCanAccessAllOrganisations(user: any){			
+	userCanAccessAllOrganisations(user: any){
 		return (user.isSuperReporter() || user.isSuperUser() || user.isUnrestrictedOrganisation())
 	}
-
 }

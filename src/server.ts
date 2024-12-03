@@ -75,7 +75,7 @@ app.get('/', function(req: any, res: any) {
 	res.redirect('/content-management')
 })
 
-app.get('/log-out', asyncHandler(ctx.auth.logout()))
+app.get('/sign-out', asyncHandler(ctx.auth.logout()))
 
 app.get('/content-management', asyncHandler(ctx.homeController.index()))
 
