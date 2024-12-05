@@ -22,19 +22,22 @@
   }) }}
 {% endblock %}
 {% block content %}
+
 <div class="govuk-grid-row">
   <div class='govuk-grid-column-full'>
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
   </div>
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-full">
+    <section>
+      <h2 class="govuk-visually-hidden">Filters</h2>
     <form method='post'>
       {{ govukRadios({
         classes: "govuk-radios--small",
         name: "timePeriod",
         fieldset: {
           legend: {
-            html: "<h2>Filter by date</h2>",
+            html: "<h3>Filter by date</h3>",
             classes: "govuk-heading-m"
           }
         },
@@ -67,8 +70,12 @@
         preventDoubleClick: true
       }) }}
     </form>
+    </section>
   </div>
+
+  
   <div class="govuk-grid-column-two-thirds">
+    <h2>Overview</h2>
     {{ filterSummary(pageModel.selectedFilters) }}
     {% set table = {
       "caption": "Number of completions",

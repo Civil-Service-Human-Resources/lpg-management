@@ -9,7 +9,7 @@
 {% endmacro %}
 
 <section class='filter-summary__container'>
-    <h2 class='govuk-visually-hidden'>Selected filters</h2>
+    <h3 class='govuk-visually-hidden'>Selected filters</h3>
     {% if options['submitUrl'] %}
         <form action='{{ options['submitUrl'] }}' method='post'>
             {{ rows(options['rows']) }}
