@@ -6,10 +6,12 @@
         {% if tag["preText"] %}
             <span class="filter-summary__tag-pretext">{{tag["preText"]}}</span>
         {% endif %}
-        <div class="filter-summary__tag {% if tag['dismissable'] %}filter-summary__tag--dismiss{% endif %}">
-            <span>{{ tag["tagText"] }}</span>
-            {% if tag["dismissable"] %}<button formaction="{{ submitUrl }}?remove={{tag["formName"]}},{{tag["formValue"]}}" aria-label="Press Enter or Space to remove {{tag["tagText"]}}" type="submit">✕</button>{% endif %}
-        </div>
+        {% if tag['tagText'] %}
+            <div class="filter-summary__tag {% if tag['dismissable'] %}filter-summary__tag--dismiss{% endif %}">
+                <span>{{ tag["tagText"] }}</span>
+                {% if tag["dismissable"] %}<button formaction="{{ submitUrl }}?remove={{tag["formName"]}},{{tag["formValue"]}}" aria-label="Press Enter or Space to remove {{tag["tagText"]}}" type="submit">✕</button>{% endif %}
+            </div>
+        {% endif %}
     </div>
 {% endmacro %}
 

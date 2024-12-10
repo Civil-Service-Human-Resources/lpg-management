@@ -303,6 +303,12 @@
 	"errors": {
 		"actionNotAuthorised": "You are not authorised to perform this operation"
 	},
+	"validation": {
+		"date_range": {
+			"valid_date": "Enter a date",
+			"validation_report_start_after_end": "The start date must be before the end date"
+		}
+	},
 	"content_management_title": "Content management",
 	"cancellation_policy_add_title": "Add cancellation policy",
 	"cancellation_policy_edit_title": "Edit cancellation policy",

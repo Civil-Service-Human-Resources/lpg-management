@@ -1,0 +1,94 @@
+{% from "date-input/macro.njk" import govukDateInput %}
+
+{{ govukDateInput({
+    id: params.id + "StartDate",
+    name: params.id + "StartDate",
+    fieldset: {
+        legend: params.legend.start
+    },
+    hint: {
+        text: "For example, " + datePlaceHolder
+    },
+    errorMessage: ({
+        text: params.pageModel.getErrorMsg('start') | jsonpath(i18n)
+    } if params.pageModel.getErrorMsg('start')) if params.pageModel,
+    items: [
+        {
+            attributes: {
+                "maxLength": "2"
+            },
+            label: "Day",
+            name: "startDay",
+            value: params.pageModel.startDay,
+            id: params.id + "StartDay",
+            classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.startDay)
+        },
+        {
+            attributes: {
+                "maxLength": "2"
+            },
+            label: "Month",
+            name: "startMonth",
+            value: params.pageModel.startMonth,
+            id: params.id + "StartMonth",
+            classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.startMonth)
+        },
+        {
+            attributes: {
+                "maxLength": "4"
+            },
+            label: "Year",
+            name: "startYear",
+            value: params.pageModel.startYear,
+            id: params.id + "StartYear",
+            classes: "govuk-input--width-5" + (" govuk-input--error" if params.pageModel.errors.fields.startYear)
+        }
+    ]
+}) }}
+
+
+{{ govukDateInput({
+    id: params.id + "EndDate",
+    name: params.id + "EndDate",
+    fieldset: {
+        legend: params.legend.end
+    },
+    hint: {
+        text: "For example, " + datePlaceHolder
+    },
+    errorMessage: ({
+        text: params.pageModel.getErrorMsg('end') | jsonpath(i18n)
+    } if params.pageModel.getErrorMsg('end')) if params.pageModel,
+    items: [
+        {
+            attributes: {
+                "maxLength": "2"
+            },
+            label: "Day",
+            name: "endDay",
+            value: params.pageModel.endDay,
+            id: params.id + "EndDay",
+            classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
+        },
+        {
+            attributes: {
+                "maxLength": "2"
+            },
+            label: "Month",
+            name: "endMonth",
+            value: params.pageModel.endMonth,
+            id: params.id + "EndMonth",
+            classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
+        },
+        {
+            attributes: {
+                "maxLength": "4"
+            },
+            label: "Year",
+            name: "endYear",
+            value: params.pageModel.endYear,
+            id: params.id + "EndYear",
+            classes: "govuk-input--width-5" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
+        }
+    ]
+}) }}

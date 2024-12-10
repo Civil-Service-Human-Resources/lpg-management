@@ -1,6 +1,6 @@
 import {OauthRestService} from 'lib/http/oauthRestService'
-import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
 import {getLogger} from '../utils/logger'
+import {DateStartEnd} from '../controllers/command/dateStartEndCommand'
 
 export class ReportServiceClient {
 

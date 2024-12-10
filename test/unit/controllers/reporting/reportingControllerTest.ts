@@ -26,8 +26,8 @@ describe('reportingController tests', () => {
 						endMonth: '',
 						endYear: '',
 					})
-				expect(res.status).to.eql(302)
-				expect(res.header['location']).to.eql("/reporting")
+				expect(res.status).to.eql(400)
+				expect(res.text).to.contain("Enter a date")
 			})
 			it('Should validate invalid date parameters', async () => {
 				const res = await request(app)
@@ -41,7 +41,8 @@ describe('reportingController tests', () => {
 						endMonth: '200',
 						endYear: '200',
 					})
-				expect(res.status).to.eql(302)
+				expect(res.status).to.eql(400)
+				expect(res.text).to.contain("Enter a date")
 			})
 			it('Should validate start date is before end date', async () => {
 				const res = await request(app)
@@ -55,7 +56,8 @@ describe('reportingController tests', () => {
 						endMonth: '12',
 						endYear: '2023',
 					})
-				expect(res.status).to.eql(302)
+				expect(res.status).to.eql(400)
+				expect(res.text).to.contain("The start date must be before the end date")
 			})
 		})
 

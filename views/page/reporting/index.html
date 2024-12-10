@@ -3,13 +3,11 @@
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends "../../component/Page.njk" %}
+{% from "../../component/datePicker/macro.njk" import datePicker with context %}
 
 {% block pageTitle %}{{ i18n['administration_pages_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% block content %}
-{% set errors = sessionFlash.errors %}
-
-{{ errorSummary(errors.fields) }}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l">Reporting</h1>
@@ -39,84 +37,22 @@
                     </li>
                     <li class="course list-details u--border--bgrey">
                         <form action="/reporting/booking-information" method="post">
-                            {{ govukDateInput({
-                                id: "bookingStartDate",
-                                name: "bookingStartDate",
-                                fieldset: {
-                                    legend: {
-                                        html: "<h3 class='govuk-fieldset__heading'>Booking information start date</h3>",
-                                        classes: "govuk-fieldset__legend--s"
-                                    }
-                                },
-                            hint: {
-                                text: "For example, " + placeholder.startDate.format("DD MM YYYY")
-                            },
-                            items: [
-                                {   attributes: {
-                                        "maxLength": "2"
-                                    },
-                                    label: "Day",
-                                    name: "startDay",
-                                    value: placeholder.startDate.format("DD"),
-                                    id: "bookingStartDay",
-                                    classes: "govuk-input--width-3"
-                                },
+                            {{ datePicker(
                                 {
-                                    label: "Month",
-                                    name: "startMonth",
-                                    value: placeholder.startDate.format("MM"),
-                                    id: "bookingStartMonth",
-                                    classes: "govuk-input--width-3"
-                                },
-                                {
-                                    label: "Year",
-                                    name: "startYear",
-                                    value: placeholder.startDate.format("YYYY"),
-                                    id: "bookingStartYear",
-                                    classes: "govuk-input--width-5"
-                                }
-                            ]
-                            }) }}
-
-
-                            {{ govukDateInput({
-                                id: "bookingEndDate",
-                                name: "bookingEndDate",
-                                fieldset: {
+                                    id: 'booking',
+                                    pageModel: bookingPageModel,
                                     legend: {
-                                        html: "<h3 class='govuk-fieldset__heading'>Booking information end date</h3>",
-                                        classes: "govuk-fieldset__legend--s"
-                                    }
-                                },
-                                hint: {
-                                    text: "For example, " + placeholder.endDate.format("DD MM YYYY")
-                                },
-                                items: [
-                                    {attributes: {
-                                        "maxLength": "2"
+                                        start: {
+                                            html: "<h3 class='govuk-fieldset__heading'>Booking information start date</h3>",
+                                            classes: "govuk-fieldset__legend--s"
                                         },
-                                        label: "Day",
-                                        name: "endDay",
-                                        value: placeholder.endDate.format("DD"),
-                                        id: "bookingEndDay",
-                                        classes: "govuk-input--width-3"
-                                    },
-                                    {
-                                        label: "Month",
-                                        name: "endMonth",
-                                        value: placeholder.endDate.format("MM"),
-                                        id: "bookingEndMonth",
-                                        classes: "govuk-input--width-3"
-                                    },
-                                    {
-                                        label: "Year",
-                                        name: "endYear",
-                                        value: placeholder.endDate.format("YYYY"),
-                                        id: "bookingEndYear",
-                                        classes: "govuk-input--width-5"
+                                        end: {
+                                            html: "<h3 class='govuk-fieldset__heading'>Booking information end date</h3>",
+                                            classes: "govuk-fieldset__legend--s"
+                                        }
                                     }
-                                ]
-                            }) }}
+                                }
+                            ) }}
 
                             {{ govukButton({
                                 text: "Download booking information report",
@@ -138,84 +74,22 @@
                     </li>
                     <li class="course list-details u--border--bgrey">
                         <form action="/reporting/learner-record" method="post">
-                            {{ govukDateInput({
-                                id: "learningRecordStartDate",
-                                name: "learningRecordStartDate",
-                                fieldset: {
+                            {{ datePicker(
+                                {
+                                    id: 'learningRecord',
+                                    pageModel: learnerRecordPageModel,
                                     legend: {
-                                        html: "<h3 class='govuk-fieldset__heading'>Learning record information start date</h3>",
-                                        classes: "govuk-fieldset__legend--s"
-                                }
-                                },
-                                hint: {
-                                    text: "For example, " + placeholder.startDate.format("DD MM YYYY")
-                                },
-                                items: [
-                                    {   attributes: {
-                                    "maxLength": "2"
-                                    },
-                                        label: "Day",
-                                        name: "startDay",
-                                        value: placeholder.startDate.format("DD"),
-                                        id: "learningRecordStartDay",
-                                        classes: "govuk-input--width-3"
-                                    },
-                                    {
-                                        label: "Month",
-                                        name: "startMonth",
-                                        value: placeholder.startDate.format("MM"),
-                                        id: "learningRecordStartMonth",
-                                        classes: "govuk-input--width-3"
-                                    },
-                                    {
-                                        label: "Year",
-                                        name: "startYear",
-                                        value: placeholder.startDate.format("YYYY"),
-                                        id: "learningRecordStartYear",
-                                        classes: "govuk-input--width-5"
-                                }
-                                ]
-                                }) }}
-
-
-                                {{ govukDateInput({
-                                    id: "learningRecordEndDate",
-                                    name: "learningRecordEndDate",
-                                    fieldset: {
-                                    legend: {
-                                        html: "<h3 class='govuk-fieldset__heading'>Learning record information end date</h3>",
-                                        classes: "govuk-fieldset__legend--s"
-                                    }
-                                    },
-                                    hint: {
-                                        text: "For example, " + placeholder.endDate.format("DD MM YYYY")
-                                    },
-                                    items: [
-                                    {attributes: {
-                                        "maxLength": "2"
+                                        start: {
+                                            html: "<h3 class='govuk-fieldset__heading'>Learning record start date</h3>",
+                                            classes: "govuk-fieldset__legend--s"
                                         },
-                                            label: "Day",
-                                            name: "endDay",
-                                            value: placeholder.endDate.format("DD"),
-                                            id: "learningRecordEndDay",
-                                            classes: "govuk-input--width-3"
-                                        },
-                                        {
-                                            label: "Month",
-                                            name: "endMonth",
-                                            value: placeholder.endDate.format("MM"),
-                                            id: "learningRecordEndMonth",
-                                            classes: "govuk-input--width-3"
-                                        },
-                                        {
-                                            label: "Year",
-                                            name: "endYear",
-                                            value: placeholder.endDate.format("YYYY"),
-                                            id: "learningRecordEndYear",
-                                            classes: "govuk-input--width-5"
+                                        end: {
+                                            html: "<h3 class='govuk-fieldset__heading'>Learning record end date</h3>",
+                                            classes: "govuk-fieldset__legend--s"
                                         }
-                                ]
-                            }) }}
+                                    }
+                                }
+                            ) }}
 
                             {{ govukButton({
                                 text: "Download learning record information report",
