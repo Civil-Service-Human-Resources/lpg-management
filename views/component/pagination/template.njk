@@ -4,18 +4,18 @@
             {% if pageResults.getPageCount() != 1 %}
                 <div class="pager-buttons">
                     {% if pageResults.page > 0 %}
-                        <a class="pager__prev govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ pageResults.getPreviousPage() }}{{ query }}">Prev</a>
+                        <a class="pager__prev govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ pageResults.getPreviousPage() }}{{ query }}">Previous<span class="govuk-visually-hidden"> page</span></a>
                     {% endif %}
                     {% for x in range(pageResults.getPageCount()) %}
                         {% if x == pageResults.page %}
-                            <span>{{ x + 1 }}</span>
+                            <span aria-label="Page {{ x + 1 }}">{{ x + 1 }}</span>
                         {% else %}
-                            <a class="govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ x }}{{ query }}">{{ x+1 }}</a>
+                            <a class="govuk-link" aria-label="Page {{ x+1 }}" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ x }}{{ query }}">{{ x+1 }}</a>
                         {% endif %}
                     {% endfor %}
 
                     {% if pageResults.page != pageResults.getPageCount() - 1 %}
-                        <a class="pager__next govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ pageResults.getNextPage() }}{{ query }}">Next</a>
+                        <a class="pager__next govuk-link" href="{{ paginationBaseUrl }}?s={{ pageResults.size }}&p={{ pageResults.getNextPage() }}{{ query }}">Next<span class="govuk-visually-hidden"> page</span></a>
                     {% endif %}
                 </div>
             {% endif %}
