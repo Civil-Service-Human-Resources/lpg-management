@@ -1,4 +1,4 @@
-import {IsNotEmpty, registerDecorator, ValidationArguments, ValidationOptions} from 'class-validator'
+import {IsNotEmpty, registerDecorator, ValidateIf, ValidationArguments, ValidationOptions} from 'class-validator'
 import {Expose, Transform} from 'class-transformer'
 import {IsValidDateString} from '../../learning-catalogue/validator/custom/isValidDateString'
 import moment = require('moment')
@@ -107,6 +107,10 @@ export class DateStartEndCommand extends SubmittableForm {
 	@Expose()
 	@Transform(({obj}) => {
 		return `${obj.startYear}-${padFn(obj.startMonth)}-${padFn(obj.startDay)}`
+	})
+	@ValidateIf((object) => {
+		console.log(object)
+		return object.endDay && object.endMonth && object.endYear
 	})
 	@IsValidDateString({
 		message: 'validation.date_range.valid_date',
