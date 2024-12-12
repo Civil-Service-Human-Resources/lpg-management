@@ -4,6 +4,7 @@
 
 {% extends "../../component/Page.njk" %}
 {% from "../../component/datePicker/macro.njk" import datePicker with context %}
+{% from "../../component/errorSummary/macro.njk" import errorSummary %}
 
 {% block pageTitle %}{{ i18n['administration_pages_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
@@ -11,97 +12,81 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l">Reporting</h1>
-            <div class="reports-container">
-                <ul class="list">
-                    {% if identity.isMVPReporter() %}
-                        <li class="course list-details u--border--bgrey">
-                            <div class="course-details">
-                                <h2 class="govuk-heading-m">Course completions dashboard</h2>
-                                <div class="govuk-body no-margin">
-                                    <p>View a summary of total completed learning for your department.</p>
-                                    <p><a href='/reporting/course-completions/choose-organisation'>Course completions dashboard</a></p>
-                                </div>
-                            </div>
-                        </li>
-                    {% endif %}
-                    <li class="course list-details">
-                        <div class="course-details">
-                            <h2 class="govuk-heading-m">Booking information</h2>
-                            <p class="govuk-body no-margin">See data on face-to-face courses:</p>
-                            <ul class="bullet govuk-body no-margin">
-                                <li><p>requests (unconfirmed bookings, before payment has been provided)</p></li>
-                                <li><p>bookings (confirmed bookings, where payment has been received)</p></li>
-                                <li><p>cancellations (shows the reason, such as capacity issues, course not run or payment not accepted)</p></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="course list-details u--border--bgrey">
-                        <form action="/reporting/booking-information" method="post">
-                            {{ datePicker(
-                                {
-                                    id: 'booking',
-                                    pageModel: bookingPageModel,
-                                    legend: {
-                                        start: {
-                                            html: "<h3 class='govuk-fieldset__heading'>Booking information start date</h3>",
-                                            classes: "govuk-fieldset__legend--s"
-                                        },
-                                        end: {
-                                            html: "<h3 class='govuk-fieldset__heading'>Booking information end date</h3>",
-                                            classes: "govuk-fieldset__legend--s"
-                                        }
-                                    }
-                                }
-                            ) }}
+            {% if identity.isMVPReporter() %}
+                <h2 class="govuk-heading-m">Course completions dashboard</h2>
+                <div class="govuk-body no-margin">
+                    <p>View a summary of total completed learning for your department.</p>
+                    <p><a href='/reporting/course-completions/choose-organisation'>Course completions dashboard</a></p>
+                </div>
+            {% endif %}
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+            <h2 class="govuk-heading-m" id='booking-information'>Booking information</h2>
+            <p class="govuk-body no-margin">See data on face-to-face courses:</p>
+            <ul class="bullet govuk-body">
+                <li><p>requests (unconfirmed bookings, before payment has been provided)</p></li>
+                <li><p>bookings (confirmed bookings, where payment has been received)</p></li>
+                <li><p>cancellations (shows the reason, such as capacity issues, course not run or payment not accepted)</p></li>
+            </ul>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            {{ errorSummary(bookingPageModel.getErrorFields() if bookingPageModel) }}
+            <form action="/reporting/booking-information#booking-information" method="post">
+                {{ datePicker(
+                    {
+                        id: 'booking',
+                        pageModel: bookingPageModel,
+                        legend: {
+                            start: {
+                                html: "<h3 class='govuk-fieldset__heading'>Booking information start date</h3>",
+                                classes: "govuk-fieldset__legend--s"
+                            },
+                            end: {
+                                html: "<h3 class='govuk-fieldset__heading'>Booking information end date</h3>",
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        }
+                    }
+                ) }}
 
-                            {{ govukButton({
-                                text: "Download booking information report",
-                                classes: "button-blue left-aligned",
-                                preventDoubleClick: true
-                            }) }}
-                        </form>
-                    </li>
-                    <li class="course list-details u--border--bgrey">
-                        <div class="course-details">
-                            <h2 class="govuk-heading-m">Learning record information</h2>
-                            <div class="govuk-body no-margin">
-                            <p>View information relating to the learning records for all learners in your department or area of work.</p>
-                            <p>The data provided is learner’s ID or name; profile information; all online courses and modules started and completed, and the dates
-                            of starting and completion; and all confirmed bookings for face-to-face courses, and dates for confirmed bookings on face-to-face courses.</p>
-                            <p>The availability of this information depends on your level of reporting access.</p>
-                            </div>
-                        </div>
-                    </li>
-                    <li class="course list-details u--border--bgrey">
-                        <form action="/reporting/learner-record" method="post">
-                            {{ datePicker(
-                                {
-                                    id: 'learningRecord',
-                                    pageModel: learnerRecordPageModel,
-                                    legend: {
-                                        start: {
-                                            html: "<h3 class='govuk-fieldset__heading'>Learning record start date</h3>",
-                                            classes: "govuk-fieldset__legend--s"
-                                        },
-                                        end: {
-                                            html: "<h3 class='govuk-fieldset__heading'>Learning record end date</h3>",
-                                            classes: "govuk-fieldset__legend--s"
-                                        }
-                                    }
-                                }
-                            ) }}
-
-                            {{ govukButton({
-                                text: "Download learning record information report",
-                                classes: "button-blue left-aligned",
-                                preventDoubleClick: true
-                            }) }}
-                        </form>
-                    </li>
-                </ul>
+                {{ govukButton({
+                text: "Download booking information report",
+                classes: "button-blue left-aligned",
+                preventDoubleClick: true
+                }) }}
+            </form>
+            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+            <h2 class="govuk-heading-m" id="learning-record">Learning record information</h2>
+            <div class="govuk-body no-margin">
+                <p>View information relating to the learning records for all learners in your department or area of work.</p>
+                <p>The data provided is learner’s ID or name; profile information; all online courses and modules started and completed, and the dates
+                of starting and completion; and all confirmed bookings for face-to-face courses, and dates for confirmed bookings on face-to-face courses.</p>
+                <p>The availability of this information depends on your level of reporting access.</p>
             </div>
-        </div>
-        <div class="govuk-grid-column-one-third">
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+            {{ errorSummary(learnerRecordPageModel.getErrorFields() if learnerRecordPageModel) }}
+            <form action="/reporting/learner-record#learning-record" method="post">
+                {{ datePicker(
+                    {
+                        id: 'learningRecord',
+                        pageModel: learnerRecordPageModel,
+                        legend: {
+                            start: {
+                                html: "<h3 class='govuk-fieldset__heading'>Learning record start date</h3>",
+                                classes: "govuk-fieldset__legend--s"
+                            },
+                            end: {
+                                html: "<h3 class='govuk-fieldset__heading'>Learning record end date</h3>",
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        }
+                    }
+                ) }}
+
+                {{ govukButton({
+                text: "Download learning record information report",
+                classes: "button-blue left-aligned",
+                preventDoubleClick: true
+                }) }}
+            </form>
         </div>
     </div>
 {% endblock %}

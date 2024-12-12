@@ -35,7 +35,6 @@ export class TimePeriodParamsFactory {
 		let end = getFrontendDayJs(`${endYear}-${endMonth}-${endDay}`)
 		let startOf: OpUnitType = end.diff(start, 'day') <= 31 ? 'day' : 'month'
 		start = start.startOf(startOf)
-		end = end.startOf(startOf)
 		return this.createFromDates(start, end)
 	}
 
