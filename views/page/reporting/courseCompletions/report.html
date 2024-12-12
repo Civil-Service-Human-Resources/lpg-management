@@ -27,16 +27,15 @@
 
 <div class="govuk-grid-row">
   <div class='govuk-grid-column-full'>
-    {{ errorSummary(pageModel.getErrorFields(), true) }}
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
+    {{ errorSummary(pageModel.getErrorFields(), true) }}
   </div>
   <div class="govuk-grid-column-full">
     <section>
       <h2 class="govuk-visually-hidden">Filters</h2>
       {% set filterDatePicker %}
       {{ datePicker({
-          id: 'courseCompletions',
           pageModel: pageModel,
           legend: {
               start: {

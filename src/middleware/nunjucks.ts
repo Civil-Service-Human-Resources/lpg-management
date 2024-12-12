@@ -8,6 +8,7 @@ import {Duration} from 'moment'
 import * as nunjucks from 'nunjucks'
 import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 import moment = require('moment')
+import _ = require('lodash')
 
 export class NunjucksMiddleware extends Middleware {
     apply(app: Express): void {
@@ -18,6 +19,12 @@ export class NunjucksMiddleware extends Middleware {
 				express: app,
 			})
 		// Filters
+		env.addFilter('appendIdPrefix', (value: string, idPrefix?: string) => {
+			if (idPrefix) {
+				value = idPrefix + _.capitalize(value)
+			}
+			return value
+		})
 		env.addFilter('jsonpath', function(path: string | string[], map: any) {
 				return Object.is(path, undefined) ? undefined : Array.isArray(path) ? path.map(pathElem => jsonpath.value(map, pathElem)) : jsonpath.value(map, path)
 			})

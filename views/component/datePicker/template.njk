@@ -1,8 +1,8 @@
 {% from "date-input/macro.njk" import govukDateInput %}
 
 {{ govukDateInput({
-    id: params.id + "StartDate",
-    name: params.id + "StartDate",
+    id: "startDate" | appendIdPrefix(params.id),
+    name: "startDate" | appendIdPrefix(params.id),
     fieldset: {
         legend: params.legend.start
     },
@@ -20,7 +20,7 @@
             label: "Day",
             name: "startDay",
             value: params.pageModel.startDay,
-            id: params.id + "StartDay",
+            id: "startDay" | appendIdPrefix(params.id),
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.startDay)
         },
         {
@@ -30,7 +30,7 @@
             label: "Month",
             name: "startMonth",
             value: params.pageModel.startMonth,
-            id: params.id + "StartMonth",
+            id: "startMonth" | appendIdPrefix(params.id),
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.startMonth)
         },
         {
@@ -40,7 +40,7 @@
             label: "Year",
             name: "startYear",
             value: params.pageModel.startYear,
-            id: params.id + "StartYear",
+            id: params.id + "startYear" | appendIdPrefix(params.id),
             classes: "govuk-input--width-5" + (" govuk-input--error" if params.pageModel.errors.fields.startYear)
         }
     ]
@@ -48,8 +48,8 @@
 
 
 {{ govukDateInput({
-    id: params.id + "EndDate",
-    name: params.id + "EndDate",
+    id: "endDate" | appendIdPrefix(params.id),
+    name: "endDate" | appendIdPrefix(params.id),
     fieldset: {
         legend: params.legend.end
     },
@@ -67,7 +67,7 @@
             label: "Day",
             name: "endDay",
             value: params.pageModel.endDay,
-            id: params.id + "EndDay",
+            id: params.id + "endDay" | appendIdPrefix(params.id),
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
         },
         {
@@ -77,7 +77,7 @@
             label: "Month",
             name: "endMonth",
             value: params.pageModel.endMonth,
-            id: params.id + "EndMonth",
+            id: params.id + "endMonth" | appendIdPrefix(params.id),
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
         },
         {
@@ -87,7 +87,7 @@
             label: "Year",
             name: "endYear",
             value: params.pageModel.endYear,
-            id: params.id + "EndYear",
+            id: params.id + "endYear" | appendIdPrefix(params.id),
             classes: "govuk-input--width-5" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
         }
     ]
