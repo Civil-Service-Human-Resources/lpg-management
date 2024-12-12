@@ -1,10 +1,8 @@
 {% from "date-input/macro.njk" import govukDateInput %}
 
-{% set id = params.id + "-" if params.id else "" %}
-
 {{ govukDateInput({
-    id: id + "start-date",
-    name: id + "start-date",
+    id: params.id + "StartDate",
+    name: params.id + "StartDate",
     fieldset: {
         legend: params.legend.start
     },
@@ -17,32 +15,32 @@
     items: [
         {
             attributes: {
-                "maxLength": "2"
-            },
+            "maxLength": "2"
+        },
             label: "Day",
-            name: "start-day",
+            name: "startDay",
             value: params.pageModel.startDay,
-            id: id + "start-day",
+            id: params.id + "StartDay",
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.startDay)
         },
         {
             attributes: {
-                "maxLength": "2"
-            },
+            "maxLength": "2"
+        },
             label: "Month",
-            name: "start-month",
+            name: "startMonth",
             value: params.pageModel.startMonth,
-            id: id + "start-month",
+            id: params.id + "StartMonth",
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.startMonth)
         },
         {
             attributes: {
-                "maxLength": "4"
-            },
+            "maxLength": "4"
+        },
             label: "Year",
-            name: "start-year",
+            name: "startYear",
             value: params.pageModel.startYear,
-            id: id + "start-year",
+            id: params.id + "StartYear",
             classes: "govuk-input--width-5" + (" govuk-input--error" if params.pageModel.errors.fields.startYear)
         }
     ]
@@ -50,8 +48,8 @@
 
 
 {{ govukDateInput({
-    id: id + "end-date",
-    name: id + "end-date",
+    id: params.id + "EndDate",
+    name: params.id + "EndDate",
     fieldset: {
         legend: params.legend.end
     },
@@ -64,32 +62,32 @@
     items: [
         {
             attributes: {
-                "maxLength": "2"
-            },
+            "maxLength": "2"
+        },
             label: "Day",
-            name: "end-day",
+            name: "endDay",
             value: params.pageModel.endDay,
-            id: id + "end-day",
+            id: params.id + "EndDay",
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
         },
         {
             attributes: {
-                "maxLength": "2"
-            },
+            "maxLength": "2"
+        },
             label: "Month",
-            name: "end-month",
+            name: "endMonth",
             value: params.pageModel.endMonth,
-            id: id + "end-month",
+            id: params.id + "EndMonth",
             classes: "govuk-input--width-3" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
         },
         {
             attributes: {
-                "maxLength": "4"
-            },
+            "maxLength": "4"
+        },
             label: "Year",
-            name: "end-year",
+            name: "endYear",
             value: params.pageModel.endYear,
-            id: id + "end-year",
+            id: params.id + "EndYear",
             classes: "govuk-input--width-5" + (" govuk-input--error" if params.pageModel.errors.fields.endDay)
         }
     ]

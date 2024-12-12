@@ -106,7 +106,8 @@ export class Auth {
 		return async (req: Request, res: Response, next: NextFunction) => {
 			const user = req.user as Identity
 			 if (user.managementShouldLogout) {
-				await this.logout()(req, res)
+				 logger.info(`Logout flag found for user ${user.uid}, logging out`)
+				 await this.logout()(req, res)
 			} else {
 				next()
 			}

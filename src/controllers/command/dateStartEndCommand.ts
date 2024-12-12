@@ -68,54 +68,36 @@ export class DateStartEndCommand extends SubmittableForm {
 		}
 	}
 
-	@Expose({
-		name: 'start-day'
-	})
 	@IsNotEmpty({
 		groups: ['all'],
 		message: 'validation.date_range.valid_date',
 	})
 	public startDay?: string
 
-	@Expose({
-		name: 'start-month'
-	})
 	@IsNotEmpty({
 		groups: ['all'],
 		message: 'validation.date_range.valid_date',
 	})
 	public startMonth?: string
 
-	@Expose({
-		name: 'start-year'
-	})
 	@IsNotEmpty({
 		groups: ['all'],
 		message: 'validation.date_range.valid_date',
 	})
 	public startYear?: string
 
-	@Expose({
-		name: 'end-day'
-	})
 	@IsNotEmpty({
 		groups: ['all'],
 		message: 'validation.date_range.valid_date',
 	})
 	public endDay?: string
 
-	@Expose({
-		name: 'end-month'
-	})
 	@IsNotEmpty({
 		groups: ['all'],
 		message: 'validation.date_range.valid_date',
 	})
 	public endMonth?: string
 
-	@Expose({
-		name: 'end-year'
-	})
 	@IsNotEmpty({
 		groups: ['all'],
 		message: 'validation.date_range.valid_date',
