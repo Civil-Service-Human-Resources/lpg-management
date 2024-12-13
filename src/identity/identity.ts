@@ -146,6 +146,10 @@ export class Identity {
 		return this.fullName && this.organisationalUnit
 	}
 
+	getDomain() {
+		return this.username.split("@")[1].toLowerCase()
+	}
+
 	hasRole(role: string) {
 		return this.roles && this.roles.indexOf(role) > -1
 	}
