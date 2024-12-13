@@ -11,6 +11,14 @@ export const padFn = (value?: string) => {
 	return value
 }
 
+function formatDateStr(day: string, month: string, year: string) {
+	return `${year}-${padFn(month)}-${padFn(day)}`
+}
+
+function transformDate(day: string, month: string, year: string) {
+	return moment(formatDateStr(day, month, year), 'YYYY-MM-DD', true)
+}
+
 function isStartDateBeforeEndDate(validationOptions?: ValidationOptions) {
 	return function(object: Object, propertyName: string) {
 		registerDecorator({
@@ -20,6 +28,8 @@ function isStartDateBeforeEndDate(validationOptions?: ValidationOptions) {
 			constraints: [],
 			validator: {
 				validate(startDate: any, args: ValidationArguments) {
+					console.log(startDate)
+					console.log((args.object as any)['endDate'])
 					return moment(startDate, 'YYYY-MM-DD', true) < moment((args.object as any)['endDate'], 'YYYY-MM-DD', true)
 				},
 			},
@@ -106,11 +116,10 @@ export class DateStartEndCommand extends SubmittableForm {
 
 	@Expose()
 	@Transform(({obj}) => {
-		return `${obj.startYear}-${padFn(obj.startMonth)}-${padFn(obj.startDay)}`
+		return formatDateStr(obj.startDay, obj.startMonth, obj.startYear)
 	})
 	@ValidateIf((object) => {
-		console.log(object)
-		return object.endDay && object.endMonth && object.endYear
+		 return transformDate(object.endDay,  object.endMonth, object.endYear).isValid()
 	})
 	@IsValidDateString({
 		message: 'validation.date_range.valid_date',
@@ -122,7 +131,7 @@ export class DateStartEndCommand extends SubmittableForm {
 
 	@Expose()
 	@Transform(({obj}) => {
-		return `${obj.endYear}-${padFn(obj.endMonth)}-${padFn(obj.endDay)}`
+		return formatDateStr(obj.endDay, obj.endMonth, obj.endYear)
 	})
 	@IsValidDateString({
 		message: 'validation.date_range.valid_date',

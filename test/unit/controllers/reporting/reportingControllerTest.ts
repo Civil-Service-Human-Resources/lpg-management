@@ -59,6 +59,22 @@ describe('reportingController tests', () => {
 				expect(res.status).to.eql(400)
 				expect(res.text).to.contain("The start date must be before the end date")
 			})
+			it('Should validate only invalid date error is shown', async () => {
+				const res = await request(app)
+					.post("/reporting/booking-information")
+					.set({"roles": 'ORGANISATION_REPORTER'})
+					.send({
+						startDay: '1',
+						startMonth: '11',
+						startYear: '2024',
+						endDay: '31',
+						endMonth: '11',
+						endYear: '2024',
+					})
+				expect(res.status).to.eql(400)
+				expect(res.text).to.contain("Enter a date")
+				expect(res.text).to.not.contain("The start date must be before the end date")
+			})
 		})
 
 
