@@ -1,4 +1,4 @@
-import {DateStartEndCommand} from '../../command/dateStartEndCommand'
+import {DateStartEndCommand, transformDate} from '../../command/dateStartEndCommand'
 import {DashboardTimePeriodType} from './dashboardTimePeriod'
 import {ValidateIf} from 'class-validator'
 
@@ -29,11 +29,6 @@ export class CourseCompletionsFilterModel extends DateStartEndCommand {
 	}
 
 	@ValidateIf(validateIfCustom)
-	startDate?: string
-	@ValidateIf(validateIfCustom)
-	endDate?: string
-
-	@ValidateIf(validateIfCustom)
 	startDay?: string
 
 	@ValidateIf(validateIfCustom)
@@ -50,6 +45,14 @@ export class CourseCompletionsFilterModel extends DateStartEndCommand {
 
 	@ValidateIf(validateIfCustom)
 	endYear?: string
+
+	@ValidateIf(validateIfCustom)
+	@ValidateIf((object) => {
+		return transformDate(object.endDay,  object.endMonth, object.endYear).isValid()
+	})
+	startDate?: string
+	@ValidateIf(validateIfCustom)
+	endDate?: string
 
 	public remove: string
 

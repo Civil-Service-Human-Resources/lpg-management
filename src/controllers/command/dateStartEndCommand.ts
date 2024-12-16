@@ -15,7 +15,7 @@ function formatDateStr(day: string, month: string, year: string) {
 	return `${year}-${padFn(month)}-${padFn(day)}`
 }
 
-function transformDate(day: string, month: string, year: string) {
+export function transformDate(day: string, month: string, year: string) {
 	return moment(formatDateStr(day, month, year), 'YYYY-MM-DD', true)
 }
 
