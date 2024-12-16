@@ -1,11 +1,16 @@
 import {TableService} from '../templating/tableService'
 import {Chart} from './model/chart'
 import {CourseFilterSummaryRow} from '../controllers/reporting/model/courseFilterSummaryRow'
-import {DateFilterSummaryRow} from '../controllers/reporting/model/dateFilterSummaryRow'
 import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFilterSummary'
 import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
-import {DashboardTimePeriod} from '../controllers/reporting/model/dashboardTimePeriod'
 import {ChartJsService} from './chartJsService'
+import {
+	getMultipleCourseSummaryTags,
+	getOrganisationSummaryTags,
+} from '../controllers/models/filterSummary/filterSummaryTag'
+import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
+import {DateFilterSummaryRow} from '../controllers/reporting/model/dateFilterSummaryRow'
+import {getDashboardTimePeriod} from '../controllers/reporting/model/dashboardTimePeriod'
 
 export class ReportServicePageModelService {
 
@@ -26,10 +31,11 @@ export class ReportServicePageModelService {
 		]
 	}
 
-	buildReportingFilterSummary(courses: {name: string, id: string}[], timePeriod: DashboardTimePeriod, selectedOrganisation: {name: string, id: string}) {
-		const coursesFilterSummary = CourseFilterSummaryRow.create(courses)
-		const dateFilterSummary = DateFilterSummaryRow.createForSinglePeriod(timePeriod)
-		return new ReportingFilterSummary(OrganisationFilterSummaryRow.create([selectedOrganisation.name]), coursesFilterSummary, dateFilterSummary)
+	buildReportingFilterSummary(session: CourseCompletionsSession) {
+		const coursesFilterSummary = new CourseFilterSummaryRow(getMultipleCourseSummaryTags(session.courses!))
+		const organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags([session.selectedOrganisation!.name]))
+		const dateFilterSummary = new DateFilterSummaryRow(getDashboardTimePeriod(session).tags)
+		return new ReportingFilterSummary(organisationFilterSummary, coursesFilterSummary, dateFilterSummary)
 	}
 
 }

@@ -1,9 +1,15 @@
-import {DashboardTimePeriod, TODAY} from './dashboardTimePeriod'
-import {CourseCompletionsFilterModel} from './courseCompletionsFilterModel'
+import {DashboardTimePeriodType} from './dashboardTimePeriod'
+import {CourseCompletionsGraphModel} from './courseCompletionsGraphModel'
 
 export class CourseCompletionsSession {
 
-	public timePeriod: DashboardTimePeriod = TODAY
+	public timePeriod: DashboardTimePeriodType = 'today'
+	public startDay?: string
+	public startMonth?: string
+	public startYear?: string
+	public endDay?: string
+	public endMonth?: string
+	public endYear?: string
 
 	constructor(public userEmail: string, public fullName: string, public userUid: string, public selectedOrganisation?: {name: string, id: string},
 				public allOrganisationIds?: number[], public courses?: {name: string, id: string}[],
@@ -27,7 +33,14 @@ export class CourseCompletionsSession {
 		return (this.courses || []).map(course => course.id)
 	}
 
-	updateWithFilterPageModel(model: CourseCompletionsFilterModel) {
-		this.timePeriod = model.getTimePeriod()
+	updateWithFilterPageModel(model: CourseCompletionsGraphModel) {
+		this.timePeriod = model.timePeriod
+		const customDateRange = model.timePeriod === 'custom'
+		this.startDay = customDateRange ? model.startDay : undefined
+		this.startMonth = customDateRange ? model.startMonth : undefined
+		this.startYear = customDateRange ? model.startYear : undefined
+		this.endDay = customDateRange ? model.endDay : undefined
+		this.endMonth = customDateRange ? model.endMonth : undefined
+		this.endYear = customDateRange ? model.endYear : undefined
 	}
 }

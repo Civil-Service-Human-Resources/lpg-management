@@ -2,13 +2,10 @@ import moment = require('moment')
 import {ReportService} from '../../report-service'
 import {getRequest, postRequestWithBody, Route} from '../route'
 import {NextFunction, Request, Response} from 'express'
-import {PlaceholderDate} from '../../learning-catalogue/model/placeholderDate'
 import {DateStartEndCommand} from '../command/dateStartEndCommand'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {Report, ReportType} from './Report'
 import {Controller} from '../controller'
-import {DateStartEnd} from '../../learning-catalogue/model/dateStartEnd'
-import {validateAndMapErrors} from '../../validators/util'
 import {CompoundRoleBase, reporterRole} from '../../identity/identity'
 
 export class ReportingController extends Controller {
@@ -30,8 +27,9 @@ export class ReportingController extends Controller {
 		return postRequestWithBody(url, this.generateReport(reportType),{
 			dtoClass: DateStartEndCommand,
 			onError: {
-				behaviour: BehaviourOnError.REDIRECT,
-				path: `/reporting`
+				behaviour: BehaviourOnError.RENDER_TEMPLATE,
+				path: `page/reporting/index`,
+				pageModelKey: reportType === Report.BOOKING ? 'bookingPageModel' : 'learnerRecordPageModel'
 			}
 		})
 	}
@@ -47,7 +45,8 @@ export class ReportingController extends Controller {
 	getReports() {
 		return async (request: Request, response: Response) => {
 			response.render('page/reporting/index', {
-				placeholder: new PlaceholderDate(),
+				bookingPageModel: new DateStartEndCommand(),
+				learnerRecordPageModel: new DateStartEndCommand()
 			})
 		}
 	}
@@ -55,18 +54,10 @@ export class ReportingController extends Controller {
 	generateReport(reportType: Report) {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			const dateRange: DateStartEndCommand = response.locals.input
-			const startEnd = new DateStartEnd(dateRange.getStartDate(), dateRange.getEndDate())
-			const errors = await validateAndMapErrors(startEnd)
-			if (errors !== undefined) {
-				request.session!.sessionFlash = {
-					errors,
-					form: request.body,
-				}
-				return request.session!.save(() => {
-					response.redirect('/reporting')
-				})
-			}
-			const report = await this.reportService.getReport(reportType, startEnd)
+			const report = await this.reportService.getReport(reportType, {
+				startDate: dateRange.startDate!,
+				endDate: dateRange.endDate!
+			})
 			const metadata = this.reportMap.get(reportType)
 			if (metadata) {
 				const filename = metadata.fileName.concat(moment().toISOString())

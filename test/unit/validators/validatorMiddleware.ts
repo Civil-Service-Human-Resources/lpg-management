@@ -7,8 +7,9 @@ import * as sinon from 'sinon'
 import * as chai from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {beforeEach} from 'mocha'
+import {SubmittableForm} from '../../../src/controllers/models/submittableForm'
 
-class TestObject {
+class TestObject extends SubmittableForm {
 	@IsNotEmpty({
 		message: 'notEmpty'
 	})
@@ -37,15 +38,17 @@ describe('Validation middleware tests', () => {
 		request.params = {
 			paramOne: 'paramOneVal'
 		}
+		const pageModelKey = 'pageModelKey'
 		const func = validateEndpoint({
 			dtoClass: TestObject,
 			onError: {
 				behaviour: BehaviourOnError.REDIRECT,
-				path: '/:paramOne'
+				path: '/:paramOne',
+				pageModelKey
 			}
 		})
 		await func(request, response, next)
-		const errors: any = request.session!.sessionFlash.errors
+		const errors: any = request.session![pageModelKey].errors
 		expect(errors.fields.value[0]).to.eql('notEmpty')
 		expect(response.redirect).to.have.been.calledOnceWith('/paramOneVal')
 	})
@@ -56,14 +59,16 @@ describe('Validation middleware tests', () => {
 			paramOne: 'paramOneVal'
 		}
 		request.originalUrl = '/request'
+		const pageModelKey = 'pageModelKey'
 		const func = validateEndpoint({
 			dtoClass: TestObject,
 			onError: {
-				behaviour: BehaviourOnError.REDIRECT
+				behaviour: BehaviourOnError.REDIRECT,
+				pageModelKey
 			}
 		})
 		await func(request, response, next)
-		const errors: any = request.session!.sessionFlash.errors
+		const errors: any = request.session![pageModelKey].errors
 		expect(errors.fields.value[0]).to.eql('notEmpty')
 		expect(response.redirect).to.have.been.calledOnceWith('/request')
 	})

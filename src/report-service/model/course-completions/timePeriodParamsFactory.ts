@@ -1,7 +1,7 @@
 import {TimePeriodParameters} from './timePeriodParameters'
 import {getFrontendDayJs} from '../../../utils/dateUtil'
-import {Dayjs} from 'dayjs'
-import {DashboardTimePeriodEnum} from '../../../controllers/reporting/model/dashboardTimePeriod'
+import {Dayjs, OpUnitType} from 'dayjs'
+import {CourseCompletionsSession} from '../../../controllers/reporting/model/courseCompletionsSession'
 
 export class TimePeriodParamsFactory {
 
@@ -29,16 +29,27 @@ export class TimePeriodParamsFactory {
 		return this.createFromDates(startDate, endDate)
 	}
 
+	createForCustom(startYear: string, startMonth: string, startDay: string,
+					endYear: string, endMonth: string, endDay: string,): TimePeriodParameters {
+		let start = getFrontendDayJs(`${startYear}-${startMonth}-${startDay}`)
+		let end = getFrontendDayJs(`${endYear}-${endMonth}-${endDay}`)
+		let startOf: OpUnitType = end.diff(start, 'day') <= 31 ? 'day' : 'month'
+		start = start.startOf(startOf)
+		return this.createFromDates(start, end)
+	}
+
 	createFromDates(startDate: Dayjs, endDate: Dayjs) {
 		const offsetInHours = startDate.utcOffset() / 60
 		return new TimePeriodParameters(startDate, endDate, `+${offsetInHours}`)
 	}
 
-	createFromTimePeriodEnum(timePeriod: DashboardTimePeriodEnum) {
-		switch (timePeriod) {
-			case DashboardTimePeriodEnum.PAST_SEVEN_DAYS: return this.createForPastSevenDays()
-			case DashboardTimePeriodEnum.PAST_MONTH: return this.createForPastMonth()
-			case DashboardTimePeriodEnum.PAST_YEAR: return this.createForPastYear()
+	createFromSession(session: CourseCompletionsSession) {
+		switch (session.timePeriod) {
+			case 'past-seven-days': return this.createForPastSevenDays()
+			case 'past-month': return this.createForPastMonth()
+			case 'past-year': return this.createForPastYear()
+			case 'custom': return this.createForCustom(session.startYear!, session.startMonth!, session.startDay!,
+				session.endYear!, session.endMonth!, session.endDay!)
 		}
 		return this.createForDay()
 	}
