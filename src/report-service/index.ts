@@ -11,6 +11,7 @@ import {Chart} from './model/chart'
 import {RequestCourseCompletionExportRequestResponse} from './model/requestCourseCompletionExportRequestResponse'
 import {ReportServicePageModelService} from './reportServicePageModelService'
 import {DateStartEnd} from '../controllers/command/dateStartEndCommand'
+import {ReportResponse} from '../csl-service/model/ReportResponse'
 
 export class ReportService {
 
@@ -61,6 +62,10 @@ export class ReportService {
 	async submitExportRequest(session: CourseCompletionsSession): Promise<RequestCourseCompletionExportRequestResponse> {
 		const params = this.reportParameterFactory.generateReportRequestParams(session)
 		return await this.cslService.postCourseCompletionsExportRequest(params)
+	}
+
+	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
+		return await this.cslService.downloadCourseCompletionsReport(urlSlug)
 	}
 
 	private async buildPageModelFromChart(chart: Chart, session: CourseCompletionsSession) {

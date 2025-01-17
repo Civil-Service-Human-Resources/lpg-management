@@ -14,7 +14,7 @@ export interface LearningCatalogueMiddlewareSettings {
 
 export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMiddlewareSettings,
 												 router: Router, learningCatalogue: LearningCatalogue) {
-	let course: Course
+	let course: Course | null
 
 	router.param('courseId', async (req: Request, res: Response, next: NextFunction, courseId: string) => {
 		course = await learningCatalogue.getCourse(courseId)
@@ -22,7 +22,8 @@ export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMidd
 			res.locals.course = course
 			next()
 		} else {
-			res.sendStatus(404)
+			res.status(404)
+			return res.render("page/not-found")
 		}
 	})
 	if (settings.getModule) {
@@ -36,10 +37,12 @@ export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMidd
 					res.locals.module.minutes = duration.minutes()
 					next()
 				} else {
-					res.sendStatus(404)
+					res.status(404)
+					return res.render("page/not-found")
 				}
 			} else {
-				res.sendStatus(404)
+				res.status(404)
+				return res.render("page/not-found")
 			}
 		})
 	}
@@ -58,7 +61,8 @@ export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMidd
 				}
 			}
 			if (!res.locals.audience) {
-				res.sendStatus(404)
+				res.status(404)
+				return res.render("page/not-found")
 			}
 		})
 	}

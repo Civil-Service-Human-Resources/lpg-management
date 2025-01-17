@@ -13,7 +13,8 @@ import {OauthRestService} from '../lib/http/oauthRestService'
 import {CslServiceClient} from '../csl-service/client'
 import {CourseTypeAheadCache} from './courseTypeaheadCache'
 import {BasicCourse, CourseTypeAhead} from './courseTypeAhead'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
+import {RestServiceConfig} from '../lib/http/restServiceConfig'
+import {HttpException} from '../lib/exception/HttpException'
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
 	private _moduleService: EntityService<Module>
@@ -129,8 +130,15 @@ export class LearningCatalogue {
 		return course
 	}
 
-	async getCourse(courseId: string): Promise<Course> {
-		return this._courseService.get(`/courses/${courseId}`)
+	async getCourse(courseId: string): Promise<Course|null> {
+		try {
+			return await this._courseService.get(`/courses/${courseId}`)
+		} catch (e) {
+			if (e instanceof HttpException && e.statusCode === 404) {
+				return null
+			}
+			throw e
+		}
 	}
 
 	async getRequiredLearning(departmentCodes: string[]): Promise<DefaultPageResults<Course>> {

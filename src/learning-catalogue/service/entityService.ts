@@ -51,9 +51,8 @@ export class EntityService<T> {
 	}
 
 	async get(path: string): Promise<T> {
-		const data = await this._restService.get(path)
-
-		return this._factory.create(data)
+		const response = await this._restService.getRequest<T>({url: path})
+		return this._factory.create(response.data)
 	}
 
 	async update(path: string, entity: any): Promise<T> {

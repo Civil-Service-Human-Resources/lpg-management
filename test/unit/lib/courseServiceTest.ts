@@ -35,10 +35,6 @@ describe('CourseService tests', () => {
 		let course: Course = new Course()
 		course.modules = [module1, module2, module3]
 
-		learningCatalogue.getCourse = sinon
-			.stub()
-			.withArgs(courseId)
-			.returns(course)
 		learningCatalogue.updateCourse = sinon
 			.stub()
 			.withArgs(courseId)
@@ -46,7 +42,7 @@ describe('CourseService tests', () => {
 
 		expect(course.modules.map(m => m.id)).to.be.eql(['1', '2', '3'])
 
-		const sortedCourse = await courseService.sortModules(courseId, ['3', '2', '1'])
+		const sortedCourse = await courseService.sortModules(course, ['3', '2', '1'])
 
 		expect(sortedCourse.modules.map(m => m.id)).to.be.eql(['3', '2', '1'])
 	})
@@ -64,18 +60,15 @@ describe('CourseService tests', () => {
 		module3.id = '3'
 
 		let course: Course = new Course()
+		course.id = "course-id"
 		course.modules = [module1, module2, module3]
 
-		learningCatalogue.getCourse = sinon
-			.stub()
-			.withArgs(courseId)
-			.returns(course)
 		learningCatalogue.updateCourse = sinon
 			.stub()
 			.withArgs(courseId)
 			.returns(course)
 
-		return expect(courseService.sortModules(courseId, ['4', '2', '1'])).to.be.rejectedWith('Module (id: 4) not found in course (id: course-id)')
+		return expect(courseService.sortModules(course, ['4', '2', '1'])).to.be.rejectedWith('Module (id: 4) not found in course (id: course-id)')
 	})
 
 	it('should throw error if length of modules and module ids does not match', async () => {
@@ -93,16 +86,12 @@ describe('CourseService tests', () => {
 		let course: Course = new Course()
 		course.modules = [module1, module2, module3]
 
-		learningCatalogue.getCourse = sinon
-			.stub()
-			.withArgs(courseId)
-			.returns(course)
 		learningCatalogue.updateCourse = sinon
 			.stub()
 			.withArgs(courseId)
 			.returns(course)
 
-		return expect(courseService.sortModules(courseId, ['3', '2'])).to.be.rejectedWith('Course modules length(3) does not match module ids length(2)')
+		return expect(courseService.sortModules(course, ['3', '2'])).to.be.rejectedWith('Course modules length(3) does not match module ids length(2)')
 	})
 
 	describe('Sort audiences', () => {

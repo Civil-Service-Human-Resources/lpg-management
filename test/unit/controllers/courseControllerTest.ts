@@ -398,7 +398,7 @@ describe('Course Controller Tests', function() {
 
 			await courseController.sortModules()(req, res, next)
 
-			expect(courseService.sortModules).to.have.been.calledWith(courseId, moduleIds)
+			expect(courseService.sortModules).to.have.been.calledWith(course, moduleIds)
 			expect(res.redirect).to.have.been.calledWith(`/content-management/courses/${courseId}/add-module`)
 		})
 
@@ -419,7 +419,7 @@ describe('Course Controller Tests', function() {
 
 			await courseController.sortModules()(req, res, next)
 
-			expect(courseService.sortModules).to.have.been.calledWith(courseId, moduleIds)
+			expect(courseService.sortModules).to.have.been.calledWith(course, moduleIds)
 			expect(next).to.have.been.calledWith(error)
 		})
 

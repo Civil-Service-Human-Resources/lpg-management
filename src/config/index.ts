@@ -43,7 +43,8 @@ export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 export const LOGGING_LEVEL = env.LOGGING_LEVEL
 
 export const FRONTEND = set({
-	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001'
+	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001',
+	MANAGEMENT_UI_URL: env.MANAGEMENT_UI_URL || 'http://localhost:3005',
 })
 
 export const AUTHENTICATION = set({

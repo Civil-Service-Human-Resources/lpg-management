@@ -60,7 +60,8 @@ export class EventController implements FormController {
 					res.locals.moduleId = req.params.moduleId
 					next()
 				} else {
-					res.sendStatus(404)
+					res.status(404)
+					return res.render("page/not-found")
 				}
 			})
 		)
@@ -74,11 +75,12 @@ export class EventController implements FormController {
 					res.locals.invitees = invitees
 					next()
 				} else {
-					res.sendStatus(404)
+					res.status(404)
+					return res.render("page/not-found")
 				}
 			})
 		)
-		applyLearningCatalogueMiddleware({getModule: false}, this.router, this.learningCatalogue)
+		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
 
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.getLocation()))
 
@@ -343,8 +345,8 @@ export class EventController implements FormController {
 
 	public getDatePreview() {
 		return async (req: Request, res: Response) => {
-			const course: Course = await this.learningCatalogue.getCourse(req.params.courseId)
-			const module: Module = await this.learningCatalogue.getModule(req.params.courseId, req.params.moduleId)
+			const course: Course = res.locals.course
+			const module: Course = res.locals.module
 
 			res.render('page/course/module/events/events-preview', {course: course, module: module})
 		}
@@ -448,8 +450,8 @@ export class EventController implements FormController {
 
 	public getEventOverview() {
 		return async (req: Request, res: Response) => {
-			const course: Course = await this.learningCatalogue.getCourse(req.params.courseId)
-			const module: Module = await this.learningCatalogue.getModule(req.params.courseId, req.params.moduleId)
+			const course: Course = res.locals.course
+			const module: Module = res.locals.module
 
 			const event = res.locals.event
 			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
@@ -468,8 +470,8 @@ export class EventController implements FormController {
 
 	public cancelEvent() {
 		return async (req: Request, res: Response) => {
-			const course: Course = await this.learningCatalogue.getCourse(req.params.courseId)
-			const module: Module = await this.learningCatalogue.getModule(req.params.courseId, req.params.moduleId)
+			const course: Course = res.locals.course
+			const module: Module = res.locals.module
 
 			const cancellationReasons = await this.learnerRecord.getCancellationReasons()
 
@@ -543,8 +545,8 @@ export class EventController implements FormController {
 
 	public getAttendeeDetails() {
 		return async (req: Request, res: Response) => {
-			const course: Course = await this.learningCatalogue.getCourse(req.params.courseId)
-			const module: Module = await this.learningCatalogue.getModule(req.params.courseId, req.params.moduleId)
+			const course: Course = res.locals.course
+			const module: Module = res.locals.module
 
 			const event = res.locals.event
 			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)

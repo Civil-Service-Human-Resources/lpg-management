@@ -84,7 +84,8 @@ export class CourseCompletionsController extends Controller {
 			]),
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
 				roleCheckMiddleware(mvpExportRole.compoundRoles)
-			])
+			]),
+			getRequest("/download-report/:urlSlug", this.downloadExtract())
 		]
 	}
 
@@ -140,6 +141,25 @@ export class CourseCompletionsController extends Controller {
 			await this.submitExportRequest(request, response)
 			response.status(200)
 			return response.send()
+		}
+	}
+
+	public downloadExtract() {
+		return async (request: Request, response: Response) => {
+			const reportResponse = await this.reportService.downloadCourseCompletionsReport(request.params.urlSlug)
+			if (reportResponse.file === null) {
+				if (reportResponse.code === 403) {
+					return response.render("page/unauthorised")
+				}
+				if (reportResponse.code === 404) {
+					return response.render("page/not-found")
+				}
+			} else {
+				const report = reportResponse.file
+				response.set(report.getHeaders())
+				response.status(200)
+				response.end(report.data)
+			}
 		}
 	}
 
