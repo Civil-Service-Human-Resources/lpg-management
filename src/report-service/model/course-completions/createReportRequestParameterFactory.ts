@@ -12,7 +12,7 @@ export class CreateReportRequestReportParameterFactory extends GetCourseCompleti
 	createFromSession(session: CourseCompletionsSession, timePeriodParams: TimePeriodParameters): CreateReportRequestParams {
 		const params = super.createFromSession(session, timePeriodParams)
 		return CreateReportRequestParams.createFromBaseReportParameters(session.userUid, session.fullName,
-			session.userEmail, `${this.managementUrl}/reporting/course-completions/download-report"`, params)
+			session.userEmail, `${this.managementUrl}/reporting/course-completions/download-report`, params)
 	}
 
 }
