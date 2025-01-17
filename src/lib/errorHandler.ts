@@ -18,7 +18,7 @@ export async function handleError(error: any, request: Request, response: Respon
 		logger.error(msg)
 
 		if (error.response && error.response.status == 401) {
-			return response.redirect('/log-out')
+			return response.redirect('/sign-out')
 		}
 
 		if (error.response && error.response.status == 403) {

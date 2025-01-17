@@ -537,8 +537,8 @@ describe('EventController', function() {
 		request.params.bookingId = 99
 
 		learnerRecord.getEventBookings = sinon.stub().returns(bookings)
-		learningCatalogue.getCourse = sinon.stub().returns(course)
-		learningCatalogue.getModule = sinon.stub().returns(module)
+		response.locals.course = course
+		response.locals.module = module
 
 		await getAttendeeDetails(request, response)
 
