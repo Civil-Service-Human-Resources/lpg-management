@@ -33,6 +33,87 @@ describe('JsonRestService tests', () => {
 		restService.http = http
 	})
 
+	it('should return file data from get file request', async () => {
+		const path = '/download'
+
+		const reqData = {
+			url: path,
+			responseType: 'arraybuffer'
+		}
+
+		const response = {
+			data: Buffer.from('test'),
+			headers: {
+				'content-disposition': 'attachment; filename="test.zip"',
+				'content-type': 'octet-stream'
+			},
+			status: 200
+		}
+
+		http.request = sinon
+			.stub()
+			.withArgs(reqData)
+			.resolves(response)
+
+		const data = await restService.getFile(path)
+		expect(data.code).to.eql(200)
+		expect(data.file!.filename).to.eql("test.zip")
+		expect(data.file!.data.toString()).to.eql("test")
+	})
+
+	it('should return a 404 code when the filename is not present', async () => {
+		const path = '/download'
+
+		const reqData = {
+			url: 'path',
+			responseType: 'arraybuffer'
+		}
+
+		const response = {
+			data: Buffer.from('test'),
+			headers: {
+				'content-disposition': 'attachment;',
+				'content-type': 'octet-stream'
+			},
+			status: 200
+		}
+
+		http.request = sinon
+			.stub()
+			.withArgs(reqData)
+			.resolves(response)
+
+		const data = await restService.getFile(path)
+		expect(data.code).to.eql(404)
+		expect(data.file).null
+	})
+
+	it('should return a 404 code when the content-disposition header is not present', async () => {
+		const path = '/download'
+
+		const reqData = {
+			url: 'path',
+			responseType: 'arraybuffer'
+		}
+
+		const response = {
+			data: Buffer.from('test'),
+			headers: {
+				'content-type': 'octet-stream'
+			},
+			status: 200
+		}
+
+		http.request = sinon
+			.stub()
+			.withArgs(reqData)
+			.resolves(response)
+
+		const data = await restService.getFile(path)
+		expect(data.code).to.eql(404)
+		expect(data.file).null
+	})
+
 	it('should return data from GET request', async () => {
 		const path = '/courses/course-id'
 

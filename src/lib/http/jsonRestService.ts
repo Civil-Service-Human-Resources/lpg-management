@@ -134,6 +134,7 @@ export class JsonRestService {
 					const filename = matches[1].replace(/['"]/g, '');
 					file = new DownloadableFile(filename, Buffer.from(resp.data))
 				} else {
+					this.logger.error(`filename header was not found on report download for path ${path}`)
 					status = 404
 				}
 			}
