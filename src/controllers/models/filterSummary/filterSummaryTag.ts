@@ -38,13 +38,22 @@ export class FilterSummaryTag {
 
 }
 
+export function getAllCoursesSummaryTag(): FilterSummaryTag {
+	return new FilterSummaryTag("courseId", "", "All learning")
+}
+
 export function getCourseSummaryTag(courseId: string, courseName: string): FilterSummaryTag {
 	return new FilterSummaryTag("courseId", courseId, courseName, "and", true, false)
 }
 
 export function getMultipleCourseSummaryTags(courses: {name: string, id: string}[]): FilterSummaryTag[] {
-	const tags = courses.map(course => getCourseSummaryTag(course.id, course.name))
-	tags[0].preText = undefined
+	const tags: FilterSummaryTag[] = []
+	if (courses.length > 0) {
+		tags.push(...courses.map(course => getCourseSummaryTag(course.id, course.name)))
+		tags[0].preText = undefined
+	} else {
+		tags.push(getAllCoursesSummaryTag())
+	}
 	return tags
 }
 

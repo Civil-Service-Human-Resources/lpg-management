@@ -71,7 +71,10 @@ export class ReportService {
 	private async buildPageModelFromChart(chart: Chart, session: CourseCompletionsSession) {
 		const chartJsConfig = this.reportServicePageModelService.buildCourseCompletionsChart(chart)
 		const tableModel = this.reportServicePageModelService.buildNoJSTable(chartJsConfig.noJSChart)
-		const courseBreakdown = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
+		let courseBreakdown: {text: string, format?: string | undefined}[][] = []
+		if (session.courses && session.courses.length > 0) {
+			courseBreakdown = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
+		}
 		const filterSummary = this.reportServicePageModelService.buildReportingFilterSummary(session)
 		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel,
 			courseBreakdown, filterSummary, chart.hasRequest, session.timePeriod, session.startDay, session.startMonth,

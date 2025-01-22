@@ -2,6 +2,12 @@ import {Exclude, Transform} from 'class-transformer'
 import {ArrayMaxSize, IsNotEmpty, ValidateIf} from 'class-validator'
 import {REPORTING} from '../../../config'
 
+export enum LearningSelection {
+	requiredLearning = "requiredLearning",
+	courseSearch = "courseSearch",
+	allLearning = "allLearning"
+}
+
 export class ChooseCoursesModel {
 
 	// settings
@@ -17,7 +23,7 @@ export class ChooseCoursesModel {
 	public courseSearchList: BasicCoursePageModel[]
 
 	// input attributes
-	public learning: string
+	public learning: LearningSelection
 	@ValidateIf(o => o.learning === "requiredLearning")
 	@IsNotEmpty({
 		message: 'reporting.course_completions.validation.requiredLearningSelection',
@@ -65,8 +71,10 @@ export class ChooseCoursesModel {
 				return this.allRequiredLearning.split(",")
 			}
 			return this.requiredLearning
-		} else {
+		} else if (this.learning === "courseSearch") {
 			return this.courseSearch
+		} else {
+			return []
 		}
 	}
 

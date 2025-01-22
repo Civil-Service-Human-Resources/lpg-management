@@ -150,6 +150,18 @@ describe('courseCompletionsController tests', () => {
 				expect(res.headers['location']).to.eql("/reporting/course-completions")
 			})
 
+			it('Should successfully redirect with all learning selected', async () => {
+				reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
+				const res = await session(subApp)
+					.post("/reporting/course-completions/choose-courses")
+					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
+					.send({
+						learning: 'allLearning',
+					})
+				expect(res.status).to.eql(302)
+				expect(res.headers['location']).to.eql("/reporting/course-completions")
+			})
+
 			describe('Download chart as CSV', () => {
 				it('should download a CSV file', async () => {
 					const momentIsoStringStub = sinon.stub(moment.prototype, 'toISOString').returns('2024-06-06T11_08_50.592Z')

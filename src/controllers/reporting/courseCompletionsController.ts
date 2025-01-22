@@ -15,6 +15,7 @@ import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {CourseCompletionsGraphModel} from './model/courseCompletionsGraphModel'
 import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
+import {BasicCourse} from '../../learning-catalogue/courseTypeAhead'
 
 export class CourseCompletionsController extends Controller {
 
@@ -192,17 +193,20 @@ export class CourseCompletionsController extends Controller {
 	public chooseCourses() {
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
-			const courseIds = pageModel.getCourseIdsFromSelection()
-			const selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
-			if (selectedCourses.length !== courseIds.length) {
-				this.logger.debug("Course selections were invalid")
-				const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
-				request.session!.sessionFlash = {
-					error,
+			let selectedCourses: BasicCourse[] | undefined
+			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
+				const courseIds = pageModel.getCourseIdsFromSelection()
+				selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
+				if (selectedCourses.length !== courseIds.length) {
+					this.logger.debug("Course selections were invalid")
+					const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
+					request.session!.sessionFlash = {
+						error,
+					}
+					return request.session!.save(() => {
+						response.redirect('/reporting/course-completions/choose-courses')
+					})
 				}
-				return request.session!.save(() => {
-					response.redirect('/reporting/course-completions/choose-courses')
-				})
 			}
 			const session = fetchCourseCompletionSessionObject(request)!
 			session.courses = selectedCourses
