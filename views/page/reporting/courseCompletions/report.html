@@ -123,7 +123,7 @@
         rows: pageModel.courseBreakdown
       }) }}
     {% else %}
-      <p class='govuk-body'>No data available</p>
+      <p class='govuk-body'>Course breakdown is not available</p>
     {% endif %}
     {% if identity.hasMvpExport() %}
     {% set downloadUrl = '/reporting/course-completions/download-source-data' %}
