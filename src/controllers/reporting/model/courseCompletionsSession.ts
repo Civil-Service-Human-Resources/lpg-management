@@ -27,6 +27,7 @@ export class CourseCompletionsSession {
 	}
 
 	hasSelectedCourses() {
+		console.log(this.learningSelection)
 		if (this.learningSelection) {
 			if (this.learningSelection === "allLearning") {
 				return true

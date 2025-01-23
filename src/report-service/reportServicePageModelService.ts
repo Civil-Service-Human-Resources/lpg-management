@@ -32,7 +32,7 @@ export class ReportServicePageModelService {
 	}
 
 	buildReportingFilterSummary(session: CourseCompletionsSession) {
-		const coursesFilterSummary = new CourseFilterSummaryRow(getMultipleCourseSummaryTags(session.courses!))
+		const coursesFilterSummary = new CourseFilterSummaryRow(getMultipleCourseSummaryTags(session.courses || []))
 		const organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags([session.selectedOrganisation!.name]))
 		const dateFilterSummary = new DateFilterSummaryRow(getDashboardTimePeriod(session).tags)
 		return new ReportingFilterSummary(organisationFilterSummary, coursesFilterSummary, dateFilterSummary)

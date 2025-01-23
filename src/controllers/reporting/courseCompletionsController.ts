@@ -193,7 +193,7 @@ export class CourseCompletionsController extends Controller {
 	public chooseCourses() {
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
-			let selectedCourses: BasicCourse[] | undefined
+			let selectedCourses: BasicCourse[] = []
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()
 				selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
@@ -210,6 +210,7 @@ export class CourseCompletionsController extends Controller {
 			}
 			const session = fetchCourseCompletionSessionObject(request)!
 			session.courses = selectedCourses
+			session.learningSelection = pageModel.learning
 			saveCourseCompletionSessionObject(session, request, async () => {
 				response.redirect('/reporting/course-completions')
 			})

@@ -116,7 +116,7 @@
       <p class='govuk-body'>No data available</p>
     {% endif %}
     <h2 class='govuk-heading-m'>Course breakdown</h2>
-    {% if pageModel.courseBreakdown %}
+    {% if pageModel.courseBreakdown.length > 0 %}
       {{ govukTable({
         firstCellIsHeader: true,
         head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],

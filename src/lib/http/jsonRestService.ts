@@ -21,23 +21,6 @@ export class JsonRestService {
 			timeout: config.timeout,
 		})
 
-		this._http.interceptors.response.use((response: AxiosResponse): AxiosResponse<any> => {
-			if (config.detailedLogs) {
-				let logMsg = `Response from ${response.config.method} request to ${response.config.url}: ${response.status}`
-				const contentType = response.headers['content-type']
-				if (response.data && contentType && contentType === 'application/json') {
-					let stringedData = JSON.stringify(response.data)
-					logMsg += ` Data: ${stringedData}`
-				}
-				if (response.config.params) {
-					const stringedParams = JSON.stringify(response.config.params)
-					logMsg += ` Params: ${stringedParams}`
-				}
-				this.logger.debug(logMsg)
-			}
-			return response
-		})
-
 		this.config = config
 		this.post = this.post.bind(this)
 		this.get = this.get.bind(this)
@@ -59,7 +42,21 @@ export class JsonRestService {
 			this.logger.debug(logMsg)
 		}
 		try {
-			return await this._http.request<T>(req)
+			const response = await this._http.request<T>(req)
+			if (this.config.detailedLogs) {
+				let logMsg = `Response from ${response.config.method} request to ${response.config.url}: ${response.status}`
+				const contentType = response.headers['content-type']
+				if (response.data && contentType && contentType === 'application/json') {
+					let stringedData = JSON.stringify(response.data)
+					logMsg += ` Data: ${stringedData}`
+				}
+				if (response.config.params) {
+					const stringedParams = JSON.stringify(response.config.params)
+					logMsg += ` Params: ${stringedParams}`
+				}
+				this.logger.debug(logMsg)
+			}
+			return response
 		} catch (e) {
 			let str = `${req.method} request to ${fullUrl} failed`
 			let respCode: number = 0
@@ -106,10 +103,18 @@ export class JsonRestService {
 		return this.get(url.parse(response.headers.location).path!)
 	}
 
+	async postRequest<T>(req: AxiosRequestConfig) {
+		return await this.makeRawAuthenticatedRequest<T>({method: 'POST', ...req})
+	}
+
 	async getRequest<T>(req: AxiosRequestConfig) {
 		return await this.makeRawAuthenticatedRequest<T>({method: 'GET', ...req})
 	}
 
+	/**
+	 * @deprecated Prefer getRequest over this, as this does not include detailed logging
+	 * @param path
+	 */
 	async get(path: string) {
 		return (await this._http.get(path, this.getHeaders())).data
 	}
