@@ -34,7 +34,7 @@ export class CslServiceClient {
 	async approveBooking(courseId: string, moduleId: string, eventId: string, bookingId: string) {
 		const response = await this._http.postRequest<EventResponse>(
 			{
-				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/cancel_booking`
+				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/approve_booking`
 			})
 		return plainToInstance(EventResponse, response.data)
 	}
