@@ -49,7 +49,11 @@
                 <p class="govuk-body">This audience does not have any organisations yet</p>
                 {% endif %}
 
-            <h3 class="govuk-heading-m">Add an organisation</h3>
+            <h3 class="govuk-heading-m">
+                <label for="parent" class="govuk-label govuk-label--m">
+                    Add an organisation
+                </label>
+            </h3>
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" method="post">
                 <fieldset class="govuk-fieldset module-selector">
                     <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
