@@ -58,6 +58,9 @@ export class OrganisationController extends OrganisationalUnitControllerBase imp
 
 	public addEditOrganisation() {
 		return async (request: Request, response: Response) => {
+			
+			
+			
 			const typeahead: OrganisationalUnitTypeAhead = await this.organisationalUnitService.getOrgDropdown()
 			response.render('page/organisation/add-edit-organisation', {organisationalUnits: typeahead.typeahead})
 		}
@@ -68,7 +71,7 @@ export class OrganisationController extends OrganisationalUnitControllerBase imp
 		redirect: '/content-management/organisations',
 	})
 	public createOrganisation() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response) => {		
 			const organisationalUnit = this.organisationalUnitPageModelFactory.create(request.body)
 
 			this.logger.debug(`Creating new organisation: ${organisationalUnit.name}`)
@@ -77,10 +80,13 @@ export class OrganisationController extends OrganisationalUnitControllerBase imp
 				const newOrganisationalUnit: OrganisationalUnit = await this.organisationalUnitService.createOrganisationalUnit(organisationalUnit)
 				request.session!.sessionFlash = {organisationAddedSuccessMessage: 'organisationAddedSuccessMessage'}
 				response.redirect(`/content-management/organisations/${newOrganisationalUnit.id}/overview`)
-			} catch (e) {
+			} catch (e) {			
 				const errors = {fields: {fields: ['organisations.validation.organisation.alreadyExists'], size: 1}}
 
-				request.session!.sessionFlash = {errors: errors}
+				request.session!.sessionFlash = {
+					errors: errors,
+					form: request.body
+				}
 
 				return request.session!.save(() => {
 					response.redirect(`/content-management/organisations`)
