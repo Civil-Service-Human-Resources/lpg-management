@@ -8,11 +8,13 @@ import {GetCourseCompletionParameters} from '../report-service/model/course-comp
 import {
 	RequestCourseCompletionExportRequestResponse
 } from '../report-service/model/requestCourseCompletionExportRequestResponse'
+import {ReportResponse} from './model/ReportResponse'
 
 export class CslServiceClient {
 
 	private COURSE_COMPLETIONS_AGGREGATIONS_URL = "/admin/reporting/course-completions/generate-graph"
-	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/request-source-data"
+	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL = "/admin/reporting/course-completions/request-source-data"
+	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
 
 	constructor(private readonly _http: OauthRestService) { }
 
@@ -39,6 +41,11 @@ export class CslServiceClient {
 	}
 
 	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {
-		return plainToInstance(RequestCourseCompletionExportRequestResponse, (await this._http.postWithoutFollowing<RequestCourseCompletionExportRequestResponse>(this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL, params.getAsApiParams())).data)
+		return plainToInstance(RequestCourseCompletionExportRequestResponse, (await this._http.postWithoutFollowing<RequestCourseCompletionExportRequestResponse>(this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL, params.getAsApiParams())).data)
+	}
+
+	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
+		console.log(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
+		return await this._http.getFile(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
 	}
 }

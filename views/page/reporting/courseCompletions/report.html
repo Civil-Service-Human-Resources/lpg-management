@@ -1,8 +1,10 @@
 {% from "radios/macro.njk" import govukRadios %}
 {% from "select/macro.njk" import govukSelect %}
 {% from "button/macro.njk" import govukButton %}
+{% from "date-input/macro.njk" import govukDateInput %}
 {% from "../../../component/chart/macro.njk" import renderChart %}
 {% from "../../../component/filterSummary/macro.njk" import filterSummary %}
+{% from "../../../component/datePicker/macro.njk" import datePicker with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "table/macro.njk" import govukTable %}
@@ -22,19 +24,38 @@
   }) }}
 {% endblock %}
 {% block content %}
+
 <div class="govuk-grid-row">
   <div class='govuk-grid-column-full'>
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
+    {{ errorSummary(pageModel.getErrorFields(), true) }}
   </div>
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-full">
+    <section>
+      <h2 class="govuk-visually-hidden">Filters</h2>
+      {% set filterDatePicker %}
+      {{ datePicker({
+          pageModel: pageModel,
+          legend: {
+              start: {
+                text: "Completed after",
+                classes: "govuk-fieldset__legend--s"
+              },
+              end: {
+                text: "Completed before",
+                classes: "govuk-fieldset__legend--s"
+              }
+          }
+      }) }}
+      {% endset %}
     <form method='post'>
       {{ govukRadios({
         classes: "govuk-radios--small",
         name: "timePeriod",
         fieldset: {
           legend: {
-            html: "<h2>Filter by date</h2>",
+            html: "<h3>Filter by date</h3>",
             classes: "govuk-heading-m"
           }
         },
@@ -58,6 +79,14 @@
             value: "past-year",
             text: "Past year",
             checked: pageModel.timePeriod == "past-year"
+          },
+          {
+            value: "custom",
+            text: "Custom",
+            checked: pageModel.timePeriod == "custom",
+            conditional: {
+              html: filterDatePicker
+            }
           }
         ]
       }) }}
@@ -67,27 +96,40 @@
         preventDoubleClick: true
       }) }}
     </form>
+    </section>
   </div>
-  <div class="govuk-grid-column-two-thirds">
+
+
+  <div class="govuk-grid-column-full">
+    <h2>Overview</h2>
     {{ filterSummary(pageModel.selectedFilters) }}
-    {% set table = {
-      "caption": "Number of completions",
-      "headings": [
-        {"text": pageModel.chart.xAxisSettings.tableHeader}, {"text": "Completions", format: "numeric"}
-      ],
-      "rows": pageModel.table
-    } %}
-    {{ renderChart("course-completions", table, pageModel.chart) }}
+    {% if pageModel.chart %}
+      {% set table = {
+        "caption": "Number of completions",
+        "headings": [
+          {"text": pageModel.chart.xAxisSettings.tableHeader}, {"text": "Completions", format: "numeric"}
+        ],
+        "rows": pageModel.table
+      } %}
+      {{ renderChart("course-completions", table, pageModel.chart) }}
+    {% else %}
+      <p class='govuk-body'>No data available</p>
+    {% endif %}
     <h2 class='govuk-heading-m'>Course breakdown</h2>
-    {{ govukTable({
-      firstCellIsHeader: true,
-      head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
-      rows: pageModel.courseBreakdown
-    }) }}
+    {% if pageModel.courseBreakdown %}
+      {{ govukTable({
+        firstCellIsHeader: true,
+        head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
+        rows: pageModel.courseBreakdown
+      }) }}
+    {% else %}
+      <p class='govuk-body'>No data available</p>
+    {% endif %}
     {% if identity.hasMvpExport() %}
     {% set downloadUrl = '/reporting/course-completions/download-source-data' %}
-      <div class='course-completions-report'>
-        <h2 class='govuk-heading-m'>Download source data</h2>
+    <div class='course-completions-report'>
+      <h2 class='govuk-heading-m'>Download source data</h2>
+      {% if pageModel.chart %}
         <p class='govuk-body'>
           The data used to generate this graph can be requested for download (CSV).
         </p>
@@ -108,9 +150,12 @@
               }) }}
             </form>
           {% endif %}
-        {% endif %}
         </div>
-      </div>
+      {% else %}
+        <p class='govuk-body'>No data available</p>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -178,8 +178,11 @@ describe('CsrsService tests', () => {
 				isUnrestrictedOrganisation: () => {
 					return false
 				},
+				getDomain: () => {
+					return "user-domain.gov.uk"
+				},
 				username: "user@user-domain.gov.uk"
-			}				
+			}
 
 			let userDomain = new Domain(1, "user-domain.gov.uk")
 			let notUserDomain = new Domain(2, "not-user-domain.gov.uk")
@@ -225,7 +228,7 @@ describe('CsrsService tests', () => {
 					return false
 				},
 				username: "user@user-domain.gov.uk"
-			}	
+			}
 
 			let userDomain = new Domain(1, "user-domain.gov.uk")
 			let notUserDomain = new Domain(2, "not-user-domain.gov.uk")
@@ -270,7 +273,7 @@ describe('CsrsService tests', () => {
 				isUnrestrictedOrganisation: () => {
 					return false
 				}
-				
+
 			}
 
 			let expectedResult = false
@@ -290,7 +293,7 @@ describe('CsrsService tests', () => {
 				isUnrestrictedOrganisation: () => {
 					return true
 				}
-				
+
 			}
 
 			let expectedResult = true
@@ -310,7 +313,7 @@ describe('CsrsService tests', () => {
 				isUnrestrictedOrganisation: () => {
 					return true
 				}
-				
+
 			}
 
 			let expectedResult = true
@@ -320,5 +323,5 @@ describe('CsrsService tests', () => {
 		})
 	})
 
-	
+
 })

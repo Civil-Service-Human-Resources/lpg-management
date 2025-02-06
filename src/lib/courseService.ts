@@ -17,9 +17,7 @@ export class CourseService {
 		return (await this.learningCatalogue.getCourseTypeAhead()).typeahead
 	}
 
-	async sortModules(courseId: string, moduleIds: string[]): Promise<Course> {
-		const course: Course = await this.learningCatalogue.getCourse(courseId)
-
+	async sortModules(course: Course, moduleIds: string[]): Promise<Course> {
 		if (course.modules.length !== moduleIds.length) {
 			throw new Error(`Course modules length(${course.modules.length}) does not match module ids length(${moduleIds.length})`)
 		}
@@ -34,7 +32,7 @@ export class CourseService {
 			if (module) {
 				modules.push(module)
 			} else {
-				throw new Error(`Module (id: ${id}) not found in course (id: ${courseId})`)
+				throw new Error(`Module (id: ${id}) not found in course (id: ${course.id})`)
 			}
 		})
 

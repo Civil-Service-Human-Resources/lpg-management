@@ -1,5 +1,7 @@
-export class ResourceNotFoundError extends Error {
+import {HttpException} from './HttpException'
+
+export class ResourceNotFoundError extends HttpException {
 	constructor(readonly url: string) {
-		super(`Resource with URL ${url} was not found`)
+		super(url, 404)
 	}
 }

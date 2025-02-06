@@ -1,4 +1,3 @@
-import {DateStartEnd} from '../learning-catalogue/model/dateStartEnd'
 import {ReportServiceClient} from './reportServiceClient'
 import {CourseService} from 'lib/courseService'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
@@ -11,6 +10,8 @@ import {ReportParameterFactory} from './model/course-completions/reportParameter
 import {Chart} from './model/chart'
 import {RequestCourseCompletionExportRequestResponse} from './model/requestCourseCompletionExportRequestResponse'
 import {ReportServicePageModelService} from './reportServicePageModelService'
+import {DateStartEnd} from '../controllers/command/dateStartEndCommand'
+import {ReportResponse} from '../csl-service/model/ReportResponse'
 
 export class ReportService {
 
@@ -63,12 +64,18 @@ export class ReportService {
 		return await this.cslService.postCourseCompletionsExportRequest(params)
 	}
 
+	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
+		return await this.cslService.downloadCourseCompletionsReport(urlSlug)
+	}
+
 	private async buildPageModelFromChart(chart: Chart, session: CourseCompletionsSession) {
 		const chartJsConfig = this.reportServicePageModelService.buildCourseCompletionsChart(chart)
 		const tableModel = this.reportServicePageModelService.buildNoJSTable(chartJsConfig.noJSChart)
 		const courseBreakdown = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
-		const filterSummary = this.reportServicePageModelService.buildReportingFilterSummary(session.courses!, session.timePeriod, session.selectedOrganisation!)
-		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel, courseBreakdown, filterSummary, session.timePeriod.formValue, chart.hasRequest)
+		const filterSummary = this.reportServicePageModelService.buildReportingFilterSummary(session)
+		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel,
+			courseBreakdown, filterSummary, chart.hasRequest, session.timePeriod, session.startDay, session.startMonth,
+			session.startYear, session.endDay, session.endMonth, session.endYear)
 		session.chartData = graphPageModel.table
 		return {
 			pageModel: graphPageModel,

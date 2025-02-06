@@ -1,13 +1,8 @@
 import {FilterSummaryRow} from '../../models/filterSummary/filterSummaryRow'
-import {DateFilterSummaryTag} from './dateFilterSummaryTag'
-import {DashboardTimePeriod} from './dashboardTimePeriod'
+import {FilterSummaryTag} from '../../models/filterSummary/filterSummaryTag'
 
 export class DateFilterSummaryRow extends FilterSummaryRow {
-	constructor(tags: DateFilterSummaryTag[]) {
+	constructor(tags: FilterSummaryTag[]) {
 		super("When", tags, "/reporting/course-completions")
-	}
-
-	public static createForSinglePeriod(timePeriod: DashboardTimePeriod): DateFilterSummaryRow {
-		return new DateFilterSummaryRow([DateFilterSummaryTag.createForTimePeriod(timePeriod)])
 	}
 }

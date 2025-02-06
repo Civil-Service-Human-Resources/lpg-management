@@ -26,7 +26,8 @@ export abstract class OrganisationalUnitControllerBase extends Controller {
 					res.locals.organisationalUnit = organisationalUnit
 					next()
 				} else {
-					res.sendStatus(404)
+					res.status(404)
+					return res.render("page/not-found")
 				}
 			})
 		)

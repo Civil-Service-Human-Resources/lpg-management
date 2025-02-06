@@ -128,10 +128,10 @@ describe('EntityService tests', () => {
 			name: data.name,
 		}
 
-		restService.get = sinon
+		restService.getRequest = sinon
 			.stub()
-			.withArgs(`/learning-providers/${learningProviderId}`)
-			.returns(data)
+			.withArgs({url: `/learning-providers/${learningProviderId}`})
+			.resolves({data})
 
 		learningProviderFactory.create = sinon
 			.stub()
@@ -141,7 +141,8 @@ describe('EntityService tests', () => {
 		const result: LearningProvider = await entityService.get(`/learning-providers/${learningProviderId}`)
 
 		expect(result).to.equal(learningProvider)
-		expect(restService.get).to.have.been.calledOnceWith(`/learning-providers/${learningProviderId}`)
+		expect(restService.getRequest).to.have.been.calledOnceWith({url: `/learning-providers/${learningProviderId}`
+	})
 		expect(learningProviderFactory.create).to.have.been.calledOnceWith(data)
 	})
 

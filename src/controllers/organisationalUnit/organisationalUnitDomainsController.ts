@@ -45,7 +45,8 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 				res.locals.domain = domain
 				next()
 			} else {
-				res.sendStatus(404)
+				res.status(404)
+				return res.render("page/not-found")
 			}
 		})
 	}

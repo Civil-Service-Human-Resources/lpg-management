@@ -10,10 +10,11 @@ import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} f
 import * as moment from 'moment'
 import { CourseCompletionsSession } from './model/courseCompletionsSession'
 import { getCsvContentFromData } from '../../utils/dataToCsv'
-import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 import {COURSE_COMPLETIONS_FEEDBACK} from '../../config'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
+import {CourseCompletionsGraphModel} from './model/courseCompletionsGraphModel'
+import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 
 export class CourseCompletionsController extends Controller {
 
@@ -63,7 +64,8 @@ export class CourseCompletionsController extends Controller {
 				dtoClass: CourseCompletionsFilterModel,
 				onError: {
 					behaviour: BehaviourOnError.REDIRECT,
-					path: '/reporting/course-completions'
+					path: '/reporting/course-completions',
+					pageModelKey: 'filterModelErrors'
 				}
 			}, [this.checkForCourseIdsInSessionMiddleware()]),
 			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
@@ -82,7 +84,8 @@ export class CourseCompletionsController extends Controller {
 			]),
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
 				roleCheckMiddleware(mvpExportRole.compoundRoles)
-			])
+			]),
+			getRequest("/download-report/:urlSlug", this.downloadExtract())
 		]
 	}
 
@@ -97,16 +100,19 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const filterModel = new CourseCompletionsFilterModel()
-			filterModel.timePeriod = session.timePeriod.formValue
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
+			const errors = request.session!.filterModelErrors
+			if (errors) {
+				pageData.pageModel.updateWithFilters(errors)
+				delete request.session!.filterModelErrors
+			}
 			return saveCourseCompletionSessionObject(pageData.session, request, () => {
 				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel})
 			})
 		}
 	}
 
-	private removeValuesFromSession(request: Request, filterPageModel: CourseCompletionsFilterModel) {
+	private removeValuesFromSession(request: Request, filterPageModel: CourseCompletionsGraphModel) {
 		const session = fetchCourseCompletionSessionObject(request)!
 		const remove = (filterPageModel.remove || request.query["remove"] || "") as string
 		if (remove !== "") {
@@ -138,11 +144,30 @@ export class CourseCompletionsController extends Controller {
 		}
 	}
 
+	public downloadExtract() {
+		return async (request: Request, response: Response) => {
+			const reportResponse = await this.reportService.downloadCourseCompletionsReport(request.params.urlSlug)
+			if (reportResponse.file === null) {
+				if (reportResponse.code === 403) {
+					return response.render("page/unauthorised")
+				}
+				if (reportResponse.code === 404) {
+					return response.render("page/not-found")
+				}
+			} else {
+				const report = reportResponse.file
+				response.set(report.getHeaders())
+				response.status(200)
+				response.end(report.data)
+			}
+		}
+	}
+
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
-			const filterPageModel = plainToInstance(CourseCompletionsFilterModel, response.locals.input as CourseCompletionsFilterModel)
-			const session = this.removeValuesFromSession(request, filterPageModel)
-			session.updateWithFilterPageModel(filterPageModel)
+			const pageModel = plainToInstance(CourseCompletionsGraphModel, response.locals.input as CourseCompletionsGraphModel)
+			const session = this.removeValuesFromSession(request, pageModel)
+			session.updateWithFilterPageModel(pageModel)
 			if (!session.hasSelectedCourses()) {
 				return saveCourseCompletionSessionObject(session, request, async () => {
 					return response.redirect('/reporting/course-completions/choose-courses')

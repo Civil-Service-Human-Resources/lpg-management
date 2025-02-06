@@ -15,6 +15,7 @@ import {ReportServicePageModelService} from './reportServicePageModelService'
 import {ChartJsService} from './chartJsService'
 import {ChartJsXaxisService} from './model/chartConfig/ChartJsXaxisService'
 import {XAxisSettings} from './model/chartConfig/xAxisSettings'
+import {FRONTEND} from '../config'
 
 const hourXaxisSettings = new XAxisSettings("Time", "hA", "hour")
 const dayXaxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
@@ -28,7 +29,7 @@ export function buildReportService(restServiceConfig: RestServiceConfig, auth: A
 	const oauth = new OauthRestService(restServiceConfig, auth)
 	const client = new ReportServiceClient(oauth)
 	const reportParameterFactory = new ReportParameterFactory(
-		new TimePeriodParamsFactory(), new CreateReportRequestReportParameterFactory(),
+		new TimePeriodParamsFactory(), new CreateReportRequestReportParameterFactory(FRONTEND.MANAGEMENT_UI_URL),
 		new GetCourseCompletionParameterFactory()
 	)
 	const tableService = new TableService()

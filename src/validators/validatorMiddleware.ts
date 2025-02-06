@@ -2,14 +2,16 @@ import {NextFunction, Request, Response} from 'express'
 import {plainToInstance, ClassConstructor} from 'class-transformer'
 import {getLogger} from '../utils/logger'
 import {validateAndMapErrors} from './util'
+import {SubmittableForm} from '../controllers/models/submittableForm'
 
 const logger = getLogger("ValidationMiddleware")
 
-export interface ValidationOptions<T> {
+export interface ValidationOptions<T extends SubmittableForm> {
 	dtoClass: ClassConstructor<T>,
 	onError: {
 		behaviour: BehaviourOnError,
-		path?: string
+		path?: string,
+		pageModelKey?: string
 	}
 }
 
@@ -18,10 +20,10 @@ export enum BehaviourOnError {
 	RENDER_TEMPLATE = 'RENDER_TEMPLATE'
 }
 
-export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
+export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOptions<T>) => {
 	return async function (req: Request, res: Response, next: NextFunction) {
 		logger.debug(`Validating request body ${JSON.stringify(req.body)} against class ${opts.dtoClass.name}`)
-		const output: any = plainToInstance(opts.dtoClass, req.body)
+		const output: T = plainToInstance(opts.dtoClass, req.body)
 		if (req.body !== undefined) {
 			const errors = await validateAndMapErrors(output)
 			if (errors !== undefined) {
@@ -33,6 +35,8 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 					}
 				})
 
+				const pageModelKey = opts.onError.pageModelKey ? opts.onError.pageModelKey : 'pageModel'
+				output.errors = errors
 				if (opts.onError.behaviour === BehaviourOnError.REDIRECT) {
 					let redirect = req.originalUrl
 					if (opts.onError.path !== undefined) {
@@ -42,9 +46,9 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 						redirect = opts.onError.path
 					}
 					req.session!.sessionFlash = {
-						errors,
-						form: req.body,
+						errors
 					}
+					req.session![pageModelKey] = output
 					return req.session!.save(() => {
 						res.redirect(redirect)
 					})
@@ -53,7 +57,7 @@ export const validateEndpoint = <T> (opts: ValidationOptions<T>) => {
 						throw new Error(`Template can't be blank when rendering after a validation error`)
 					}
 					res.status(400)
-					res.render(opts.onError.path, {errors, form: req.body})
+					res.render(opts.onError.path, {errors, [pageModelKey]: output})
 				}
 			} else {
 				logger.debug('Request body is valid')
