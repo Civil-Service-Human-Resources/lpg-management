@@ -131,6 +131,9 @@ ul.bullet {
 		font-weight: bold;
 		color: $white;
 		margin: 0 10px;
+		&:focus {
+			color: black;
+		}
 	}
 }
 
