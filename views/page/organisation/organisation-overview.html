@@ -45,9 +45,9 @@
 
         <h3 class="govuk-heading-m">Organisation details</h3>
         <ul class="list module-list">
-            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Parent organisation</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.parent.name | default("Unspecified", true) }}</p></li>
-            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Organisation code</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.code | default("Unspecified", true) }}</p></li>
-            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Organisation abbreviation</strong></p><p class="govuk-body no-margin">{{ organisationalUnit.abbreviation | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><h4>Parent organisation</h4></p><p class="govuk-body no-margin">{{ organisationalUnit.parent.name | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><h4>Organisation code</h4></p><p class="govuk-body no-margin">{{ organisationalUnit.code | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><h4>Organisation abbreviation</h4></p><p class="govuk-body no-margin">{{ organisationalUnit.abbreviation | default("Unspecified", true) }}</p></li>
         </ul>
         <div class="title-container">
             <h3 class="govuk-heading-m">Organisation email domains</h3>
