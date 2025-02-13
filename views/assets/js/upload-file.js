@@ -18,7 +18,9 @@ window.onload = function () {
             xhttp.upload.onprogress = function (event) {
                 const loaded = Math.round((event.loaded / event.total) * 100)
                 document.getElementById("progress").innerText = "Uploading ( " + loaded + "% ) "
-                document.getElementById("file-size").innerText = "File size: " + (event.total / 1000000).toPrecision(3) + "MB"
+                const fileSizeLabel = getFileSizeLabel(event.total)
+
+                document.getElementById("file-size").innerText = "File size: " + fileSizeLabel
                 document.getElementById("submitButton").disabled = true
 
                 if(event.total > 100000000){
@@ -60,4 +62,14 @@ window.onload = function () {
 
 document.getElementById("file-upload").onclick = function unHideUploadButton() {
     document.getElementById("uploadButton").style.display = "block"
+}
+
+function getFileSizeLabel(fileSizeInBytes){
+    const fileSizeUnits = ["Bytes", "KB", "MB", "GB"]
+    const sizeMultiple = 1024
+    const fileSizeUnitIndex = Math.floor(Math.log(fileSizeInBytes) / Math.log(sizeMultiple))
+    const decimalPlaces = 2
+
+    const fileSizeLabel = parseFloat((fileSizeInBytes / Math.pow(sizeMultiple, fileSizeUnitIndex)).toFixed(decimalPlaces)) + ' ' + fileSizeUnits[fileSizeUnitIndex]
+    return fileSizeLabel
 }
