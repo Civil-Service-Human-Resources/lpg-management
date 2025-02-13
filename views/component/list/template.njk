@@ -4,7 +4,7 @@
     {% for Course in pageResults.results %}
         <li class="course list-details u--border--bgrey">
             <div class="course-details">
-                <h3><a class="govuk-link list-title" href="/content-management/courses/{{ Course.id }}/overview">{{ Course.title }}</a></h3>
+                <a class="govuk-link list-title" href="/content-management/courses/{{ Course.id }}/overview"><h3>{{ Course.title }}</h3></a>
                 {% if Course._modules.length > 1 %}
                     <p class="govuk-body">This course comprises of {{ Course._modules.length }} modules</p>
                 {% endif %}
