@@ -55,7 +55,7 @@ describe('Learning Catalogue tests', () => {
 
 			await learningCatalogue.listCourses()
 
-			return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith('/courses/management?page=0&size=10&visibility=PRIVATE')
+			return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith('/courses/management?page=0&size=10&visibility=PRIVATE&visibility=PUBLIC')
 		})
 
 		it('should call courseService when searching courses', async () => {
@@ -64,7 +64,7 @@ describe('Learning Catalogue tests', () => {
 			await learningCatalogue.searchCourses('test', 0, 10)
 
 			return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith(
-				`/search/management/courses/?status=Draft&status=Published&status=Archived&query=test&page=0&size=10&visibility=PRIVATE`
+				`/search/management/courses?status=DRAFT&status=PUBLISHED&status=ARCHIVED&query=test&page=0&size=10&visibility=PRIVATE&visibility=PUBLIC`
 			)
 		})
 
