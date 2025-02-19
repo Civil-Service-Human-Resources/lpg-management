@@ -30,6 +30,10 @@
 		background-size: 64%;
 		cursor: pointer;
 		font-size: 1px;
+
+		&:focus-visible{
+			outline: 3px solid $govuk-focus-colour;
+		}
 	}
 }
 
