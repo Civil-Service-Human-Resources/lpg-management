@@ -26,7 +26,7 @@
         {% set courseAddedSuccessMessage = sessionFlash.courseAddedSuccessMessage%}
 
         {% if courseAddedSuccessMessage %}
-            <div class="panel panel-blue">
+            <div class="panel panel-blue" role="status">
                 <div class="govuk-panel__body custom-panel">
                     <p class="govuk-body"><strong>{{ course.title }}</strong>{{ i18n[courseAddedSuccessMessage] }}</p>
                 </div>
