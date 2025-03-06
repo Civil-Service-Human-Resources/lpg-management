@@ -11,6 +11,9 @@
         <form action="/reporting/course-completions/chart-csv" method="post">
             {{ govukButton({
                 text: "Download chart data (.csv)",
+                attributes: {
+                    "aria-label": "Download completed learning chart data as a CSV file"
+                },
                 classes: "govuk-body govuk-!-margin-bottom-0",
                 preventDoubleClick: true,
                 type: submit
