@@ -23,29 +23,36 @@ export class CslServiceClient {
 	}
 
 	async cancelBooking(courseId: string, moduleId: string, eventId: string, bookingId: string, dto: CancelBookingDto) {
-		const response = await this._http.postWithoutFollowing<EventResponse>(
-			`/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/cancel_booking`,
-			dto)
+		const response = await this._http.postRequest<EventResponse>(
+			{
+				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/cancel_booking`,
+				data: dto
+			})
 		return plainToInstance(EventResponse, response.data)
 	}
 
 	async approveBooking(courseId: string, moduleId: string, eventId: string, bookingId: string) {
-		const response = await this._http.postWithoutFollowing<EventResponse>(
-			`/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/approve_booking`,
-			null)
+		const response = await this._http.postRequest<EventResponse>(
+			{
+				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/approve_booking`
+			})
 		return plainToInstance(EventResponse, response.data)
 	}
 
 	async getCourseCompletionsAggregationsChart(params: GetCourseCompletionParameters): Promise<Chart> {
-		return plainToInstance(Chart, (await this._http.postWithoutFollowing<Chart>(this.COURSE_COMPLETIONS_AGGREGATIONS_URL, params.getAsApiParams())).data)
+		const response = await this._http.postRequest<Chart>({
+			url: this.COURSE_COMPLETIONS_AGGREGATIONS_URL,
+			data: params.getAsApiParams()
+		})
+		return plainToInstance(Chart, response.data)
 	}
 
 	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {
-		return plainToInstance(RequestCourseCompletionExportRequestResponse, (await this._http.postWithoutFollowing<RequestCourseCompletionExportRequestResponse>(this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL, params.getAsApiParams())).data)
+		const response = await this._http.postRequest<RequestCourseCompletionExportRequestResponse>({url: this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL, data: params.getAsApiParams()})
+		return plainToInstance(RequestCourseCompletionExportRequestResponse, response.data)
 	}
 
 	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
-		console.log(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
 		return await this._http.getFile(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
 	}
 }

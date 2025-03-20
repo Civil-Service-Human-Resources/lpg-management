@@ -1,5 +1,6 @@
 import {DashboardTimePeriodType} from './dashboardTimePeriod'
 import {CourseCompletionsGraphModel} from './courseCompletionsGraphModel'
+import {LearningSelection} from './chooseCoursesModel'
 
 export class CourseCompletionsSession {
 
@@ -12,7 +13,7 @@ export class CourseCompletionsSession {
 	public endYear?: string
 
 	constructor(public userEmail: string, public fullName: string, public userUid: string, public selectedOrganisation?: {name: string, id: string},
-				public allOrganisationIds?: number[], public courses?: {name: string, id: string}[],
+				public allOrganisationIds?: number[], public learningSelection?: LearningSelection, public courses?: {name: string, id: string}[],
 				public chartData?: {text: string}[][]) { }
 
 	static create(userDetails: any) {
@@ -26,7 +27,15 @@ export class CourseCompletionsSession {
 	}
 
 	hasSelectedCourses() {
-		return this.courses !== undefined && this.courses.length > 0
+		console.log(this.learningSelection)
+		if (this.learningSelection) {
+			if (this.learningSelection === "allLearning") {
+				return true
+			} else {
+				return this.courses !== undefined && this.courses.length > 0
+			}
+		}
+		return false
 	}
 
 	getCourseIds() {

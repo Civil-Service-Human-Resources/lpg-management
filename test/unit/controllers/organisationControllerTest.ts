@@ -141,7 +141,7 @@ describe('Organisation Controller Tests', function() {
 		const createOrganisation = organisationController.createOrganisation()
 		await createOrganisation(req, res)
 
-		expect(req.session!.sessionFlash).to.eql({errors: errors})
+		expect(req.session!.sessionFlash).to.eql({errors: errors, form: req.body})
 		expect(res.redirect).to.have.been.calledWith('/content-management/organisations')
 	})
 

@@ -22,32 +22,32 @@
 </div>
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-       
+
         {% set courseAddedSuccessMessage = sessionFlash.courseAddedSuccessMessage%}
 
         {% if courseAddedSuccessMessage %}
-            <div class="panel panel-blue">
+            <div class="panel panel-blue" role="status">
                 <div class="govuk-panel__body custom-panel">
                     <p class="govuk-body"><strong>{{ course.title }}</strong>{{ i18n[courseAddedSuccessMessage] }}</p>
                 </div>
             </div>
         {% endif %}
         <div class="course-container">
-            <h3 class="govuk-heading-m">Course overview</h3>
+            <h2 class="govuk-heading-m">Course overview</h2>
             {% block courseDetails %}
                 {{ courseDetails(course) }}
             {% endblock %}
         </div>
         <div class="section">
-            <h3 class="govuk-heading-m">Course events</h3>
+            <h2 class="govuk-heading-m">Course events</h2>
             {% block courseEvents %}
                 {{ courseEvents(course, faceToFaceModules, identity) }}
             {% endblock %}
         </div>
         {% if not identity.isSupplierAuthor() %}
         <div class="section">
-            <div class="title-container"> 
-                <h3 class="govuk-heading-m">Course audiences</h3>
+            <div class="title-container">
+                <h2 class="govuk-heading-m">Course audiences</h2>
                 {% if course.status !== "Archived" and identity.hasLearningCreate() %}
                 <form action="/content-management/courses/{{ course.id }}/audiences/" method="post">
                     <button class="govuk-link linkish-button add-audience-link" id="name" name="name" value="temp-audience-name">Add an audience</button>
