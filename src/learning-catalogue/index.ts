@@ -130,9 +130,9 @@ export class LearningCatalogue {
 		return course
 	}
 
-	async getCourse(courseId: string): Promise<Course|null> {
+	async getCourse(courseId: string, includeAvailability: boolean = false): Promise<Course|null> {
 		try {
-			return await this._courseService.get(`/courses/${courseId}`)
+			return await this._courseService.get(`/courses/${courseId}?includeAvailability=${includeAvailability}`)
 		} catch (e) {
 			if (e instanceof HttpException && e.statusCode === 404) {
 				return null
@@ -167,10 +167,6 @@ export class LearningCatalogue {
 	async createEvent(courseId: string, moduleId: string, event: Event): Promise<Event> {
 		await this._cslService.clearCourseCache(courseId)
 		return this._eventService.create(`/courses/${courseId}/modules/${moduleId}/events`, event)
-	}
-
-	async getEvent(courseId: string, moduleId: string, eventId: string): Promise<Event> {
-		return this._eventService.get(`/courses/${courseId}/modules/${moduleId}/events/${eventId}`)
 	}
 
 	async updateEvent(courseId: string, moduleId: string, eventId: string, event: Event): Promise<Event> {

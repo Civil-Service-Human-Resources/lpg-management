@@ -38,7 +38,7 @@ export class CourseController implements FormController {
 
 	/* istanbul ignore next */
 	private configureRouterPaths() {
-		applyLearningCatalogueMiddleware({getModule: false}, this.router, this.learningCatalogue)
+		applyLearningCatalogueMiddleware({getModule: false, getEvent: false}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/overview', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.courseOverview()))
 		this.router.get('/content-management/courses/:courseId/preview', xss(), this.checkForEventViewRole(), this.coursePreview())
 
