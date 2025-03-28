@@ -868,7 +868,7 @@ describe('EventController', function() {
 
 			dateRangeValidator.check = sinon.stub().returns(errors)
 
-			const event = {
+			response.locals.event = {
 				id: 'event-id',
 				venue: {
 					address: 'London',
@@ -881,8 +881,6 @@ describe('EventController', function() {
 				status: 'Active',
 				cancellationReason: 'The event is no longer available',
 			}
-
-			response.locals.event = event
 			learningCatalogue.updateEvent = sinon.stub().returns(Promise.reject(error))
 
 			await eventController.updateDateRange()(request, response, next)
