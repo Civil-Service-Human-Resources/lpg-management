@@ -103,7 +103,7 @@ export class EventController implements FormController {
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId', xss(), asyncHandler(this.getAttendeeDetails()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId/update', xss(), asyncHandler(this.updateBooking()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/update', xss(), asyncHandler(this.updateBooking()))
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), asyncHandler(this.cancelEvent()))
 		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), asyncHandler(this.setCancelEvent()))
