@@ -55,4 +55,13 @@ export class CslServiceClient {
 	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
 		return await this._http.getFile(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
 	}
+
+	async cancelEvent(courseId: string, moduleId: string, eventId: string, cancellationReason: string) {
+		return await this._http.postRequest({
+			url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/cancel`,
+			data: {
+				reason: cancellationReason
+			}
+		})
+	}
 }
