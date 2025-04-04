@@ -17,7 +17,7 @@ export class CourseService {
 		return (await this.learningCatalogue.getCourseTypeAhead()).typeahead
 	}
 
-	async sortModules(course: Course, moduleIds: string[]): Promise<Course> {
+	async sortModules(course: Course, moduleIds: string[]): Promise<void> {
 		if (course.modules.length !== moduleIds.length) {
 			throw new Error(`Course modules length(${course.modules.length}) does not match module ids length(${moduleIds.length})`)
 		}
@@ -38,7 +38,7 @@ export class CourseService {
 
 		course.modules = modules
 
-		return await this.learningCatalogue.updateCourse(course)
+		await this.learningCatalogue.updateCourse(course)
 	}
 
 	getAllEventsOnCourse(course: Course): Event[] {

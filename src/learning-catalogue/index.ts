@@ -99,17 +99,16 @@ export class LearningCatalogue {
 		return course
 	}
 
-	async updateCourse(course: Course): Promise<Course> {
+	async updateCourse(course: Course): Promise<void> {
 		await this._cslService.clearCourseCache(course.id)
-		course = await this._courseService.update(`/courses/${course.id}`, course)
-			let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		await this._courseService.update(`/courses/${course.id}`, course)
+		let typeahead = await this.courseTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead()
 		} else {
 			typeahead.updateCourse(course)
 			await this.courseTypeaheadCache.setTypeahead(typeahead)
 		}
-		return course
 	}
 
 	async publishCourse(course: Course): Promise<Course> {
