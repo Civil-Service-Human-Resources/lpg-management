@@ -4,7 +4,7 @@ import {TimePeriodParameters} from './timePeriodParameters'
 export class CreateReportRequestParams extends GetCourseCompletionParameters {
 
 	constructor(public userId: string, public fullName: string, public userEmail: string, public reportDownloadEndpoint: string,
-				timePeriodParams: TimePeriodParameters, courseIds: string[], organisationIds: string[],
+				timePeriodParams: TimePeriodParameters, courseIds: string[], organisationIds?: string[],
 				professionIds?: string[], gradeIds?: string[]) {
 		super(timePeriodParams, courseIds, organisationIds, professionIds, gradeIds)
 	}

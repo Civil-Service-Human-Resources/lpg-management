@@ -57,6 +57,41 @@
           </select>
         </div>
       {% endset -%}
+
+      {% set radioItems = [] %}
+
+      {% if pageModel.userDepartment %}
+
+        {% set radioItems = (radioItems.push({
+          value: "requiredLearning",
+          text: "Required learning for " + pageModel.userDepartment,
+          conditional: {
+              html: requiredHtml
+          },
+          checked: true
+        }), radioItems) %}
+
+      {% endif %}
+
+      {% set radioItems = (radioItems.push({
+        value: "courseSearch",
+        text: "Search for courses",
+        conditional: {
+            html: courseSearch
+        },
+        checked: pageModel.userDepartment === undefined
+    }), radioItems) %}
+
+    {% set radioItems = (radioItems.push({
+      value: "allLearning",
+      text: "All learning",
+      hint: {
+        text: "Does not include course breakdown"
+      }
+  }), radioItems) %}
+
+
+
       {{ govukRadios({
         name: "learning",
         fieldset: {
@@ -65,30 +100,7 @@
             classes: "govuk-fieldset__legend--s"
           }
         },
-        items: [
-          {
-            value: "requiredLearning",
-            text: "Required learning for " + pageModel.userDepartment,
-            conditional: {
-                html: requiredHtml
-            },
-            checked: true
-          },
-          {
-              value: "courseSearch",
-              text: "Search for courses",
-              conditional: {
-                  html: courseSearch
-              }
-          },
-          {
-              value: "allLearning",
-              text: "All learning",
-              hint: {
-                text: "Does not include course breakdown"
-              }
-          }
-        ]
+        items: radioItems
       }) }}
         </div>
         {{ govukButton({

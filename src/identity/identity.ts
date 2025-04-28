@@ -31,7 +31,8 @@ export enum Role {
 	MVP_REPORTER = 'MVP_REPORTER',
 	SUPER_REPORTER = 'SUPER_REPORTER',
 	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION',
-	REPORT_EXPORT = 'REPORT_EXPORT'
+	REPORT_EXPORT = 'REPORT_EXPORT',
+	REPORTING_ALL_ORGANISATIONS = 'REPORTING_ALL_ORGANISATIONS'
 }
 
 export enum CompoundRole {
@@ -306,5 +307,9 @@ export class Identity {
 
 	isUnrestrictedOrganisation() {
 		return this.hasRole(Role.UNRESTRICTED_ORGANISATION)
+	}
+
+	isReportingAllOrganisations() {
+		return this.hasRole(Role.REPORTING_ALL_ORGANISATIONS)
 	}
 }
