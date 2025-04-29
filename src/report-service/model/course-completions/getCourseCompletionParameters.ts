@@ -3,7 +3,7 @@ import {TimePeriodParameters} from './timePeriodParameters'
 export class GetCourseCompletionParameters {
 	constructor(public timePeriodParams: TimePeriodParameters,
 				public courseIds: string[],
-				public organisationIds: string[],
+				public organisationIds?: string[],
 				public professionIds?: string[],
 				public gradeIds?: string[]) { }
 
