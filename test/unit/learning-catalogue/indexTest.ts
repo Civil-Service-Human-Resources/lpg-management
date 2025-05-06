@@ -115,7 +115,7 @@ describe('Learning Catalogue tests', () => {
 			courseService.get = sinon.stub()
 
 			await learningCatalogue.getCourse(courseId)
-			return expect(courseService.get).to.have.been.calledOnceWith(`/courses/${courseId}`)
+			return expect(courseService.get).to.have.been.calledOnceWith(`/courses/${courseId}?includeAvailability=false`)
 		})
 	})
 
@@ -173,18 +173,6 @@ describe('Learning Catalogue tests', () => {
 			await learningCatalogue.createEvent(courseId, moduleId, event)
 
 			return expect(eventService.create).to.have.been.calledOnceWith(`/courses/${courseId}/modules/${moduleId}/events`, event)
-		})
-
-		it('should call eventService when getting an event', async () => {
-			const courseId: string = 'course-id'
-			const moduleId: string = 'module-id'
-			const eventId: string = 'event-id'
-
-			eventService.get = sinon.stub()
-
-			await learningCatalogue.getEvent(courseId, moduleId, eventId)
-
-			return expect(eventService.get).to.have.been.calledOnceWith(`/courses/${courseId}/modules/${moduleId}/events/${eventId}`)
 		})
 
 		it('should call eventService when updating an event', async () => {

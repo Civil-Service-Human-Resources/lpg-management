@@ -1,4 +1,5 @@
 import {IsIn, IsNotEmpty, IsOptional, IsPositive, Min} from 'class-validator'
+import {Event} from './event'
 
 export class Module {
 	id: string
@@ -48,6 +49,8 @@ export class Module {
 	cost?: number
 
 	optional: boolean
+
+	events: Event[]
 }
 
 export namespace Module {

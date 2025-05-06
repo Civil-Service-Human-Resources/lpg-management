@@ -34,7 +34,7 @@
                 {% endif %}
                 <input id="title" name="title" type="hidden" value="{{ form.title|default(course.title)}}">
                 <input id="topicId" name="topicId" type="hidden" value="{{ form.topicId|default(course.topicId) }}">
-                <input  id="visibility" name="visibility" type="hidden" value="{{ course.visibility }}">
+                <input  id="visibility" name="visibility" type="hidden" value="{{ form.visibility | default(course.visibility) }}">
                 <fieldset class="govuk-fieldset">
                     {% block textarea %}
                         {{ textarea("shortDescription", "shortDescription", "Maximum of 160 characters", 160, form.shortDescription|default(course.shortDescription), "Short description") }}

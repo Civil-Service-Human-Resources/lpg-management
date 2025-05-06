@@ -5,6 +5,8 @@ import {DateRange} from './dateRange'
 import {Venue} from './venue'
 import * as moment from 'moment'
 
+export type EventStatus = 'Active' | 'Cancelled'
+
 export class Event {
 	id: string
 
@@ -19,7 +21,7 @@ export class Event {
 	})
 	venue: Venue
 
-	status: Event.Status
+	status: EventStatus
 
 	cancellationReason: string
 
@@ -37,10 +39,4 @@ const extractDurationOfEvent = (dateRange: DateRange) => {
 	const endTime = moment(_.get(dateRange, 'endTime', 0), 'HH:mm')
 	const duration = moment.duration(endTime.diff(startTime))
 	return duration.asSeconds()
-}
-export namespace Event {
-	export enum Status {
-		ACTIVE = 'Active',
-		CANCELLED = 'Cancelled',
-	}
 }

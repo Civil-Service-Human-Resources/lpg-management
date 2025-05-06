@@ -38,7 +38,9 @@ export class CourseService {
 
 		course.modules = modules
 
-		return await this.learningCatalogue.updateCourse(course)
+		await this.learningCatalogue.updateCourse(course)
+
+		return course
 	}
 
 	getAllEventsOnCourse(course: Course): Event[] {

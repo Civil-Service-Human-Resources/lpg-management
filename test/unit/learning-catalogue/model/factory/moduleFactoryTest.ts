@@ -4,7 +4,6 @@ import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import {ModuleFactory} from '../../../../../src/learning-catalogue/model/factory/moduleFactory'
 import {EventFactory} from '../../../../../src/learning-catalogue/model/factory/eventFactory'
-import {Event} from '../../../../../src/learning-catalogue/model/event'
 
 chai.use(chaiAsPromised)
 
@@ -72,7 +71,7 @@ describe('ModuleFactory tests', () => {
 						availability: 99,
 					},
 					dateRanges: [{date: '2019-01-01', startTime: '09:00:00', endTime: '17:00:00'}],
-					status: Event.Status.ACTIVE,
+					status: 'Active',
 				},
 			])
 
