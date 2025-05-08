@@ -7,6 +7,7 @@ import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {Report, ReportType} from './Report'
 import {Controller} from '../controller'
 import {CompoundRoleBase, reporterRole} from '../../identity/identity'
+import {REPORT_SERVICE} from '../../config'
 
 export class ReportingController extends Controller {
 
@@ -46,7 +47,8 @@ export class ReportingController extends Controller {
 		return async (request: Request, response: Response) => {
 			response.render('page/reporting/index', {
 				bookingPageModel: new DateStartEndCommand(),
-				learnerRecordPageModel: new DateStartEndCommand()
+				learnerRecordPageModel: new DateStartEndCommand(),
+				learnerRecordPageModelEnabled: REPORT_SERVICE.MODULE_RECORD_REPORT_ENABLED
 			})
 		}
 	}
