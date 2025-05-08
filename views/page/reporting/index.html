@@ -55,38 +55,44 @@
             </form>
             <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
             <h2 class="govuk-heading-m" id="learning-record">Learning record information</h2>
-            <div class="govuk-body no-margin">
-                <p>View information relating to the learning records for all learners in your department or area of work.</p>
-                <p>The data provided is learner’s ID or name; profile information; all online courses and modules started and completed, and the dates
-                of starting and completion; and all confirmed bookings for face-to-face courses, and dates for confirmed bookings on face-to-face courses.</p>
-                <p>The availability of this information depends on your level of reporting access.</p>
-            </div>
-            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
-            {{ errorSummary(learnerRecordPageModel.getErrorFields() if learnerRecordPageModel) }}
-            <form action="/reporting/learner-record#learning-record" method="post">
-                {{ datePicker(
-                    {
-                        id: 'learningRecord',
-                        pageModel: learnerRecordPageModel,
-                        legend: {
-                            start: {
-                                html: "<h3 class='govuk-fieldset__heading'>Learning record start date</h3>",
-                                classes: "govuk-fieldset__legend--s"
-                            },
-                            end: {
-                                html: "<h3 class='govuk-fieldset__heading'>Learning record end date</h3>",
-                                classes: "govuk-fieldset__legend--s"
+                {% if learnerRecordPageModelEnabled %}
+                <div class="govuk-body no-margin">
+                    <p>View information relating to the learning records for all learners in your department or area of work.</p>
+                    <p>The data provided is learner’s ID or name; profile information; all online courses and modules started and completed, and the dates
+                    of starting and completion; and all confirmed bookings for face-to-face courses, and dates for confirmed bookings on face-to-face courses.</p>
+                    <p>The availability of this information depends on your level of reporting access.</p>
+                </div>
+                <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+                {{ errorSummary(learnerRecordPageModel.getErrorFields() if learnerRecordPageModel) }}
+                <form action="/reporting/learner-record#learning-record" method="post">
+                    {{ datePicker(
+                        {
+                            id: 'learningRecord',
+                            pageModel: learnerRecordPageModel,
+                            legend: {
+                                start: {
+                                    html: "<h3 class='govuk-fieldset__heading'>Learning record start date</h3>",
+                                    classes: "govuk-fieldset__legend--s"
+                                },
+                                end: {
+                                    html: "<h3 class='govuk-fieldset__heading'>Learning record end date</h3>",
+                                    classes: "govuk-fieldset__legend--s"
+                                }
                             }
                         }
-                    }
-                ) }}
+                    ) }}
 
-                {{ govukButton({
-                text: "Download learning record information report",
-                classes: "button-blue left-aligned",
-                preventDoubleClick: true
-                }) }}
-            </form>
+                    {{ govukButton({
+                    text: "Download learning record information report",
+                    classes: "button-blue left-aligned",
+                    preventDoubleClick: true
+                    }) }}
+                </form>
+            {% else %}
+            <div class="govuk-body no-margin">
+                <p>This report is currently unavailable. If you require learning record information, please <a href='{{ lpgUiUrl }}/contact-us'>contact the helpdesk</a>.</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
