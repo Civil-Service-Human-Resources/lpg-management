@@ -114,7 +114,8 @@ export const REGISTRY_SERVICE = set({
 export const REPORT_SERVICE = set({
 	detailedLogs: getBoolean(env.REPORT_SERVICE_DETAILED_LOGS),
 	url: env.REPORT_SERVICE_URL || 'http://localhost:9004',
-	timeout: Number(env.REPORT_SERVICE_TIMEOUT_MS)
+	timeout: Number(env.REPORT_SERVICE_TIMEOUT_MS),
+	MODULE_RECORD_REPORT_ENABLED: getBoolean(env.MODULE_RECORD_REPORT_ENABLED)
 })
 
 export const CACHE = {
