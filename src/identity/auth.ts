@@ -164,7 +164,7 @@ export class Auth {
 	hasAdminRole() {
 		return (req: Request, res: Response, next: NextFunction) => {
 			if (req.isAuthenticated()) {
-				if (req.user && (req.user.hasAnyAdminRole() || req.user.isReporter() || req.user.isMVPReporter() || req.user.isSuperReporter()) ) {
+				if (req.user && (req.user.hasAnyAdminRole() || req.user.isReporter() || req.user.isMVPReporter() || req.user.isSuperReporter())) {
 					return next()
 				} else {
 					if (req.user && req.user.uid) {
