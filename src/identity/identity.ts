@@ -197,7 +197,7 @@ export class Identity {
 
 	hasEventViewingRole() {
 		// coarse-grained check for general permission to view events
-		return this.hasAnyRole([Role.CSL_AUTHOR, Role.LEARNING_MANAGER]) || this.isSupplierAuthor()
+		return this.hasAnyRole([Role.CSL_AUTHOR, Role.LEARNING_MANAGER]) || this.isSupplierAuthor() || this.isReporter() || this.isMVPReporter() || this.isSuperReporter()
 	}
 
 	isOrganisationManager() {
