@@ -10,7 +10,7 @@
             {% if identity.hasAnyAdminRole() %}
                 <a class="nav-item govuk-link {% if originalUrl === '/content-management' %}active{% endif %}" href="/content-management">Admin</a>
             {% endif %}
-            {% if identity.isReporter() %}
+            {% if identity.isReporter() or identity.isMVPReporter() or identity.isSuperReporter() %}
                 <a class="nav-item govuk-link {% if originalUrl and originalUrl | startsWith('/reporting') %}active{% endif %}" href="/reporting">Reporting</a>
             {% endif %}
             <a class="nav-item govuk-link" href="/sign-out">Sign out</a>
