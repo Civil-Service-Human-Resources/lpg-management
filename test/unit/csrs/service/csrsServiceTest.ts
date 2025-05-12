@@ -441,6 +441,73 @@ describe('CsrsService tests', () => {
 			expect(actualResult[2].id).to.equal(3)
 
 		})
+
+		it("should return a list of organisations with Tier 1 orgs if user is a super user", async () => {
+			let usersOrganisationalUnit: OrganisationalUnit = new OrganisationalUnit()
+			usersOrganisationalUnit.id = 2
+			usersOrganisationalUnit.abbreviation = "ORG2"
+			usersOrganisationalUnit.name = "Org2"
+			usersOrganisationalUnit.parentId = 1
+
+			let mockUser = {
+				isSuperReporter: () => {
+					return false
+				},
+				isSuperUser: () => {
+					return true
+				},
+				isUnrestrictedOrganisation: () => {
+					return false
+				},
+				isTierOneReporter: () => {
+					return true
+				},
+				getDomain: () => {
+					return "user-domain.gov.uk"
+				},
+				username: "user@user-domain.gov.uk",
+				organisationalUnit: usersOrganisationalUnit
+			}
+
+			let userDomain = new Domain(1, "user-domain.gov.uk")
+
+			let organisation1 = new OrganisationalUnit()
+			organisation1.id = 1
+			organisation1.parentId = null
+			organisation1.domains = [userDomain]
+
+			let organisation2 = new OrganisationalUnit()
+			organisation2.id = 2
+			organisation2.parentId = 1
+			organisation2.domains = [userDomain]
+
+			let organisation3 = new OrganisationalUnit()
+			organisation3.id = 3
+			organisation3.parentId = 1
+			organisation3.domains = [userDomain]
+
+			let organisation4 = new OrganisationalUnit()
+			organisation4.id = 4
+			organisation4.parentId = null
+			organisation4.domains = [userDomain]
+
+			let listOrganisationalUnitsForTypehead = sinon
+				.stub()
+				.returns({
+					typeahead: [organisation1, organisation2, organisation3, organisation4]
+				})
+
+			csrsService.listOrganisationalUnitsForTypehead = listOrganisationalUnitsForTypehead
+
+			let actualResult = await csrsService.getOrganisationalUnitsForUser(mockUser)
+
+			expect(actualResult.length).to.equal(4)
+			expect(actualResult[0].id).to.equal(1)
+			expect(actualResult[1].id).to.equal(2)
+			expect(actualResult[2].id).to.equal(3)
+			expect(actualResult[3].id).to.equal(4)
+
+		})
 	})
 
 
