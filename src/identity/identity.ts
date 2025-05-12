@@ -161,16 +161,10 @@ export class Identity {
 	hasAnyAdminRole() {
 		// i.e. isn't just a LEARNER who navigated to the admin app by modifying the URL
 		return this.hasAnyRole([
-			Role.CSHR_REPORTER,
 			Role.CSL_AUTHOR,
-			Role.DOWNLOAD_BOOKING_FEED,
-			Role.IDENTITY_DELETE,
-			Role.IDENTITY_MANAGER,
 			Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR,
 			Role.KORNFERRY_SUPPLIER_AUTHOR,
-			Role.KORNFERRY_SUPPLIER_REPORTER,
 			Role.KPMG_SUPPLIER_AUTHOR,
-			Role.KPMG_SUPPLIER_REPORTER,
 			Role.LEARNING_ARCHIVE,
 			Role.LEARNING_CREATE,
 			Role.LEARNING_DELETE,
@@ -180,10 +174,8 @@ export class Identity {
 			Role.MANAGE_CALL_OFF_PO,
 			Role.ORGANISATION_AUTHOR,
 			Role.ORGANISATION_MANAGER,
-			Role.ORGANISATION_REPORTER,
 			Role.PROFESSION_AUTHOR,
-			Role.PROFESSION_MANAGER,
-			Role.PROFESSION_REPORTER
+			Role.PROFESSION_MANAGER
 		])
 	}
 
@@ -197,7 +189,7 @@ export class Identity {
 
 	hasEventViewingRole() {
 		// coarse-grained check for general permission to view events
-		return this.hasAnyRole([Role.CSL_AUTHOR, Role.LEARNING_MANAGER]) || this.isSupplierAuthor()
+		return this.hasAnyRole([Role.CSL_AUTHOR, Role.LEARNING_MANAGER]) || this.isSupplierAuthor() || this.isReporter() || this.isMVPReporter() || this.isSuperReporter()
 	}
 
 	isOrganisationManager() {
