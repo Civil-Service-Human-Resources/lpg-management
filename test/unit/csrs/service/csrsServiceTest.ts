@@ -168,6 +168,9 @@ describe('CsrsService tests', () => {
 	describe("#getOrganisationalUnitsForUser", () => {
 		it("should return a filtered list of organisations according to the user's domain if user is not a super reporter", async () => {
 
+			let getTopTierOrganisation = sinon.stub().returns(
+				new OrganisationalUnit()
+			)
 			let mockUser = {
 				isSuperReporter: () => {
 					return false
@@ -181,7 +184,11 @@ describe('CsrsService tests', () => {
 				getDomain: () => {
 					return "user-domain.gov.uk"
 				},
-				username: "user@user-domain.gov.uk"
+				isTierOneReporter: () => {
+					return true
+				},
+				username: "user@user-domain.gov.uk",
+				getTopTierOrganisation: getTopTierOrganisation	
 			}
 
 			let userDomain = new Domain(1, "user-domain.gov.uk")

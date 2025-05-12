@@ -35,7 +35,7 @@ export class ReportingController {
 		return async (request: Request, response: Response) => {
 			let currentUser = request.user
 
-			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
+			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {				
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
 				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
