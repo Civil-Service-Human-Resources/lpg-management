@@ -201,6 +201,7 @@ export class CsrsService {
 		let organisationsForTypeahead = organisationList.typeahead
 
 		if(!this.userCanAccessAllOrganisations(user)){
+			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(user.getDomain()))
 			if(user.isTierOneReporter()){
 				const userTierOneOrganisation: OrganisationalUnit = user.organisationalUnit.getTopTierOrganisation(organisationsForTypeahead)
 				organisationsForTypeahead = organisationsForTypeahead.filter(organisation => !organisation.isTierOneOrganisation() || organisation.id === userTierOneOrganisation.id)
