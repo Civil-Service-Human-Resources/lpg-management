@@ -33,7 +33,8 @@ export enum Role {
 	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION',
 	REPORT_EXPORT = 'REPORT_EXPORT',
 	REPORTING_ALL_ORGANISATIONS = 'REPORTING_ALL_ORGANISATIONS',
-	TIER1_REPORTING = 'TIER1_REPORTING'
+	TIER1_REPORTING = 'TIER1_REPORTING',
+	REGISTERED_LEARNER_REPORTER = 'REGISTERED_LEARNER_REPORTER'
 }
 
 export enum CompoundRole {
@@ -103,10 +104,11 @@ export class UserRole {
 }
 
 export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
-Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER))
-
+Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER, Role.REGISTERED_LEARNER_REPORTER))
+export const registeredLearnerReportingRole = new UserRole(All(Role.REGISTERED_LEARNER_REPORTER))
 export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
+export const eventViewingRole = new UserRole(Any(Role.CSL_AUTHOR, Role.LEARNING_MANAGER, Role.ORGANISATION_AUTHOR, Role.KPMG_SUPPLIER_AUTHOR, Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_AUTHOR))
 
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
@@ -124,7 +126,7 @@ export class Identity {
 	constructor(
 	public readonly uid: string,
 	public readonly username: string,
-	public readonly roles: string[],
+	public roles: string[],
 	public readonly accessToken: string,
 	public managementLoggedIn: boolean = false,
 	public managementShouldLogout: boolean = false,
@@ -163,6 +165,7 @@ export class Identity {
 	hasAnyAdminRole() {
 		// i.e. isn't just a LEARNER who navigated to the admin app by modifying the URL
 		return this.hasAnyRole([
+			Role.CSHR_REPORTER,
 			Role.CSL_AUTHOR,
 			Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR,
 			Role.KORNFERRY_SUPPLIER_AUTHOR,
@@ -176,8 +179,10 @@ export class Identity {
 			Role.MANAGE_CALL_OFF_PO,
 			Role.ORGANISATION_AUTHOR,
 			Role.ORGANISATION_MANAGER,
+			Role.ORGANISATION_REPORTER,
 			Role.PROFESSION_AUTHOR,
-			Role.PROFESSION_MANAGER
+			Role.PROFESSION_MANAGER,
+			Role.REGISTERED_LEARNER_REPORTER
 		])
 	}
 
@@ -185,13 +190,21 @@ export class Identity {
 		return this.hasRole(Role.MVP_REPORTER) && (this.isOrganisationReporter() || this.isCshrReporter())
 	}
 
+	roleCheck(role: UserRole) {
+		return role.checkRoles(this.roles)
+	}
+
+	isRegisteredLearnerReporter() {
+		return this.roleCheck(registeredLearnerReportingRole)
+	}
+
 	hasMvpExport() {
-		return mvpExportRole.checkRoles(this.roles)
+		return this.roleCheck(mvpExportRole)
 	}
 
 	hasEventViewingRole() {
 		// coarse-grained check for general permission to view events
-		return this.hasAnyRole([Role.CSL_AUTHOR, Role.LEARNING_MANAGER]) || this.isSupplierAuthor() || this.isReporter() || this.isMVPReporter() || this.isSuperReporter()
+		return this.roleCheck(eventViewingRole)
 	}
 
 	isOrganisationManager() {
