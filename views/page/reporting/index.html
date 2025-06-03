@@ -8,25 +8,45 @@
 
 {% block pageTitle %}{{ i18n['administration_pages_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
+{% macro reportSection(params) %}
+    {% if params.roleCheck() %}
+        <h2 class="govuk-heading-m">{{ params.heading }}</h2>
+        <div class="govuk-body no-margin">
+            <p>{{ params.summary }}</p>
+            <p><a href='{{ params.href.href }}'>{{ params.href.text }}</a></p>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% set sections = [
+    {
+        roleCheck: identity.isMVPReporter,
+        heading: "Course completions dashboard",
+        summary: "View a summary of total completed learning for your department.",
+        href: {
+            href: "/reporting/course-completions/choose-organisation",
+            text: "Course completions dashboard"
+        }
+    },
+    {
+        roleCheck: identity.isRegisteredLearnerReporter,
+        heading: "Registered learners dashboard",
+        summary: "View a summary of total registered learners for your department.",
+        href: {
+            href: "/reporting/registered-learners",
+            text: "Registered learners dashboard"
+        }
+    }
+] %}
+
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-heading-l">Reporting</h1>
-            {% if identity.isMVPReporter() %}
-                <h2 class="govuk-heading-m">Course completions dashboard</h2>
-                <div class="govuk-body no-margin">
-                    <p>View a summary of total completed learning for your department.</p>
-                    <p><a href='/reporting/course-completions/choose-organisation'>Course completions dashboard</a></p>
-                </div>
-            {% endif %}
-            {% if identity.isRegisteredLearnerReporter() %}
-            <h2 class="govuk-heading-m">Registered learners dashboard</h2>
-            <div class="govuk-body no-margin">
-                <p>View a summary of total registered learners for your department.</p>
-                <p><a href='/reporting/registered-learners'>Registered learners dashboard</a></p>
-            </div>
-            {% endif %}
-            <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+            {% for section in sections %}
+                {{ reportSection(section) }}
+                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+            {% endfor %}
             <h2 class="govuk-heading-m" id='booking-information'>Booking information</h2>
             <p class="govuk-body no-margin">See data on face-to-face courses:</p>
             <ul class="bullet govuk-body">
