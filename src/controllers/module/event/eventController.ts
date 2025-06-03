@@ -24,6 +24,8 @@ import * as EmailValidator from 'email-validator'
 import {CslServiceClient} from '../../../csl-service/client'
 import {CancelBookingDto} from '../../../csl-service/model/CancelBookingDto'
 import {applyLearningCatalogueMiddleware} from '../../middleware/learningCatalogueMiddleware'
+import {roleCheckMiddleware} from '../../middleware/roleCheckMiddleware'
+import {eventViewingRole} from '../../../identity/identity'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -51,17 +53,7 @@ export class EventController implements FormController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 
-		this.router.use(asyncHandler((req: Request, res: Response, next: NextFunction) => {
-			if (req.user && req.user.hasEventViewingRole()) {
-				next()
-			} else {
-				if (req.user && req.user.uid) {
-					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP '
-						+ req.ip + ' from page ' + req.originalUrl)
-				}
-				res.render('page/unauthorised')
-			}
-		}))
+		const roleCheck = asyncHandler(roleCheckMiddleware(eventViewingRole.compoundRoles))
 
 		this.router.param(
 			'eventId',
@@ -79,39 +71,39 @@ export class EventController implements FormController {
 		)
 		applyLearningCatalogueMiddleware({getModule: true, getEvent: true}, this.router, this.learningCatalogue)
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), asyncHandler(this.getLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), roleCheck, asyncHandler(this.getLocation()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', xss(), asyncHandler(this.editLocation()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', xss(), roleCheck, asyncHandler(this.editLocation()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), asyncHandler(this.setLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), roleCheck, asyncHandler(this.setLocation()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), asyncHandler(this.updateLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), roleCheck, asyncHandler(this.updateLocation()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', xss(), asyncHandler(this.getDatePreview()))
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-overview/:eventId', xss(), asyncHandler(this.getEventOverview()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', xss(), roleCheck, asyncHandler(this.getDatePreview()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-overview/:eventId', xss(), roleCheck, asyncHandler(this.getEventOverview()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), asyncHandler(this.getDateTime()))
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), asyncHandler(this.setDateTime()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.getDateTime()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.setDateTime()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), asyncHandler(this.editDateRange()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), roleCheck, asyncHandler(this.editDateRange()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), asyncHandler(this.dateRangeOverview()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), roleCheck, asyncHandler(this.dateRangeOverview()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), asyncHandler(this.addDateRange()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), roleCheck, asyncHandler(this.addDateRange()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), asyncHandler(this.updateDateRange()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), roleCheck, asyncHandler(this.updateDateRange()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId', xss(), asyncHandler(this.getAttendeeDetails()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId', xss(), roleCheck, asyncHandler(this.getAttendeeDetails()))
 
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/update', xss(), asyncHandler(this.updateBooking()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/update', xss(), roleCheck, asyncHandler(this.updateBooking()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), asyncHandler(this.cancelEvent()))
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), asyncHandler(this.setCancelEvent()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), roleCheck, asyncHandler(this.cancelEvent()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), roleCheck, asyncHandler(this.setCancelEvent()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId/cancel', xss(), asyncHandler(this.getCancelBooking()))
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(this.cancelBooking()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId/cancel', xss(), roleCheck, asyncHandler(this.getCancelBooking()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), roleCheck, asyncHandler(this.cancelBooking()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/invite', xss(), asyncHandler(this.inviteLearner()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/invite', xss(), roleCheck, asyncHandler(this.inviteLearner()))
 	}
 
 	public getDateTime() {

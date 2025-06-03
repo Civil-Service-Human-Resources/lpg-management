@@ -19,6 +19,13 @@
                     <p><a href='/reporting/course-completions/choose-organisation'>Course completions dashboard</a></p>
                 </div>
             {% endif %}
+            {% if identity.isRegisteredLearnerReporter() %}
+            <h2 class="govuk-heading-m">Registered learners dashboard</h2>
+            <div class="govuk-body no-margin">
+                <p>View a summary of total registered learners for your department.</p>
+                <p><a href='/reporting/registered-learners'>Registered learners dashboard</a></p>
+            </div>
+            {% endif %}
             <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
             <h2 class="govuk-heading-m" id='booking-information'>Booking information</h2>
             <p class="govuk-body no-margin">See data on face-to-face courses:</p>
