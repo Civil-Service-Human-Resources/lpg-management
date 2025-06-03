@@ -15,6 +15,7 @@
             <p>{{ params.summary }}</p>
             <p><a href='{{ params.href.href }}'>{{ params.href.text }}</a></p>
         </div>
+        <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
     {% endif %}
 {% endmacro %}
 
@@ -45,7 +46,6 @@
             <h1 class="govuk-heading-l">Reporting</h1>
             {% for section in sections %}
                 {{ reportSection(section) }}
-                <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
             {% endfor %}
             <h2 class="govuk-heading-m" id='booking-information'>Booking information</h2>
             <p class="govuk-body no-margin">See data on face-to-face courses:</p>
