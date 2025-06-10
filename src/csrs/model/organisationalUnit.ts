@@ -98,4 +98,20 @@ export class OrganisationalUnit implements CacheableObject {
 	removeDomain(domainId: number) {
 		this.domains = this.domains.filter(d => d.id !== domainId )
 	}
+
+	isTierOneOrganisation(){
+		return this.parentId === null
+	}
+
+	getTopTierOrganisation(organisations: OrganisationalUnit[]){
+		let parentId: number | null | undefined = this.id
+		let organisation
+
+		while(parentId !== null){
+			organisation = organisations.find((org) => org.id === parentId)
+			parentId = organisation && organisation.parentId
+		}
+
+		return organisation
+	}
 }

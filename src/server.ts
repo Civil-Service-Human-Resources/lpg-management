@@ -33,6 +33,7 @@ import {Controller} from './controllers/controller'
 import {CourseCompletionsController} from './controllers/reporting/courseCompletionsController'
 import {ReportingController} from './controllers/reporting/reportingController'
 import {createConfig} from './lib/http/restServiceConfigFactory'
+import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
 
 middleware.applyAll(app)
 
@@ -47,7 +48,8 @@ const reportService = buildReportService(createConfig({
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
 	new ReportingController(reportService),
-	new CourseCompletionsController(reportService)
+	new CourseCompletionsController(reportService),
+	new RegisteredLearnersController()
 ]
 
 app.use(ctx.addToResponseLocals())

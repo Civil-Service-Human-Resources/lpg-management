@@ -33,7 +33,16 @@ export class ReportServicePageModelService {
 
 	buildReportingFilterSummary(session: CourseCompletionsSession) {
 		const coursesFilterSummary = new CourseFilterSummaryRow(getMultipleCourseSummaryTags(session.courses || []))
-		const organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags([session.selectedOrganisation!.name]))
+		
+		let organisationFilterSummary
+
+		if(session.selectedOrganisation){
+			organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags([session.selectedOrganisation!.name]))
+		}
+		else{
+			organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags(["All organisations"]))
+		}
+
 		const dateFilterSummary = new DateFilterSummaryRow(getDashboardTimePeriod(session).tags)
 		return new ReportingFilterSummary(organisationFilterSummary, coursesFilterSummary, dateFilterSummary)
 	}

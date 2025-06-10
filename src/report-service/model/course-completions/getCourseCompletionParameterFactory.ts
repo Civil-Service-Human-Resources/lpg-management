@@ -4,8 +4,8 @@ import {CourseCompletionsSession} from '../../../controllers/reporting/model/cou
 
 export class GetCourseCompletionParameterFactory {
 
-	createFromSession(session: CourseCompletionsSession, timePeriodparams: TimePeriodParameters) {
+	createFromSession(session: CourseCompletionsSession, timePeriodparams: TimePeriodParameters) {		
 		return new GetCourseCompletionParameters(timePeriodparams, session.getCourseIds(),
-			session.allOrganisationIds!.map(n => n.toString()))
+		session.allOrganisationIds && session.allOrganisationIds!.map(n => n.toString()))
 	}
 }

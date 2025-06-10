@@ -47,7 +47,7 @@ export class CslServiceClient {
 		return plainToInstance(Chart, response.data)
 	}
 
-	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {
+	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {		
 		const response = await this._http.postRequest<RequestCourseCompletionExportRequestResponse>({url: this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL, data: params.getAsApiParams()})
 		return plainToInstance(RequestCourseCompletionExportRequestResponse, response.data)
 	}

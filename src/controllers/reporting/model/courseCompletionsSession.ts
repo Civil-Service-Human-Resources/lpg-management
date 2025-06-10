@@ -12,7 +12,7 @@ export class CourseCompletionsSession {
 	public endMonth?: string
 	public endYear?: string
 
-	constructor(public userEmail: string, public fullName: string, public userUid: string, public selectedOrganisation?: {name: string, id: string},
+	constructor(public userEmail: string, public fullName: string, public userUid: string, public organisationSelection?: string, public selectedOrganisation?: {name: string, id: string},
 				public allOrganisationIds?: number[], public learningSelection?: LearningSelection, public courses?: {name: string, id: string}[],
 				public chartData?: {text: string}[][]) { }
 
@@ -21,9 +21,12 @@ export class CourseCompletionsSession {
 	}
 
 	hasSelectedOrganisations() {
-		return this.selectedOrganisation !== undefined &&
+		const allOrganisationsSelected = this.organisationSelection === "allOrganisations"
+		const specificOrganisationIdsSelected = this.selectedOrganisation !== undefined &&
 			this.allOrganisationIds !== undefined &&
-			this.allOrganisationIds.length > 0
+			this.allOrganisationIds.length > 0		
+
+		return allOrganisationsSelected || specificOrganisationIdsSelected
 	}
 
 	hasSelectedCourses() {

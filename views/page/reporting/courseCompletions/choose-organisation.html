@@ -68,6 +68,13 @@ href: "#parent"
         }), radioItems) %}
         {% endif %}
 
+        {% if showWholeCivilServiceOption %}
+          {% set radioItems = (radioItems.push({
+            value: "allOrganisations",
+            text: "Whole Civil Service"
+          }), radioItems) %}
+        {% endif %}
+
         {{ govukRadios({
         name: "organisation",
         fieldset: {
