@@ -6,6 +6,7 @@
 {% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
 {% from "../../component/audiences/macro.njk" import audiences with context %}
 {% from "back-link/macro.njk" import govukBackLink %}
+{% from "button/macro.njk" import govukButton %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -78,10 +79,41 @@
                             }
                         ] %}
                         {{ menu("Actions", actions) }}
+
+                        {% set linkActions = [
+                            {
+                                link: courseUrl,
+                                text: 'View this course on Civil Service Learning',
+                                openInNewTab: true,
+                                ariaLabel: 'View course ' + course.title + ' on Civil Service Learning'
+                            }
+                        ] %}
+                        {{ menu("Course link", linkActions) }}
+
+                        <div id="course-copy" class="js-only" style="padding: 10px">
+                            <div id="course-copy-notification" class="govuk-body" role="status"></div>
+                            {{ govukButton({
+                            text: "Copy link to clipboard",
+                            "classes": "govuk-button--secondary copy-link-button"
+                            }) }}
+                        </div>
                     {% endblock %}
                 {% endif %}
             {% endif %}
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block bodyEnd %}
+<script src="/js/clipboard.js"></script>
+<script src="/js/js-only.js"></script>
+<script>
+document.querySelector('.copy-link-button').addEventListener('click', (e) => {
+    const courseUrl = "{{ courseUrl }}"
+    copyTextToClipboard(courseUrl).then(() => {
+        document.querySelector('#course-copy-notification').innerHTML = '<span class="govuk-visually-hidden"> URL for course {{ course.title }} </span>Copied to clipboard'
+    })
+})
+</script>
 {% endblock %}
