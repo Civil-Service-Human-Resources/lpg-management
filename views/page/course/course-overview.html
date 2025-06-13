@@ -84,14 +84,13 @@
                             {
                                 link: courseUrl,
                                 text: 'View this course on Civil Service Learning',
-                                openInNewTab: true,
-                                ariaLabel: 'View course ' + course.title + ' on Civil Service Learning'
+                                openInNewTab: true
                             }
                         ] %}
                         {{ menu("Course link", linkActions) }}
 
                         {% if course.status === "Published" %}
-                        <div id="course-copy" class="js-only" style="padding: 10px">
+                        <div id="course-copy" class="js-only govuk-!-padding-2">
                             {{ govukButton({
                             text: "Copy link to clipboard",
                             "classes": "govuk-button--secondary copy-link-button govuk-!-margin-0"
@@ -112,9 +111,12 @@
 <script src="/js/js-only.js"></script>
 <script>
 document.querySelector('.copy-link-button').addEventListener('click', (e) => {
+    const notificationElement = document.querySelector('#course-copy-notification')
+    notificationElement.innerHTML = ''
+
     const courseUrl = "{{ courseUrl }}"
     copyTextToClipboard(courseUrl).then(() => {
-        document.querySelector('#course-copy-notification').innerHTML = '<span class="govuk-visually-hidden"> URL for course {{ course.title }} </span>Copied to clipboard'
+        notificationElement.innerHTML = 'Course URL copied to clipboard'
     })
 })
 </script>
