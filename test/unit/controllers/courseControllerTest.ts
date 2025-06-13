@@ -54,6 +54,7 @@ describe('Course Controller Tests', function() {
 			csrsService.getGradeCodeToNameMapping = sinon.stub()
 			courseService.getAudienceIdToEventMapping = sinon.stub()
 			courseService.getEventIdToModuleIdMapping = sinon.stub()
+			courseService.getCourseUrl = sinon.stub().returns('https://localhost/course/abc123')
 			courseService.getUniqueGrades = sinon.stub().returns(['G1', 'G2', 'G3'])
 			courseService.sortAudiences = sinon.stub().resolves([])
 
