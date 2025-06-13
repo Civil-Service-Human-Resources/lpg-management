@@ -90,13 +90,15 @@
                         ] %}
                         {{ menu("Course link", linkActions) }}
 
+                        {% if course.status === "Published" %}
                         <div id="course-copy" class="js-only" style="padding: 10px">
-                            <div id="course-copy-notification" class="govuk-body" role="status"></div>
                             {{ govukButton({
                             text: "Copy link to clipboard",
-                            "classes": "govuk-button--secondary copy-link-button"
+                            "classes": "govuk-button--secondary copy-link-button govuk-!-margin-0"
                             }) }}
+                            <div id="course-copy-notification" class="govuk-body govuk-!-margin-top-2" role="status"></div>
                         </div>
+                        {% endif %}
                     {% endblock %}
                 {% endif %}
             {% endif %}
