@@ -5,7 +5,15 @@
     <ul class="action-links">
         {% for action in actions %}
             <li class="action-link">
-                <a class="govuk-link" href="{{ action.link }}">{{ action.text }}</a>
+                <a 
+                    class="govuk-link" 
+                    href="{{ action.link }}"
+                    {% if action.openInNewTab %}
+                        target="_blank" 
+                        rel="noreferrer noopener"
+                    {% endif %}
+                    aria-label="{{ action.ariaLabel }}">
+                    {{ action.text }} {{" (opens in new tab)" if action.openInNewTab else ""}}</a>
             </li>
         {% endfor %}
     </ul>

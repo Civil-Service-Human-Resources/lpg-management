@@ -95,6 +95,7 @@ export class CourseController implements FormController {
 					return a
 				})
 
+			const courseUrl = this.courseService.getCourseUrl(res.locals.course.id)
 
 			res.render('page/course/course-overview', {
 				faceToFaceModules,
@@ -105,6 +106,7 @@ export class CourseController implements FormController {
 				eventIdToModuleId,
 				grades,
 				sortedAudiences,
+				courseUrl
 			})
 		}
 	}
