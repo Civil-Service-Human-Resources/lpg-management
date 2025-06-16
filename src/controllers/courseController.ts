@@ -319,7 +319,6 @@ export class CourseController implements FormController {
 	private unarchiveCourse() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			let course = response.locals.course
-			console.log(course)
 			await this.learningCatalogue
 				.unarchiveCourse(course)
 				.then(() => {

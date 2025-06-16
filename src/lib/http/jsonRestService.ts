@@ -27,7 +27,6 @@ export class JsonRestService {
 	}
 
 	async makeRawRequest<T>(req: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-		console.log("REQUEST")
 		const fullUrl = `${this._http.defaults.baseURL}${req.url}`
 		if (this.config.detailedLogs) {
 			let logMsg = `${req.method} request to ${fullUrl}`
