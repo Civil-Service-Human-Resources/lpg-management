@@ -7,10 +7,13 @@
             <li class="action-link">
                 <a 
                     class="govuk-link" 
-                    href="{{ action.link }}" 
-                    target="{{ "_blank" if action.openInNewTab else "_self" }}"
+                    href="{{ action.link }}"
+                    {% if action.openInNewTab %}
+                        target="_blank" 
+                        rel="noreferrer noopener"
+                    {% endif %}
                     aria-label="{{ action.ariaLabel }}">
-                    {{ action.text }}</a>
+                    {{ action.text }} {{" (opens in new tab)" if action.openInNewTab else ""}}</a>
             </li>
         {% endfor %}
     </ul>
