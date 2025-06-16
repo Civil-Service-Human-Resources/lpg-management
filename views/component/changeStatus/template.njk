@@ -1,35 +1,34 @@
 {% from "button/macro.njk" import govukButton %}
 
-{% if status !== "Archived" %}
-    <div class="change-status">
-        {% if status === "Draft" %}
-            {% set buttonText = "Publish this course" %}
-            {% set value = "Published" %}
-            <p class="govuk-body">This course has not been published. You can still add events.</p>
-        {% elif status === "Published" %}
-            {% set buttonText = "Archive this course" %}
-            {% set value = "Archived" %}
-            <p class="govuk-body">This course has been published. Any further edits will be shown immediately.</p>
-            <p class="govuk-body">Archiving this course will stop it being listed and prevent further interactions.</p>
-        {% endif %}
+
+<div class="change-status">
+    {% if status === "Draft" %}
+        <p class="govuk-body">This course has not been published. You can still add events.</p>
         <form method="post" action="/content-management/courses/{{course.id}}/status/publish">
-            <input type="hidden" name="status" value="{{ value }}" />
-            {% if status === "Draft" %}
-                {% if identity.hasLearningPublish() %}
-                    {{ govukButton({
-                        text: buttonText
-                    }) }}
-                {% endif %}
-            {% elif status === "Published" %}
-                {% if identity.hasLearningArchive() %}
-                    <a href="/content-management/courses/{{course.id }}/archive" class="govuk-button red-button">{{buttonText}}</a>
-                {% endif %}
+            {% if identity.hasLearningPublish() %}
+                {{ govukButton({
+                    text: "Publish this course"
+                }) }}
             {% endif %}
         </form>
-    </div>
-{% elif course.status === "Archived" %}
-    <div class="change-status">
+    {% elif status === "Published" %}
+        {% set buttonText = "Archive this course" %}
+        {% set value = "Archived" %}
+        <p class="govuk-body">This course has been published. Any further edits will be shown immediately.</p>
+        <p class="govuk-body">Archiving this course will stop it being listed and prevent further interactions.</p>
+        {% if identity.hasLearningArchive() %}
+            <a href="/content-management/courses/{{course.id }}/archive" class="govuk-button red-button">{{buttonText}}</a>
+        {% endif %}
+    {% elif status === "Archived" %}
         <p class="govuk-body">This course has been archived and is no longer available.</p>
         <p class="govuk-body">It may appear in a learner's record of completed learning, but cannot be started or resumed.</p>
-    </div>
-{% endif %}
+        <form method="post" action="/content-management/courses/{{course.id}}/status/unarchive">
+            {% if identity.hasLearningUnarchive() %}
+                {{ govukButton({
+                    text: "Unarchive this course",
+                    classes: "red-button"
+                }) }}
+            {% endif %}
+        </form>
+    {% endif %}
+</div>

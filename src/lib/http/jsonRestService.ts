@@ -27,6 +27,7 @@ export class JsonRestService {
 	}
 
 	async makeRawRequest<T>(req: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+		console.log("REQUEST")
 		const fullUrl = `${this._http.defaults.baseURL}${req.url}`
 		if (this.config.detailedLogs) {
 			let logMsg = `${req.method} request to ${fullUrl}`
@@ -111,6 +112,10 @@ export class JsonRestService {
 		return await this.makeRawAuthenticatedRequest<T>({method: 'GET', ...req})
 	}
 
+	async putRequest<T>(req: AxiosRequestConfig) {
+		return await this.makeRawAuthenticatedRequest<T>({method: 'PUT', ...req})
+	}
+
 	/**
 	 * @deprecated Prefer getRequest over this, as this does not include detailed logging
 	 * @param path
@@ -163,6 +168,10 @@ export class JsonRestService {
 		return (await this._http.get(path, config)).data
 	}
 
+	/**
+	 * @deprecated Prefer putRequest over this, as this does not include detailed logging
+	 * @param path
+	 */
 	async put(path: string, resource: any) {
 		return (await this._http.put(path, resource, this.getHeaders())).data
 	}

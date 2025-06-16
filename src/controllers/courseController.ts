@@ -15,6 +15,8 @@ import {FormController} from './formController'
 import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
 import {applyLearningCatalogueMiddleware} from './middleware/learningCatalogueMiddleware'
+import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
+import {learningArchiveRole, learningPublishRole, learningUnarchiveRole} from '../identity/identity'
 const { xss } = require('express-xss-sanitizer')
 
 export class CourseController implements FormController {
@@ -53,9 +55,10 @@ export class CourseController implements FormController {
 		this.router.post('/content-management/courses/details/:courseId', xss(), this.updateCourseDetails())
 
 		this.router.get('/content-management/courses/:courseId/sort-modules', xss(), this.sortModules())
-		this.router.get('/content-management/courses/:courseId/archive', xss(), this.getArchiveConfirmation())
-		this.router.post('/content-management/courses/:courseId/status/publish', xss(), this.publishCourse())
-		this.router.post('/content-management/courses/:courseId/status/archive', xss(), this.archiveCourse())
+		this.router.get('/content-management/courses/:courseId/archive', asyncHandler(roleCheckMiddleware(learningArchiveRole)), xss(), this.getArchiveConfirmation())
+		this.router.post('/content-management/courses/:courseId/status/publish', asyncHandler(roleCheckMiddleware(learningPublishRole)), xss(), this.publishCourse())
+		this.router.post('/content-management/courses/:courseId/status/archive', asyncHandler(roleCheckMiddleware(learningArchiveRole)), xss(), this.archiveCourse())
+		this.router.post('/content-management/courses/:courseId/status/unarchive', asyncHandler(roleCheckMiddleware(learningUnarchiveRole)), xss(), this.unarchiveCourse())
 		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules', xss(), this.sortModules())
 	}
 
@@ -211,7 +214,7 @@ export class CourseController implements FormController {
 			await this.learningCatalogue
 				.createCourse(course)
 				.then(savedCourse => {
-					req.session!.sessionFlash = {courseAddedSuccessMessage: 'course_added_success_message'}
+					req.session!.sessionFlash = {courseSuccessMessage: 'course_added_success_message'}
 					req.session!.save(() => {
 						res.redirect(`/content-management/courses/${savedCourse.id}/overview`)
 					})
@@ -267,7 +270,6 @@ export class CourseController implements FormController {
 	publishCourse() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			let course = response.locals.course
-			course.status = request.body.status
 
 			await this.learningCatalogue
 				.publishCourse(course)
@@ -289,8 +291,6 @@ export class CourseController implements FormController {
 	archiveCourse() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			let course = response.locals.course
-			course.status = request.body.status
-
 			await this.learningCatalogue
 				.archiveCourse(course)
 				.then(() => {
@@ -307,6 +307,28 @@ export class CourseController implements FormController {
 	getArchiveConfirmation() {
 		return async (request: Request, response: Response) => {
 			response.render('page/course/archive')
+		}
+	}
+
+	@Validate({
+		fields: ['status'],
+		redirect: '/content-management/courses/:courseId/overview',
+	})
+	private unarchiveCourse() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			let course = response.locals.course
+			console.log(course)
+			await this.learningCatalogue
+				.unarchiveCourse(course)
+				.then(() => {
+					request.session!.sessionFlash = {courseSuccessMessage: 'course_unarchived_success_message'}
+					request.session!.save(() => {
+						response.redirect(`/content-management/courses/${request.params.courseId}/overview`)
+					})
+				})
+				.catch(error => {
+					next(error)
+				})
 		}
 	}
 }

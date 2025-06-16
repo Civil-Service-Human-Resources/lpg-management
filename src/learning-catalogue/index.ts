@@ -15,6 +15,8 @@ import {CourseTypeAheadCache} from './courseTypeaheadCache'
 import {BasicCourse, CourseTypeAhead} from './courseTypeAhead'
 import {RestServiceConfig} from '../lib/http/restServiceConfig'
 import {HttpException} from '../lib/exception/HttpException'
+import {Status} from './model/status'
+
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
 	private _moduleService: EntityService<Module>
@@ -112,18 +114,33 @@ export class LearningCatalogue {
 	}
 
 	async publishCourse(course: Course): Promise<Course> {
+		course.status = Status.PUBLISHED
 		await this._cslService.clearCourseCache(course.id)
-		return this._courseService.update(`/courses/${course.id}/publish`, course)
+		return this._courseService.update(`/courses/${course.id}`, course)
 	}
 
 	async archiveCourse(course: Course): Promise<Course> {
+		course.status = Status.ARCHIVED
 		await this._cslService.clearCourseCache(course.id)
-		await this._courseService.update(`/courses/${course.id}/archive`, course)
+		await this._courseService.update(`/courses/${course.id}`, course)
 		let typeahead = await this.courseTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead()
 		} else {
 			typeahead.removeCourse(course.id)
+			await this.courseTypeaheadCache.setTypeahead(typeahead)
+		}
+		return course
+	}
+
+	async unarchiveCourse(course: Course): Promise<Course> {
+		course.status = Status.DRAFT
+		await this._courseService.update(`/courses/${course.id}`, course)
+		let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.addCourse(course)
 			await this.courseTypeaheadCache.setTypeahead(typeahead)
 		}
 		return course
@@ -156,6 +173,14 @@ export class LearningCatalogue {
 	async updateModule(courseId: string, module: Module): Promise<Module> {
 		await this._cslService.clearCourseCache(courseId)
 		return this._moduleService.update(`/courses/${courseId}/modules/${module.id}`, module)
+	}
+
+	async updateModuleOrder(courseId: string, modules: Module[]): Promise<void> {
+		await this._cslService.clearCourseCache(courseId)
+		await this._restService.putRequest({
+			url: `/courses/${courseId}/modules`,
+			data: modules
+		})
 	}
 
 	async deleteModule(courseId: string, moduleId: string) {
