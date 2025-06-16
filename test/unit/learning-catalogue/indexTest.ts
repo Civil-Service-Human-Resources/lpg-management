@@ -96,7 +96,7 @@ describe('Learning Catalogue tests', () => {
 
 			await learningCatalogue.publishCourse(course)
 
-			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}/publish`, course)
+			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
 		})
 
 		it('should call courseService when archiving a course', async () => {
@@ -107,7 +107,7 @@ describe('Learning Catalogue tests', () => {
 			await learningCatalogue.archiveCourse(course)
 
 			expect(courseTypeaheadCache.setTypeahead).to.have.been.calledOnce
-			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}/archive`, course)
+			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
 		})
 
 		it('should call courseService when getting a course', async () => {

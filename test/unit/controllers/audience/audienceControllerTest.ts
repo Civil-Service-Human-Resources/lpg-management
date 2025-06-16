@@ -505,11 +505,11 @@ describe('AudienceController', () => {
 			res.locals.course = course
 			res.locals.audience = audience
 
-			learningCatalogue.updateCourse = sinon.stub()
+			learningCatalogue.updateAudience = sinon.stub().resolves()
 
 			await audienceController.setRequiredLearning()(req, res, next)
 
-			expect(learningCatalogue.updateCourse).to.have.been.calledOnceWith(course)
+			expect(learningCatalogue.updateAudience).to.have.been.calledOnceWith(course.id, audience)
 			expect(audience.requiredBy).to.eql(requiredBy)
 			expect(audience.frequency).to.eql(frequency)
 		})

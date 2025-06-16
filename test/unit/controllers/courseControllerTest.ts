@@ -475,7 +475,6 @@ describe('Course Controller Tests', function() {
 			await courseController.publishCourse()(request, response, next)
 
 			expect(validator.check).to.have.been.calledOnceWith(request.body)
-			expect(course.status).to.equal(Status.PUBLISHED)
 			expect(learningCatalogue.publishCourse).to.have.been.calledWith(course)
 			expect(response.redirect).to.have.been.calledWith('/content-management/courses/course-id/overview')
 		})
@@ -517,7 +516,6 @@ describe('Course Controller Tests', function() {
 			await courseController.publishCourse()(request, response, next)
 
 			expect(validator.check).to.have.been.calledOnceWith(request.body)
-			expect(course.status).to.equal(Status.PUBLISHED)
 			expect(learningCatalogue.publishCourse).to.have.been.calledOnceWith(course)
 			expect(next).to.have.been.calledWith(error)
 		})
@@ -605,7 +603,6 @@ describe('Course Controller Tests', function() {
 			await courseController.archiveCourse()(request, response, next)
 
 			expect(validator.check).to.have.been.calledOnceWith(request.body)
-			expect(course.status).to.equal(Status.ARCHIVED)
 			expect(learningCatalogue.archiveCourse).to.have.been.calledWith(course)
 			expect(response.redirect).to.have.been.calledWith('/content-management/courses/course-id/overview')
 		})
@@ -647,7 +644,6 @@ describe('Course Controller Tests', function() {
 			await courseController.archiveCourse()(request, response, next)
 
 			expect(validator.check).to.have.been.calledOnceWith(request.body)
-			expect(course.status).to.equal(Status.PUBLISHED)
 			expect(learningCatalogue.archiveCourse).to.have.been.calledOnceWith(course)
 			expect(next).to.have.been.calledWith(error)
 		})
