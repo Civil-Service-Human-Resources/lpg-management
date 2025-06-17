@@ -90,15 +90,7 @@ export class LearningCatalogue {
 	}
 
 	async createCourse(course: Course): Promise<Course> {
-		course = await this._courseService.create('/courses/', course)
-		let typeahead = await this.courseTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead()
-		} else {
-			typeahead.addCourse(course)
-			await this.courseTypeaheadCache.setTypeahead(typeahead)
-		}
-		return course
+		return await this._courseService.create('/courses/', course)
 	}
 
 	async updateCourse(course: Course): Promise<void> {
@@ -116,6 +108,13 @@ export class LearningCatalogue {
 	async publishCourse(course: Course): Promise<Course> {
 		course.status = Status.PUBLISHED
 		await this._cslService.clearCourseCache(course.id)
+		let typeahead = await this.courseTypeaheadCache.getTypeahead()
+		if (typeahead === undefined) {
+			await this.refreshTypeahead()
+		} else {
+			typeahead.addCourse(course)
+			await this.courseTypeaheadCache.setTypeahead(typeahead)
+		}
 		return this._courseService.update(`/courses/${course.id}`, course)
 	}
 
@@ -135,15 +134,7 @@ export class LearningCatalogue {
 
 	async unarchiveCourse(course: Course): Promise<Course> {
 		course.status = Status.DRAFT
-		await this._courseService.update(`/courses/${course.id}`, course)
-		let typeahead = await this.courseTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead()
-		} else {
-			typeahead.addCourse(course)
-			await this.courseTypeaheadCache.setTypeahead(typeahead)
-		}
-		return course
+		return await this._courseService.update(`/courses/${course.id}`, course)
 	}
 
 	async getCourse(courseId: string, includeAvailability: boolean = false): Promise<Course|null> {
