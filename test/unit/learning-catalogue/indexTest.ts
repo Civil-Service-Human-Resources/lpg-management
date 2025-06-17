@@ -68,14 +68,10 @@ describe('Learning Catalogue tests', () => {
 			)
 		})
 
-		it('should call courseService and add to the cache when creating a course', async () => {
+		it('should call courseService  when creating a course', async () => {
 			const course: Course = plainToInstance(Course, {id: "id", title: "title"})
 			courseService.create = sinon.stub().resolves(course)
-
-			courseTypeaheadCache.getTypeahead.withArgs().resolves(typeahead)
 			await learningCatalogue.createCourse(course)
-
-			expect(courseTypeaheadCache.setTypeahead).to.have.been.calledOnce
 			return expect(courseService.create).to.have.been.calledOnceWith('/courses/', course)
 		})
 
@@ -94,8 +90,10 @@ describe('Learning Catalogue tests', () => {
 			const course: Course = <Course>{}
 			courseService.update = sinon.stub()
 
+			courseTypeaheadCache.getTypeahead.withArgs().resolves(typeahead)
 			await learningCatalogue.publishCourse(course)
 
+			expect(courseTypeaheadCache.setTypeahead).to.have.been.calledOnce
 			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
 		})
 
