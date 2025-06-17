@@ -3,7 +3,7 @@ import {Route} from './route'
 import * as winston from 'winston'
 import {getLogger} from '../utils/logger'
 import {CompoundRoleBase} from '../identity/identity'
-import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
+import {compoundRoleCheckMiddleware} from './middleware/roleCheckMiddleware'
 
 export abstract class Controller {
 
@@ -38,7 +38,7 @@ export abstract class Controller {
 		const requiredRoles = this.getRequiredRoles()
 		if (requiredRoles.length > 0) {
 			this.logger.debug(`Restricting controller to roles: [${requiredRoles.map(rr => rr.getDescription())}]`)
-			this.router.use(roleCheckMiddleware(requiredRoles))
+			this.router.use(compoundRoleCheckMiddleware(requiredRoles))
 		}
 	}
 

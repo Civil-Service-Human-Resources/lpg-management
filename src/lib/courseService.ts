@@ -38,8 +38,7 @@ export class CourseService {
 		})
 
 		course.modules = modules
-
-		await this.learningCatalogue.updateCourse(course)
+		await this.learningCatalogue.updateModuleOrder(course.id, modules)
 
 		return course
 	}

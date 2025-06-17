@@ -34,7 +34,8 @@ export enum Role {
 	REPORT_EXPORT = 'REPORT_EXPORT',
 	REPORTING_ALL_ORGANISATIONS = 'REPORTING_ALL_ORGANISATIONS',
 	TIER1_REPORTING = 'TIER1_REPORTING',
-	REGISTERED_LEARNER_REPORTER = 'REGISTERED_LEARNER_REPORTER'
+	REGISTERED_LEARNER_REPORTER = 'REGISTERED_LEARNER_REPORTER',
+	LEARNING_UNARCHIVE = 'LEARNING_UNARCHIVE',
 }
 
 export enum CompoundRole {
@@ -48,6 +49,10 @@ export abstract class CompoundRoleBase {
 	public abstract checkRoles(userRoles: string[]): boolean
 	public abstract getType(): CompoundRole
 	public abstract getDescription(): string
+
+	toString() {
+		return `${this.getDescription()}`
+	}
 }
 
 export class AnyOfCompoundRole extends CompoundRoleBase {
@@ -109,6 +114,10 @@ export const registeredLearnerReportingRole = new UserRole(All(Role.REGISTERED_L
 export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
 export const eventViewingRole = new UserRole(Any(Role.CSL_AUTHOR, Role.LEARNING_MANAGER, Role.ORGANISATION_AUTHOR, Role.KPMG_SUPPLIER_AUTHOR, Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_AUTHOR))
+export const learningPublishRole = new UserRole(Any(Role.LEARNING_PUBLISH, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
+export const learningArchiveRole = new UserRole(Any(Role.LEARNING_ARCHIVE, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
+export const learningUnarchiveRole = new UserRole(Any(Role.LEARNING_UNARCHIVE, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
+export const learningEditRole = new UserRole(Any(Role.LEARNING_EDIT, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
 
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
@@ -256,7 +265,7 @@ export class Identity {
 	}
 
 	hasLearningEdit() {
-		return this.hasRole(Role.LEARNING_EDIT) || this.isSuperUser()
+		return this.isRole(learningEditRole)
 	}
 
 	hasLearningDelete() {
@@ -269,6 +278,10 @@ export class Identity {
 
 	hasLearningArchive() {
 		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
+	}
+
+	hasLearningUnarchive() {
+		return this.isRole(learningUnarchiveRole)
 	}
 
 	isRole(role: UserRole) {
