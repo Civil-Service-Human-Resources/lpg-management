@@ -30,6 +30,7 @@ export class CourseCompletionsController extends Controller {
 	private checkForOrgIdsInSessionMiddleware() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			const session = fetchCourseCompletionSessionObject(request)
+			
 			if (session === undefined || !session.hasSelectedOrganisations()) {
 				return response.redirect("/reporting/course-completions/choose-organisation")
 			}
@@ -101,6 +102,10 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
+			if(session.organisationSelection === "allOrganisations" && !request.user?.isReportingAllOrganisations()){
+				return response.render("page/unauthorised")
+			}
+
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
 			const errors = request.session!.filterModelErrors
 			if (errors) {
@@ -167,7 +172,7 @@ export class CourseCompletionsController extends Controller {
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(CourseCompletionsGraphModel, response.locals.input as CourseCompletionsGraphModel)
-			const session = this.removeValuesFromSession(request, pageModel)
+			const session = this.removeValuesFromSession(request, pageModel)			
 			session.updateWithFilterPageModel(pageModel)
 			if (!session.hasSelectedCourses()) {
 				return saveCourseCompletionSessionObject(session, request, async () => {
@@ -182,10 +187,13 @@ export class CourseCompletionsController extends Controller {
 	}
 
 	public renderChooseCourses() {
-		return async (request: Request, response: Response) => {
-			const session = fetchCourseCompletionSessionObject(request)!
-			const selectedOrganisation = session.selectedOrganisation!.id
-			const pageModel = await this.reportService.getChooseCoursePage(parseInt(selectedOrganisation))
+		return async (request: Request, response: Response) => {			
+			const session = fetchCourseCompletionSessionObject(request)!			
+			
+			const selectedOrganisation = session.selectedOrganisation && parseInt(session.selectedOrganisation!.id)
+						
+			const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
+			
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
 	}

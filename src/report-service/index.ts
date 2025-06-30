@@ -36,16 +36,24 @@ export class ReportService {
 		return Buffer.from(report, 'binary')
 	}
 
-	async getChooseCoursePage(selectedOrganisationId: number): Promise<ChooseCoursesModel> {
-		const userOrganisation = (await this.organisationalUnitService.getOrganisation(selectedOrganisationId, true))
+	async getChooseCoursePage(selectedOrganisationId: number | undefined): Promise<ChooseCoursesModel> {
+		let userDepartment
+		let requiredLearning: BasicCoursePageModel[] = []
+		if(selectedOrganisationId){
+			
+			const userOrganisation = (await this.organisationalUnitService.getOrganisation(selectedOrganisationId, true))
+			userDepartment = userOrganisation.getFormattedName()
+			const hierarchy = await this.organisationalUnitService.getOrgHierarchy(userOrganisation.id)
+			const departmentCodes = hierarchy.map(o => o.code)
+			const requiredLearningResponse = await this.courseService.getRequiredLearning(departmentCodes)
+			requiredLearning = requiredLearningResponse.results
+				.map(c => new BasicCoursePageModel(c.id, c.title))
+
+		}
+		
 		const allCourses = (await this.courseService.getCourseDropdown())
 			.map(course => new BasicCoursePageModel(course.id, course.name))
-		const hierarchy = await this.organisationalUnitService.getOrgHierarchy(userOrganisation.id)
-		const departmentCodes = hierarchy.map(o => o.code)
-		const requiredLearningResponse = await this.courseService.getRequiredLearning(departmentCodes)
-		const requiredLearning: BasicCoursePageModel[] = requiredLearningResponse.results
-			.map(c => new BasicCoursePageModel(c.id, c.title))
-		return new ChooseCoursesModel(userOrganisation.getFormattedName(), requiredLearning, allCourses)
+		return new ChooseCoursesModel(userDepartment, requiredLearning, allCourses)
 	}
 
 	async fetchCoursesWithIds(courseIds: string[]) {
@@ -53,7 +61,7 @@ export class ReportService {
 			.filter(course => courseIds.includes(course.id))
 	}
 
-	async getCourseCompletionsReportGraphPage(session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {
+	async getCourseCompletionsReportGraphPage(session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {		
 		const params = this.reportParameterFactory.generateCourseAggregationsParams(session)
 		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
 		return await this.buildPageModelFromChart(chart, session)

@@ -46,6 +46,7 @@ export class ReportingController {
 					},
 					organisationListForTypeAhead: organisationChoices.typeaheadOrganisations,
 					showTypeaheadOption: userCanAccessMultipleOrganisations,
+					showWholeCivilServiceOption: currentUser.isReportingAllOrganisations()
 				})
 			}
 			else {
@@ -60,18 +61,31 @@ export class ReportingController {
 			const session = fetchCourseCompletionSessionObject(request)
 			let currentUser = request.user
 			let selectedOrganisationId = request.body.organisation
-
+			session.organisationSelection = selectedOrganisationId
+			
 			if (selectedOrganisationId === "other") {
 				selectedOrganisationId = request.body.organisationId
 			}
 
+			if(selectedOrganisationId === "allOrganisations"){
+				session.allOrganisationIds = undefined
+				session.selectedOrganisation = undefined
+			}
+
 			if (selectedOrganisationId) {
 				const organisation = (await this.csrsService.getOrganisationalUnitsForUser(currentUser)).find(o => o.id === parseInt(selectedOrganisationId))
-				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter() && organisation !== undefined) {
-					session.selectedOrganisation = {name: organisation.name, id: organisation.id.toString()}
-					session.allOrganisationIds = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
+				
+				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
+					if(organisation !== undefined){
+						session.selectedOrganisation = {name: organisation.name, id: organisation.id.toString()}
+						session.allOrganisationIds = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
+					}
+					else{						
+						session.selectedOrganisation = undefined
+					}
+					
 					saveCourseCompletionSessionObject(session, request, async () => {
-						if (session.hasSelectedCourses()) {
+						if (session.hasSelectedCourses()) {							
 							response.redirect(`/reporting/course-completions`)
 						} else {
 							response.redirect(`/reporting/course-completions/choose-courses`)
