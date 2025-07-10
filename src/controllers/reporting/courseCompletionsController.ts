@@ -102,11 +102,12 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			if(session.organisationSelection === "allOrganisations" && !request.user?.isReportingAllOrganisations()){
+			if(session.organisationFormSelection === "allOrganisations" && !request.user?.isReportingAllOrganisations()){
 				return response.render("page/unauthorised")
 			}
 
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
+	
 			const errors = request.session!.filterModelErrors
 			if (errors) {
 				pageData.pageModel.updateWithFilters(errors)
@@ -121,10 +122,14 @@ export class CourseCompletionsController extends Controller {
 	private removeValuesFromSession(request: Request, filterPageModel: CourseCompletionsGraphModel) {
 		const session = fetchCourseCompletionSessionObject(request)!
 		const remove = (filterPageModel.remove || request.query["remove"] || "") as string
-		if (remove !== "") {
+		if (remove !== "") {			
 			if (remove.startsWith("courseId")) {
 				const courseIdToRemove = remove.split(",")[1]
 				session.courses = session.courses!.filter(course => course.id !== courseIdToRemove)
+			}
+			if (remove.startsWith("organisationId")) {
+				const organisationIdToRemove: string = remove.split(",")[1]
+				session.selectedOrganisations = session.selectedOrganisations!.filter(organisation => organisation.id !== organisationIdToRemove)
 			}
 		}
 		return session
@@ -179,6 +184,12 @@ export class CourseCompletionsController extends Controller {
 					return response.redirect('/reporting/course-completions/choose-courses')
 				})
 			}
+			if(!session.hasSelectedOrganisations()) {
+				return saveCourseCompletionSessionObject(session, request, async () => {
+					return response.redirect('/reporting/course-completions/choose-organisation')
+				})
+			}
+
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
 			return saveCourseCompletionSessionObject(pageData.session, request, async () => {
 				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel})
@@ -188,19 +199,17 @@ export class CourseCompletionsController extends Controller {
 
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
-			const session = fetchCourseCompletionSessionObject(request)!
-
-			const selectedOrganisation = session.selectedOrganisation && parseInt(session.selectedOrganisation!.id)
-
-			const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
-
+			const session = fetchCourseCompletionSessionObject(request)!			
+			const pageModel = await this.reportService.getChooseCoursePage(session.selectedOrganisations)			
+			
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
 	}
 
 	public chooseCourses() {
 		return async (request: Request, response: Response) => {
-			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
+			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)			
+			
 			let selectedCourses: BasicCourse[] = []
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()

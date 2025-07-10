@@ -57,6 +57,14 @@ export function getMultipleCourseSummaryTags(courses: {name: string, id: string}
 	return tags
 }
 
+export function getAllOrganisationsSummaryTag(): FilterSummaryTag {
+	return new FilterSummaryTag("organisationId", "", "All organisations")
+}
+
+export function getOrganisationSummaryTagById(organisationId: string, organisationName: string): FilterSummaryTag {
+	return new FilterSummaryTag("organisationId", organisationId, organisationName, "and", true, false)
+}
+
 export function getOrganisationSummaryTag(organisationName: string): FilterSummaryTag {
 	return new FilterSummaryTag("", "", organisationName)
 }

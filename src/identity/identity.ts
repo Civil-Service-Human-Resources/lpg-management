@@ -123,10 +123,10 @@ export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
 }
 
-export function createIdentity(identityDetails: IdentityDetails, profile: Profile) {
+export function createIdentity(identityDetails: IdentityDetails, profile: Profile) {	
 	return new Identity(identityDetails.uid, identityDetails.username, identityDetails.roles, identityDetails.accessToken,
 		profile.managementLoggedIn, profile.managementShouldLogout, profile.uiLoggedIn, profile.uiShouldLogout, profile.shouldRefresh,
-		profile.organisationalUnit, profile.fullName)
+		profile.organisationalUnit, profile.otherOrganisationalUnits, profile.fullName)
 
 }
 
@@ -143,6 +143,7 @@ export class Identity {
 	public uiShouldLogout: boolean = false,
 	public shouldRefresh: boolean = false,
 	public organisationalUnit?: OrganisationalUnit,
+	public otherOrganisationalUnits: OrganisationalUnit[] = [],
 	public fullName?: string,) { }
 
 	updateWithProfile(profile: Profile) {

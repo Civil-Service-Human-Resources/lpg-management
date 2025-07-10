@@ -137,6 +137,7 @@ export class ApplicationContext {
 	quizFactory: QuizFactory
 	questionValidator: Validator<Question>
 	civilServantProfileService: CivilServantProfileService
+	cslServiceClient: CslServiceClient
 
 	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
 
@@ -304,7 +305,7 @@ export class ApplicationContext {
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 
-		this.reportingController = new ReportingController(this.reportService, this.csrsService, this.organisationalUnitService)
+		this.reportingController = new ReportingController(this.reportService, this.csrsService, this.organisationalUnitService, new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth)))
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 
