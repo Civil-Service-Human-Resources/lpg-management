@@ -5,6 +5,7 @@ import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFi
 import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
 import {ChartJsService} from './chartJsService'
 import {
+	FilterSummaryTag,
 	getAllOrganisationsSummaryTag,
 	getMultipleCourseSummaryTags,
 	getOrganisationSummaryTagById,
@@ -37,7 +38,9 @@ export class ReportServicePageModelService {
 		let organisationFilterSummary
 
 		if(session.selectedOrganisations){
-			organisationFilterSummary = new OrganisationFilterSummaryRow(session.selectedOrganisations.map(org => getOrganisationSummaryTagById(org.id.toString(), org.name)))
+			const filterSummaryTags: FilterSummaryTag[] = session.selectedOrganisations.map(org => getOrganisationSummaryTagById(org.id.toString(), org.name))
+			filterSummaryTags[0].preText = ""
+			organisationFilterSummary = new OrganisationFilterSummaryRow(filterSummaryTags)
 		}
 		else{
 			organisationFilterSummary = new OrganisationFilterSummaryRow([getAllOrganisationsSummaryTag()])
