@@ -76,33 +76,6 @@ export class ReportingController {
 			let currentUser = request.user
 			session.organisationFormSelection = request.body.organisation
 
-			// let selectedOrganisationIds: number[] | undefined = []
-
-			// if (session.organisationFormSelection && !Number.isNaN(parseInt(session.organisationFormSelection))) {
-			// 	selectedOrganisationIds = [parseInt(session.organisationFormSelection)]
-			// }
-
-			// if (session.organisationFormSelection === "other") {
-			// 	selectedOrganisationIds = [request.body.organisationId]
-			// }
-
-			// if (session.organisationFormSelection === "allOrganisations") {
-			// 	selectedOrganisationIds = undefined
-			// }
-
-			// if (session.organisationFormSelection === "multiple-organisations") {				
-			// 	let organisationIds: number[] = []
-			// 	if(request.body.organisationSearch){
-			// 		if(request.body.organisationSearch === 'string'){
-			// 			organisationIds = [parseInt(request.body.organisationSearch)]
-			// 		}
-			// 		else{
-			// 			request.body.organisationSearch.map((id: string) => parseInt(id))
-			// 		}
-			// 	}
-			// 	selectedOrganisationIds = organisationIds
-			// }
-
 			const selectedOrganisationIds = this.getSelectedOrganisationIdsFromSubmitRequest(request)
 
 			session.selectedOrganisations = selectedOrganisationIds ? await Promise.all(selectedOrganisationIds?.map(async id => {
