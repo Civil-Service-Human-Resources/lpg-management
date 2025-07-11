@@ -76,24 +76,34 @@ export class ReportingController {
 			let currentUser = request.user
 			session.organisationFormSelection = request.body.organisation
 
-			let selectedOrganisationIds: number[] | undefined = []
+			// let selectedOrganisationIds: number[] | undefined = []
 
-			if (session.organisationFormSelection && !Number.isNaN(parseInt(session.organisationFormSelection))) {
-				selectedOrganisationIds = [parseInt(session.organisationFormSelection)]
-			}
+			// if (session.organisationFormSelection && !Number.isNaN(parseInt(session.organisationFormSelection))) {
+			// 	selectedOrganisationIds = [parseInt(session.organisationFormSelection)]
+			// }
 
-			if (session.organisationFormSelection === "other") {
-				selectedOrganisationIds = [request.body.organisationId]
-			}
+			// if (session.organisationFormSelection === "other") {
+			// 	selectedOrganisationIds = [request.body.organisationId]
+			// }
 
-			if (session.organisationFormSelection === "allOrganisations") {
-				selectedOrganisationIds = undefined
-			}
+			// if (session.organisationFormSelection === "allOrganisations") {
+			// 	selectedOrganisationIds = undefined
+			// }
 
-			if (session.organisationFormSelection === "multiple-organisations") {
-				const organisationIds: number[] = typeof request.body.organisationSearch === 'string' ? [parseInt(request.body.organisationSearch)] : request.body.organisationSearch.map((id: string) => parseInt(id))
-				selectedOrganisationIds = organisationIds
-			}
+			// if (session.organisationFormSelection === "multiple-organisations") {				
+			// 	let organisationIds: number[] = []
+			// 	if(request.body.organisationSearch){
+			// 		if(request.body.organisationSearch === 'string'){
+			// 			organisationIds = [parseInt(request.body.organisationSearch)]
+			// 		}
+			// 		else{
+			// 			request.body.organisationSearch.map((id: string) => parseInt(id))
+			// 		}
+			// 	}
+			// 	selectedOrganisationIds = organisationIds
+			// }
+
+			const selectedOrganisationIds = this.getSelectedOrganisationIdsFromSubmitRequest(request)
 
 			session.selectedOrganisations = selectedOrganisationIds ? await Promise.all(selectedOrganisationIds?.map(async id => {
 				const organisation = await this.organisationalUnitService.getOrganisation(id)
@@ -101,13 +111,11 @@ export class ReportingController {
 			})) : undefined
 
 			const submitModel = new SubmitOrganisationsModel(session.selectedOrganisations)
-			
 			const validationErrors = await this.getValidationErrors(submitModel)			
 			if(validationErrors.length > 0){
 				request.session!.sessionFlash = {
 					errors: validationErrors
 				}
-
 				return request.session!.save(() => {
 					response.redirect('/reporting/course-completions/choose-organisation')
 				})
@@ -140,6 +148,37 @@ export class ReportingController {
 			}
 
 		}
+	}
+
+	getSelectedOrganisationIdsFromSubmitRequest(request: Request): number[] | undefined{
+		let selectedOrganisationIds: number[] | undefined = []
+
+		const organisationFormSelection: string = request.body.organisation
+
+		if (organisationFormSelection && !Number.isNaN(parseInt(organisationFormSelection))) {
+			selectedOrganisationIds = [parseInt(organisationFormSelection)]
+		}
+		if (organisationFormSelection === "other") {
+			selectedOrganisationIds = [request.body.organisationId]
+		}
+		if (organisationFormSelection === "allOrganisations") {
+			selectedOrganisationIds = undefined
+		}
+		if (organisationFormSelection === "multiple-organisations") {				
+			let organisationIds: number[] = []
+			if(request.body.organisationSearch){
+				if(request.body.organisationSearch === 'string'){
+					organisationIds = [parseInt(request.body.organisationSearch)]
+				}
+				else{
+					organisationIds = request.body.organisationSearch.map((id: string) => parseInt(id))
+				}
+			}
+			selectedOrganisationIds = organisationIds
+		}
+
+		return selectedOrganisationIds
+
 	}
 
 	async getOrganisationChoicesForUser(user: any) {
