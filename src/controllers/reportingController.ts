@@ -48,7 +48,7 @@ export class ReportingController {
 				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
 				const otherOrganisationIds = currentUser.otherOrganisationalUnits.map((o: { id: any }) => o.id)
-				const formattedOtherOrganisations: FormattedOrganisation[] = (await this.cslServiceClient.getFormattedOrganisationList(otherOrganisationIds)).formattedOrganisationalUnitNames
+				const formattedOtherOrganisations: FormattedOrganisation[] = (await this.cslServiceClient.getFormattedOrganisationList(otherOrganisationIds, currentUser.getDomain())).formattedOrganisationalUnitNames
 
 				const pageModel = new ChooseOrganisationsModel({
 					name: organisationChoices.directOrganisation.name,

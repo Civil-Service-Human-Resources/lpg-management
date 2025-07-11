@@ -67,9 +67,13 @@ export class CslServiceClient {
 		})
 	}
 
-	async getFormattedOrganisationList(organisationIds: number[]): Promise<FormattedOrganisationListResponse> {				
+	async getFormattedOrganisationList(organisationIds: number[], domain?: string): Promise<FormattedOrganisationListResponse> {				
+		let url = `${this.FORMATTED_LIST_URL}?${organisationIds.map(id => `organisationId=${id}`).join('&')}`
+		if(domain){
+			url += `&domain=${domain}`
+		}
 		const response = await this._http.getRequest({
-			url: `${this.FORMATTED_LIST_URL}?${organisationIds.map(id => `organisationId=${id}`).join('&')}`
+			url
 		})		
 
 		return plainToInstance(FormattedOrganisationListResponse, response.data)
