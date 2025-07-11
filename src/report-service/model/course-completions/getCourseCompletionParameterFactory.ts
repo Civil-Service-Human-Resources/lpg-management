@@ -6,6 +6,6 @@ export class GetCourseCompletionParameterFactory {
 
 	createFromSession(session: CourseCompletionsSession, timePeriodparams: TimePeriodParameters) {		
 		return new GetCourseCompletionParameters(timePeriodparams, session.getCourseIds(),
-		session.allOrganisationIds && session.allOrganisationIds!.map(n => n.toString()))
+		session.selectedOrganisations && session.selectedOrganisations!.map(n => n.id.toString()))
 	}
 }

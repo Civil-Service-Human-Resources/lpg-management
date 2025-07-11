@@ -53,10 +53,10 @@ describe('courseCompletionsController tests', () => {
 			const subApp = createSubApp()
 			subApp.all('*', (req, res, next) => {
 				req.session!.courseCompletions = new CourseCompletionsSession("userEmail", "full name", "userId",
-					"1", {id: "1", name: "Org"},[1])
+					"1", [{id: "1", name: "Org"}])					
 				next()
 			}).use(app)
-			reportService.getChooseCoursePage.withArgs(1).resolves(new ChooseCoursesModel('department', [
+			reportService.getChooseCoursePage.withArgs([{id: "1", name: "Org"}]).resolves(new ChooseCoursesModel(['department'], [
 				new BasicCoursePageModel('1', 'course 1'),
 				new BasicCoursePageModel('2', 'course 2'),
 				new BasicCoursePageModel('3', 'course 3')
@@ -115,7 +115,7 @@ describe('courseCompletionsController tests', () => {
 					expect(res.headers['location']).to.eql("/reporting/course-completions/choose-courses")
 				})
 			})
-			it('Should render required learning correctly', async () => {
+			it('Should render required learning correctly', async () => {				
 				const res = await session(subApp)
 					.get("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
