@@ -56,11 +56,14 @@ describe('courseCompletionsController tests', () => {
 					"1", [{id: "1", name: "Org"}])					
 				next()
 			}).use(app)
-			reportService.getChooseCoursePage.withArgs([{id: "1", name: "Org"}]).resolves(new ChooseCoursesModel(['department'], [
+
+			const chooseCoursesModel = new ChooseCoursesModel(['department'], [
 				new BasicCoursePageModel('1', 'course 1'),
 				new BasicCoursePageModel('2', 'course 2'),
 				new BasicCoursePageModel('3', 'course 3')
-			]))
+			])
+			chooseCoursesModel.showRequiredLearningOption = true
+			reportService.getChooseCoursePage.withArgs([{id: "1", name: "Org"}]).resolves(chooseCoursesModel)
 
 			describe('Validation', () => {
 				it('Should validate required learning selection', async () => {
