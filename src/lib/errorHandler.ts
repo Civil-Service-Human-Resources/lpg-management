@@ -17,22 +17,27 @@ export async function handleError(error: any, request: Request, response: Respon
 		msg += ` stack: ${error.stack}`
 		logger.error(msg)
 
-		if (error.response && error.response.status == 401) {
+		if (request.isAuthenticated()) {
+			if (error.response && error.response.status == 401) {
+				return response.redirect('/sign-out')
+			}
+
+			if (error.response && error.response.status == 403) {
+				const errors = {fields: {fields: ['errors.actionNotAuthorised'], size: 1}}
+				request.session!.sessionFlash = {errors: errors}
+
+				return request.session!.save(() => {
+					response.redirect(`/content-management/`)
+				})
+			}
+
+			response.status(500)
+
+			response.render('page/error')
+		} else {
 			return response.redirect('/sign-out')
 		}
 
-		if (error.response && error.response.status == 403) {
-			const errors = {fields: {fields: ['errors.actionNotAuthorised'], size: 1}}
-			request.session!.sessionFlash = {errors: errors}
-
-			return request.session!.save(() => {
-				response.redirect(`/content-management/`)
-			})
-		}
-
-		response.status(500)
-
-		response.render('page/error')
 	} catch (e) {
 		console.error('Error handling error', error, e)
 		next(e)
