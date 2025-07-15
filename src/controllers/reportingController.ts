@@ -140,7 +140,7 @@ export class ReportingController {
 		if (organisationFormSelection === "multiple-organisations") {				
 			let organisationIds: number[] = []
 			if(request.body.organisationSearch){
-				if(request.body.organisationSearch === 'string'){
+				if(typeof request.body.organisationSearch === 'string'){
 					organisationIds = [parseInt(request.body.organisationSearch)]
 				}
 				else{
