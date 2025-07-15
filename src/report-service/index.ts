@@ -53,10 +53,15 @@ export class ReportService {
 				.map(c => new BasicCoursePageModel(c.id, c.title))
 
 		}
+
+
 		
 		const allCourses = (await this.courseService.getCourseDropdown())
 			.map(course => new BasicCoursePageModel(course.id, course.name))
-		return new ChooseCoursesModel(organisationDepartments, requiredLearning, allCourses)
+
+		const model = new ChooseCoursesModel(organisationDepartments, requiredLearning, allCourses)
+		model.showRequiredLearningOption = requiredLearning.length > 0
+		return model
 	}
 
 	async fetchCoursesWithIds(courseIds: string[]) {

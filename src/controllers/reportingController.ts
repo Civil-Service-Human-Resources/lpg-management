@@ -131,8 +131,8 @@ export class ReportingController {
 		if (organisationFormSelection && !Number.isNaN(parseInt(organisationFormSelection))) {
 			selectedOrganisationIds = [parseInt(organisationFormSelection)]
 		}
-		if (organisationFormSelection === "other") {
-			selectedOrganisationIds = [request.body.organisationId]
+		if (organisationFormSelection === "other") {			
+			selectedOrganisationIds = request.body.organisationId ? [request.body.organisationId] : []
 		}
 		if (organisationFormSelection === "allOrganisations") {
 			selectedOrganisationIds = undefined

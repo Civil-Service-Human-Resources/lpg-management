@@ -200,7 +200,7 @@ export class CourseCompletionsController extends Controller {
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!			
-			const pageModel = await this.reportService.getChooseCoursePage(session.selectedOrganisations)			
+			const pageModel = await this.reportService.getChooseCoursePage(session.selectedOrganisations)						
 			
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
