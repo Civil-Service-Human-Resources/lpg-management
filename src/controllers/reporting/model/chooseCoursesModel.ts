@@ -18,7 +18,7 @@ export class ChooseCoursesModel {
 
 	// data
 	@Exclude()
-	public userDepartment?: string[];
+	public userDepartment?: string
 	@Exclude()
 	public requiredLearningList: BasicCoursePageModel[]
 	@Exclude()
@@ -59,7 +59,7 @@ export class ChooseCoursesModel {
 	})
 	public courseSearch: string[]
 
-	constructor(userDepartment?: string[], requiredLearningList: BasicCoursePageModel[] = [],
+	constructor(userDepartment?: string, requiredLearningList: BasicCoursePageModel[] = [],
 				courseSearchList: BasicCoursePageModel[] = []) {
 		this.userDepartment = userDepartment
 		this.requiredLearningList = requiredLearningList

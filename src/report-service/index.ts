@@ -37,14 +37,11 @@ export class ReportService {
 		return Buffer.from(report, 'binary')
 	}
 
-	async getChooseCoursePage(selectedOrganisations: {name: string, id: string}[] | undefined): Promise<ChooseCoursesModel> {
+	async getChooseCoursePage(selectedOrganisations: {name: string, id: string, abbreviation: string|undefined}[] | undefined): Promise<ChooseCoursesModel> {
 		let requiredLearning: BasicCoursePageModel[] = []
-		let organisationDepartments: string[] = []
-		if(selectedOrganisations){
-			organisationDepartments  = (await this.cslService.getFormattedOrganisationList(selectedOrganisations.map(o => parseInt(o.id))))
-				.formattedOrganisationalUnitNames
-				.map(o => o.name)
-
+		let organisationDepartments: string = ""
+		if(selectedOrganisations){			
+			organisationDepartments  = selectedOrganisations.length > 1 ? selectedOrganisations.map(organisation => organisation.abbreviation || organisation.name).join(" - ") : selectedOrganisations[0].name
 			const hierarchy: OrganisationalUnit[] = (await Promise.all(selectedOrganisations.map(async organisation => await this.organisationalUnitService.getOrgHierarchy(parseInt(organisation.id))))).flat()
 
 			const departmentCodes = hierarchy.map(o => o.code)
@@ -53,8 +50,6 @@ export class ReportService {
 				.map(c => new BasicCoursePageModel(c.id, c.title))
 
 		}
-
-
 		
 		const allCourses = (await this.courseService.getCourseDropdown())
 			.map(course => new BasicCoursePageModel(course.id, course.name))

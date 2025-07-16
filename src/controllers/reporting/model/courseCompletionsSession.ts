@@ -16,7 +16,7 @@ export class CourseCompletionsSession {
 		public fullName: string, 
 		public userUid: string, 
 		public organisationFormSelection?: string, 
-		public selectedOrganisations?: {name: string, id: string}[],
+		public selectedOrganisations?: {name: string, id: string, abbreviation: string|undefined}[],
 		public learningSelection?: LearningSelection, 
 		public courses?: {name: string, id: string}[],
 		public chartData?: {text: string}[][]) { }

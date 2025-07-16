@@ -45,7 +45,6 @@ export class ReportingController {
 
 			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
-				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
 				const otherOrganisationIds = currentUser.otherOrganisationalUnits.map((o: { id: any }) => o.id)
 				const formattedOtherOrganisations: FormattedOrganisation[] = (await this.cslServiceClient.getFormattedOrganisationList(otherOrganisationIds, currentUser.getDomain())).formattedOrganisationalUnitNames
@@ -53,10 +52,8 @@ export class ReportingController {
 				const pageModel = new ChooseOrganisationsModel({
 					name: organisationChoices.directOrganisation.name,
 					id: organisationChoices.directOrganisation.id
-				}, organisationChoices.typeaheadOrganisations,
-					formattedOtherOrganisations)
+				},formattedOtherOrganisations)
 
-				pageModel.showTypeaheadOption = userCanAccessMultipleOrganisations
 				pageModel.showWholeCivilServiceOption = currentUser.isReportingAllOrganisations()
 				pageModel.showMultipleOrganisationsOption = formattedOtherOrganisations.length > 0
 
@@ -80,7 +77,7 @@ export class ReportingController {
 
 			session.selectedOrganisations = selectedOrganisationIds ? await Promise.all(selectedOrganisationIds?.map(async id => {
 				const organisation = await this.organisationalUnitService.getOrganisation(id)
-				return { name: organisation.name, id: organisation.id.toString() }
+				return { name: organisation.name, id: organisation.id.toString(), abbreviation: organisation.abbreviation || '' }
 			})) : undefined
 
 			const submitModel = new SubmitOrganisationsModel(session.selectedOrganisations)

@@ -11,25 +11,6 @@
 {% set backButton = "/reporting" %}
 {% block content %}
 
-{% set typeAheadHtml %}
-
-<div class="govuk-form-group">
-  <label class="govuk-label" for="parent">
-    Organisation
-  </label>
-  <div class="autocomplete-wrapper autocomplete-wrapper--full-width">
-
-    <select class="autocomplete__organisations" name="organisationId" id="parent">
-      <option value="" selected></option>
-      {% for organisation in pageModel.organisationListForTypeAhead %}
-      <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
-      {% endfor %}
-    </select>
-  </div>
-</div>
-
-{% endset -%}
-
 {% set multipleOrganisationSelectionHtml %}
   <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
     <label class="govuk-label" for="organisationSearch">All organisations</label>
