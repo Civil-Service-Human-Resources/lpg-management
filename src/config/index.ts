@@ -34,6 +34,11 @@ function getBoolean(rawValue: string) {
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
+export const HEALTH_CHECK = set({
+	enabled: getBoolean(env.HEALTH_CHECK_ENABLED) || true,
+	endpoint: env.HEALTH_CHECK_ENDPOINT || undefined
+})
+
 export const APPLICATIONINSIGHTS_CONNECTION_STRING = env.APPLICATIONINSIGHTS_CONNECTION_STRING
 
 export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.local.learn.civilservice.gov.uk/lpgdevcontent'
