@@ -4,11 +4,11 @@ import { CsrsService } from 'src/csrs/service/csrsService'
 import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
 import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 import { fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject } from './reporting/utils'
-import { CslServiceClient } from 'src/csl-service/client'
 import { ChooseOrganisationsModel } from './reporting/model/chooseOrganisationsModel'
 import { SubmitOrganisationsModel } from './reporting/model/submitOrganisationsModel'
 import { validate } from 'class-validator'
 import { FormattedOrganisation } from 'src/csl-service/model/FormattedOrganisation'
+import { CslService } from 'src/csl-service/service/cslService'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -17,21 +17,21 @@ export class ReportingController {
 	router: Router
 	reportService: ReportService
 	csrsService: CsrsService
-	cslServiceClient: CslServiceClient
+	cslService: CslService
 	organisationalUnitService: OrganisationalUnitService
 
 	constructor(
 		reportService: ReportService,
 		csrsService: CsrsService,
 		organisationalUnitService: OrganisationalUnitService,
-		cslServiceClient: CslServiceClient
+		cslService: CslService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
 		this.reportService = reportService
 		this.csrsService = csrsService
 		this.organisationalUnitService = organisationalUnitService
-		this.cslServiceClient = cslServiceClient
+		this.cslService = cslService
 	}
 
 	private configureRouterPaths() {
@@ -47,7 +47,7 @@ export class ReportingController {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
 
 				const otherOrganisationIds = currentUser.otherOrganisationalUnits.map((o: { id: any }) => o.id)
-				const formattedOtherOrganisations: FormattedOrganisation[] = (await this.cslServiceClient.getFormattedOrganisationList(otherOrganisationIds, currentUser.getDomain())).formattedOrganisationalUnitNames
+				const formattedOtherOrganisations: FormattedOrganisation[] = await this.cslService.getFormattedOrganisationList(currentUser.uid, otherOrganisationIds, currentUser.getDomain()) || []
 
 				const pageModel = new ChooseOrganisationsModel({
 					name: organisationChoices.directOrganisation.name,
