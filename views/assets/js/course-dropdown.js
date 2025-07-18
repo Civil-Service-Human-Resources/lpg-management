@@ -1,10 +1,15 @@
 const accessibleAutocomplete = require('accessible-autocomplete-multiselect')
 
-if (document.querySelector('#courseSearch') !== null) {
-	accessibleAutocomplete.enhanceSelectElement({
-		selectElement: document.querySelector('#courseSearch'),
-		id: 'courseSearch',
-		multiple: true,
-		showAllValues: true
-	})
+function enhanceElement(elementId) {
+	if (document.querySelector(`#${elementId}`) !== null) {
+		accessibleAutocomplete.enhanceSelectElement({
+			selectElement: document.querySelector(`#${elementId}`),
+			id: elementId,
+			multiple: true,
+			showAllValues: true
+		})
+	}
 }
+
+enhanceElement('courseSearch')
+enhanceElement('organisationSearch')

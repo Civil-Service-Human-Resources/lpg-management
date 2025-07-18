@@ -13,10 +13,12 @@ export class ChooseCoursesModel {
 	// settings
 	@Exclude()
 	public maxCoursesSelection: number = REPORTING.COURSE_COMPLETIONS_MAX_COURSES
+	@Exclude()
+	public showRequiredLearningOption: boolean = false
 
 	// data
 	@Exclude()
-	public userDepartment?: string;
+	public userDepartment?: string
 	@Exclude()
 	public requiredLearningList: BasicCoursePageModel[]
 	@Exclude()

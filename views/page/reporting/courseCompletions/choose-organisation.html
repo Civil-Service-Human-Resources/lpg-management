@@ -11,23 +11,18 @@
 {% set backButton = "/reporting" %}
 {% block content %}
 
-{% set typeAheadHtml %}
-
-<div class="govuk-form-group">
-  <label class="govuk-label" for="parent">
-    Organisation
-  </label>
-  <div class="autocomplete-wrapper autocomplete-wrapper--full-width">
-
-    <select class="autocomplete__organisations" name="organisationId" id="parent">
-      <option value="" selected></option>
-      {% for organisation in organisationListForTypeAhead %}
-      <option value={{ organisation.id }}>{{ organisation.formattedName }}</option>
-      {% endfor %}
+{% set multipleOrganisationSelectionHtml %}
+  <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
+    <label class="govuk-label" for="organisationSearch">All organisations</label>
+    <div id="subject-hint" class="govuk-hint">
+        <span id="course-completions-js-hint" class='hidden'>Start typing to filter available organisations.</span> You can select up to {{pageModel.maxAllowedOrganisations}} organisations.
+    </div>
+    <select id="organisationSearch" name="organisationSearch" class="govuk-input" aria-labelledby="organisationSearch" multiple>
+        {% for organisation in pageModel.multipleOrganisationsOptions %}
+            <option {% if  (pageModel.organisationSearch or []).indexOf(organisation.id) > -1 %}selected{% endif %} value={{ organisation.id }}>{{ organisation.name }}</option>
+        {% endfor %}
     </select>
   </div>
-</div>
-
 {% endset -%}
 
 {% if sessionFlash.errors %}
@@ -52,13 +47,13 @@ href: "#parent"
 
         {% set radioItems = [
         {
-        value: firstOrganisationOption.id,
-        text: firstOrganisationOption.name,
+        value: pageModel.firstOrganisationOption.id,
+        text: pageModel.firstOrganisationOption.name,
         checked: true
         }
         ] %}
 
-        {% if showTypeaheadOption %}
+        {% if pageModel.showTypeaheadOption %}
         {% set radioItems = (radioItems.push({
         value: "other",
         text: "Other organisation",
@@ -68,7 +63,15 @@ href: "#parent"
         }), radioItems) %}
         {% endif %}
 
-        {% if showWholeCivilServiceOption %}
+        {% set radioItems = (radioItems.push({
+        value: "multiple-organisations",
+        text: "Multiple organisations (max " + pageModel.maxAllowedOrganisations + ")",
+        conditional: {
+        html: multipleOrganisationSelectionHtml
+        }
+        }), radioItems) %}
+
+        {% if pageModel.showWholeCivilServiceOption %}
           {% set radioItems = (radioItems.push({
             value: "allOrganisations",
             text: "Whole Civil Service"
@@ -96,7 +99,10 @@ href: "#parent"
 {% endblock %}
 
 {% block bodyEnd %}
+<script>
+document.getElementById("course-completions-js-hint").className = ""
+</script>
 <script src="/govuk-frontend/all.js"></script>
 <script>window.GOVUKFrontend.initAll()</script>
-  <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+<script type="text/javascript" src="/js/main-bundle.min.js"></script>
 {% endblock %}

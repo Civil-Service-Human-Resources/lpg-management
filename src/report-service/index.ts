@@ -12,6 +12,7 @@ import {RequestCourseCompletionExportRequestResponse} from './model/requestCours
 import {ReportServicePageModelService} from './reportServicePageModelService'
 import {DateStartEnd} from '../controllers/command/dateStartEndCommand'
 import {ReportResponse} from '../csl-service/model/ReportResponse'
+import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
 
 export class ReportService {
 
@@ -36,14 +37,13 @@ export class ReportService {
 		return Buffer.from(report, 'binary')
 	}
 
-	async getChooseCoursePage(selectedOrganisationId: number | undefined): Promise<ChooseCoursesModel> {
-		let userDepartment
+	async getChooseCoursePage(selectedOrganisations: {name: string, id: string, abbreviation: string|undefined}[] | undefined): Promise<ChooseCoursesModel> {
 		let requiredLearning: BasicCoursePageModel[] = []
-		if(selectedOrganisationId){
-			
-			const userOrganisation = (await this.organisationalUnitService.getOrganisation(selectedOrganisationId, true))
-			userDepartment = userOrganisation.getFormattedName()
-			const hierarchy = await this.organisationalUnitService.getOrgHierarchy(userOrganisation.id)
+		let organisationDepartments: string = ""
+		if(selectedOrganisations){			
+			organisationDepartments  = selectedOrganisations.length > 1 ? selectedOrganisations.map(organisation => organisation.abbreviation || organisation.name).join(" - ") : selectedOrganisations[0].name
+			const hierarchy: OrganisationalUnit[] = (await Promise.all(selectedOrganisations.map(async organisation => await this.organisationalUnitService.getOrgHierarchy(parseInt(organisation.id))))).flat()
+
 			const departmentCodes = hierarchy.map(o => o.code)
 			const requiredLearningResponse = await this.courseService.getRequiredLearning(departmentCodes)
 			requiredLearning = requiredLearningResponse.results
@@ -53,7 +53,10 @@ export class ReportService {
 		
 		const allCourses = (await this.courseService.getCourseDropdown())
 			.map(course => new BasicCoursePageModel(course.id, course.name))
-		return new ChooseCoursesModel(userDepartment, requiredLearning, allCourses)
+
+		const model = new ChooseCoursesModel(organisationDepartments, requiredLearning, allCourses)
+		model.showRequiredLearningOption = requiredLearning.length > 0
+		return model
 	}
 
 	async fetchCoursesWithIds(courseIds: string[]) {
@@ -68,7 +71,7 @@ export class ReportService {
 	}
 
 	async submitExportRequest(session: CourseCompletionsSession): Promise<RequestCourseCompletionExportRequestResponse> {
-		const params = this.reportParameterFactory.generateReportRequestParams(session)
+		const params = this.reportParameterFactory.generateReportRequestParams(session)		
 		return await this.cslService.postCourseCompletionsExportRequest(params)
 	}
 
@@ -83,7 +86,7 @@ export class ReportService {
 		if (session.courses && session.courses.length > 0) {
 			courseBreakdown = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
 		}
-		const filterSummary = this.reportServicePageModelService.buildReportingFilterSummary(session)
+		const filterSummary = await this.reportServicePageModelService.buildReportingFilterSummary(session)
 		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel,
 			courseBreakdown, filterSummary, chart.hasRequest, session.timePeriod, session.startDay, session.startMonth,
 			session.startYear, session.endDay, session.endMonth, session.endYear)

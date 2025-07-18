@@ -60,7 +60,7 @@
 
       {% set radioItems = [] %}
 
-      {% if pageModel.userDepartment %}
+      {% if pageModel.showRequiredLearningOption %}
 
         {% set radioItems = (radioItems.push({
           value: "requiredLearning",
@@ -79,7 +79,7 @@
         conditional: {
             html: courseSearch
         },
-        checked: pageModel.userDepartment === undefined
+        checked: pageModel.showRequiredLearningOption == false
     }), radioItems) %}
 
     {% set radioItems = (radioItems.push({
