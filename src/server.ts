@@ -34,6 +34,17 @@ import {CourseCompletionsController} from './controllers/reporting/courseComplet
 import {ReportingController} from './controllers/reporting/reportingController'
 import {createConfig} from './lib/http/restServiceConfigFactory'
 import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
+import {HEALTH_CHECK} from './config'
+
+if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
+	logger.info("Health check enabled")
+	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
+	app.get(`/${HEALTH_CHECK.endpoint}`, (req, res) => {
+		return res.status(200).send('OK')
+	})
+} else {
+	logger.info("Health check not enabled")
+}
 
 middleware.applyAll(app)
 
