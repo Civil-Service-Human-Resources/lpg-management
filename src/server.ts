@@ -37,7 +37,6 @@ import {RegisteredLearnersController} from './controllers/reporting/registeredLe
 import {HEALTH_CHECK} from './config'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
-	logger.info("Health check enabled")
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
 	app.get(`/${HEALTH_CHECK.endpoint}`, (req, res) => {
 		return res.status(200).send('OK')
