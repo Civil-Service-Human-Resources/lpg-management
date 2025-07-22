@@ -10,7 +10,7 @@ export class CslService {
         private cslClient: CslServiceClient) { }
 
     async getFormattedOrganisationList(uid: string, organisationIds: number[], domain: string): Promise<FormattedOrganisation[] | undefined> {
-        let formattedOrganisationList = await this.formattedOrganisationListCache.get(uid)
+        let formattedOrganisationList = await this.formattedOrganisationListCache.get(uid)        
 
         if (!formattedOrganisationList) {
             const formattedOrganisationsResponse: FormattedOrganisationListResponse = await this.cslClient.getFormattedOrganisationList(organisationIds, domain)
@@ -18,7 +18,9 @@ export class CslService {
             formattedOrganisationList = new FormattedOrganisationList(formattedOrganisationsResponse.formattedOrganisationalUnitNames)            
             await this.formattedOrganisationListCache.set(uid, formattedOrganisationList)
 
-            return formattedOrganisationList?.formattedOrganisationalUnitNames
+            
         }
+
+        return formattedOrganisationList?.formattedOrganisationalUnitNames
     }
 }

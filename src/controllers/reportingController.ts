@@ -48,7 +48,7 @@ export class ReportingController {
 
 				const otherOrganisationIds = currentUser.otherOrganisationalUnits.map((o: { id: any }) => o.id)
 				const formattedOtherOrganisations: FormattedOrganisation[] = await this.cslService.getFormattedOrganisationList(currentUser.uid, otherOrganisationIds, currentUser.getDomain()) || []
-
+				
 				const pageModel = new ChooseOrganisationsModel({
 					name: organisationChoices.directOrganisation.name,
 					id: organisationChoices.directOrganisation.id
