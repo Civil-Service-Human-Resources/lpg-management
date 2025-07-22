@@ -5,13 +5,14 @@ import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFi
 import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
 import {ChartJsService} from './chartJsService'
 import {
+	FilterSummaryTag,
+	getAllOrganisationsSummaryTag,
 	getMultipleCourseSummaryTags,
-	getOrganisationSummaryTags,
+	getOrganisationSummaryTagById,
 } from '../controllers/models/filterSummary/filterSummaryTag'
 import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
 import {DateFilterSummaryRow} from '../controllers/reporting/model/dateFilterSummaryRow'
 import {getDashboardTimePeriod} from '../controllers/reporting/model/dashboardTimePeriod'
-
 export class ReportServicePageModelService {
 
 	constructor(private tableService: TableService, private chartService: ChartJsService) { }
@@ -31,16 +32,18 @@ export class ReportServicePageModelService {
 		]
 	}
 
-	buildReportingFilterSummary(session: CourseCompletionsSession) {
+	async buildReportingFilterSummary(session: CourseCompletionsSession) {
 		const coursesFilterSummary = new CourseFilterSummaryRow(getMultipleCourseSummaryTags(session.courses || []))
 		
 		let organisationFilterSummary
 
-		if(session.selectedOrganisation){
-			organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags([session.selectedOrganisation!.name]))
+		if(session.selectedOrganisations){
+			const filterSummaryTags: FilterSummaryTag[] = session.selectedOrganisations.map(org => getOrganisationSummaryTagById(org.id.toString(), org.name))
+			filterSummaryTags[0].preText = ""
+			organisationFilterSummary = new OrganisationFilterSummaryRow(filterSummaryTags)
 		}
 		else{
-			organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags(["All organisations"]))
+			organisationFilterSummary = new OrganisationFilterSummaryRow([getAllOrganisationsSummaryTag()])
 		}
 
 		const dateFilterSummary = new DateFilterSummaryRow(getDashboardTimePeriod(session).tags)

@@ -1,9 +1,14 @@
-import {Request, Response, Router} from 'express'
-import {ReportService} from '../report-service'
-import {CsrsService} from 'src/csrs/service/csrsService'
-import {OrganisationalUnitService} from 'src/csrs/service/organisationalUnitService'
-import {OrganisationalUnit} from '../../src/csrs/model/organisationalUnit'
-import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './reporting/utils'
+import { Request, Response, Router } from 'express'
+import { ReportService } from '../report-service'
+import { CsrsService } from 'src/csrs/service/csrsService'
+import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
+import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
+import { fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject } from './reporting/utils'
+import { ChooseOrganisationsModel } from './reporting/model/chooseOrganisationsModel'
+import { SubmitOrganisationsModel } from './reporting/model/submitOrganisationsModel'
+import { validate } from 'class-validator'
+import { FormattedOrganisation } from 'src/csl-service/model/FormattedOrganisation'
+import { CslService } from 'src/csl-service/service/cslService'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -12,18 +17,21 @@ export class ReportingController {
 	router: Router
 	reportService: ReportService
 	csrsService: CsrsService
+	cslService: CslService
 	organisationalUnitService: OrganisationalUnitService
 
 	constructor(
 		reportService: ReportService,
 		csrsService: CsrsService,
-		organisationalUnitService: OrganisationalUnitService
+		organisationalUnitService: OrganisationalUnitService,
+		cslService: CslService
 	) {
 		this.router = Router()
 		this.configureRouterPaths()
 		this.reportService = reportService
 		this.csrsService = csrsService
 		this.organisationalUnitService = organisationalUnitService
+		this.cslService = cslService
 	}
 
 	private configureRouterPaths() {
@@ -37,17 +45,19 @@ export class ReportingController {
 
 			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
-				let userCanAccessMultipleOrganisations: boolean = organisationChoices.typeaheadOrganisations.length > 1
 
-				response.render('page/reporting/courseCompletions/choose-organisation', {
-					firstOrganisationOption: {
-						name: organisationChoices.directOrganisation.name,
-						id: organisationChoices.directOrganisation.id
-					},
-					organisationListForTypeAhead: organisationChoices.typeaheadOrganisations,
-					showTypeaheadOption: userCanAccessMultipleOrganisations,
-					showWholeCivilServiceOption: currentUser.isReportingAllOrganisations()
-				})
+				const otherOrganisationIds = currentUser.otherOrganisationalUnits.map((o: { id: any }) => o.id)
+				const formattedOtherOrganisations: FormattedOrganisation[] = await this.cslService.getFormattedOrganisationList(currentUser.uid, otherOrganisationIds, currentUser.getDomain()) || []
+				
+				const pageModel = new ChooseOrganisationsModel({
+					name: organisationChoices.directOrganisation.name,
+					id: organisationChoices.directOrganisation.id
+				},formattedOtherOrganisations)
+
+				pageModel.showWholeCivilServiceOption = currentUser.isReportingAllOrganisations()
+				pageModel.showMultipleOrganisationsOption = formattedOtherOrganisations.length > 0
+
+				response.render('page/reporting/courseCompletions/choose-organisation', {pageModel})
 			}
 			else {
 				response.render("page/unauthorised")
@@ -59,33 +69,33 @@ export class ReportingController {
 	submitOrganisationSelection() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)
+
 			let currentUser = request.user
-			let selectedOrganisationId = request.body.organisation
-			session.organisationSelection = selectedOrganisationId
+			session.organisationFormSelection = request.body.organisation
+
+			const selectedOrganisationIds = this.getSelectedOrganisationIdsFromSubmitRequest(request)
+
+			session.selectedOrganisations = selectedOrganisationIds ? await Promise.all(selectedOrganisationIds?.map(async id => {
+				const organisation = await this.organisationalUnitService.getOrganisation(id)
+				return { name: organisation.name, id: organisation.id.toString(), abbreviation: organisation.abbreviation || '' }
+			})) : undefined
+
+			const submitModel = new SubmitOrganisationsModel(session.selectedOrganisations)
+			const validationErrors = await this.getValidationErrors(submitModel)			
+			if(validationErrors.length > 0){
+				request.session!.sessionFlash = {
+					errors: validationErrors
+				}
+				return request.session!.save(() => {
+					response.redirect('/reporting/course-completions/choose-organisation')
+				})
+			}
 			
-			if (selectedOrganisationId === "other") {
-				selectedOrganisationId = request.body.organisationId
-			}
-
-			if(selectedOrganisationId === "allOrganisations"){
-				session.allOrganisationIds = undefined
-				session.selectedOrganisation = undefined
-			}
-
-			if (selectedOrganisationId) {
-				const organisation = (await this.csrsService.getOrganisationalUnitsForUser(currentUser)).find(o => o.id === parseInt(selectedOrganisationId))
-				
+			if (session.organisationFormSelection) {
 				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
-					if(organisation !== undefined){
-						session.selectedOrganisation = {name: organisation.name, id: organisation.id.toString()}
-						session.allOrganisationIds = await this.getOrganisationWithAllChildren(+selectedOrganisationId)
-					}
-					else{						
-						session.selectedOrganisation = undefined
-					}
-					
+
 					saveCourseCompletionSessionObject(session, request, async () => {
-						if (session.hasSelectedCourses()) {							
+						if (session.hasSelectedCourses()) {
 							response.redirect(`/reporting/course-completions`)
 						} else {
 							response.redirect(`/reporting/course-completions/choose-courses`)
@@ -106,7 +116,39 @@ export class ReportingController {
 					response.redirect('/reporting/course-completions/choose-organisation')
 				})
 			}
+
 		}
+	}
+
+	getSelectedOrganisationIdsFromSubmitRequest(request: Request): number[] | undefined{
+		let selectedOrganisationIds: number[] | undefined = []
+
+		const organisationFormSelection: string = request.body.organisation
+
+		if (organisationFormSelection && !Number.isNaN(parseInt(organisationFormSelection))) {
+			selectedOrganisationIds = [parseInt(organisationFormSelection)]
+		}
+		if (organisationFormSelection === "other") {			
+			selectedOrganisationIds = request.body.organisationId ? [request.body.organisationId] : []
+		}
+		if (organisationFormSelection === "allOrganisations") {
+			selectedOrganisationIds = undefined
+		}
+		if (organisationFormSelection === "multiple-organisations") {				
+			let organisationIds: number[] = []
+			if(request.body.organisationSearch){
+				if(typeof request.body.organisationSearch === 'string'){
+					organisationIds = [parseInt(request.body.organisationSearch)]
+				}
+				else{
+					organisationIds = request.body.organisationSearch.map((id: string) => parseInt(id))
+				}
+			}
+			selectedOrganisationIds = organisationIds
+		}
+
+		return selectedOrganisationIds
+
 	}
 
 	async getOrganisationChoicesForUser(user: any) {
@@ -129,7 +171,13 @@ export class ReportingController {
 	}
 
 	getAllChildOrganisations(organisation: OrganisationalUnit): OrganisationalUnit[] {
-		return [organisation, organisation.children.flatMap(child => this.getAllChildOrganisations(child))].flatMap(item=>item)
+		return [organisation, organisation.children.flatMap(child => this.getAllChildOrganisations(child))].flatMap(item => item)
+	}
+
+	async getValidationErrors(submitModel: SubmitOrganisationsModel){
+		const validationErrors = await validate(submitModel)
+			const errors = validationErrors.map(error => error.constraints).map(constraint => Object.values(constraint)).flat()			
+			return errors
 	}
 
 

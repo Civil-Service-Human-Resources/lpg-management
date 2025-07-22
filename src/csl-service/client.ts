@@ -9,12 +9,14 @@ import {
 	RequestCourseCompletionExportRequestResponse
 } from '../report-service/model/requestCourseCompletionExportRequestResponse'
 import {ReportResponse} from './model/ReportResponse'
+import { FormattedOrganisationListResponse } from './model/FormattedOrganisationListResponse'
 
 export class CslServiceClient {
 
 	private COURSE_COMPLETIONS_AGGREGATIONS_URL = "/admin/reporting/course-completions/generate-graph"
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL = "/admin/reporting/course-completions/request-source-data"
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
+	private FORMATTED_LIST_URL = "/organisations/formatted_list"
 
 	constructor(private readonly _http: OauthRestService) { }
 
@@ -47,7 +49,7 @@ export class CslServiceClient {
 		return plainToInstance(Chart, response.data)
 	}
 
-	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {		
+	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {				
 		const response = await this._http.postRequest<RequestCourseCompletionExportRequestResponse>({url: this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL, data: params.getAsApiParams()})
 		return plainToInstance(RequestCourseCompletionExportRequestResponse, response.data)
 	}
@@ -63,5 +65,17 @@ export class CslServiceClient {
 				reason: cancellationReason
 			}
 		})
+	}
+
+	async getFormattedOrganisationList(organisationIds: number[], domain?: string): Promise<FormattedOrganisationListResponse> {				
+		let url = `${this.FORMATTED_LIST_URL}?${organisationIds.map(id => `organisationId=${id}`).join('&')}`
+		if(domain){
+			url += `&domain=${domain}`
+		}
+		const response = await this._http.getRequest({
+			url
+		})		
+
+		return plainToInstance(FormattedOrganisationListResponse, response.data)
 	}
 }
