@@ -9,7 +9,12 @@
 {% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management" %}
+
+{% if course %}
+    {% set backButton = "/content-management/courses/"+course.id+"/preview" %}
+{% else %}
+    {% set backButton = "/content-management/" %}
+{% endif %}
 
 {% block content %}
 {% set errors = sessionFlash.errors %}
@@ -19,9 +24,9 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.addNew}}</p>
+            <p class="govuk-body form-header govuk-!-font-size-24">{{i18n.course.text.editDetails if course.title else i18n.course.text.addNew}}</p>
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{i18n['course_visibility']}}</h2>
-            <form action="/content-management/courses/visibility" method="post" class="course-form">
+            <form action="/content-management/courses/visibility/{{ course.id }}" method="post" class="course-form">
                 {% if course.id %}
                 <input type="hidden" name="id" value="{{ course.id }}">
                 {% endif %}
@@ -45,12 +50,14 @@
                     },
                     items: [
                         {
-                        value: "PUBLIC",
-                        text: "Yes"
+                            value: "PUBLIC",
+                            text: "Yes",
+                            checked: course.visibility == 0
                         },
                         {
-                        value: "PRIVATE",
-                        text: "No"
+                            value: "PRIVATE",
+                            text: "No",
+                            checked: course.visibility == 1
                         }
                     ]
                     }) }}

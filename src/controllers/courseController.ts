@@ -45,7 +45,8 @@ export class CourseController implements FormController {
 		this.router.get('/content-management/courses/:courseId/preview', xss(), this.checkForEventViewRole(), this.coursePreview())
 
 		this.router.get('/content-management/courses/visibility/:courseId?', xss(), this.getCourseVisibility())
-		this.router.post('/content-management/courses/visibility/:courseId?', xss(), this.setCourseVisibility())
+		this.router.post('/content-management/courses/visibility/', xss(), this.setCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId', xss(), this.updateCourseVisibility())
 		this.router.get('/content-management/courses/title/:courseId?', xss(), this.getCourseTitle())
 		this.router.post('/content-management/courses/title/', xss(), this.createCourseTitle())
 		this.router.post('/content-management/courses/title/:courseId', xss(), this.updateCourseTitle())
@@ -156,8 +157,24 @@ export class CourseController implements FormController {
 		}
 	}
 
+	updateCourseVisibility(){
+		return async (request: Request, response: Response, next: NextFunction) => {
+			let course = response.locals.course
+			course.visibility = request.body.visibility
+
+			await this.learningCatalogue
+				.updateCourse(course)
+				.then(() => {
+					response.redirect(`/content-management/courses/${request.params.courseId}/preview`)
+				})
+				.catch(error => {
+					next(error)
+				})
+		}
+	}
+
 	getCourseTitle() {
-		return async (request: Request, response: Response) => {
+		return async (request: Request, response: Response) => {			
 			response.render('page/course/course-title')
 		}
 	}
