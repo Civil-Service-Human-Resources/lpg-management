@@ -47,6 +47,7 @@ export class CourseController implements FormController {
 		this.router.get('/content-management/courses/visibility/:courseId?', xss(), this.getCourseVisibility())
 		this.router.post('/content-management/courses/visibility/', xss(), this.setCourseVisibility())
 		this.router.post('/content-management/courses/visibility/:courseId', xss(), this.updateCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId/confirm', xss(), this.confirmCourseVisibilityUpdate())
 		this.router.get('/content-management/courses/title/:courseId?', xss(), this.getCourseTitle())
 		this.router.post('/content-management/courses/title/', xss(), this.createCourseTitle())
 		this.router.post('/content-management/courses/title/:courseId', xss(), this.updateCourseTitle())
@@ -158,6 +159,16 @@ export class CourseController implements FormController {
 	}
 
 	updateCourseVisibility(){
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const visibilityValue = request.body.visibility
+			
+			response.render('page/course/course-visibility-confirmation', {
+				visibilityValue
+			})
+		}
+	}
+
+	confirmCourseVisibilityUpdate(){
 		return async (request: Request, response: Response, next: NextFunction) => {
 			let course = response.locals.course
 			course.visibility = request.body.visibility
