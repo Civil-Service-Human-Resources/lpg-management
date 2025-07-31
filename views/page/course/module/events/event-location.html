@@ -21,6 +21,7 @@
             <p class="govuk-body">This event is for the {{ module.title }} module on the {{ course.title }} course</p>
 
             <form class="govuk-form" action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/location/{{event.id}}" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <input type="hidden" name="eventJson" value="{{eventJson}}" />
 
                 <fieldset class="govuk-fieldset">

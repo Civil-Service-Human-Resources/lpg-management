@@ -18,6 +18,7 @@
             <p class="govuk-body">By archiving, you will no longer be able to amend this course in any way. Nor can it be searched, booked or completed.</p>
             <p class="govuk-body">Learners that have started or completed the course will still be able to see and access the course in their learner records.</p>
             <form method="post" action="/content-management/courses/{{course.id}}/status/archive">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <p class="govuk-body"><strong>Archiving a course is irreversible</strong></p>
                 <input type="hidden" name="status" value="Archived" />
                 {{ govukButton({

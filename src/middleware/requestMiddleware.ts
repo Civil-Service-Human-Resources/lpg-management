@@ -1,10 +1,9 @@
 import {Middleware} from './middleware'
-import {Express} from 'express'
-import * as bodyParser from 'body-parser'
+import * as express from 'express'
 export class RequestMiddleware extends Middleware {
-	apply(app: Express): void {
-		app.use(bodyParser.json())
-		app.use(bodyParser.urlencoded({extended: false}))
+	apply(app: express.Express): void {
+		app.use(express.json())
+		app.use(express.urlencoded({extended: false}))
 	}
 
 	getName(): string {

@@ -9,6 +9,7 @@
         <canvas class='chart' tabindex="0" data-chart='canvas' id="{{ id }}"></canvas>
         <div style="margin-top: 45px">
         <form action="/reporting/course-completions/chart-csv" method="post">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
             {{ govukButton({
                 text: "Download chart data (.csv)",
                 attributes: {

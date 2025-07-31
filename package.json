@@ -29,6 +29,7 @@
 	},
 	"homepage": "https://github.com/Civil-Service-Human-Resources/lpg-admin#readme",
 	"dependencies": {
+		"@types/lusca": "^1.7.5",
 		"app-root-path": "2.1.0",
 		"applicationinsights": "1.8.10",
 		"axios": "0.18.1",
@@ -51,6 +52,7 @@
 		"jsonpath": "1.0.0",
 		"jsonwebtoken": "^9.0.2",
 		"lodash": "4.17.13",
+		"lusca": "^1.7.0",
 		"moment": "2.22.2",
 		"node-cache": "4.2.0",
 		"number-to-date-month-name": "1.0.2",
