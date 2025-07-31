@@ -2,6 +2,7 @@ import { FormattedOrganisationListCache } from "src/csrs/formattedOrganisationLi
 import { CslServiceClient } from "../client";
 import { FormattedOrganisationList } from "../model/FormattedOrganisationList";
 import {GetOrganisationsFormattedParams} from '../model/getOrganisationsFormattedParams'
+import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 
 export class CslService {
     constructor(
@@ -10,8 +11,10 @@ export class CslService {
 
     async getOrganisationTypeaheadForUser(user: any) {
         let params = new GetOrganisationsFormattedParams()
-        if (!user.isUnrestrictedOrgUser()) {
-            params = new GetOrganisationsFormattedParams(user.getDomain(), user.getOtherOrganisationIds())
+        if (!user.isUnrestrictedOrganisation()) {
+            params = new GetOrganisationsFormattedParams(user.getDomain(), user.otherOrganisationalUnits.map((o: OrganisationalUnit) => {
+                return o.id
+            }))
         }
         const cacheKey = params.getCacheKey()
         let typeahead = await this.formattedOrganisationListCache.get(cacheKey)
