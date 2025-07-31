@@ -5,7 +5,8 @@
 {% block pageTitle %}{{ "Confirm course visibility update" }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/"+course.id+"/preview" %}
+{% set backButton = "/content-management/courses/visibility/" + course.id %}
+
 
 {% block content %}
 
@@ -29,8 +30,7 @@
                 <input type="hidden" name="visibility" value="{{visibilityValue}}" />
                 <div class="button-container">
                     {{ govukButton({
-                        text: "Update course visibility",
-                        classes: "button-blue"
+                        text: "Update course visibility"
                     }) }}
                 </div>
             </form>
