@@ -4,7 +4,6 @@ import { FormattedOrganisation } from "src/csl-service/model/FormattedOrganisati
 export class ChooseOrganisationsModel{
     // Settings:
     public showWholeCivilServiceOption: boolean = false
-    public showMultipleOrganisationsOption: boolean = false
     public maxAllowedOrganisations: number = REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS
 
     // Data:
@@ -18,6 +17,6 @@ export class ChooseOrganisationsModel{
         this.firstOrganisationOption = firstOrganisationOption
         this.multipleOrganisationsOptions = multipleOrganisationsOptions
     }
-    
-    
+
+
 }

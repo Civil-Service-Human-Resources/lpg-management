@@ -173,10 +173,6 @@ export class CsrsService {
 		return mapping
 	}
 
-	async findByName(name: string) {
-		return await this.restService.get(`/professions/search/findByName?name=${name}`)
-	}
-
 	async getReportForSuperAdmin(startDate: any, endDate: any, professionID: any, user:any) {
 		let reportUrl = `/report/skills/report-for-super-admin?from=${startDate}&to=${endDate}&professionId=${professionID}`
 
@@ -194,28 +190,6 @@ export class CsrsService {
 		let reportUrl = `/report/skills/report-for-profession-admin?from=${startDate}&to=${endDate}&professionId=${professionID}`
 
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
-	}
-
-	async getOrganisationalUnitsForUser(user: any) {
-		let organisationList = await this.listOrganisationalUnitsForTypehead()
-		let organisationsForTypeahead = organisationList.typeahead
-
-		if(!this.userCanAccessAllOrganisations(user)){
-			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(user.getDomain()))
-			if(user.isTierOneReporter()){
-				const userTierOneOrganisation: OrganisationalUnit = user.organisationalUnit.getTopTierOrganisation(organisationsForTypeahead)
-				organisationsForTypeahead = organisationsForTypeahead.filter(organisation => !organisation.isTierOneOrganisation() || organisation.id === userTierOneOrganisation.id)
-			}
-			else{
-				organisationsForTypeahead = organisationsForTypeahead.filter(organisation => !organisation.isTierOneOrganisation())
-			}
-		}
-
-		return organisationsForTypeahead
-	}
-
-	userCanAccessAllOrganisations(user: any){
-		return (user.isSuperReporter() || user.isSuperUser() || user.isUnrestrictedOrganisation())
 	}
 
 }

@@ -2,7 +2,6 @@ import { Request, Response, Router } from 'express'
 import { ReportService } from '../report-service'
 import { CsrsService } from 'src/csrs/service/csrsService'
 import { OrganisationalUnitService } from 'src/csrs/service/organisationalUnitService'
-import { OrganisationalUnit } from '../../src/csrs/model/organisationalUnit'
 import { fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject } from './reporting/utils'
 import { ChooseOrganisationsModel } from './reporting/model/chooseOrganisationsModel'
 import { SubmitOrganisationsModel } from './reporting/model/submitOrganisationsModel'
@@ -44,18 +43,14 @@ export class ReportingController {
 			let currentUser = request.user
 
 			if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
-				let organisationChoices = await this.getOrganisationChoicesForUser(currentUser)
+				const formattedOtherOrganisations: FormattedOrganisation[] = await this.cslService.getOrganisationTypeaheadForUser(currentUser)
 
-				const otherOrganisationIds = currentUser.otherOrganisationalUnits.map((o: { id: any }) => o.id)
-				const formattedOtherOrganisations: FormattedOrganisation[] = await this.cslService.getFormattedOrganisationList(currentUser.uid, otherOrganisationIds, currentUser.getDomain()) || []
-				
 				const pageModel = new ChooseOrganisationsModel({
-					name: organisationChoices.directOrganisation.name,
-					id: organisationChoices.directOrganisation.id
-				},formattedOtherOrganisations)
+					name: currentUser.organisationalUnit.name,
+					id: currentUser.organisationalUnit.id
+				}, formattedOtherOrganisations)
 
 				pageModel.showWholeCivilServiceOption = currentUser.isReportingAllOrganisations()
-				pageModel.showMultipleOrganisationsOption = formattedOtherOrganisations.length > 0
 
 				response.render('page/reporting/courseCompletions/choose-organisation', {pageModel})
 			}
@@ -81,7 +76,7 @@ export class ReportingController {
 			})) : undefined
 
 			const submitModel = new SubmitOrganisationsModel(session.selectedOrganisations)
-			const validationErrors = await this.getValidationErrors(submitModel)			
+			const validationErrors = await this.getValidationErrors(submitModel)
 			if(validationErrors.length > 0){
 				request.session!.sessionFlash = {
 					errors: validationErrors
@@ -90,7 +85,7 @@ export class ReportingController {
 					response.redirect('/reporting/course-completions/choose-organisation')
 				})
 			}
-			
+
 			if (session.organisationFormSelection) {
 				if (currentUser && currentUser.isOrganisationReporter() && currentUser.isMVPReporter()) {
 
@@ -128,13 +123,13 @@ export class ReportingController {
 		if (organisationFormSelection && !Number.isNaN(parseInt(organisationFormSelection))) {
 			selectedOrganisationIds = [parseInt(organisationFormSelection)]
 		}
-		if (organisationFormSelection === "other") {			
+		if (organisationFormSelection === "other") {
 			selectedOrganisationIds = request.body.organisationId ? [request.body.organisationId] : []
 		}
 		if (organisationFormSelection === "allOrganisations") {
 			selectedOrganisationIds = undefined
 		}
-		if (organisationFormSelection === "multiple-organisations") {				
+		if (organisationFormSelection === "multiple-organisations") {
 			let organisationIds: number[] = []
 			if(request.body.organisationSearch){
 				if(typeof request.body.organisationSearch === 'string'){
@@ -151,32 +146,9 @@ export class ReportingController {
 
 	}
 
-	async getOrganisationChoicesForUser(user: any) {
-		return {
-			directOrganisation: user.organisationalUnit,
-			typeaheadOrganisations: await this.csrsService.getOrganisationalUnitsForUser(user)
-		}
-	}
-
-	async getOrganisationWithAllChildren(organisationId: number): Promise<number[]> {
-		let organisationWithChildren = (await this.organisationalUnitService.getOrgDropdown())
-			.getOrgWithChildren(organisationId)
-
-		let allChildren: OrganisationalUnit[] | undefined = organisationWithChildren ? this.getAllChildOrganisations(organisationWithChildren) : undefined
-
-		let childOrganisationIds = allChildren ? allChildren.map(child => child.id) : [organisationId]
-		childOrganisationIds = [...new Set(childOrganisationIds)]
-
-		return childOrganisationIds
-	}
-
-	getAllChildOrganisations(organisation: OrganisationalUnit): OrganisationalUnit[] {
-		return [organisation, organisation.children.flatMap(child => this.getAllChildOrganisations(child))].flatMap(item => item)
-	}
-
 	async getValidationErrors(submitModel: SubmitOrganisationsModel){
 		const validationErrors = await validate(submitModel)
-			const errors = validationErrors.map(error => error.constraints).map(constraint => Object.values(constraint)).flat()			
+			const errors = validationErrors.map(error => error.constraints).map(constraint => Object.values(constraint)).flat()
 			return errors
 	}
 

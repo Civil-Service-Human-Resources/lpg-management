@@ -1,12 +1,18 @@
 import { CacheableObject } from "lib/cacheableObject";
 import { FormattedOrganisation } from "./FormattedOrganisation";
+import {Type} from 'class-transformer'
 
 export class FormattedOrganisationList implements CacheableObject {
-    constructor(
-        public formattedOrganisationalUnitNames: FormattedOrganisation[]
-    ) {}
+    private _id: string
+    @Type(() => FormattedOrganisation)
+    public formattedOrganisations: FormattedOrganisation[]
+
+    constructor(id: string, formattedOrganisations: FormattedOrganisation[]) {
+        this._id = id
+        this.formattedOrganisations = formattedOrganisations
+    }
 
     getId(): string {
-        return this.formattedOrganisationalUnitNames.map(org => org.id).join(",");
+        return this._id
     }
 }

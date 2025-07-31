@@ -26,15 +26,15 @@
 {% endset -%}
 
 {% if sessionFlash.errors %}
-{{ govukErrorSummary({
-titleText: "There is a problem",
-errorList: [
-{
-text: sessionFlash.errors[0],
-href: "#parent"
-}
-]
-}) }}
+    {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+            {
+                text: sessionFlash.errors[0],
+                href: "#parent"
+            }
+        ]
+    }) }}
 {% endif %}
 
 
@@ -46,29 +46,19 @@ href: "#parent"
     <div class="govuk-form-group">
 
         {% set radioItems = [
-        {
-        value: pageModel.firstOrganisationOption.id,
-        text: pageModel.firstOrganisationOption.name,
-        checked: true
-        }
+            {
+                value: pageModel.firstOrganisationOption.id,
+                text: pageModel.firstOrganisationOption.name,
+                checked: true
+            }
         ] %}
 
-        {% if pageModel.showTypeaheadOption %}
         {% set radioItems = (radioItems.push({
-        value: "other",
-        text: "Other organisation",
-        conditional: {
-        html: typeAheadHtml
-        }
-        }), radioItems) %}
-        {% endif %}
-
-        {% set radioItems = (radioItems.push({
-        value: "multiple-organisations",
-        text: "Multiple organisations (max " + pageModel.maxAllowedOrganisations + ")",
-        conditional: {
-        html: multipleOrganisationSelectionHtml
-        }
+                value: "multiple-organisations",
+                text: "Multiple organisations (max " + pageModel.maxAllowedOrganisations + ")",
+                conditional: {
+                    html: multipleOrganisationSelectionHtml
+                }
         }), radioItems) %}
 
         {% if pageModel.showWholeCivilServiceOption %}
@@ -79,19 +69,19 @@ href: "#parent"
         {% endif %}
 
         {{ govukRadios({
-        name: "organisation",
-        fieldset: {
-        legend: {
-        text: "Which organisation would you like to report on?",
-              classes: "govuk-fieldset__legend--s"
-        }
-        },
-        items: radioItems
+            name: "organisation",
+            fieldset: {
+            legend: {
+                    text: "Which organisation would you like to report on?",
+                          classes: "govuk-fieldset__legend--s"
+                }
+            },
+            items: radioItems
         }) }}
     </div>
           {{ govukButton({
-          text: "Continue",
-          preventDoubleClick: true
+              text: "Continue",
+              preventDoubleClick: true
           }) }}
       </form>
   </div>
