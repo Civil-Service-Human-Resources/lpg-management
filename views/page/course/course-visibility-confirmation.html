@@ -1,0 +1,40 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ "Confirm course visibility update" }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/courses/visibility/" + course.id %}
+
+
+{% block content %}
+
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m govuk-!-font-size-36">Confirm course visibility update</h1>
+
+            {% if visibilityValue == "PRIVATE" %}
+                <p class="govuk-body">You are about to change the visibility of this course to Private</p>
+                <p class="govuk-body">By making it private, this course will be removed from the public course catalogue and will no longer appear in general search results. New learners will not be able to discover or book this course unless via direct link by an administrator of the course.</p>
+                <p class="govuk-body">Learners who are already enrolled or have completed the course will still be able to see and access it in their learning records</p>
+            {% elif visibilityValue == "PUBLIC" %}
+                <p class="govuk-body">You are about to change the visibility of this course to Public</p>
+                <p class="govuk-body">By making it public, this course will become discoverable in the main course catalogue and will appear in search results for all relevant users.</p>
+                <p class="govuk-body">Learners will now be able to discover or book this course</p>
+            {% endif %}
+
+            <p class="govuk-body no-margin">This action can be reversed at any time.</p>
+
+            <form action="/content-management/courses/visibility/{{course.id}}/confirm" method="post">
+                <input type="hidden" name="visibility" value="{{visibilityValue}}" />
+                <div class="button-container">
+                    {{ govukButton({
+                        text: "Update course visibility"
+                    }) }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
