@@ -1,13 +1,13 @@
 export class GetOrganisationsFormattedParams {
-	constructor(public domain?: string, public otherOrganisationIds?: number[], public isTierOne?: boolean) {}
+	constructor(public domain?: string, public organisationId?: number[], public isTierOne?: boolean) {}
 
 	public getCacheKey() {
-		if (this.domain === undefined && this.otherOrganisationIds === undefined) {
+		if (this.domain === undefined && this.organisationId === undefined) {
 			return 'all'
 		} else {
 			const parts = [this.domain]
-			if (this.otherOrganisationIds !== undefined) {
-				parts.push(...this.otherOrganisationIds.map(o => o.toString()))
+			if (this.organisationId !== undefined) {
+				parts.push(...this.organisationId.map(o => o.toString()))
 			}
 			if (this.isTierOne !== undefined) {
 				parts.push(...this.isTierOne.toString())
