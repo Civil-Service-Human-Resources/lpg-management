@@ -45,7 +45,7 @@ export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.local.learn.civilservi
 
 export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 
-export type validLogLevel = 'debug' | 'info'
+export type validLogLevel = 'trace' | 'debug' | 'info'
 
 export const LOGGING_LEVEL: validLogLevel = env.LOGGING_LEVEL as validLogLevel
 

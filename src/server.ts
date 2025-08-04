@@ -15,7 +15,7 @@ appInsights.start()
 import { getLogger } from './utils/logger'
 const logger = getLogger('server')
 
-if (config.LOGGING_LEVEL === 'debug') {
+if (config.LOGGING_LEVEL === 'trace') {
 	const originalStdErr = process.stderr.write.bind(process.stderr);
 	logger.info("ENABLING TRACE LOGS")
 	process.stderr.write = (chunk?: any, encodingOrCb?: string | Function, cb?: Function): boolean => {
