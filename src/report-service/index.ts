@@ -1,6 +1,5 @@
 import {ReportServiceClient} from './reportServiceClient'
 import {CourseService} from 'lib/courseService'
-import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
 import {Report} from '../controllers/reporting/Report'
 import {BasicCoursePageModel, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
@@ -12,12 +11,14 @@ import {RequestCourseCompletionExportRequestResponse} from './model/requestCours
 import {ReportServicePageModelService} from './reportServicePageModelService'
 import {DateStartEnd} from '../controllers/command/dateStartEndCommand'
 import {ReportResponse} from '../csl-service/model/ReportResponse'
-import { OrganisationalUnit } from 'src/csrs/model/organisationalUnit'
+import {FormattedOrganisation} from '../csl-service/model/FormattedOrganisation'
+import {ChooseOrganisationsModel} from '../controllers/reporting/model/chooseOrganisationsModel'
+import {CslService} from '../csl-service/service/cslService'
 
 export class ReportService {
 
 	constructor(private client: ReportServiceClient, private courseService: CourseService,
-				private organisationalUnitService: OrganisationalUnitService, private cslService: CslServiceClient,
+				private cslServiceClient: CslServiceClient, private cslService: CslService,
 				private reportServicePageModelService: ReportServicePageModelService,
 				private reportParameterFactory: ReportParameterFactory) {
 	}
@@ -37,20 +38,15 @@ export class ReportService {
 		return Buffer.from(report, 'binary')
 	}
 
-	async getChooseCoursePage(selectedOrganisations: {name: string, id: string, abbreviation: string|undefined}[] | undefined): Promise<ChooseCoursesModel> {
+	async getChooseCoursePage(selectedOrganisations: FormattedOrganisation[] | undefined): Promise<ChooseCoursesModel> {
 		let requiredLearning: BasicCoursePageModel[] = []
 		let organisationDepartments: string = ""
-		if(selectedOrganisations){			
+		if(selectedOrganisations){
 			organisationDepartments  = selectedOrganisations.length > 1 ? selectedOrganisations.map(organisation => organisation.abbreviation || organisation.name).join(" - ") : selectedOrganisations[0].name
-			const hierarchy: OrganisationalUnit[] = (await Promise.all(selectedOrganisations.map(async organisation => await this.organisationalUnitService.getOrgHierarchy(parseInt(organisation.id))))).flat()
-
-			const departmentCodes = hierarchy.map(o => o.code)
-			const requiredLearningResponse = await this.courseService.getRequiredLearning(departmentCodes)
-			requiredLearning = requiredLearningResponse.results
-				.map(c => new BasicCoursePageModel(c.id, c.title))
-
+			const requiredLearningResponse = await this.cslServiceClient.getRequiredLearningForOrganisations(selectedOrganisations.map(o => o.id),)
+			requiredLearning = requiredLearningResponse.getAllCourses()
 		}
-		
+
 		const allCourses = (await this.courseService.getCourseDropdown())
 			.map(course => new BasicCoursePageModel(course.id, course.name))
 
@@ -64,19 +60,19 @@ export class ReportService {
 			.filter(course => courseIds.includes(course.id))
 	}
 
-	async getCourseCompletionsReportGraphPage(session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {		
+	async getCourseCompletionsReportGraphPage(session: CourseCompletionsSession): Promise<{pageModel: CourseCompletionsGraphModel, session: CourseCompletionsSession}> {
 		const params = this.reportParameterFactory.generateCourseAggregationsParams(session)
-		const chart = await this.cslService.getCourseCompletionsAggregationsChart(params)
+		const chart = await this.cslServiceClient.getCourseCompletionsAggregationsChart(params)
 		return await this.buildPageModelFromChart(chart, session)
 	}
 
 	async submitExportRequest(session: CourseCompletionsSession): Promise<RequestCourseCompletionExportRequestResponse> {
-		const params = this.reportParameterFactory.generateReportRequestParams(session)		
-		return await this.cslService.postCourseCompletionsExportRequest(params)
+		const params = this.reportParameterFactory.generateReportRequestParams(session)
+		return await this.cslServiceClient.postCourseCompletionsExportRequest(params)
 	}
 
 	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
-		return await this.cslService.downloadCourseCompletionsReport(urlSlug)
+		return await this.cslServiceClient.downloadCourseCompletionsReport(urlSlug)
 	}
 
 	private async buildPageModelFromChart(chart: Chart, session: CourseCompletionsSession) {
@@ -97,4 +93,18 @@ export class ReportService {
 		}
 	}
 
+	async getChooseOrganisationPage(user: any) {
+		const formattedOtherOrganisations = await this.getOrganisationsForUser(user)
+		const pageModel = new ChooseOrganisationsModel({
+			name: user.organisationalUnit.name,
+			id: user.organisationalUnit.id
+		}, formattedOtherOrganisations)
+
+		pageModel.showWholeCivilServiceOption = user.isReportingAllOrganisations()
+		return pageModel
+	}
+
+	async getOrganisationsForUser(user: any): Promise<FormattedOrganisation[]> {
+		return await this.cslService.getOrganisationTypeaheadForUser(user)
+	}
 }

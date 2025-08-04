@@ -11,6 +11,7 @@ import {
 import {ReportResponse} from './model/ReportResponse'
 import { FormattedOrganisationListResponse } from './model/FormattedOrganisationListResponse'
 import {GetOrganisationsFormattedParams} from './model/getOrganisationsFormattedParams'
+import {OrgRequiredLearningMap} from './model/orgRequiredLearningMap'
 
 export class CslServiceClient {
 
@@ -18,6 +19,7 @@ export class CslServiceClient {
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL = "/admin/reporting/course-completions/request-source-data"
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
+	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
 
 	constructor(private readonly _http: OauthRestService) { }
 
@@ -75,5 +77,13 @@ export class CslServiceClient {
 		})
 
 		return plainToInstance(FormattedOrganisationListResponse, response.data)
+	}
+
+	async getRequiredLearningForOrganisations(organisationIds: number[]) {
+		const response = await this._http.getRequest({
+			url: this.GET_REQUIRED_LEARNING_MAP_URL,
+			params: {organisationIds}
+		})
+		return plainToInstance(OrgRequiredLearningMap, response.data)
 	}
 }
