@@ -1,4 +1,5 @@
 /* tslint:disable:no-var-requires */
+import * as debug from 'debug'
 import * as config from './config'
 process.env.TZ = config.SERVER_DEFAULT_TZ
 export const appInsights = require('applicationinsights')
@@ -14,18 +15,18 @@ appInsights.start()
 import { getLogger } from './utils/logger'
 const logger = getLogger('server')
 
-if (config.LOGGING_LEVEL === 'trace') {
-	debug.enable("*")
+if (config.LOGGING_LEVEL === 'debug') {
 	const originalStdErr = process.stderr.write.bind(process.stderr);
 	logger.info("ENABLING TRACE LOGS")
 	process.stderr.write = (chunk?: any, encodingOrCb?: string | Function, cb?: Function): boolean => {
 		if (typeof chunk == 'string') {
 			// trace == silly in winston terms
-			logger.silly(`NODE INTERNAL: ${chunk}`, encodingOrCb)
+			logger.debug(`NODE INTERNAL: ${chunk}`, encodingOrCb)
 			return true
 		}
 		return originalStdErr(chunk, encodingOrCb, cb)
 	}
+	debug.enable("*")
 	logger.info("TRACE LOGS ENABLED")
 }
 
@@ -51,7 +52,6 @@ import {ReportingController} from './controllers/reporting/reportingController'
 import {createConfig} from './lib/http/restServiceConfigFactory'
 import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
 import {HEALTH_CHECK} from './config'
-import * as debug from 'debug'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
