@@ -12,6 +12,23 @@ appInsights.start()
 /* tslint:enable */
 
 import { getLogger } from './utils/logger'
+const logger = getLogger('server')
+
+if (config.LOGGING_LEVEL === 'trace') {
+	debug.enable("*")
+	const originalStdErr = process.stderr.write.bind(process.stderr);
+	logger.info("ENABLING TRACE LOGS")
+	process.stderr.write = (chunk?: any, encodingOrCb?: string | Function, cb?: Function): boolean => {
+		if (typeof chunk == 'string') {
+			// trace == silly in winston terms
+			logger.silly(`NODE INTERNAL: ${chunk}`, encodingOrCb)
+			return true
+		}
+		return originalStdErr(chunk, encodingOrCb, cb)
+	}
+	logger.info("TRACE LOGS ENABLED")
+}
+
 import * as express from 'express'
 
 import {Properties} from 'ts-json-properties'
@@ -21,7 +38,6 @@ import * as errorController from './lib/errorHandler'
 
 Properties.initialize()
 
-const logger = getLogger('server')
 const {PORT = 3005} = process.env
 const app = express()
 const ctx = new ApplicationContext()
@@ -35,6 +51,7 @@ import {ReportingController} from './controllers/reporting/reportingController'
 import {createConfig} from './lib/http/restServiceConfigFactory'
 import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
 import {HEALTH_CHECK} from './config'
+import * as debug from 'debug'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)

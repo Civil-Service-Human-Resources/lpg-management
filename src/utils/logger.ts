@@ -1,11 +1,6 @@
 import { format, transports, createLogger } from 'winston'
 const { combine, timestamp, printf } = format
 import * as config from '../config'
-import * as debug from 'debug'
-import * as winston from 'winston'
-import {validLogLevel} from '../config'
-
-let logger: winston.Logger
 
 const loggingFormat = printf(info => JSON.stringify({
 	timestamp: info.timestamp,
@@ -14,38 +9,18 @@ const loggingFormat = printf(info => JSON.stringify({
 	name: info.name
 }))
 
-export function createNodeLogger(loggingLevel: validLogLevel) {
-	const WINSTON_CONFIG = {
-		level: loggingLevel.toLowerCase(),
-		format: combine(
-			timestamp(),
-			loggingFormat
-		),
-		transports: [
-			new transports.Console()
-		]
-	}
-
-	logger = createLogger(WINSTON_CONFIG)
-
-	if (config.LOGGING_LEVEL === 'silly') {
-		debug.enable("*")
-		const serverLogger = logger.child({name: 'internals'})
-		const originalStdErr = process.stderr.write.bind(process.stderr);
-		serverLogger.info("ENABLING TRACE LOGS")
-		process.stderr.write = (chunk?: any, encodingOrCb?: string | Function, cb?: Function): boolean => {
-			if (typeof chunk == 'string') {
-				serverLogger.silly(`NODE INTERNAL: ${chunk}`, encodingOrCb)
-				return true
-			}
-			return originalStdErr(chunk, encodingOrCb, cb)
-		}
-		serverLogger.info("TRACE LOGS ENABLED")
-	}
+const WINSTON_CONFIG = {
+	level: config.LOGGING_LEVEL.toLowerCase(),
+	format: combine(
+		timestamp(),
+		loggingFormat
+	),
+	transports: [
+		new transports.Console()
+	]
 }
 
-
-
+const logger = createLogger(WINSTON_CONFIG)
 
 export const getLogger = (loggerName: string) => {
 	return logger.child({name: loggerName})
