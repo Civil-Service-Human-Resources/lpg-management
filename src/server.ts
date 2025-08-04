@@ -20,7 +20,6 @@ if (config.LOGGING_LEVEL === 'trace') {
 	logger.info("ENABLING TRACE LOGS")
 	process.stderr.write = (chunk?: any, encodingOrCb?: string | Function, cb?: Function): boolean => {
 		if (typeof chunk == 'string') {
-			// trace == silly in winston terms
 			logger.debug(`NODE INTERNAL: ${chunk}`, encodingOrCb)
 			return true
 		}
