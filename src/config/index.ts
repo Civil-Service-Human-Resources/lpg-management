@@ -1,6 +1,7 @@
 import 'reflect-metadata'
 import * as dotenv from 'dotenv'
 import * as path from 'path'
+import {createNodeLogger} from '../utils/logger'
 
 export const COURSE_COMPLETIONS_FEEDBACK = {
 	MESSAGE: process.env.COURSE_COMPLETIONS_FEEDBACK_MESSAGE || "",
@@ -34,6 +35,12 @@ function getBoolean(rawValue: string) {
 
 const env: Record<string, string> = new Proxy({}, {get: getEnv})
 
+export type validLogLevel = 'silly' | 'debug' | 'info'
+
+export const LOGGING_LEVEL: validLogLevel = env.LOGGING_LEVEL as validLogLevel
+
+createNodeLogger(LOGGING_LEVEL)
+
 export const HEALTH_CHECK = set({
 	enabled: getBoolean(env.HEALTH_CHECK_ENABLED) || true,
 	endpoint: env.HEALTH_CHECK_ENDPOINT || undefined
@@ -44,8 +51,6 @@ export const APPLICATIONINSIGHTS_CONNECTION_STRING = env.APPLICATIONINSIGHTS_CON
 export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.local.learn.civilservice.gov.uk/lpgdevcontent'
 
 export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
-
-export const LOGGING_LEVEL = env.LOGGING_LEVEL
 
 export const FRONTEND = set({
 	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001',
