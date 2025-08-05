@@ -6,6 +6,7 @@ import {buildSessionMiddleware} from './session'
 import {RequestMiddleware} from './requestMiddleware'
 import {Express} from 'express'
 import {getLogger} from '../utils/logger'
+import {SecurityMiddleware} from './securityMiddleware'
 
 const logger = getLogger('middleware')
 
@@ -21,5 +22,6 @@ export const middleware: Middleware[] = [
 	new NunjucksMiddleware(),
 	new AssetMiddleware(),
 	buildSessionMiddleware(),
-	new RequestMiddleware()
+	new RequestMiddleware(),
+	new SecurityMiddleware()
 ]

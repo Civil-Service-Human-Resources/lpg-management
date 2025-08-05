@@ -10,7 +10,7 @@ const loggingFormat = printf(info => JSON.stringify({
 }))
 
 const WINSTON_CONFIG = {
-	level: config.LOGGING_LEVEL.toLowerCase(),
+	level: (config.LOGGING_LEVEL == 'trace' ? 'debug' : config.LOGGING_LEVEL).toLowerCase(),
 	format: combine(
 		timestamp(),
 		loggingFormat

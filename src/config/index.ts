@@ -45,7 +45,9 @@ export const CONTENT_URL = env.CONTENT_URL || 'http://cdn.local.learn.civilservi
 
 export const CONTENT_CONTAINER = env.CONTENT_CONTAINER || 'lpgdevcontent'
 
-export const LOGGING_LEVEL = env.LOGGING_LEVEL
+export type validLogLevel = 'trace' | 'debug' | 'info'
+
+export const LOGGING_LEVEL: validLogLevel = env.LOGGING_LEVEL as validLogLevel
 
 export const FRONTEND = set({
 	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001',
