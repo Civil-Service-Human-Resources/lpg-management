@@ -55,6 +55,7 @@
                 </label>
             </h3>
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <fieldset class="govuk-fieldset module-selector">
                     <div class="autocomplete-wrapper autocomplete-wrapper-organisations ">
                         <select class = "autocomplete__organisations" name="parent" id="parent">

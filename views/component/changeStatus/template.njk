@@ -6,6 +6,7 @@
         <p class="govuk-body">This course has not been published. You can still add events.</p>
         {% if identity.hasLearningPublish() %}
             <form method="post" action="/content-management/courses/{{course.id}}/status/publish">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {{ govukButton({
                     text: "Publish this course"
                 }) }}
@@ -23,6 +24,7 @@
         {% if identity.hasLearningUnarchive() %}
             <p class="govuk-body">Unarchiving this course will move it into draft.</p>
             <form method="post" action="/content-management/courses/{{course.id}}/status/unarchive">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
             {{ govukButton({
                 text: "Unarchive this course",
                 classes: "red-button"
