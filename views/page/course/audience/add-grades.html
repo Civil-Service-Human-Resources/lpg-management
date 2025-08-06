@@ -15,28 +15,29 @@
             <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</h1>
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.audience.pageTitle.addGrades }}</h2>
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {% set gradeList = [] %}
                 {% for grade in grades._embedded.grades %}
                     {% set list = gradeList.push({
                         "text": grade.name,
                         "value": grade.code
                     }) %}
-                {% endfor %} 
+                {% endfor %}
                 {{ govukCheckboxes({
                 idPrefix: "grades",
                 name: "grades",
-                hint:{ 
+                hint:{
                     text: "Check all the grades that are required for this audience"
                 },
                 fieldset: {
                     legend: {
                         text: "Which grade is this audience for?",
                         isPageHeading: true,
-                        classes: "govuk-fieldset__legend--s" 
+                        classes: "govuk-fieldset__legend--s"
                     }
                 },
                 items: gradeList
-                        
+
                 }) }}
                 <div class="button-container">
                     {{ govukButton({

@@ -39,6 +39,7 @@
             {% endif %}
 
             <form action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/{{event.id}}" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <input type="hidden" name="eventJson" value="{{eventJson}}" />
                 {% if errors.fields.minDate or errors.fields.dateRanges or errors.fields.invalidDate %}
                     {{ govukDateInput({
@@ -119,6 +120,7 @@
 
             {% if event.dateRanges and event.dateRanges.length > 0 %}
             <form action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/location/create" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
             <input type="hidden" name="eventJson" value="{{eventJson}}" />
 
             <div class="button-container">

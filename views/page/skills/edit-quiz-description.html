@@ -27,6 +27,7 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-m govuk-!-font-size-36">Edit description</h1>
         <form action="/content-management/skills/edit-quiz-description" method="post" class="course-form">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
 
             {{ govukTextarea({
                 name: "description",

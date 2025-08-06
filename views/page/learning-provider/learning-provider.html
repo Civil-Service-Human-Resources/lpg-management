@@ -19,8 +19,9 @@
             {% set errors = sessionFlash.errors %}
 
             {{ errorSummary(errors.fields) }}
-            
+
             <form action="/content-management/learning-providers/learning-provider" method="post" class="module-form">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <fieldset class="govuk-fieldset">
                  {% if errors.fields %}
                     {{ govukInput({

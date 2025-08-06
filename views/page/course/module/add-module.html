@@ -67,6 +67,7 @@
                 <div class="added-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
                     {% if identity.hasLearningCreate() %}
                         <form action="/content-management/courses/{{ course.id }}/add-module" method="post" class="module-form">
+                            <input type="hidden" name="_csrf" value="{{ _csrf }}">
                             <h3 class="govuk-heading-m">Add a module</h3>
                             <p class="govuk-body">Choose the type of learning you wish to add to the course</p>
                             <fieldset class="govuk-fieldset module-selector">

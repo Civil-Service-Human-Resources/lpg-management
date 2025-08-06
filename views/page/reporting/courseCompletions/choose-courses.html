@@ -19,6 +19,7 @@
     <span class="govuk-caption-m">Reporting</span>
     <h1 class="govuk-heading-l">{{ i18n.reporting.course_completions.title }}</h1>
     <form method="post" action="/reporting/course-completions/choose-courses">
+        <input type="hidden" name="_csrf" value="{{ _csrf }}">
         <div class="govuk-form-group">
         {% set requiredLearningOptions = pageModel.requiredLearningList %}
         {% if pageModel.requiredLearningList | length > 1 %}

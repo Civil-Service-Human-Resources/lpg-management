@@ -1,4 +1,5 @@
 /* tslint:disable:no-var-requires */
+import * as debug from 'debug'
 import * as config from './config'
 process.env.TZ = config.SERVER_DEFAULT_TZ
 export const appInsights = require('applicationinsights')
@@ -12,6 +13,22 @@ appInsights.start()
 /* tslint:enable */
 
 import { getLogger } from './utils/logger'
+const logger = getLogger('server')
+
+if (config.LOGGING_LEVEL === 'trace') {
+	const originalStdErr = process.stderr.write.bind(process.stderr);
+	logger.info("ENABLING TRACE LOGS")
+	process.stderr.write = (chunk?: any, encodingOrCb?: string | Function, cb?: Function): boolean => {
+		if (typeof chunk == 'string') {
+			logger.debug(`NODE INTERNAL: ${chunk}`, encodingOrCb)
+			return true
+		}
+		return originalStdErr(chunk, encodingOrCb, cb)
+	}
+	debug.enable("*")
+	logger.info("TRACE LOGS ENABLED")
+}
+
 import * as express from 'express'
 
 import {Properties} from 'ts-json-properties'
@@ -21,7 +38,6 @@ import * as errorController from './lib/errorHandler'
 
 Properties.initialize()
 
-const logger = getLogger('server')
 const {PORT = 3005} = process.env
 const app = express()
 const ctx = new ApplicationContext()

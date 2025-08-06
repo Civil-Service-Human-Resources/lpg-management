@@ -60,6 +60,7 @@
             <p class="govuk-body">No domains have been added yet</p>
         {% endif %}
         <form id="add-domain-form" action="/content-management/organisations/{{ organisationalUnit.id }}/domains" method="post">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
             {% if errors.fields %}
                 {% if errors.fields.domainToAdd == 'domains.validation.domains.invalid' %}
                     {{ govukInput ({

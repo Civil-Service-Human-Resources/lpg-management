@@ -22,7 +22,7 @@
         {% else %}
             <p class="govuk-body">Your audience has not been configured</strong></p>
         {% endif %}
-        
+
         <dl class="govuk-summary-list">
             <div class="govuk-summary-list__row">
               <dt class="govuk-summary-list__key">
@@ -54,6 +54,7 @@
                 <dd class="govuk-summary-list__actions">
                     {% if audience.areasOfWork and audience.areasOfWork.length > 0 %}
                         <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/area-of-work/delete" method="post" class="audience-link">
+                            <input type="hidden" name="_csrf" value="{{ _csrf }}">
                             <button class="govuk-link linkish-button delete-audience-configuration-link" aria-label="Delete area of work" role="link">Delete</button>
                         </form>
                     {% else %}
@@ -75,7 +76,7 @@
                 </dd>
                 <dd class="govuk-summary-list__actions">
                     {% if audience.interests.length > 0 %}
-                        <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/core-learning/delete" method="post" class="audience-link"><button class="govuk-link linkish-button" aria-label="Delete core learning" role="link">Delete</button></form>
+                        <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/core-learning/delete" method="post" class="audience-link"><input type="hidden" name="_csrf" value="{{ _csrf }}"><button class="govuk-link linkish-button" aria-label="Delete core learning" role="link">Delete</button></form>
                     {% else %}
                         <a href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/add-core-learning" class="govuk-link audience-link">Add <span class="govuk-visually-hidden"> core learning</span></a>
                     {% endif %}
@@ -96,6 +97,7 @@
                 <dd class="govuk-summary-list__actions">
                     {% if audience.grades and audience.grades.length > 0 %}
                         <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades/delete" method="post" class="audience-link">
+                            <input type="hidden" name="_csrf" value="{{ _csrf }}">
                             <button class="govuk-link linkish-button" aria-label="Delete grades" role="link">Delete</button>
                         </form>
                     {% else %}
@@ -122,6 +124,7 @@
                 <dd class="govuk-summary-list__actions">
                     {% if audience.requiredBy or audience.frequency %}
                         <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/required-learning/delete" method="post" class="audience-link">
+                            <input type="hidden" name="_csrf" value="{{ _csrf }}">
                             <button class="govuk-link linkish-button" aria-label="Delete required learning" role="link">Delete</button>
                         </form>
                     {% else %}

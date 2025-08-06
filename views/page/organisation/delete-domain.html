@@ -18,6 +18,7 @@
                 Hello
             {% endfor %}
             <form action="/content-management/organisations/{{ organisationalUnit.id }}/domains/{{ domain.id }}/delete" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {{ govukRadios({
                     idPrefix: "removeFromSubOrgs",
                     name: "removeFromSubOrgs",

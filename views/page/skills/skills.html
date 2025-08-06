@@ -142,6 +142,7 @@
 
 
         <form action="/content-management/skills/publish-quiz" method="post" class="course-form">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
             <div class="button-container">
                 {{ govukButton({
                 text: "Publish"

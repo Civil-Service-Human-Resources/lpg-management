@@ -58,6 +58,7 @@
             <input id="accessToken" type="hidden" value="{{identity.accessToken}}">
             <input id="courseCatalogueUrl" type="hidden" value="{{courseCatalogueUrl}}">
             <form id="detailsForm" action="/content-management/courses/{{course.id}}/module-file/{{ module.id }}" method="post" class="module-form">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <input id="courseId" name="courseId" type="hidden" value="{{course.id}}">
                 <input id="mediaId" name="mediaId" type="hidden" value="{{media.id}}">
                 <input id="fileType" name="fileType" type="hidden" value="{{type}}">

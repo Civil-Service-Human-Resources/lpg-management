@@ -18,6 +18,7 @@
 {{ errorSummary(errors.fields) }}
 <div class="govuk-grid-row">
     <form action="/content-management/skills/generate-report" method="post">
+        <input type="hidden" name="_csrf" value="{{ _csrf }}">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">Skills reporting</h1>
         <div class="reports-container">

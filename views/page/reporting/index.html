@@ -57,6 +57,7 @@
             <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
             {{ errorSummary(bookingPageModel.getErrorFields() if bookingPageModel) }}
             <form action="/reporting/booking-information#booking-information" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {{ datePicker(
                     {
                         id: 'booking',
@@ -92,6 +93,7 @@
                 <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
                 {{ errorSummary(learnerRecordPageModel.getErrorFields() if learnerRecordPageModel) }}
                 <form action="/reporting/learner-record#learning-record" method="post">
+                    <input type="hidden" name="_csrf" value="{{ _csrf }}">
                     {{ datePicker(
                         {
                             id: 'learningRecord',

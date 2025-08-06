@@ -21,6 +21,7 @@
             <p class="govuk-body"><strong>Deleting a token is permanent.</strong></p>
 
             <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/delete" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {{ govukButton({
                     text: "Delete token",
                     classes: "button-red",

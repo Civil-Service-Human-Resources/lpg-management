@@ -22,7 +22,9 @@ if (successMsg !== undefined && errorMsg !== undefined) {
 		const panel = document.getElementsByClassName("course-completions-report__panel")[0]
 		const form = panel.getElementsByClassName("course-completions-report__form")[0]
 		let button = panel.getElementsByClassName("course-completions-report__button")[0]
-		if (button !== undefined) {
+		let csrf = document.querySelector("[name='_csrf']").getAttribute("value")
+		console.log(csrf)
+		if (button !== undefined && csrf !== null) {
 			const submitUrl = button.getAttribute('data-submiturl')
 			form.remove()
 			panel.appendChild(button)
@@ -31,7 +33,11 @@ if (successMsg !== undefined && errorMsg !== undefined) {
 				e.target.disabled = true
 				try {
 					const resp = await fetch(`${window.location.origin}${submitUrl}`, {
-						method: 'POST'
+						method: 'POST',
+						body: JSON.stringify({
+							_csrf: csrf
+						}),
+						headers :{"Content-type": "application/json; charset=UTF-8"}
 					})
 					success = resp.ok
 				} catch (e) {

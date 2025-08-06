@@ -29,6 +29,7 @@
 
         <div class="govuk-form-group">
             <form action="/content-management/skills/delete-quiz" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <fieldset class="govuk-fieldset">
                     {{ govukRadios({
                         classes: "govuk-radios--inline",

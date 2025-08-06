@@ -22,7 +22,7 @@
 {% set errors = sessionFlash.errors %}
 {{ errorSummary(errors.fields) }}
 
-<div class="govuk-grid-row">    
+<div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{ organisationalUnit.name }}</h1>
         <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.agencyToken.title.editAgencyToken if organisationalUnit.agencyToken else i18n.agencyToken.title.addAgencyToken }}</h2>
@@ -39,6 +39,7 @@
                     <li class="list-details list-domain">
                         <p class="govuk-body title">{{ domain }}</p>
                         <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/domain/delete" method="post">
+                            <input type="hidden" name="_csrf" value="{{ _csrf }}">
                             <input class="hidden" name="domainToDelete" value="{{ domain }}" aria-label="{{ domain }}">
                             <button class="govuk-link linkish-button" type="submit">Remove</button>
                         </form>
@@ -50,6 +51,7 @@
         {% endif %}
 
         <form id="add-domain-form" action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/domain" method="post">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
             {% if errors.fields.domains %}
                 {% if errors.fields.domains == 'agencyToken.validation.domains.invalid' %}
                     {{ govukInput ({
@@ -67,7 +69,7 @@
                         name: "domainToAdd",
                         errorMessage: { text: i18n.agencyToken.validation.domains.invalidFormat }
                     }) }}
-                {% elif errors.fields.domains == 'agencyToken.validation.domains.empty' %}                    
+                {% elif errors.fields.domains == 'agencyToken.validation.domains.empty' %}
                     {{ govukInput ({
                         label: { text: "Add domain" },
                         classes: "govuk-input--width-10",
@@ -106,7 +108,7 @@
         {% else %}
         <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token" method="post">
         {% endif %}
-
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
             {% if errors.fields.capacity == 'agencyToken.validation.capacity.lessThanCurrentUsage' %}
                 {{ govukInput ({
                     label: { text: i18n.agencyToken.text.numberOfSpaces },
