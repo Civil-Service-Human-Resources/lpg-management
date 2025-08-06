@@ -1,16 +1,22 @@
 import {BasicCoursePageModel} from '../../controllers/reporting/model/chooseCoursesModel'
+import {CourseWithTitle} from './courseWithTitle'
 
 export class OrgRequiredLearningMap {
-	public departmentMap: Map<number, {id: string, title: string}[]>
+	public departmentMap: {[key: number]: CourseWithTitle[]}
 
-	getAllCourses() {
-		const requiredLearningSet: Set<BasicCoursePageModel> = new Set()
-		this.departmentMap.forEach((departments) => {
+	public getAllCourses() {
+		const _ids: string[] = []
+		const requiredLearning: BasicCoursePageModel[] = []
+		for (const _id of Object.keys(this.departmentMap)) {
+			const departments = this.departmentMap[parseInt(_id)]
 			departments.forEach(c => {
-				requiredLearningSet.add(new BasicCoursePageModel(c.id, c.title))
+				if (!_ids.includes(c.id)) {
+					requiredLearning.push(new BasicCoursePageModel(c.id, c.title))
+					_ids.push(c.id)
+				}
 			})
-		})
+		}
 		const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
-		return [...requiredLearningSet].sort((a, b) => { return collator.compare(a.text, b.text!)})
+		return requiredLearning.sort((a, b) => { return collator.compare(a.text, b.text!)})
 	}
 }

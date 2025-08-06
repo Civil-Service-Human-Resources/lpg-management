@@ -71,8 +71,8 @@ export class CourseCompletionsController extends Controller {
 					pageModelKey: 'filterModelErrors'
 				}
 			}, [this.checkForCourseIdsInSessionMiddleware()]),
-			getRequest('/choose-organisations', this.renderChooseOrganisations()),
-			postRequestWithBody('/choose-organisations', this.chooseOrganisations(),
+			getRequest('/choose-organisation', this.renderChooseOrganisations()),
+			postRequestWithBody('/choose-organisation', this.chooseOrganisations(),
 				{
 					dtoClass: ChooseOrganisationsModel,
 					onError: {
@@ -219,31 +219,31 @@ export class CourseCompletionsController extends Controller {
 			let currentUser = request.user
 			const pageModel = plainToInstance(ChooseOrganisationsModel, response.locals.input as ChooseOrganisationsModel)
 			const session = fetchCourseCompletionSessionObject(request)
-			session.organisationFormSelection = request.body.organisation
+			session.organisationFormSelection = pageModel.organisation
 
 			const selectedOrganisationIds = pageModel.getSelectedOrganisationIds()
 
 			session.selectedOrganisations = selectedOrganisationIds ? (await this.reportService.getOrganisationsForUser(currentUser))
 				.filter(o => selectedOrganisationIds.includes(o.id)) : undefined
 
-			if (session.hasSelectedOrganisations()) {
-				saveCourseCompletionSessionObject(session, request, async () => {
-					if (session.hasSelectedCourses()) {
-						response.redirect(`/reporting/course-completions`)
-					} else {
-						response.redirect(`/reporting/course-completions/choose-courses`)
-					}
-				})
-			}
-			else {
-				request.session!.sessionFlash = {
-					errors: ["You need to select an organisation before continuing."]
-				}
+			if (!session.hasSelectedOrganisations()) {
 
+				const errors = {fields: {organisation: ["You need to select an organisation before continuing."]}, size: 1}
+				request.session!.sessionFlash = {
+					errors,
+				}
 				return request.session!.save(() => {
 					response.redirect('/reporting/course-completions/choose-organisation')
 				})
 			}
+
+			saveCourseCompletionSessionObject(session, request, async () => {
+				if (session.hasSelectedCourses()) {
+					response.redirect(`/reporting/course-completions`)
+				} else {
+					response.redirect(`/reporting/course-completions/choose-courses`)
+				}
+			})
 
 		}
 	}
@@ -267,9 +267,9 @@ export class CourseCompletionsController extends Controller {
 				selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
 				if (selectedCourses.length !== courseIds.length) {
 					this.logger.debug("Course selections were invalid")
-					const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
+					const errors = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
 					request.session!.sessionFlash = {
-						error,
+						errors,
 					}
 					return request.session!.save(() => {
 						response.redirect('/reporting/course-completions/choose-courses')

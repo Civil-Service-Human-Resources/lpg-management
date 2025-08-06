@@ -2,6 +2,8 @@ import {DashboardTimePeriodType} from './dashboardTimePeriod'
 import {CourseCompletionsGraphModel} from './courseCompletionsGraphModel'
 import {LearningSelection} from './chooseCoursesModel'
 import {FormattedOrganisation} from '../../../csl-service/model/FormattedOrganisation'
+import {OrganisationSelection} from './chooseOrganisationsModel'
+import {Type} from 'class-transformer'
 
 export class CourseCompletionsSession {
 
@@ -13,14 +15,19 @@ export class CourseCompletionsSession {
 	public endMonth?: string
 	public endYear?: string
 
+	@Type(() => FormattedOrganisation)
+	public selectedOrganisations?: FormattedOrganisation[]
+
 	constructor(public userEmail: string,
 		public fullName: string,
 		public userUid: string,
-		public organisationFormSelection?: string,
-		public selectedOrganisations?: FormattedOrganisation[],
+		public organisationFormSelection?: OrganisationSelection | number,
+		selectedOrganisations?: FormattedOrganisation[],
 		public learningSelection?: LearningSelection,
 		public courses?: {name: string, id: string}[],
-		public chartData?: {text: string}[][]) { }
+		public chartData?: {text: string}[][]) {
+		this.selectedOrganisations = selectedOrganisations
+	}
 
 	static create(userDetails: any) {
 		return new CourseCompletionsSession(userDetails.username, userDetails.fullName, userDetails.uid)

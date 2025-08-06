@@ -20,6 +20,13 @@ export class ChooseOrganisationsModel {
     public multipleOrganisationsOptions: FormattedOrganisation[]
 
     // Input attributes:
+    @Transform(({value}) => {
+        if (!["allOrganisations", "multiple-organisations"].includes(value)) {
+            return parseInt(value)
+        } else {
+            return value
+        }
+    })
     public organisation: OrganisationSelection | number
 
     @ValidateIf(o => o.organisation === 'multiple-organisations')
@@ -33,11 +40,10 @@ export class ChooseOrganisationsModel {
         if (typeof value === "string") {
             return [value]
         } else {
-            return [...value]
+            return [...(value as string[]).map(orgId => parseInt(orgId))]
         }
     })
-    public organisationSearch: string[]
-
+    public organisationSearch: number[]
 
     constructor(
         firstOrganisationOption: { id: string, name: string },
@@ -48,12 +54,12 @@ export class ChooseOrganisationsModel {
     }
 
     public getSelectedOrganisationIds(): number[] | undefined {
-        if (!Number.isNaN(this.organisation)) {
-            return [this.organisation as number]
+        if (this.organisation == 'multiple-organisations') {
+            return this.organisationSearch
         } else if (this.organisation == 'allOrganisations') {
             return undefined
         } else {
-            return this.organisationSearch.map(parseInt)
+            return [this.organisation]
         }
     }
 

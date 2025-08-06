@@ -41,7 +41,6 @@ import {LearnerRecord} from './learner-record'
 import {InviteFactory} from './learner-record/model/factory/inviteFactory'
 import {BookingFactory} from './learner-record/model/factory/bookingFactory'
 import {Booking} from './learner-record/model/booking'
-import {ReportingController} from './controllers/reportingController'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
 import {ReportService} from './report-service'
 import {SkillsController} from './controllers/skills/skillsController'
@@ -126,7 +125,6 @@ export class ApplicationContext {
 	agencyTokenHttpService: AgencyTokenHttpService
 	agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
 	searchController: SearchController
-	reportingController: ReportingController
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
 	skillsController: SkillsController
@@ -184,7 +182,7 @@ export class ApplicationContext {
 
 		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.cslService = new CslService(this.formattedOrganisationListCache, this.cslServiceClient)
-		
+
 		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
 
 		this.courseTypeaheadCache = new CourseTypeAheadCache(redisClient, config.ORG_REDIS.ttl_seconds)
@@ -310,8 +308,6 @@ export class ApplicationContext {
 		)
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
-
-		this.reportingController = new ReportingController(this.reportService, this.csrsService, this.organisationalUnitService, this.cslService)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 

@@ -79,7 +79,7 @@ export class CslServiceClient {
 		return plainToInstance(FormattedOrganisationListResponse, response.data)
 	}
 
-	async getRequiredLearningForOrganisations(organisationIds: number[]) {
+	async getRequiredLearningForOrganisations(organisationIds: number[]): Promise<OrgRequiredLearningMap> {
 		const response = await this._http.getRequest({
 			url: this.GET_REQUIRED_LEARNING_MAP_URL,
 			params: {organisationIds}
