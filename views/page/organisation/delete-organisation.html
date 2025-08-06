@@ -15,6 +15,7 @@
         <p class="govuk-body">By deleting this organisation, you will delete any sub-divisions which are associated to it.</p>
         <p class="govuk-body">This action is irreversible.</p>
         <form action="/content-management/organisations/{{ organisationalUnit.id }}/delete" method="post">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
             <fieldset class="govuk-fieldset">
                 {{ govukButton({
                     text: "Remove organisation",

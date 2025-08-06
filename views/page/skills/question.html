@@ -36,6 +36,7 @@
             <h1 id="header" class="govuk-heading-m govuk-!-font-size-36">Add new question</h1>
             <form action="/content-management/skills/add-new-question" method="post" class="course-form">
         {% endif %}
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <input type="hidden" id="questionId" name="questionId" value="{{question.id}}">
                 <input id="accessToken" type="hidden" value="{{identity.accessToken}}">
                 <input id="courseCatalogueUrl" type="hidden" value="{{courseCatalogueUrl}}">
