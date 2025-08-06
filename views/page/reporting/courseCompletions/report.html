@@ -50,6 +50,7 @@
       }) }}
       {% endset %}
     <form method='post'>
+      <input type="hidden" name="_csrf" value="{{ _csrf }}">
       {{ govukRadios({
         classes: "govuk-radios--small",
         name: "timePeriod",
@@ -140,6 +141,7 @@
             </p>
           {% else %}
             <form class='course-completions-report__form' action='{{ downloadUrl }}' method='POST'>
+              <input type="hidden" name="_csrf" value="{{ _csrf }}">
               {{ govukButton({
                 text: "Request report (CSV)",
                 preventDoubleClick: true,
