@@ -4,8 +4,11 @@ import { JsonpathService } from '../../lib/jsonpathService';
 import { CivilServant } from '../model/civilServant';
 import { OrganisationalUnit } from '../model/organisationalUnit';
 import { OrganisationalUnitService } from './organisationalUnitService';
+import {getLogger} from '../../utils/logger'
 
 export class CsrsService {
+
+	private logger = getLogger('csrsService')
 
 	static readonly DEPARTMENT_CODE_TO_NAME_MAPPING = 'CsrsService.departmentCodeToNameMapping'
 	static readonly AREAS_OF_WORK = 'CsrsService.areasOfWork'
@@ -196,22 +199,38 @@ export class CsrsService {
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
 	}
 
-	async getOrganisationalUnitsForUser(user: any) {
+	async getOrganisationalUnitsForUser(user: any): Promise<OrganisationalUnit[]> {
 		let organisationList = await this.listOrganisationalUnitsForTypehead()
-		let organisationsForTypeahead = organisationList.typeahead
+		let allOrganisations = new Map<number, OrganisationalUnit> (organisationList.typeahead.map((o): [number, OrganisationalUnit] => [o.id, o]))
 
 		if(!this.userCanAccessAllOrganisations(user)){
-			organisationsForTypeahead = organisationsForTypeahead.filter((org) => org.domains.map(domain => domain.domain).includes(user.getDomain()))
-			if(user.isTierOneReporter()){
-				const userTierOneOrganisation: OrganisationalUnit = user.organisationalUnit.getTopTierOrganisation(organisationsForTypeahead)
-				organisationsForTypeahead = organisationsForTypeahead.filter(organisation => !organisation.isTierOneOrganisation() || organisation.id === userTierOneOrganisation.id)
-			}
-			else{
-				organisationsForTypeahead = organisationsForTypeahead.filter(organisation => !organisation.isTierOneOrganisation())
-			}
-		}
+			const filteredOrgs = []
+			const filteredOrgIds: number[] = []
 
-		return organisationsForTypeahead
+			for (const organisationalUnit of allOrganisations.values()) {
+				if (organisationalUnit.doesDomainExist(user.getDomain()) && !filteredOrgIds.includes(organisationalUnit.id)) {
+					filteredOrgs.push(organisationalUnit)
+					filteredOrgIds.push(organisationalUnit.id)
+					if (user.isTierOneReporter()) {
+						let parentId: number | null = organisationalUnit.getParentId()
+						while (parentId !== null && !filteredOrgIds.includes(parentId)) {
+							this.logger.debug(`Fetching parent ID for tier 1 reporting ${parentId}`)
+							const parentOrg = allOrganisations.get(parentId)
+							if (parentOrg !== undefined) {
+								filteredOrgs.push(parentOrg)
+								filteredOrgIds.push(parentOrg.id)
+								parentId = parentOrg.getParentId()
+							}
+						}
+					}
+				}
+			}
+			const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' })
+			filteredOrgs.sort((a, b) => { return collator.compare(a.formattedName!, b.formattedName!)})
+			return filteredOrgs
+		} else {
+			return [...allOrganisations.values()]
+		}
 	}
 
 	userCanAccessAllOrganisations(user: any){
