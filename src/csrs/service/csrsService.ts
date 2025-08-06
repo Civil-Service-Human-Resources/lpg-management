@@ -4,8 +4,11 @@ import { JsonpathService } from '../../lib/jsonpathService';
 import { CivilServant } from '../model/civilServant';
 import { OrganisationalUnit } from '../model/organisationalUnit';
 import { OrganisationalUnitService } from './organisationalUnitService';
+import {getLogger} from '../../utils/logger'
 
 export class CsrsService {
+
+	private logger = getLogger('csrsService')
 
 	static readonly DEPARTMENT_CODE_TO_NAME_MAPPING = 'CsrsService.departmentCodeToNameMapping'
 	static readonly AREAS_OF_WORK = 'CsrsService.areasOfWork'
@@ -211,6 +214,7 @@ export class CsrsService {
 					if (user.isTierOneReporter()) {
 						let parentId: number | null = organisationalUnit.getParentId()
 						while (parentId !== null && !filteredOrgIds.includes(parentId)) {
+							this.logger.debug(`Fetching parent ID for tier 1 reporting ${parentId}`)
 							const parentOrg = allOrganisations.get(parentId)
 							if (parentOrg !== undefined) {
 								filteredOrgs.push(parentOrg)
