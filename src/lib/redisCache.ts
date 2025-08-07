@@ -12,6 +12,7 @@ export abstract class Cache<T> {
 
 	async get(id: string | number): Promise<T | undefined> {
 		const key = this.getFormattedKey(id)
+		this.logger.debug(`Fetching object with cache key ${key}`)
 		try {
 			const response = await promisify(this.redisClient.get).bind(this.redisClient)(key)
 			if (response === null) {
