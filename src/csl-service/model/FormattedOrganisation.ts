@@ -3,7 +3,7 @@ export class FormattedOrganisation {
         public id: number,
         public name: string,
         public code: string,
-        public abbreviation?: string,
+        public abbreviation: string = '',
     ) {}
 
     getName() {
@@ -13,7 +13,7 @@ export class FormattedOrganisation {
 
     getAbbreviationOrName() {
         let orgNameOrAbbreviation = this.abbreviation
-        if (orgNameOrAbbreviation == undefined) {
+        if (orgNameOrAbbreviation === '') {
             orgNameOrAbbreviation = this.getName()
         }
         return orgNameOrAbbreviation

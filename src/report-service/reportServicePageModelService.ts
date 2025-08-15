@@ -21,10 +21,7 @@ export class ReportServicePageModelService {
 	}
 
 	buildCourseBreakdownTable(chartData: Chart) {
-		return [
-			...this.tableService.convertDataToNumericTable(chartData.courseBreakdown),
-			...this.tableService.convertDataToNumericTable(new Map<string, number>([["Total", chartData.total]]))
-		]
+		return this.tableService.convertBreakdownToNumericTable(chartData.breakdowns)
 	}
 
 	async buildReportingFilterSummary(session: CourseCompletionsSession) {

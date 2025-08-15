@@ -14,6 +14,7 @@ import {ReportResponse} from '../csl-service/model/ReportResponse'
 import {FormattedOrganisation} from '../csl-service/model/FormattedOrganisation'
 import {ChooseOrganisationsModel} from '../controllers/reporting/model/chooseOrganisationsModel'
 import {CslService} from '../csl-service/service/cslService'
+import {Table} from './model/course-completions/table'
 
 export class ReportService {
 
@@ -42,7 +43,7 @@ export class ReportService {
 		let requiredLearning: BasicCoursePageModel[] = []
 		let organisationDepartments: string = ""
 		if(selectedOrganisations){
-			organisationDepartments  = selectedOrganisations.length > 1 ? selectedOrganisations.map(organisation => organisation.abbreviation || organisation.name).join(" - ") : selectedOrganisations[0].name
+			organisationDepartments  = selectedOrganisations.length > 1 ? selectedOrganisations.map(o => o.getAbbreviationOrName()).join(" - ") : selectedOrganisations[0].name
 			const requiredLearningResponse = await this.cslServiceClient.getRequiredLearningForOrganisations(selectedOrganisations.map(o => o.id),)
 			requiredLearning = requiredLearningResponse.getAllCourses()
 		}
@@ -78,13 +79,13 @@ export class ReportService {
 	private async buildPageModelFromChart(chart: Chart, session: CourseCompletionsSession) {
 		const chartJsConfig = this.reportServicePageModelService.buildCourseCompletionsChart(chart)
 		const tableModel = this.reportServicePageModelService.buildNoJSTable(chartJsConfig.noJSChart)
-		let courseBreakdown: {text: string, format?: string | undefined}[][] = []
+		let courseBreakdowns: Table[] = []
 		if (session.courses && session.courses.length > 0) {
-			courseBreakdown = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
+			courseBreakdowns = this.reportServicePageModelService.buildCourseBreakdownTable(chart)
 		}
 		const filterSummary = await this.reportServicePageModelService.buildReportingFilterSummary(session)
 		const graphPageModel = new CourseCompletionsGraphModel(chartJsConfig, tableModel,
-			courseBreakdown, filterSummary, chart.hasRequest, session.timePeriod, session.startDay, session.startMonth,
+			courseBreakdowns, filterSummary, chart.hasRequest, session.timePeriod, session.startDay, session.startMonth,
 			session.startYear, session.endDay, session.endMonth, session.endYear)
 		session.chartData = graphPageModel.table
 		return {

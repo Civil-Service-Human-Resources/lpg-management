@@ -1,18 +1,25 @@
 import {Type} from 'class-transformer'
 
+export class CourseBreakdown {
+	public title: string
+	@Type(() => Map)
+	public rows: Map<string, number>
+	public total: number
+}
+
 export class Chart {
 	public timezone: string
 	@Type(() => Map)
 	public chart: Map<string, number>;
-	@Type(() => Map)
-	public courseBreakdown: Map<string, number>;
+	@Type(() => CourseBreakdown)
+	public breakdowns: CourseBreakdown[];
 	public total: number;
 	public delimiter: string;
 	public hasRequest: boolean;
 
-	constructor(chart: Map<string, number>, courseBreakdown: Map<string, number>, total: number) {
+	constructor(chart: Map<string, number>, breakdowns: CourseBreakdown[], total: number) {
 		this.chart = chart
-		this.courseBreakdown = courseBreakdown
+		this.breakdowns = breakdowns
 		this.total = total
 	}
 
