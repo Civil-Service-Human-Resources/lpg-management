@@ -59,9 +59,9 @@
         </div>
       {% endset -%}
 
+        {{ pageModel.requiredLearningList }}
       {% set radioItems = [] %}
-
-      {% if pageModel.showRequiredLearningOption %}
+      {% if pageModel.requiredLearningList | length > 0 %}
 
         {% set radioItems = (radioItems.push({
           value: "requiredLearning",
@@ -80,7 +80,7 @@
         conditional: {
             html: courseSearch
         },
-        checked: pageModel.showRequiredLearningOption == false
+        checked: pageModel.requiredLearningList | length == 0
     }), radioItems) %}
 
     {% set radioItems = (radioItems.push({
