@@ -7,9 +7,9 @@ import * as chaiAsPromised from 'chai-as-promised'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import {CacheService} from '../../../../src/lib/cacheService'
-import { OrganisationalUnitService } from '../../../../src/csrs/service/organisationalUnitService'
-import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
-import { OrganisationalUnit } from '../../../../src/csrs/model/organisationalUnit'
+import {OrganisationalUnitService} from '../../../../src/csrs/service/organisationalUnitService'
+import {OrganisationalUnitTypeAhead} from '../../../../src/csrs/model/organisationalUnitTypeAhead'
+import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
