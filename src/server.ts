@@ -69,7 +69,7 @@ const reportService = buildReportService(createConfig({
 	url: config.REPORT_SERVICE.url,
 	timeout: config.REPORT_SERVICE.timeout,
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
-}), ctx.auth, ctx.courseService, ctx.organisationalUnitService, ctx.cslServiceClient)
+}), ctx.auth, ctx.courseService, ctx.cslServiceClient, ctx.cslService)
 
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
@@ -89,7 +89,6 @@ app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
 app.use(ctx.organisationController.router)
 app.use(ctx.searchController.router)
-app.use(ctx.reportingController.router)
 app.use(ctx.skillsController.router)
 app.use(ctx.agencyTokenController.router)
 logger.debug(`Registering ${controllers.length} controllers`)

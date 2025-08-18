@@ -10,6 +10,8 @@ import {
 } from '../report-service/model/requestCourseCompletionExportRequestResponse'
 import {ReportResponse} from './model/ReportResponse'
 import { FormattedOrganisationListResponse } from './model/FormattedOrganisationListResponse'
+import {GetOrganisationsFormattedParams} from './model/getOrganisationsFormattedParams'
+import {OrgRequiredLearningMap} from './model/orgRequiredLearningMap'
 
 export class CslServiceClient {
 
@@ -17,6 +19,7 @@ export class CslServiceClient {
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL = "/admin/reporting/course-completions/request-source-data"
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
+	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
 
 	constructor(private readonly _http: OauthRestService) { }
 
@@ -49,7 +52,7 @@ export class CslServiceClient {
 		return plainToInstance(Chart, response.data)
 	}
 
-	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {				
+	async postCourseCompletionsExportRequest(params: CreateReportRequestParams): Promise<RequestCourseCompletionExportRequestResponse> {
 		const response = await this._http.postRequest<RequestCourseCompletionExportRequestResponse>({url: this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL, data: params.getAsApiParams()})
 		return plainToInstance(RequestCourseCompletionExportRequestResponse, response.data)
 	}
@@ -67,15 +70,20 @@ export class CslServiceClient {
 		})
 	}
 
-	async getFormattedOrganisationList(organisationIds: number[], domain?: string): Promise<FormattedOrganisationListResponse> {				
-		let url = `${this.FORMATTED_LIST_URL}?${organisationIds.map(id => `organisationId=${id}`).join('&')}`
-		if(domain){
-			url += `&domain=${domain}`
-		}
+	async getFormattedOrganisationList(params?: GetOrganisationsFormattedParams): Promise<FormattedOrganisationListResponse> {
 		const response = await this._http.getRequest({
-			url
-		})		
+			url: this.FORMATTED_LIST_URL,
+			params
+		})
 
 		return plainToInstance(FormattedOrganisationListResponse, response.data)
+	}
+
+	async getRequiredLearningForOrganisations(organisationIds: number[]): Promise<OrgRequiredLearningMap> {
+		const response = await this._http.getRequest({
+			url: this.GET_REQUIRED_LEARNING_MAP_URL,
+			params: {organisationIds}
+		})
+		return plainToInstance(OrgRequiredLearningMap, response.data)
 	}
 }

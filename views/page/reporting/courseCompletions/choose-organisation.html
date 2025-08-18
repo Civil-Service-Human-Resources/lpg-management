@@ -26,15 +26,15 @@
 {% endset -%}
 
 {% if sessionFlash.errors %}
-{{ govukErrorSummary({
-titleText: "There is a problem",
-errorList: [
-{
-text: sessionFlash.errors[0],
-href: "#parent"
-}
-]
-}) }}
+    {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [
+            {
+                text: sessionFlash.errors[0],
+                href: "#parent"
+            }
+        ]
+    }) }}
 {% endif %}
 
 
@@ -44,55 +44,44 @@ href: "#parent"
     <h1 class="govuk-heading-l">Completed learning</h1>
       <form action="/reporting/course-completions/choose-organisation" method="post">
           <input type="hidden" name="_csrf" value="{{ _csrf }}">
-    <div class="govuk-form-group">
+            <div class="govuk-form-group">
+                {% set radioItems = [
+                    {
+                        value: pageModel.firstOrganisationOption.id,
+                        text: pageModel.firstOrganisationOption.name,
+                        checked: true
+                    }
+                ] %}
 
-        {% set radioItems = [
-        {
-        value: pageModel.firstOrganisationOption.id,
-        text: pageModel.firstOrganisationOption.name,
-        checked: true
-        }
-        ] %}
+                {% set radioItems = (radioItems.push({
+                        value: "multiple-organisations",
+                        text: "Multiple organisations (max " + pageModel.maxAllowedOrganisations + ")",
+                        conditional: {
+                            html: multipleOrganisationSelectionHtml
+                        }
+                }), radioItems) %}
 
-        {% if pageModel.showTypeaheadOption %}
-        {% set radioItems = (radioItems.push({
-        value: "other",
-        text: "Other organisation",
-        conditional: {
-        html: typeAheadHtml
-        }
-        }), radioItems) %}
-        {% endif %}
+                {% if pageModel.showWholeCivilServiceOption %}
+                  {% set radioItems = (radioItems.push({
+                    value: "allOrganisations",
+                    text: "Whole Civil Service"
+                  }), radioItems) %}
+                {% endif %}
 
-        {% set radioItems = (radioItems.push({
-        value: "multiple-organisations",
-        text: "Multiple organisations (max " + pageModel.maxAllowedOrganisations + ")",
-        conditional: {
-        html: multipleOrganisationSelectionHtml
-        }
-        }), radioItems) %}
-
-        {% if pageModel.showWholeCivilServiceOption %}
-          {% set radioItems = (radioItems.push({
-            value: "allOrganisations",
-            text: "Whole Civil Service"
-          }), radioItems) %}
-        {% endif %}
-
-        {{ govukRadios({
-        name: "organisation",
-        fieldset: {
-        legend: {
-        text: "Which organisation would you like to report on?",
-              classes: "govuk-fieldset__legend--s"
-        }
-        },
-        items: radioItems
-        }) }}
-    </div>
+                {{ govukRadios({
+                    name: "organisation",
+                    fieldset: {
+                    legend: {
+                            text: "Which organisation would you like to report on?",
+                                  classes: "govuk-fieldset__legend--s"
+                        }
+                    },
+                    items: radioItems
+                }) }}
+            </div>
           {{ govukButton({
-          text: "Continue",
-          preventDoubleClick: true
+              text: "Continue",
+              preventDoubleClick: true
           }) }}
       </form>
   </div>

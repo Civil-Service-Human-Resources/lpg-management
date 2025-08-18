@@ -116,47 +116,56 @@
     {% else %}
       <p class='govuk-body'>No data available</p>
     {% endif %}
-    <h2 class='govuk-heading-m'>Course breakdown</h2>
-    {% if pageModel.courseBreakdown.length > 0 %}
-      {{ govukTable({
-        firstCellIsHeader: true,
-        head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
-        rows: pageModel.courseBreakdown
-      }) }}
+    {% if pageModel.courseBreakdowns.length > 0 %}
+      {% for breakdown in pageModel.courseBreakdowns %}
+        <h2 class='govuk-heading-m'>
+          {% if pageModel.courseBreakdowns.length == 1 %}
+            {{ breakdown.title }}
+          {% else %}
+            Course breakdown for {{ breakdown.title }}
+          {% endif %}
+        </h2>
+        {{ govukTable({
+          firstCellIsHeader: true,
+          head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
+          rows: breakdown.rows
+        }) }}
+      {% endfor %}
     {% else %}
+      <h2 class='govuk-heading-m'>Course breakdown</h2>
       <p class='govuk-body'>Course breakdown is not available</p>
     {% endif %}
     {% if identity.hasMvpExport() %}
-    {% set downloadUrl = '/reporting/course-completions/download-source-data' %}
-    <div class='course-completions-report'>
-      <h2 class='govuk-heading-m'>Download source data</h2>
-      {% if pageModel.chart %}
-        <p class='govuk-body'>
-          The data used to generate this graph can be requested for download (CSV).
-        </p>
-        <div class='course-completions-report__panel'>
-          {% if pageModel.hasRequestedReport %}
-            <p class='govuk-body'>
-              {{ i18n.reporting.course_completions.report_download.success_message }}
-            </p>
-          {% else %}
-            <form class='course-completions-report__form' action='{{ downloadUrl }}' method='POST'>
-              <input type="hidden" name="_csrf" value="{{ _csrf }}"/>
-              {{ govukButton({
-                text: "Request report (CSV)",
-                preventDoubleClick: true,
-                classes: "course-completions-report__button",
-                attributes: {
-                  "data-submiturl": downloadUrl + "/js"
-                }
-              }) }}
-            </form>
-          {% endif %}
-        </div>
-      {% else %}
-        <p class='govuk-body'>No data available</p>
-      {% endif %}
-    </div>
+      {% set downloadUrl = '/reporting/course-completions/download-source-data' %}
+      <div class='course-completions-report'>
+        <h2 class='govuk-heading-m'>Download source data</h2>
+        {% if pageModel.chart %}
+          <p class='govuk-body'>
+            The data used to generate this graph can be requested for download (CSV).
+          </p>
+          <div class='course-completions-report__panel'>
+            {% if pageModel.hasRequestedReport %}
+              <p class='govuk-body'>
+                {{ i18n.reporting.course_completions.report_download.success_message }}
+              </p>
+            {% else %}
+              <form class='course-completions-report__form' action='{{ downloadUrl }}' method='POST'>
+                <input type="hidden" name="_csrf" value="{{ _csrf }}"/>
+                {{ govukButton({
+                  text: "Request report (CSV)",
+                  preventDoubleClick: true,
+                  classes: "course-completions-report__button",
+                  attributes: {
+                    "data-submiturl": downloadUrl + "/js"
+                  }
+                }) }}
+              </form>
+            {% endif %}
+          </div>
+        {% else %}
+          <p class='govuk-body'>No data available</p>
+        {% endif %}
+      </div>
     {% endif %}
   </div>
 </div>
