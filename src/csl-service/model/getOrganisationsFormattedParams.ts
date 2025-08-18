@@ -10,7 +10,7 @@ export class GetOrganisationsFormattedParams {
 				parts.push(...this.organisationId.map(o => o.toString()))
 			}
 			if (this.isTierOne !== undefined) {
-				parts.push(...this.isTierOne.toString())
+				parts.push(this.isTierOne.toString())
 			}
 			return parts.join(",")
 		}

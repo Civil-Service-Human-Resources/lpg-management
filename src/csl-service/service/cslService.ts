@@ -14,7 +14,7 @@ export class CslService {
         if (!user.isUnrestrictedOrganisation()) {
             params = new GetOrganisationsFormattedParams(user.getDomain(), user.otherOrganisationalUnits.map((o: OrganisationalUnit) => {
                 return o.id
-            }))
+            }), user.isTierOneReporter())
         }
         const cacheKey = params.getCacheKey()
         let typeahead = await this.formattedOrganisationListCache.get(cacheKey)
