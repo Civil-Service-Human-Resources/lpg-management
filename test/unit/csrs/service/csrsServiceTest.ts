@@ -7,10 +7,10 @@ import * as chaiAsPromised from 'chai-as-promised'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import {CacheService} from '../../../../src/lib/cacheService'
-import { OrganisationalUnitService } from '../../../../src/csrs/service/organisationalUnitService'
-import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
-import { OrganisationalUnit } from '../../../../src/csrs/model/organisationalUnit'
-import { Domain } from 'src/csrs/model/domain'
+import {OrganisationalUnitService} from '../../../../src/csrs/service/organisationalUnitService'
+import {OrganisationalUnitTypeAhead} from '../../../../src/csrs/model/organisationalUnitTypeAhead'
+import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
+import {Domain} from 'src/csrs/model/domain'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -329,7 +329,7 @@ describe('CsrsService tests', () => {
 			expect(actualResult).to.equal(expectedResult)
 		})
 
-		it("should return a list of organisations without the user's Tier 1 org if user is not a Tier 1 reporter and not a super reporter", async () => {
+		it("should return a list of organisations for a tier 1 reporter", async () => {
 			let mockUser = {
 				isSuperReporter: () => {
 					return false
@@ -341,7 +341,7 @@ describe('CsrsService tests', () => {
 					return false
 				},
 				isTierOneReporter: () => {
-					return false
+					return true
 				},
 				getDomain: () => {
 					return "user-domain.gov.uk"
@@ -354,31 +354,33 @@ describe('CsrsService tests', () => {
 			let organisation1 = new OrganisationalUnit()
 			organisation1.id = 1
 			organisation1.parentId = null
-			organisation1.domains = [userDomain]
+			organisation1.formattedName = "Org 1"
+			organisation1.domains = []
 
 			let organisation2 = new OrganisationalUnit()
 			organisation2.id = 2
 			organisation2.parentId = 1
+			organisation1.formattedName = "Org 1 | Org 2"
 			organisation2.domains = [userDomain]
 
 			let organisation3 = new OrganisationalUnit()
 			organisation3.id = 3
 			organisation3.parentId = 1
+			organisation1.formattedName = "Org 1 | Org 3"
 			organisation3.domains = [userDomain]
 
-			let listOrganisationalUnitsForTypehead = sinon
+			csrsService.listOrganisationalUnitsForTypehead = sinon
 				.stub()
 				.returns({
 					typeahead: [organisation1, organisation2, organisation3]
 				})
 
-			csrsService.listOrganisationalUnitsForTypehead = listOrganisationalUnitsForTypehead
-
 			let actualResult = await csrsService.getOrganisationalUnitsForUser(mockUser)
 
-			expect(actualResult.length).to.equal(2)
-			expect(actualResult[0].id).to.equal(2)
-			expect(actualResult[1].id).to.equal(3)
+			expect(actualResult.length).to.equal(3)
+			expect(actualResult[0].id).to.equal(1)
+			expect(actualResult[1].id).to.equal(2)
+			expect(actualResult[2].id).to.equal(3)
 
 		})
 
