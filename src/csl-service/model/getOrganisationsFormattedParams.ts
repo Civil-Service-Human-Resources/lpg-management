@@ -1,5 +1,5 @@
 export class GetOrganisationsFormattedParams {
-	constructor(public domain?: string, public organisationId?: number[], public isTierOne?: boolean) {}
+	constructor(public domain?: string, public organisationId?: number[], public tierOne?: boolean) {}
 
 	public getCacheKey() {
 		if (this.domain === undefined && this.organisationId === undefined) {
@@ -9,8 +9,8 @@ export class GetOrganisationsFormattedParams {
 			if (this.organisationId !== undefined) {
 				parts.push(...this.organisationId.map(o => o.toString()))
 			}
-			if (this.isTierOne !== undefined) {
-				parts.push(this.isTierOne.toString())
+			if (this.tierOne !== undefined) {
+				parts.push(this.tierOne.toString())
 			}
 			return parts.join(",")
 		}
