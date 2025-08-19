@@ -15,6 +15,7 @@ import {OrgRequiredLearningMap} from './model/orgRequiredLearningMap'
 
 export class CslServiceClient {
 
+	private RESET_CACHE = '/reset-cache'
 	private COURSE_COMPLETIONS_AGGREGATIONS_URL = "/admin/reporting/course-completions/generate-graph"
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_REQUEST_URL = "/admin/reporting/course-completions/request-source-data"
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
@@ -24,7 +25,7 @@ export class CslServiceClient {
 	constructor(private readonly _http: OauthRestService) { }
 
 	async clearCourseCache(courseId: string) {
-		await this._http.get(`/reset-cache/course/${courseId}`)
+		await this._http.get(`${this.RESET_CACHE}/course/${courseId}`)
 	}
 
 	async cancelBooking(courseId: string, moduleId: string, eventId: string, bookingId: string, dto: CancelBookingDto) {
@@ -85,5 +86,11 @@ export class CslServiceClient {
 			params: {organisationIds}
 		})
 		return plainToInstance(OrgRequiredLearningMap, response.data)
+	}
+
+	async clearOrganisationCache() {
+		await this._http.getRequest({
+			url: `${this.RESET_CACHE}/organisations`
+		})
 	}
 }
