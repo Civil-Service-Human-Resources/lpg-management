@@ -216,7 +216,8 @@ export class ApplicationContext {
 			this.organisationalUnitCache,
 			this.organisationalUnitTypeaheadCache,
 			this.organisationalUnitClient,
-			this.agencyTokenCapacityUsedHttpService)
+			this.agencyTokenCapacityUsedHttpService,
+			this.cslServiceClient)
 
 		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.organisationalUnitService)
 
