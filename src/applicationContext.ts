@@ -68,6 +68,7 @@ import {redisClient} from './lib/redis'
 import {ProfileCache} from './csrs/profileCache'
 import { CslService } from './csl-service/service/cslService'
 import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
+import {LearningPlanCache} from './csl-service/learningPlanCache'
 
 export class ApplicationContext {
 
@@ -109,6 +110,7 @@ export class ApplicationContext {
 	dateRangeFactory: DateRangeFactory
 	dateRangeValidator: Validator<DateRange>
 	cslServiceConfig: RestServiceConfig
+	learningPlanCache: LearningPlanCache
 	cslServiceClient: CslServiceClient
 	learnerRecord: LearnerRecord
 	learnerRecordConfig: RestServiceConfig
@@ -177,8 +179,10 @@ export class ApplicationContext {
 			timeout: config.AUTHENTICATION.timeout,
 		})
 
+		this.learningPlanCache = new LearningPlanCache(redisClient, 1)
+
 		this.cslServiceConfig = createConfig(config.CSL_SERVICE)
-		this.cslServiceClient = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+		this.cslServiceClient = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth), this.learningPlanCache)
 
 		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.cslService = new CslService(this.formattedOrganisationListCache, this.cslServiceClient)

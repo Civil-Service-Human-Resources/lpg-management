@@ -1,7 +1,6 @@
 import {OauthRestService} from 'lib/http/oauthRestService'
 import {CancelBookingDto} from './model/CancelBookingDto'
 import {plainToInstance} from 'class-transformer'
-import {EventResponse} from './model/EventResponse'
 import {Chart} from '../report-service/model/chart'
 import {CreateReportRequestParams} from '../report-service/model/course-completions/createReportRequestParams'
 import {GetCourseCompletionParameters} from '../report-service/model/course-completions/getCourseCompletionParameters'
@@ -12,6 +11,9 @@ import {ReportResponse} from './model/ReportResponse'
 import { FormattedOrganisationListResponse } from './model/FormattedOrganisationListResponse'
 import {GetOrganisationsFormattedParams} from './model/getOrganisationsFormattedParams'
 import {OrgRequiredLearningMap} from './model/orgRequiredLearningMap'
+import {LearningPlanCache} from './learningPlanCache'
+import {CancelEventResponse} from './model/CancelEventResponse'
+import {BookingResponse} from './model/booklngResponse'
 
 export class CslServiceClient {
 
@@ -22,27 +24,40 @@ export class CslServiceClient {
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
 	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
 
-	constructor(private readonly _http: OauthRestService) { }
+	constructor(private readonly _http: OauthRestService, private readonly learningPlanCache: LearningPlanCache) { }
 
 	async clearCourseCache(courseId: string) {
 		await this._http.get(`${this.RESET_CACHE}/course/${courseId}`)
 	}
 
 	async cancelBooking(courseId: string, moduleId: string, eventId: string, bookingId: string, dto: CancelBookingDto) {
-		const response = await this._http.postRequest<EventResponse>(
+		const response = await this._http.postRequest<BookingResponse>(
 			{
 				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/cancel_booking`,
 				data: dto
 			})
-		return plainToInstance(EventResponse, response.data)
+		await this.learningPlanCache.delete(plainToInstance(BookingResponse, response.data).learner)
 	}
 
 	async approveBooking(courseId: string, moduleId: string, eventId: string, bookingId: string) {
-		const response = await this._http.postRequest<EventResponse>(
+		const response = await this._http.postRequest<BookingResponse>(
 			{
 				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/bookings/${bookingId}/approve_booking`
 			})
-		return plainToInstance(EventResponse, response.data)
+		await this.learningPlanCache.delete(plainToInstance(BookingResponse, response.data).learner)
+	}
+
+	async cancelEvent(courseId: string, moduleId: string, eventId: string, cancellationReason: string) {
+		const response = await this._http.postRequest({
+			url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/cancel`,
+			data: {
+				reason: cancellationReason
+			}
+		})
+		plainToInstance(CancelEventResponse, response.data)
+			.learners.forEach(learner => {
+				this.learningPlanCache.delete(learner)
+		})
 	}
 
 	async getCourseCompletionsAggregationsChart(params: GetCourseCompletionParameters): Promise<Chart> {
@@ -60,15 +75,6 @@ export class CslServiceClient {
 
 	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
 		return await this._http.getFile(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
-	}
-
-	async cancelEvent(courseId: string, moduleId: string, eventId: string, cancellationReason: string) {
-		return await this._http.postRequest({
-			url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/cancel`,
-			data: {
-				reason: cancellationReason
-			}
-		})
 	}
 
 	async getFormattedOrganisationList(params?: GetOrganisationsFormattedParams): Promise<FormattedOrganisationListResponse> {
