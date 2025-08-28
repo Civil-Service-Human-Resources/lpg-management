@@ -284,6 +284,12 @@
 		"blended": "Blended"
 	},
 	"reporting": {
+		"validation": {
+			"organisations": {
+				"tooManyOrganisations": "Please select a valid number of organisations",
+				"minimumOrganisations":  "Please choose at least one organisation before proceeding"
+			}
+		},
 		"course_completions": {
 			"title": "Completed learning",
 			"validation": {

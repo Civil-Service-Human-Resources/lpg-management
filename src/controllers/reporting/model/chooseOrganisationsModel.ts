@@ -31,10 +31,10 @@ export class ChooseOrganisationsModel {
 
     @ValidateIf(o => o.organisation === 'multiple-organisations')
     @ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS, {
-        message: `You have chosen too many organisations. You can choose up to ${REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS} organisations`
+        message: "reporting.validation.organisations.tooManyOrganisations"
     })
     @ArrayMinSize(1, {
-        message: "Please choose at least one organisation before proceeding."
+        message: "reporting.validation.organisations.minimumOrganisations"
     })
     @Transform(({value}) => {
         if (typeof value === "string") {
