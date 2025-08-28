@@ -1,5 +1,5 @@
 // Progressively enhance the CSV report request functionality.
-const jsonLocale = require('../../../src/locale/en.json').reporting.course_completions.report_download
+const jsonLocale = require('../../../src/locale/en.json').reporting.report_download
 const successMsg = jsonLocale.success_message
 const errorMsg = jsonLocale.error_message
 

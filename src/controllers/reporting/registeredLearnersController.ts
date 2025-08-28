@@ -1,11 +1,14 @@
 import {Controller} from '../controller'
 import {CompoundRoleBase, registeredLearnerReportingRole} from '../../identity/identity'
 import {getRequest, postRequestWithBody, Route} from '../route'
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {OrganisationPageModelService} from './organisationPageModelService'
-import {fetchChooseOrganisationSessionObject, saveChooseOrganisationSessionObject} from './utils'
+import {
+	fetchChooseOrganisationSessionObject,
+	saveChooseOrganisationSessionObject,
+} from './utils'
 
 export class RegisteredLearnersController extends Controller {
 
@@ -17,9 +20,20 @@ export class RegisteredLearnersController extends Controller {
 		return registeredLearnerReportingRole.compoundRoles
 	}
 
+	private checkForOrgIdsInSessionMiddleware() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const session = fetchChooseOrganisationSessionObject(request)
+
+			if (session === undefined || !session.hasSelectedOrganisations()) {
+				return response.redirect("/reporting/registered-learners/choose-organisation")
+			}
+			next()
+		}
+	}
+
 	protected getRoutes(): Route[] {
 		return [
-			getRequest('/', this.renderPage()),
+			getRequest('/', this.renderPage(), [this.checkForOrgIdsInSessionMiddleware()]),
 			getRequest('/choose-organisation', this.renderChooseOrganisations()),
 			postRequestWithBody('/choose-organisation', this.chooseOrganisations(),
 				{
@@ -41,7 +55,9 @@ export class RegisteredLearnersController extends Controller {
 
 	renderPage() {
 		return async (request: Request, response: Response) => {
-			return response.send('registered learners')
+			const session = fetchChooseOrganisationSessionObject(request)
+			const organisationDepartments = session.organisationFormSelection == 'allOrganisations' ? 'all organisations' : session.selectedOrganisations!.length > 1 ? session.selectedOrganisations!.map(o => o.getAbbreviationOrName()).join(" - ") : session.selectedOrganisations![0].name
+			return response.render('page/reporting/registeredLearners/download-report', {pageModel: {organisationDepartments}})
 		}
 	}
 
@@ -61,9 +77,7 @@ export class RegisteredLearnersController extends Controller {
 			}
 
 			saveChooseOrganisationSessionObject(session, request, async () => {
-				response.send(session.organisationFormSelection + "\n" + (session.selectedOrganisations || []).map(organisation => {
-					return organisation.name
-				}).join("\n"))
+				response.redirect('/reporting/registered-learners')
 			})
 		}
 	}

@@ -1,0 +1,23 @@
+{% extends "../../../component/Page.njk" %}
+
+{% set backButton = "/reporting/registered-learners/choose-organisation" %}
+
+{% block pageTitle %}{{ i18n.reporting.registered_learners.title }} - {{ i18n.proposition_name }}{% endblock %}
+{% block nav %}
+	{{ super() }}
+	{{ govukPhaseBanner({
+		tag: {
+			text: "Beta"
+		},
+		html: feedbackBanner.message + ' Your <a href="/reporting/course-completions/feedback" target="_blank" rel="noopener noreferrer" title="The Civil Service Learning reporting dashboard feedback survey will open in another window">feedback</a> will help us to improve.'
+	}) }}
+{% endblock %}
+{% block content %}
+	<div class="govuk-grid-row">
+		<div class='govuk-grid-column-full'>
+			<span class="govuk-caption-m">Reporting</span>
+			<h1 class="govuk-heading-l">{{ i18n.reporting.registered_learners.title }}</h1>
+			<p class='govuk-body'>Request report for total registered learners for {{ pageModel.organisationDepartments }}.</p>
+		</div>
+	</div>
+{% endblock %}

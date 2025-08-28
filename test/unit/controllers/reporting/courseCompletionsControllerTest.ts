@@ -10,10 +10,12 @@ import {REPORTING} from '../../../../src/config'
 import * as moment from 'moment'
 import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
 import {match} from 'sinon'
+import {OrganisationPageModelService} from '../../../../src/controllers/reporting/organisationPageModelService'
 
 describe('courseCompletionsController tests', () => {
 	let reportService: sinon.SinonStubbedInstance<ReportService> = sinon.createStubInstance(ReportService)
-	const controller: CourseCompletionsController = new CourseCompletionsController(reportService as any)
+	let organisationPageModelService: sinon.SinonStubbedInstance<OrganisationPageModelService> = sinon.createStubInstance(OrganisationPageModelService)
+	const controller: CourseCompletionsController = new CourseCompletionsController(reportService as any, organisationPageModelService as any)
 	const app = getApp()
 	app.use(controller.path, controller.buildRouter())
 
