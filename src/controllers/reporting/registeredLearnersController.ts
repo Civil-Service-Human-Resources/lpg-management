@@ -7,6 +7,7 @@ import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {OrganisationPageModelService} from './organisationPageModelService'
 import {
 	fetchChooseOrganisationSessionObject,
+	fetchCourseCompletionSessionObject,
 	saveChooseOrganisationSessionObject,
 } from './utils'
 
@@ -63,21 +64,12 @@ export class RegisteredLearnersController extends Controller {
 
 	private chooseOrganisations() {
 		return async (request: Request, response: Response) => {
-			let session = fetchChooseOrganisationSessionObject(request)
-			session = await this.organisationPageModelService.chooseOrganisations(request, response, session)
-
-			if (!session.hasSelectedOrganisations()) {
-				const errors = {fields: {organisation: ["reporting.validation.organisations.minimumOrganisations"]}, size: 1}
-				request.session!.sessionFlash = {
-					errors,
-				}
-				return request.session!.save(() => {
-					response.redirect('/reporting/registered-learners/choose-organisation')
-				})
-			}
-
+			let session = fetchCourseCompletionSessionObject(request)
+			await this.organisationPageModelService.handleSubmit(request, response, session)
 			saveChooseOrganisationSessionObject(session, request, async () => {
-				response.redirect('/reporting/registered-learners')
+				if (!response.headersSent) {
+					response.redirect('/reporting/registered-learners')
+				}
 			})
 		}
 	}

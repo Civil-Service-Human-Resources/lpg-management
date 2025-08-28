@@ -35,8 +35,6 @@ export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOpt
 					}
 				})
 
-				console.log(req.i18n_texts)
-
 				const pageModelKey = opts.onError.pageModelKey ? opts.onError.pageModelKey : 'pageModel'
 				output.errors = errors
 				if (opts.onError.behaviour === BehaviourOnError.REDIRECT) {

@@ -23,7 +23,6 @@ if (successMsg !== undefined && errorMsg !== undefined) {
 		const form = panel.getElementsByClassName("course-completions-report__form")[0]
 		let button = panel.getElementsByClassName("course-completions-report__button")[0]
 		let csrf = document.querySelector("[name='_csrf']").getAttribute("value")
-		console.log(csrf)
 		if (button !== undefined && csrf !== null) {
 			const submitUrl = button.getAttribute('data-submiturl')
 			form.remove()

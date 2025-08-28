@@ -215,26 +215,16 @@ export class CourseCompletionsController extends Controller {
 	public chooseOrganisations() {
 		return async (request: Request, response: Response) => {
 			let session = fetchCourseCompletionSessionObject(request)
-			session = await this.organisationPageModelService.chooseOrganisations(request, response, session)
-
-			if (!session.hasSelectedOrganisations()) {
-				const errors = {fields: {organisation: ["reporting.validation.organisations.minimumOrganisations"]}, size: 1}
-				request.session!.sessionFlash = {
-					errors,
-				}
-				return request.session!.save(() => {
-					response.redirect('/reporting/course-completions/choose-organisation')
-				})
-			}
-
+			await this.organisationPageModelService.handleSubmit(request, response, session)
 			saveCourseCompletionSessionObject(session, request, async () => {
-				if (session.hasSelectedCourses()) {
-					response.redirect(`/reporting/course-completions`)
-				} else {
-					response.redirect(`/reporting/course-completions/choose-courses`)
+				if (!response.headersSent) {
+					if (session.hasSelectedCourses()) {
+						response.redirect(`/reporting/course-completions`)
+					} else {
+						response.redirect(`/reporting/course-completions/choose-courses`)
+					}
 				}
 			})
-
 		}
 	}
 

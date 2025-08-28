@@ -2,7 +2,7 @@ import {plainToInstance} from 'class-transformer'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {Request, Response} from 'express'
 import {ReportService} from '../../report-service'
-import {IOrganisationSession} from './model/IOrganisationSession'
+import {ChooseOrganisationSession} from './model/chooseOrganisationSession'
 
 export class OrganisationPageModelService {
 
@@ -13,15 +13,23 @@ export class OrganisationPageModelService {
 		return await this.reportService.getChooseOrganisationPage(request.user)
 	}
 
-	async chooseOrganisations<T extends IOrganisationSession>(request: Request, response: Response, session: T): Promise<T> {
-		let currentUser = request.user
-		const pageModel = plainToInstance(ChooseOrganisationsModel, response.locals.input as ChooseOrganisationsModel)
+	async handleSubmit(req: Request, res: Response, session: ChooseOrganisationSession) {
+		let currentUser = req.user
+		const pageModel = plainToInstance(ChooseOrganisationsModel, res.locals.input as ChooseOrganisationsModel)
 		const selectedOrganisationIds = pageModel.getSelectedOrganisationIds()
 		const selectedOrganisations = selectedOrganisationIds ? (await this.reportService.getOrganisationsForUser(currentUser))
 			.filter(o => selectedOrganisationIds.includes(o.id)) : undefined
 		session.organisationFormSelection = pageModel.organisation
 		session.selectedOrganisations = selectedOrganisations
-		return session
+		if (!session.hasSelectedOrganisations()) {
+			const errors = {fields: {organisation: ["reporting.validation.organisations.minimumOrganisations"]}, size: 1}
+			req.session!.sessionFlash = {
+				errors,
+			}
+			req.session!.save(() => {
+				res.redirect('/reporting/course-completions/choose-organisation')
+			})
+		}
 	}
 
 }
