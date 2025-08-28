@@ -284,6 +284,12 @@
 		"blended": "Blended"
 	},
 	"reporting": {
+		"validation": {
+			"organisations": {
+				"tooManyOrganisations": "Please select a valid number of organisations",
+				"minimumOrganisations":  "Please choose at least one organisation before proceeding"
+			}
+		},
 		"course_completions": {
 			"title": "Completed learning",
 			"validation": {
@@ -291,11 +297,14 @@
 				"courseSearchSelection": "Please select which courses you want to report on",
 				"invalidCourseIds": "Please select valid courses to report on",
 				"maximumCourses": "Please select a valid number of courses"
-			},
-			"report_download": {
-				"success_message": "Your request has been successfully submitted. You will shortly receive an email containing the CSV report.",
-				"error_message": "There was an error processing the request. If the problem persists, please contact the helpdesk."
 			}
+		},
+		"registered_learners": {
+			"title": "Registered Learners"
+		},
+		"report_download": {
+			"success_message": "Your request has been successfully submitted. You will shortly receive an email containing the CSV report.",
+			"error_message": "There was an error processing the request. If the problem persists, please contact the helpdesk."
 		}
 	},
 	"administration_pages_title": "Reporting",

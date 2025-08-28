@@ -51,6 +51,7 @@ import {ReportingController} from './controllers/reporting/reportingController'
 import {createConfig} from './lib/http/restServiceConfigFactory'
 import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
 import {HEALTH_CHECK} from './config'
+import {OrganisationPageModelService} from './controllers/reporting/organisationPageModelService'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
@@ -71,11 +72,13 @@ const reportService = buildReportService(createConfig({
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
 }), ctx.auth, ctx.courseService, ctx.cslServiceClient, ctx.cslService)
 
+const organisationPageModelService: OrganisationPageModelService = new OrganisationPageModelService(reportService)
+
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
 	new ReportingController(reportService),
-	new CourseCompletionsController(reportService),
-	new RegisteredLearnersController()
+	new CourseCompletionsController(reportService, organisationPageModelService),
+	new RegisteredLearnersController(organisationPageModelService)
 ]
 
 app.use(ctx.addToResponseLocals())

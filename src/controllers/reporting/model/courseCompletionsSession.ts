@@ -3,9 +3,9 @@ import {CourseCompletionsGraphModel} from './courseCompletionsGraphModel'
 import {LearningSelection} from './chooseCoursesModel'
 import {FormattedOrganisation} from '../../../csl-service/model/FormattedOrganisation'
 import {OrganisationSelection} from './chooseOrganisationsModel'
-import {Type} from 'class-transformer'
+import {ChooseOrganisationSession} from './chooseOrganisationSession'
 
-export class CourseCompletionsSession {
+export class CourseCompletionsSession extends ChooseOrganisationSession {
 
 	public timePeriod: DashboardTimePeriodType = 'today'
 	public startDay?: string
@@ -15,9 +15,6 @@ export class CourseCompletionsSession {
 	public endMonth?: string
 	public endYear?: string
 
-	@Type(() => FormattedOrganisation)
-	public selectedOrganisations?: FormattedOrganisation[]
-
 	constructor(public userEmail: string,
 		public fullName: string,
 		public userUid: string,
@@ -26,19 +23,11 @@ export class CourseCompletionsSession {
 		public learningSelection?: LearningSelection,
 		public courses?: {name: string, id: string}[],
 		public chartData?: {text: string}[][]) {
-		this.selectedOrganisations = selectedOrganisations
+		super(organisationFormSelection, selectedOrganisations)
 	}
 
 	static create(userDetails: any) {
 		return new CourseCompletionsSession(userDetails.username, userDetails.fullName, userDetails.uid)
-	}
-
-	hasSelectedOrganisations() {
-		const allOrganisationsSelected = this.organisationFormSelection === "allOrganisations"
-		const specificOrganisationIdsSelected = this.selectedOrganisations !== undefined &&
-			this.selectedOrganisations.length > 0
-
-		return allOrganisationsSelected || specificOrganisationIdsSelected
 	}
 
 	hasSelectedCourses() {

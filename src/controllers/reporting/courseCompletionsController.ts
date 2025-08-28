@@ -17,10 +17,12 @@ import {CourseCompletionsGraphModel} from './model/courseCompletionsGraphModel'
 import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 import {BasicCourse} from '../../learning-catalogue/courseTypeAhead'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
+import {OrganisationPageModelService} from './organisationPageModelService'
 
 export class CourseCompletionsController extends Controller {
 
-	constructor(protected reportService: ReportService,) {
+	constructor(protected reportService: ReportService,
+				protected organisationPageModelService: OrganisationPageModelService) {
 		super("/reporting/course-completions", 'CourseCompletionsController')
 	}
 
@@ -112,10 +114,6 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			if(session.organisationFormSelection === "allOrganisations" && !request.user?.isReportingAllOrganisations()){
-				return response.render("page/unauthorised")
-			}
-
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
 
 			const errors = request.session!.filterModelErrors
@@ -209,42 +207,24 @@ export class CourseCompletionsController extends Controller {
 
 	public renderChooseOrganisations() {
 		return async (request: Request, response: Response) => {
-			const pageModel = await this.reportService.getChooseOrganisationPage(request.user)
+			const pageModel = await this.organisationPageModelService.renderChooseOrganisation(request)
 			response.render('page/reporting/courseCompletions/choose-organisation', {pageModel})
 		}
 	}
 
 	public chooseOrganisations() {
 		return async (request: Request, response: Response) => {
-			let currentUser = request.user
-			const pageModel = plainToInstance(ChooseOrganisationsModel, response.locals.input as ChooseOrganisationsModel)
-			const session = fetchCourseCompletionSessionObject(request)
-			session.organisationFormSelection = pageModel.organisation
-
-			const selectedOrganisationIds = pageModel.getSelectedOrganisationIds()
-
-			session.selectedOrganisations = selectedOrganisationIds ? (await this.reportService.getOrganisationsForUser(currentUser))
-				.filter(o => selectedOrganisationIds.includes(o.id)) : undefined
-
-			if (!session.hasSelectedOrganisations()) {
-
-				const errors = {fields: {organisation: ["You need to select an organisation before continuing."]}, size: 1}
-				request.session!.sessionFlash = {
-					errors,
-				}
-				return request.session!.save(() => {
-					response.redirect('/reporting/course-completions/choose-organisation')
-				})
-			}
-
+			let session = fetchCourseCompletionSessionObject(request)
+			await this.organisationPageModelService.handleSubmit(request, response, session)
 			saveCourseCompletionSessionObject(session, request, async () => {
-				if (session.hasSelectedCourses()) {
-					response.redirect(`/reporting/course-completions`)
-				} else {
-					response.redirect(`/reporting/course-completions/choose-courses`)
+				if (!response.headersSent) {
+					if (session.hasSelectedCourses()) {
+						response.redirect(`/reporting/course-completions`)
+					} else {
+						response.redirect(`/reporting/course-completions/choose-courses`)
+					}
 				}
 			})
-
 		}
 	}
 

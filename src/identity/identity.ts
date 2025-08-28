@@ -110,7 +110,7 @@ export class UserRole {
 
 export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
 Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER, Role.REGISTERED_LEARNER_REPORTER))
-export const registeredLearnerReportingRole = new UserRole(All(Role.REGISTERED_LEARNER_REPORTER))
+export const registeredLearnerReportingRole = new UserRole(All(Role.REGISTERED_LEARNER_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
 export const eventViewingRole = new UserRole(Any(Role.CSL_AUTHOR, Role.LEARNING_MANAGER, Role.ORGANISATION_AUTHOR, Role.KPMG_SUPPLIER_AUTHOR, Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_AUTHOR))
@@ -123,7 +123,7 @@ export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
 }
 
-export function createIdentity(identityDetails: IdentityDetails, profile: Profile) {	
+export function createIdentity(identityDetails: IdentityDetails, profile: Profile) {
 	return new Identity(identityDetails.uid, identityDetails.username, identityDetails.roles, identityDetails.accessToken,
 		profile.managementLoggedIn, profile.managementShouldLogout, profile.uiLoggedIn, profile.uiShouldLogout, profile.shouldRefresh,
 		profile.organisationalUnit, profile.otherOrganisationalUnits, profile.fullName)

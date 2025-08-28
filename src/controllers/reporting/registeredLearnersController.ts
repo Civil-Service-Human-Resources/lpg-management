@@ -1,11 +1,19 @@
 import {Controller} from '../controller'
 import {CompoundRoleBase, registeredLearnerReportingRole} from '../../identity/identity'
-import {getRequest, Route} from '../route'
-import {Request, Response} from 'express'
+import {getRequest, postRequestWithBody, Route} from '../route'
+import {NextFunction, Request, Response} from 'express'
+import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
+import {BehaviourOnError} from '../../validators/validatorMiddleware'
+import {OrganisationPageModelService} from './organisationPageModelService'
+import {
+	fetchChooseOrganisationSessionObject,
+	fetchCourseCompletionSessionObject,
+	saveChooseOrganisationSessionObject,
+} from './utils'
 
 export class RegisteredLearnersController extends Controller {
 
-	constructor() {
+	constructor(private organisationPageModelService: OrganisationPageModelService) {
 		super("/reporting/registered-learners", 'RegisteredLearnersController')
 	}
 
@@ -13,15 +21,56 @@ export class RegisteredLearnersController extends Controller {
 		return registeredLearnerReportingRole.compoundRoles
 	}
 
+	private checkForOrgIdsInSessionMiddleware() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const session = fetchChooseOrganisationSessionObject(request)
+
+			if (session === undefined || !session.hasSelectedOrganisations()) {
+				return response.redirect("/reporting/registered-learners/choose-organisation")
+			}
+			next()
+		}
+	}
+
 	protected getRoutes(): Route[] {
 		return [
-			getRequest('/', this.renderPage()),
+			getRequest('/', this.renderPage(), [this.checkForOrgIdsInSessionMiddleware()]),
+			getRequest('/choose-organisation', this.renderChooseOrganisations()),
+			postRequestWithBody('/choose-organisation', this.chooseOrganisations(),
+				{
+					dtoClass: ChooseOrganisationsModel,
+					onError: {
+						behaviour: BehaviourOnError.REDIRECT,
+						path: '/reporting/registered-learners/choose-organisation'
+					}
+				})
 		]
+	}
+
+	renderChooseOrganisations() {
+		return async (request: Request, response: Response) => {
+			const pageModel = await this.organisationPageModelService.renderChooseOrganisation(request)
+			response.render('page/reporting/registeredLearners/choose-organisation', {pageModel})
+		}
 	}
 
 	renderPage() {
 		return async (request: Request, response: Response) => {
-			return response.send('registered learners')
+			const session = fetchChooseOrganisationSessionObject(request)
+			const organisationDepartments = session.organisationFormSelection == 'allOrganisations' ? 'all organisations' : session.selectedOrganisations!.length > 1 ? session.selectedOrganisations!.map(o => o.getAbbreviationOrName()).join(" - ") : session.selectedOrganisations![0].name
+			return response.render('page/reporting/registeredLearners/download-report', {pageModel: {organisationDepartments}})
+		}
+	}
+
+	private chooseOrganisations() {
+		return async (request: Request, response: Response) => {
+			let session = fetchCourseCompletionSessionObject(request)
+			await this.organisationPageModelService.handleSubmit(request, response, session)
+			saveChooseOrganisationSessionObject(session, request, async () => {
+				if (!response.headersSent) {
+					response.redirect('/reporting/registered-learners')
+				}
+			})
 		}
 	}
 }

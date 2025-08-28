@@ -21,7 +21,7 @@ export enum BehaviourOnError {
 }
 
 export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOptions<T>) => {
-	return async function (req: Request, res: Response, next: NextFunction) {
+	return async function (req: Request & {i18n_texts: Object}, res: Response, next: NextFunction) {
 		logger.debug(`Validating request body ${JSON.stringify(req.body)} against class ${opts.dtoClass.name}`)
 		const output: T = plainToInstance(opts.dtoClass, req.body)
 		if (req.body !== undefined) {
