@@ -99,5 +99,8 @@
   ],
   "standard": {
     "parser": "babel-eslint"
+  },
+  "overrides": {
+    "serve-static@<=1.16.0": "1.16.0"
   }
 }
