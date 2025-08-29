@@ -156,7 +156,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.deleteOrganisationalUnit(1)
 			expect(organisationalUnitCache.delete).to.be.calledWith(1)
-			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			expect(cslServieClient.delete).to.be.calledWith(1)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
@@ -178,7 +178,7 @@ describe('OrganisationalUnitService tests', () => {
 			expect(organisationalUnitCache.delete).to.be.calledWith(1)
 			expect(organisationalUnitCache.delete).to.be.calledWith(2)
 			expect(organisationalUnitCache.delete).to.be.calledWith(3)
-			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			expect(cslServieClient.delete).to.be.calledWith(1)
 			const call = organisationalUnitTypeaheadCache.setTypeahead.firstCall
 			const calledTypeahead: OrganisationalUnitTypeAhead = call.args[0]
 			expect(calledTypeahead.typeahead.length).to.eql(1)

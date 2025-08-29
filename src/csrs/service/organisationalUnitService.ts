@@ -96,7 +96,7 @@ export class OrganisationalUnitService {
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
-		await this.organisationalUnitClient.delete(organisationalUnitId)
+		await this.cslServiceClient.delete(organisationalUnitId)
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead(true)
@@ -104,7 +104,6 @@ export class OrganisationalUnitService {
 			const deletedIds = typeahead.removeOrganisation(organisationalUnitId)
 			await Promise.all(deletedIds.map(id => this.organisationalUnitCache.delete(id)))
 			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-			await this.cslServiceClient.clearOrganisationCache()
 		}
 	}
 
