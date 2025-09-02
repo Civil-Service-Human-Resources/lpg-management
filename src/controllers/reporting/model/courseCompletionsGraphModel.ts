@@ -2,10 +2,11 @@ import { ChartjsConfig} from '../../../report-service/model/chartConfig/chartjsC
 import {ReportingFilterSummary} from './reportingFilterSummary'
 import {DashboardTimePeriodType} from './dashboardTimePeriod'
 import {CourseCompletionsFilterModel} from './courseCompletionsFilterModel'
+import {Table} from '../../../report-service/model/course-completions/table'
 
 export class CourseCompletionsGraphModel extends CourseCompletionsFilterModel {
 
-	constructor(public chart: ChartjsConfig, public table: {text: string}[][], public courseBreakdown: {text: string}[][],
+	constructor(public chart: ChartjsConfig, public table: {text: string}[][], public courseBreakdowns: Table[],
 				public selectedFilters: ReportingFilterSummary, public hasRequestedReport: boolean,
 				timePeriod: DashboardTimePeriodType, public startDay?: string, public startMonth?: string,
 				public startYear?: string, public endDay?: string, public endMonth?: string, public endYear?: string,

@@ -14,6 +14,7 @@ import { OrganisationalUnitPageModel } from '../../../../src/csrs/model/organisa
 import { getOrg } from '../utils'
 import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 import { AgencyTokenCapacityUsed } from '../../../../src/identity/model/AgencyTokenCapacityUsed'
+import {CslServiceClient} from '../../../../src/csl-service/client'
 
 chai.use(sinonChai)
 
@@ -23,6 +24,7 @@ describe('OrganisationalUnitService tests', () => {
 	let organisationalUnitCache: sinon.SinonStubbedInstance<OrganisationalUnitCache>
 	let organisationalUnitTypeaheadCache: sinon.SinonStubbedInstance<OrganisationalUnitTypeaheadCache>
 	let agencyTokenCapacityUsedService: sinon.SinonStubbedInstance<AgencyTokenCapacityUsedHttpService>
+	let cslServieClient: sinon.SinonStubbedInstance<CslServiceClient>
 	let organisationalUnitService: OrganisationalUnitService
 
 	beforeEach(() => {
@@ -30,11 +32,13 @@ describe('OrganisationalUnitService tests', () => {
 		organisationalUnitCache = sinon.createStubInstance(OrganisationalUnitCache)
 		organisationalUnitTypeaheadCache = sinon.createStubInstance(OrganisationalUnitTypeaheadCache)
 		agencyTokenCapacityUsedService = sinon.createStubInstance(AgencyTokenCapacityUsedHttpService)
+		cslServieClient = sinon.createStubInstance(CslServiceClient)
 		organisationalUnitService = new OrganisationalUnitService(
 			organisationalUnitCache as any,
 			organisationalUnitTypeaheadCache as any,
 			organisationalUnitClient as any,
-			agencyTokenCapacityUsedService as any
+			agencyTokenCapacityUsedService as any,
+			cslServieClient as any
 		)
 		organisationalUnitCache.setMultiple.returns([])
 	})

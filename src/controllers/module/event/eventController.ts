@@ -53,7 +53,7 @@ export class EventController implements FormController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 
-		const roleCheck = asyncHandler(roleCheckMiddleware(eventViewingRole.compoundRoles))
+		const roleCheck = asyncHandler(roleCheckMiddleware(eventViewingRole))
 
 		this.router.param(
 			'eventId',

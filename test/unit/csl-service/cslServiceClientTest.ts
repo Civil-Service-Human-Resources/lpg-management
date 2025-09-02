@@ -77,7 +77,7 @@ describe('CslServiceClient', function() {
 				endDate: '2024-10-10T10:00:00',
 				timezone: '+1',
 				courseIds: ['course1'],
-				organisationIds: ['org1'],
+				selectedOrganisationIds: ['org1'],
 				gradeIds: undefined,
 				professionIds: undefined,
 			}
@@ -103,7 +103,7 @@ describe('CslServiceClient', function() {
 					endDate: "2024-10-10T10:00:00",
 					timezone: "+1",
 					courseIds: ["course1"],
-					organisationIds: ["org1"],
+					selectedOrganisationIds: ["org1"],
 					gradeIds: undefined,
 					professionIds: undefined,
 				}})

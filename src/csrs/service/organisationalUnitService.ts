@@ -9,6 +9,7 @@ import { OrganisationalUnitTypeAhead } from '../model/organisationalUnitTypeAhea
 import { OrganisationalUnitCache } from '../organisationalUnitCache';
 import { OrganisationalUnitTypeaheadCache } from '../organisationalUnitTypeaheadCache';
 import {DomainUpdate, DomainUpdateSuccess} from '../model/page/domainUpdateSuccess'
+import {CslServiceClient} from '../../csl-service/client'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
@@ -16,7 +17,8 @@ export class OrganisationalUnitService {
 	constructor(private readonly organisationalUnitCache: OrganisationalUnitCache,
 		private readonly organisationalUnitTypeaheadCache : OrganisationalUnitTypeaheadCache,
 		private readonly organisationalUnitClient: OrganisationalUnitClient,
-		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService) { }
+		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService,
+		private cslServiceClient: CslServiceClient) { }
 
 	async getOrgDropdown(): Promise<OrganisationalUnitTypeAhead> {
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
@@ -78,6 +80,7 @@ export class OrganisationalUnitService {
 		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnitModel)
 		newOrgWithId.updateWithPageModel(organisationalUnitModel)
 		await this.refreshSpecificOrg(newOrgWithId)
+		await this.cslServiceClient.clearOrganisationCache()
 		return newOrgWithId
 	}
 
@@ -88,11 +91,13 @@ export class OrganisationalUnitService {
 		organisationalUnit.updateWithPageModel(organisationalUnitModel)
 		this.logger.debug(`Resulting organisationalUnit ${JSON.stringify(organisationalUnit)}`)
 		await this.refreshSpecificOrg(organisationalUnit)
+		await this.cslServiceClient.clearOrganisationCache()
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
 		await this.organisationalUnitClient.delete(organisationalUnitId)
+		await this.cslServiceClient.clearOrganisationCache()
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead(true)
@@ -108,6 +113,7 @@ export class OrganisationalUnitService {
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.agencyToken = newTokenWithId
 		await this.refreshSpecificOrg(organisationalUnit)
+		await this.cslServiceClient.clearOrganisationCache()
 	}
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
@@ -115,6 +121,7 @@ export class OrganisationalUnitService {
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.agencyToken = agencyToken
 		await this.refreshSpecificOrg(organisationalUnit)
+		await this.cslServiceClient.clearOrganisationCache()
 	}
 
 	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
@@ -122,6 +129,7 @@ export class OrganisationalUnitService {
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.agencyToken = undefined
 		await this.refreshSpecificOrg(organisationalUnit)
+		await this.cslServiceClient.clearOrganisationCache()
 	}
 
 	private async refreshSpecificOrg(organisationalUnit: OrganisationalUnit) {
@@ -175,6 +183,7 @@ export class OrganisationalUnitService {
 	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
 		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
+		await this.cslServiceClient.clearOrganisationCache()
 		let parentOrg = await this.getOrganisation(organisationalUnitId)
 		parentOrg.insertAndSortDomain(response.domain)
 		await this.refreshOrgs([parentOrg])
@@ -198,6 +207,7 @@ export class OrganisationalUnitService {
 		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}`)
 		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId,
 			{ includeSubOrgs })
+		await this.cslServiceClient.clearOrganisationCache()
 		let parentOrg = await this.getOrganisation(organisationalUnitId)
 		parentOrg.removeDomain(domainId)
 		await this.refreshOrgs([parentOrg])

@@ -41,7 +41,6 @@ import {LearnerRecord} from './learner-record'
 import {InviteFactory} from './learner-record/model/factory/inviteFactory'
 import {BookingFactory} from './learner-record/model/factory/bookingFactory'
 import {Booking} from './learner-record/model/booking'
-import {ReportingController} from './controllers/reportingController'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
 import {ReportService} from './report-service'
 import {SkillsController} from './controllers/skills/skillsController'
@@ -67,6 +66,8 @@ import {RestServiceConfig} from './lib/http/restServiceConfig'
 import {createConfig} from './lib/http/restServiceConfigFactory'
 import {redisClient} from './lib/redis'
 import {ProfileCache} from './csrs/profileCache'
+import { CslService } from './csl-service/service/cslService'
+import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
 
 export class ApplicationContext {
 
@@ -108,7 +109,7 @@ export class ApplicationContext {
 	dateRangeFactory: DateRangeFactory
 	dateRangeValidator: Validator<DateRange>
 	cslServiceConfig: RestServiceConfig
-	cslService: CslServiceClient
+	cslServiceClient: CslServiceClient
 	learnerRecord: LearnerRecord
 	learnerRecordConfig: RestServiceConfig
 	inviteFactory: InviteFactory
@@ -124,7 +125,6 @@ export class ApplicationContext {
 	agencyTokenHttpService: AgencyTokenHttpService
 	agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
 	searchController: SearchController
-	reportingController: ReportingController
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
 	skillsController: SkillsController
@@ -137,6 +137,8 @@ export class ApplicationContext {
 	quizFactory: QuizFactory
 	questionValidator: Validator<Question>
 	civilServantProfileService: CivilServantProfileService
+	cslService: CslService
+	formattedOrganisationListCache: FormattedOrganisationListCache
 
 	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
 
@@ -176,12 +178,15 @@ export class ApplicationContext {
 		})
 
 		this.cslServiceConfig = createConfig(config.CSL_SERVICE)
-		this.cslService = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+		this.cslServiceClient = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth))
+
+		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
+		this.cslService = new CslService(this.formattedOrganisationListCache, this.cslServiceClient)
 
 		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
 
 		this.courseTypeaheadCache = new CourseTypeAheadCache(redisClient, config.ORG_REDIS.ttl_seconds)
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslService, this.courseTypeaheadCache)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslServiceClient, this.courseTypeaheadCache)
 
 		this.courseFactory = new CourseFactory()
 
@@ -211,7 +216,8 @@ export class ApplicationContext {
 			this.organisationalUnitCache,
 			this.organisationalUnitTypeaheadCache,
 			this.organisationalUnitClient,
-			this.agencyTokenCapacityUsedHttpService)
+			this.agencyTokenCapacityUsedHttpService,
+			this.cslServiceClient)
 
 		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.organisationalUnitService)
 
@@ -268,7 +274,7 @@ export class ApplicationContext {
 			this.dateRangeCommandValidator,
 			this.dateRangeValidator,
 			this.dateRangeCommandFactory,
-			this.cslService
+			this.cslServiceClient
 		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
@@ -303,8 +309,6 @@ export class ApplicationContext {
 		)
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
-
-		this.reportingController = new ReportingController(this.reportService, this.csrsService, this.organisationalUnitService)
 		this.questionValidator = new Validator<Question>(this.questionFactory)
 		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 

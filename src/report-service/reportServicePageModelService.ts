@@ -4,14 +4,10 @@ import {CourseFilterSummaryRow} from '../controllers/reporting/model/courseFilte
 import {ReportingFilterSummary} from '../controllers/reporting/model/reportingFilterSummary'
 import {OrganisationFilterSummaryRow} from '../controllers/reporting/model/organisationFilterSummaryRow'
 import {ChartJsService} from './chartJsService'
-import {
-	getMultipleCourseSummaryTags,
-	getOrganisationSummaryTags,
-} from '../controllers/models/filterSummary/filterSummaryTag'
+import {getMultipleCourseSummaryTags, getMultipleOrganisationSummaryTags} from '../controllers/models/filterSummary/filterSummaryTag'
 import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
 import {DateFilterSummaryRow} from '../controllers/reporting/model/dateFilterSummaryRow'
 import {getDashboardTimePeriod} from '../controllers/reporting/model/dashboardTimePeriod'
-
 export class ReportServicePageModelService {
 
 	constructor(private tableService: TableService, private chartService: ChartJsService) { }
@@ -25,24 +21,12 @@ export class ReportServicePageModelService {
 	}
 
 	buildCourseBreakdownTable(chartData: Chart) {
-		return [
-			...this.tableService.convertDataToNumericTable(chartData.courseBreakdown),
-			...this.tableService.convertDataToNumericTable(new Map<string, number>([["Total", chartData.total]]))
-		]
+		return this.tableService.convertBreakdownToNumericTable(chartData.breakdowns)
 	}
 
-	buildReportingFilterSummary(session: CourseCompletionsSession) {
+	async buildReportingFilterSummary(session: CourseCompletionsSession) {
 		const coursesFilterSummary = new CourseFilterSummaryRow(getMultipleCourseSummaryTags(session.courses || []))
-		
-		let organisationFilterSummary
-
-		if(session.selectedOrganisation){
-			organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags([session.selectedOrganisation!.name]))
-		}
-		else{
-			organisationFilterSummary = new OrganisationFilterSummaryRow(getOrganisationSummaryTags(["All organisations"]))
-		}
-
+		let organisationFilterSummary = new OrganisationFilterSummaryRow(getMultipleOrganisationSummaryTags(session.selectedOrganisations || []))
 		const dateFilterSummary = new DateFilterSummaryRow(getDashboardTimePeriod(session).tags)
 		return new ReportingFilterSummary(organisationFilterSummary, coursesFilterSummary, dateFilterSummary)
 	}

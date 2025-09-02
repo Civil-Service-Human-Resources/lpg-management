@@ -1,15 +1,20 @@
 import {getLogger} from '../../utils/logger'
 import {NextFunction, Request, Response} from 'express'
-import {CompoundRoleBase} from '../../identity/identity'
+import {CompoundRoleBase, UserRole} from '../../identity/identity'
 
 const logger  = getLogger("roleCheck")
 
-export const roleCheckMiddleware = (requiredRoles: CompoundRoleBase[]) => (req: Request, res: Response, next: NextFunction) => {
+export const roleCheckMiddleware = (role: UserRole) => (req: Request, res: Response, next: NextFunction) => {
+	return compoundRoleCheckMiddleware(role.compoundRoles)(req, res, next)
+}
+
+export const compoundRoleCheckMiddleware = (requiredRoles: CompoundRoleBase[]) => (req: Request, res: Response, next: NextFunction) => {
 	let errorMsg: string = ""
 	if (req.user) {
 		const userRoles: string[] = req.user.roles
+		const requiredRoleDescriptions = requiredRoles.map(r => r.getDescription()).join(" ")
+		logger.debug(`Checking user '${req.user.uid}' against required roles ${requiredRoleDescriptions}`)
 		if (!requiredRoles.every(rr => rr.checkRoles(userRoles))) {
-			const requiredRoleDescriptions = requiredRoles.map(r => r.getDescription()).join(" ")
 			errorMsg = `User '${req.user.uid}' does not have the correct roles assigned for URL ${req.originalUrl}. User has roles: [${userRoles}], required Roles are: ` + requiredRoleDescriptions
 		} else {
 			return next()

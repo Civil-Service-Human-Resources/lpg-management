@@ -35,9 +35,9 @@ describe('CourseService tests', () => {
 		let course: Course = new Course()
 		course.modules = [module1, module2, module3]
 
-		learningCatalogue.updateCourse = sinon
+		learningCatalogue.updateModuleOrder = sinon
 			.stub()
-			.withArgs(courseId)
+			.withArgs(courseId, [module1, module2, module3])
 			.returns(course)
 
 		expect(course.modules.map(m => m.id)).to.be.eql(['1', '2', '3'])

@@ -1,5 +1,6 @@
 import {CourseCompletionsSession} from '../../reporting/model/courseCompletionsSession'
 import dayjs = require('dayjs')
+import {FormattedOrganisation} from '../../../csl-service/model/FormattedOrganisation'
 
 export class FilterSummaryTag {
 	/**
@@ -57,12 +58,31 @@ export function getMultipleCourseSummaryTags(courses: {name: string, id: string}
 	return tags
 }
 
-export function getOrganisationSummaryTag(organisationName: string): FilterSummaryTag {
-	return new FilterSummaryTag("", "", organisationName)
+export function getMultipleOrganisationSummaryTags(selectedOrganisations: FormattedOrganisation[]) {
+	const tags: FilterSummaryTag[] = []
+	if (selectedOrganisations.length === 1) {
+		tags.push(getOrganisationSummaryTag(selectedOrganisations[0].getName()))
+	} else if (selectedOrganisations.length > 1) {
+		tags.push(...selectedOrganisations.map(org => {
+			return getOrganisationSummaryTagById(org.id.toString(), org.getAbbreviationOrName())
+		}))
+		tags[0].preText = undefined
+	} else {
+		tags.push(getAllOrganisationsSummaryTag())
+	}
+	return tags
 }
 
-export function getOrganisationSummaryTags(organisationNames: string[]): FilterSummaryTag[] {
-	return organisationNames.map(organisationName => getOrganisationSummaryTag(organisationName))
+export function getAllOrganisationsSummaryTag(): FilterSummaryTag {
+	return new FilterSummaryTag("organisationId", "", "All organisations")
+}
+
+export function getOrganisationSummaryTagById(organisationId: string, organisationNameOrAbbreviation: string): FilterSummaryTag {
+	return new FilterSummaryTag("organisationId", organisationId, organisationNameOrAbbreviation, "and", true, false)
+}
+
+export function getOrganisationSummaryTag(organisationName: string): FilterSummaryTag {
+	return new FilterSummaryTag("", "", organisationName)
 }
 
 export function getDateFilterSummaryTags(period: string, periodValue: string): FilterSummaryTag {

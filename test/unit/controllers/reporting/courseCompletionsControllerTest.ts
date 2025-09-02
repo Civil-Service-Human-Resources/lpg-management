@@ -8,6 +8,8 @@ import {BasicCoursePageModel, ChooseCoursesModel} from '../../../../src/controll
 import {CourseCompletionsSession} from '../../../../src/controllers/reporting/model/courseCompletionsSession'
 import {REPORTING} from '../../../../src/config'
 import * as moment from 'moment'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
+import {match} from 'sinon'
 
 describe('courseCompletionsController tests', () => {
 	let reportService: sinon.SinonStubbedInstance<ReportService> = sinon.createStubInstance(ReportService)
@@ -38,6 +40,47 @@ describe('courseCompletionsController tests', () => {
 		})
 	})
 
+	describe('Select organisational unit tests', () => {
+		it('should redirect to the choose courses screen when valid organisations have been selected', async () => {
+			reportService.getOrganisationsForUser.withArgs(match.any).resolves([{id:1}])
+			const res = await session(app)
+				.post("/reporting/course-completions/choose-organisation")
+				.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
+				.send({
+					organisation: 'multiple-organisations',
+					organisationSearch: [1]
+				})
+			expect(res.status).to.eql(302)
+			expect(res.headers['location']).to.eql("/reporting/course-completions/choose-courses")
+		})
+		describe('Validation', () => {
+			it('should validate that multiple courses have been selected when the' +
+				'Multiple Organisations radio is checked', async () => {
+				const res = await session(app)
+					.post("/reporting/course-completions/choose-organisation")
+					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
+					.send({
+						organisation: 'multiple-organisations',
+					})
+				expect(res.status).to.eql(302)
+				expect(res.headers['location']).to.eql("/reporting/course-completions/choose-organisation")
+			})
+			it('should validate that no more than the maximum allowed organisations have been selected', async () => {
+				const res = await session(app)
+					.post("/reporting/course-completions/choose-organisation")
+					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
+					.send({
+						organisation: 'multiple-organisations',
+						organisationSearch: [
+							1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16
+						]
+					})
+				expect(res.status).to.eql(302)
+				expect(res.headers['location']).to.eql("/reporting/course-completions/choose-organisation")
+			})
+		})
+	})
+
 	describe('Select courses tests', () => {
 		describe('Without session', () => {
 			it('Should redirect when there are no organisationIds in the session', async () => {
@@ -51,16 +94,19 @@ describe('courseCompletionsController tests', () => {
 		})
 		describe('With session', () => {
 			const subApp = createSubApp()
+			const formattedOrg = new FormattedOrganisation(1, "Org", "O", "O")
 			subApp.all('*', (req, res, next) => {
 				req.session!.courseCompletions = new CourseCompletionsSession("userEmail", "full name", "userId",
-					"1", {id: "1", name: "Org"},[1])
+					1, [formattedOrg])
 				next()
 			}).use(app)
-			reportService.getChooseCoursePage.withArgs(1).resolves(new ChooseCoursesModel('department', [
+
+			const chooseCoursesModel = new ChooseCoursesModel("department", [
 				new BasicCoursePageModel('1', 'course 1'),
 				new BasicCoursePageModel('2', 'course 2'),
 				new BasicCoursePageModel('3', 'course 3')
-			]))
+			])
+			reportService.getChooseCoursePage.withArgs([formattedOrg]).resolves(chooseCoursesModel)
 
 			describe('Validation', () => {
 				it('Should validate required learning selection', async () => {
@@ -120,7 +166,7 @@ describe('courseCompletionsController tests', () => {
 					.get("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
 					.send()
-				
+
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain("Required learning for department")
 			})

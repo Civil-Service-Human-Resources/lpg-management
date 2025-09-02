@@ -12,7 +12,7 @@ export class CreateReportRequestParams extends GetCourseCompletionParameters {
 	static createFromBaseReportParameters(userId: string, fullName: string, userEmail: string, reportDownloadEndpoint: string,
 										  params: GetCourseCompletionParameters) {
 		return new CreateReportRequestParams(userId, fullName, userEmail, reportDownloadEndpoint, params.timePeriodParams,
-			params.courseIds, params.organisationIds, params.professionIds, params.gradeIds)
+			params.courseIds, params.selectedOrganisationIds, params.professionIds, params.gradeIds)
 	}
 
 	public getAsApiParams() {

@@ -5,6 +5,7 @@ import {Module} from '../learning-catalogue/model/module'
 import {FaceToFaceModule} from '../learning-catalogue/model/faceToFaceModule'
 import {Audience} from '../learning-catalogue/model/audience'
 import * as _ from 'lodash'
+import { FRONTEND } from '../config'
 
 export class CourseService {
 	learningCatalogue: LearningCatalogue
@@ -37,8 +38,7 @@ export class CourseService {
 		})
 
 		course.modules = modules
-
-		await this.learningCatalogue.updateCourse(course)
+		await this.learningCatalogue.updateModuleOrder(course.id, modules)
 
 		return course
 	}
@@ -123,5 +123,10 @@ export class CourseService {
 
 	async getRequiredLearning(departmentCodes: string[]) {
 		return await this.learningCatalogue.getRequiredLearning(departmentCodes)
+	}
+
+	getCourseUrl(courseId: string): string {
+		const uiBaseUrl = FRONTEND.LPG_UI_URL
+		return `${uiBaseUrl}/courses/${courseId}`
 	}
 }

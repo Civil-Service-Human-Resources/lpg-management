@@ -16,6 +16,7 @@ import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {CourseCompletionsGraphModel} from './model/courseCompletionsGraphModel'
 import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel'
 import {BasicCourse} from '../../learning-catalogue/courseTypeAhead'
+import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 
 export class CourseCompletionsController extends Controller {
 
@@ -30,7 +31,7 @@ export class CourseCompletionsController extends Controller {
 	private checkForOrgIdsInSessionMiddleware() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			const session = fetchCourseCompletionSessionObject(request)
-			
+
 			if (session === undefined || !session.hasSelectedOrganisations()) {
 				return response.redirect("/reporting/course-completions/choose-organisation")
 			}
@@ -70,6 +71,15 @@ export class CourseCompletionsController extends Controller {
 					pageModelKey: 'filterModelErrors'
 				}
 			}, [this.checkForCourseIdsInSessionMiddleware()]),
+			getRequest('/choose-organisation', this.renderChooseOrganisations()),
+			postRequestWithBody('/choose-organisation', this.chooseOrganisations(),
+				{
+					dtoClass: ChooseOrganisationsModel,
+					onError: {
+						behaviour: BehaviourOnError.REDIRECT,
+						path: '/reporting/course-completions/choose-organisation'
+					}
+				}),
 			getRequest('/choose-courses', this.renderChooseCourses(), [this.checkForOrgIdsInSessionMiddleware()]),
 			postRequestWithBody('/choose-courses', this.chooseCourses(),
 				{
@@ -82,10 +92,10 @@ export class CourseCompletionsController extends Controller {
 			postRequest("/chart-csv", this.downloadDataAsCsv()),
 			getRequest("/feedback", this.feedback()),
 			postRequest("/download-source-data", this.submitExportRequestNoJs(), [
-				roleCheckMiddleware(mvpExportRole.compoundRoles)
+				roleCheckMiddleware(mvpExportRole)
 			]),
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
-				roleCheckMiddleware(mvpExportRole.compoundRoles)
+				roleCheckMiddleware(mvpExportRole)
 			]),
 			getRequest("/download-report/:urlSlug", this.downloadExtract())
 		]
@@ -102,11 +112,12 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			if(session.organisationSelection === "allOrganisations" && !request.user?.isReportingAllOrganisations()){
+			if(session.organisationFormSelection === "allOrganisations" && !request.user?.isReportingAllOrganisations()){
 				return response.render("page/unauthorised")
 			}
 
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
+
 			const errors = request.session!.filterModelErrors
 			if (errors) {
 				pageData.pageModel.updateWithFilters(errors)
@@ -125,6 +136,10 @@ export class CourseCompletionsController extends Controller {
 			if (remove.startsWith("courseId")) {
 				const courseIdToRemove = remove.split(",")[1]
 				session.courses = session.courses!.filter(course => course.id !== courseIdToRemove)
+			}
+			if (remove.startsWith("organisationId")) {
+				const organisationIdToRemove: number = parseInt(remove.split(",")[1])
+				session.selectedOrganisations = session.selectedOrganisations!.filter(organisation => organisation.id !== organisationIdToRemove)
 			}
 		}
 		return session
@@ -172,13 +187,19 @@ export class CourseCompletionsController extends Controller {
 	public updateReportFilters() {
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(CourseCompletionsGraphModel, response.locals.input as CourseCompletionsGraphModel)
-			const session = this.removeValuesFromSession(request, pageModel)			
+			const session = this.removeValuesFromSession(request, pageModel)
 			session.updateWithFilterPageModel(pageModel)
 			if (!session.hasSelectedCourses()) {
 				return saveCourseCompletionSessionObject(session, request, async () => {
 					return response.redirect('/reporting/course-completions/choose-courses')
 				})
 			}
+			if(!session.hasSelectedOrganisations()) {
+				return saveCourseCompletionSessionObject(session, request, async () => {
+					return response.redirect('/reporting/course-completions/choose-organisation')
+				})
+			}
+
 			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
 			return saveCourseCompletionSessionObject(pageData.session, request, async () => {
 				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel})
@@ -186,14 +207,52 @@ export class CourseCompletionsController extends Controller {
 		}
 	}
 
+	public renderChooseOrganisations() {
+		return async (request: Request, response: Response) => {
+			const pageModel = await this.reportService.getChooseOrganisationPage(request.user)
+			response.render('page/reporting/courseCompletions/choose-organisation', {pageModel})
+		}
+	}
+
+	public chooseOrganisations() {
+		return async (request: Request, response: Response) => {
+			let currentUser = request.user
+			const pageModel = plainToInstance(ChooseOrganisationsModel, response.locals.input as ChooseOrganisationsModel)
+			const session = fetchCourseCompletionSessionObject(request)
+			session.organisationFormSelection = pageModel.organisation
+
+			const selectedOrganisationIds = pageModel.getSelectedOrganisationIds()
+
+			session.selectedOrganisations = selectedOrganisationIds ? (await this.reportService.getOrganisationsForUser(currentUser))
+				.filter(o => selectedOrganisationIds.includes(o.id)) : undefined
+
+			if (!session.hasSelectedOrganisations()) {
+
+				const errors = {fields: {organisation: ["You need to select an organisation before continuing."]}, size: 1}
+				request.session!.sessionFlash = {
+					errors,
+				}
+				return request.session!.save(() => {
+					response.redirect('/reporting/course-completions/choose-organisation')
+				})
+			}
+
+			saveCourseCompletionSessionObject(session, request, async () => {
+				if (session.hasSelectedCourses()) {
+					response.redirect(`/reporting/course-completions`)
+				} else {
+					response.redirect(`/reporting/course-completions/choose-courses`)
+				}
+			})
+
+		}
+	}
+
 	public renderChooseCourses() {
-		return async (request: Request, response: Response) => {			
-			const session = fetchCourseCompletionSessionObject(request)!			
-			
-			const selectedOrganisation = session.selectedOrganisation && parseInt(session.selectedOrganisation!.id)
-						
-			const pageModel = await this.reportService.getChooseCoursePage(selectedOrganisation)
-			
+		return async (request: Request, response: Response) => {
+			const session = fetchCourseCompletionSessionObject(request)!
+			const pageModel = await this.reportService.getChooseCoursePage(session.selectedOrganisations)
+
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
 	}
@@ -201,15 +260,16 @@ export class CourseCompletionsController extends Controller {
 	public chooseCourses() {
 		return async (request: Request, response: Response) => {
 			const pageModel = plainToInstance(ChooseCoursesModel, response.locals.input as ChooseCoursesModel)
+
 			let selectedCourses: BasicCourse[] = []
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()
 				selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
 				if (selectedCourses.length !== courseIds.length) {
 					this.logger.debug("Course selections were invalid")
-					const error = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
+					const errors = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
 					request.session!.sessionFlash = {
-						error,
+						errors,
 					}
 					return request.session!.save(() => {
 						response.redirect('/reporting/course-completions/choose-courses')

@@ -1,7 +1,6 @@
 import {NextFunction, Request, Response, Router} from 'express'
 import {AudienceFactory} from '../../learning-catalogue/model/factory/audienceFactory'
 import {LearningCatalogue} from '../../learning-catalogue'
-import {Event} from '../../learning-catalogue/model/event'
 import {Audience} from '../../learning-catalogue/model/audience'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {CourseService} from '../../lib/courseService'
@@ -70,10 +69,6 @@ export class AudienceController {
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), this.getGrades())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), this.setGrades())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades/delete', xss(), this.deleteGrades())
-
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/event', xss(), this.getPrivateCourseEvent())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/event', xss(), this.setPrivateCourseEvent())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/event/delete', xss(), this.deletePrivateCourseEvent())
 
 		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), this.getRequiredLearning())
 		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), this.setRequiredLearning())
@@ -336,39 +331,6 @@ export class AudienceController {
 		}
 	}
 
-	getPrivateCourseEvent() {
-		return async (req: Request, res: Response) => {
-			const courseEvents = this.courseService.getAllEventsOnCourse(res.locals.course).map((event: Event) => {
-				event.dateRanges.sort((dr1: any, dr2: any) => (dr1.date < dr2.date ? -1 : dr1.date > dr2.date ? 1 : 0))
-				return event
-			})
-			res.render('page/course/audience/add-event', {courseEvents})
-		}
-	}
-
-	setPrivateCourseEvent() {
-		return async (req: Request, res: Response) => {
-			const eventId = req.body.events
-			if (eventId) {
-				const event = this.courseService.getAllEventsOnCourse(res.locals.course).find((event: Event) => event.id == eventId)
-				if (event) {
-					res.locals.audience.eventId = eventId
-					await this.learningCatalogue.updateCourse(res.locals.course)
-				}
-			}
-			res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
-		}
-	}
-
-	deletePrivateCourseEvent() {
-		return async (req: Request, res: Response) => {
-			res.locals.audience.eventId = undefined
-			await this.learningCatalogue.updateCourse(res.locals.course)
-
-			res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
-		}
-	}
-
 	deleteRequiredLearning() {
 		return async (req: Request, res: Response, next: NextFunction) => {
 			res.locals.audience.type = Audience.Type.OPEN
@@ -407,9 +369,12 @@ export class AudienceController {
 				res.locals.audience.frequency = moment.duration(years * 12 + months, 'months')
 			}
 
-			await this.learningCatalogue.updateCourse(res.locals.course)
-
-			res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+			await this.learningCatalogue
+				.updateAudience(res.locals.course.id, res.locals.audience)
+				.then(() => {
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+				})
+				.catch(error => next(error))
 		}
 	}
 }
