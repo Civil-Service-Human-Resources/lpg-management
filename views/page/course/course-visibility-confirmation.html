@@ -27,6 +27,7 @@
             <p class="govuk-body no-margin">This action can be reversed at any time.</p>
 
             <form action="/content-management/courses/visibility/{{course.id}}/confirm" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}" />
                 <input type="hidden" name="visibility" value="{{visibilityValue}}" />
                 <div class="button-container">
                     {{ govukButton({
