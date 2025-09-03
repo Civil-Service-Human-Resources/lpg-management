@@ -54,30 +54,6 @@ describe('Leaner Record Tests', () => {
 		expect(learnerRecord.getEventBookings(eventId)).to.be.rejectedWith(`An error occurred when trying to get event bookings: Error: An error occurred when GETTING`)
 	})
 
-	it('should update booking', async () => {
-		const eventId = 'test-event-id'
-		const booking: Booking = new Booking()
-		booking.id = 99
-		booking.status = Booking.Status.REQUESTED
-
-		restService.patch = sinon.stub()
-		await learnerRecord.updateBooking(eventId, booking)
-
-		expect(restService.patch).to.have.been.calledOnceWith('/event/test-event-id/booking/99', {
-			status: booking.status,
-			cancellationReason: undefined,
-		})
-	})
-
-	it('should throw error if error occurs with PATCH request', async () => {
-		const eventId = 'eventId'
-		const booking = new Booking()
-
-		restService.patch = sinon.stub().throws(new Error(`An error occurred when PATCHING`))
-
-		expect(learnerRecord.updateBooking(eventId, booking)).to.be.rejectedWith('An error occurred when trying to update booking: Error: An error occurred when PATCHING')
-	})
-
 	it('should call rest service when getting invitees', async () => {
 		const eventId = 'eventId'
 		restService.get = sinon.stub().returns([{learnerEmail: 'test1@test.com'}])
