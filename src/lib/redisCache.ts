@@ -44,6 +44,7 @@ export abstract class Cache<T> {
 		try {
 			// redisClient.delete does not play nicely with promisify, so just
 			// set expiriy = now
+			this.logger.debug(`Deleting object with cache key ${key}`)
 			await promisify(this.redisClient.expire).bind(this.redisClient)(key, 0)
 		} catch (e) {
 			this.logger.error(`Error deleting object from cache with key ${key}. Error: ${e}.`)

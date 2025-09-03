@@ -11,6 +11,7 @@ import {
 } from '../../../src/report-service/model/course-completions/getCourseCompletionParameters'
 import {TimePeriodParameters} from '../../../src/report-service/model/course-completions/timePeriodParameters'
 import {CreateReportRequestParams} from '../../../src/report-service/model/course-completions/createReportRequestParams'
+import {LearningPlanCache} from '../../../src/csl-service/learningPlanCache'
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
@@ -23,11 +24,14 @@ dayjs.extend(advancedFormat)
 chai.use(sinonChai)
 describe('CslServiceClient', function() {
 	let restService: OauthRestService
+	let cache: LearningPlanCache
 	let client: CslServiceClient
 
 	beforeEach(() => {
 		restService = <OauthRestService>{}
-		client = new CslServiceClient(restService)
+		cache = <LearningPlanCache>{}
+		cache.delete = sinon.stub().resolves()
+		client = new CslServiceClient(restService, cache)
 	})
 
 	describe('Event API calls with correct responses', () => {
