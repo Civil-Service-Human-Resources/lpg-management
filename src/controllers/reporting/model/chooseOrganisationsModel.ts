@@ -27,7 +27,7 @@ export class ChooseOrganisationsModel {
             return value
         }
     })
-    public organisation: OrganisationSelection | number
+    public organisation: OrganisationSelection | number | undefined
 
     @ValidateIf(o => o.organisation === 'multiple-organisations')
     @ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS, {
@@ -59,8 +59,7 @@ export class ChooseOrganisationsModel {
         } else if (this.organisation == 'allOrganisations') {
             return undefined
         } else {
-            return [this.organisation]
+            return this.organisation ? [this.organisation] : []
         }
     }
-
 }

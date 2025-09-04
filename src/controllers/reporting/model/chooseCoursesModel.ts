@@ -26,10 +26,10 @@ export class ChooseCoursesModel {
 	public learning: LearningSelection
 	@ValidateIf(o => o.learning === "requiredLearning")
 	@IsNotEmpty({
-		message: 'reporting.course_completions.validation.select_courses.requiredLearningSelection',
+		message: 'reporting.course_completions.validation.requiredLearningSelection',
 	})
 	@ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_COURSES, {
-		message: 'reporting.course_completions.validation.select_courses.maximumCourses',
+		message: 'reporting.course_completions.validation.maximumCourses',
 	})
 	@Transform(({value}) => {
 		if (typeof value === "string") {
@@ -43,7 +43,7 @@ export class ChooseCoursesModel {
 
 	@ValidateIf(o => o.learning === "courseSearch")
 	@IsNotEmpty({
-		message: 'reporting.course_completions.validation.select_courses.courseSearchSelection',
+		message: 'reporting.course_completions.validation.courseSearchSelection',
 	})
 	@ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_COURSES, {
 		message: 'reporting.course_completions.validation.maximumCourses',

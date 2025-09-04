@@ -5,5 +5,7 @@ export class ReportType {
 
 export enum Report {
 	BOOKING,
-	LEARNER_RECORD
+	LEARNER_RECORD,
+	COURSE_COMPLETIONS,
+	REGISTERED_LEARNERS
 }

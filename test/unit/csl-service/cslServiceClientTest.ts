@@ -3,14 +3,18 @@ import {CslServiceClient} from '../../../src/csl-service/client'
 import {OauthRestService} from 'lib/http/oauthRestService'
 import * as sinon from 'sinon'
 import {CancelBookingDto} from '../../../src/csl-service/model/CancelBookingDto'
-import {expect} from 'chai'
 import * as chai from 'chai'
+import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {
-	GetCourseCompletionParameters
+	GetCourseCompletionParameters,
 } from '../../../src/report-service/model/course-completions/getCourseCompletionParameters'
 import {TimePeriodParameters} from '../../../src/report-service/model/course-completions/timePeriodParameters'
-import {CreateReportRequestParams} from '../../../src/report-service/model/course-completions/createReportRequestParams'
+import {
+	CourseCompletionReportRequestParams,
+} from '../../../src/report-service/model/course-completions/courseCompletionReportRequestParams'
+import {Report} from '../../../src/controllers/reporting/Report'
+
 import {LearningPlanCache} from '../../../src/csl-service/learningPlanCache'
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
@@ -93,10 +97,11 @@ describe('CslServiceClient', function() {
 
 				}
 			})
-			const params = new CreateReportRequestParams("userId", "full name", "userEmail",
-				"https://baseUrl.com/reporting/course-completions/download-report", timePeriod, ["course1"], ["org1"])
+			const getCourseCompletionParameters = new GetCourseCompletionParameters(timePeriod, ["course1"], ["org1"])
+			const params = new CourseCompletionReportRequestParams("userId", "full name", "userEmail",
+				"https://baseUrl.com/reporting/course-completions/download-report", getCourseCompletionParameters)
 			const expUrl = `/admin/reporting/course-completions/request-source-data`
-			await client.postCourseCompletionsExportRequest(params)
+			await client.postReportExportRequest(Report.COURSE_COMPLETIONS, params)
 			expect(restService.postRequest).to.have.been.calledOnceWith({url: expUrl,
 				data: {
 					userId: "userId",

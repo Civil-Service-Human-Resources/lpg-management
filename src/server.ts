@@ -43,15 +43,11 @@ const app = express()
 const ctx = new ApplicationContext()
 const { xss } = require('express-xss-sanitizer')
 import * as middleware from './middleware/lpgManagementMiddleware'
-import {buildReportService} from './report-service/builder'
+import {buildReportingControllers} from './report-service/builder'
 import {OrganisationalUnitDomainsController} from './controllers/organisationalUnit/organisationalUnitDomainsController'
 import {Controller} from './controllers/controller'
-import {CourseCompletionsController} from './controllers/reporting/courseCompletionsController'
-import {ReportingController} from './controllers/reporting/reportingController'
 import {createConfig} from './lib/http/restServiceConfigFactory'
-import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
 import {HEALTH_CHECK} from './config'
-import {OrganisationPageModelService} from './controllers/reporting/organisationPageModelService'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
@@ -66,19 +62,15 @@ middleware.applyAll(app)
 
 ctx.auth.configure(app)
 
-const reportService = buildReportService(createConfig({
+const reportingControllers: Controller[] = buildReportingControllers(createConfig({
 	url: config.REPORT_SERVICE.url,
 	timeout: config.REPORT_SERVICE.timeout,
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
 }), ctx.auth, ctx.courseService, ctx.cslServiceClient, ctx.cslService)
 
-const organisationPageModelService: OrganisationPageModelService = new OrganisationPageModelService(reportService)
-
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
-	new ReportingController(reportService),
-	new CourseCompletionsController(reportService, organisationPageModelService),
-	new RegisteredLearnersController(organisationPageModelService)
+	...reportingControllers
 ]
 
 app.use(ctx.addToResponseLocals())

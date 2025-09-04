@@ -8,7 +8,10 @@ export class ChooseOrganisationSession implements IOrganisationSession {
 	@Type(() => FormattedOrganisation)
 	public selectedOrganisations?: FormattedOrganisation[]
 
-	constructor(public organisationFormSelection?: OrganisationSelection | number,
+	constructor(public userEmail: string,
+				public fullName: string,
+				public userUid: string,
+				public organisationFormSelection?: OrganisationSelection | number,
 				selectedOrganisations?: FormattedOrganisation[]) {
 		this.selectedOrganisations = selectedOrganisations
 	}

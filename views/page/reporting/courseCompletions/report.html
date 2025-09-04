@@ -3,6 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "date-input/macro.njk" import govukDateInput %}
 {% from "../../../component/chart/macro.njk" import renderChart with context %}
+{% from "../component/downloadSourceData.njk" import downloadSourceData with context %}
 {% from "../../../component/filterSummary/macro.njk" import filterSummary with context %}
 {% from "../../../component/datePicker/macro.njk" import datePicker with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
@@ -136,36 +137,18 @@
       <p class='govuk-body'>Course breakdown is not available</p>
     {% endif %}
     {% if identity.hasMvpExport() %}
-      {% set downloadUrl = '/reporting/course-completions/download-source-data' %}
-      <div class='course-completions-report'>
-        <h2 class='govuk-heading-m'>Download source data</h2>
-        {% if pageModel.chart %}
-          <p class='govuk-body'>
-            The data used to generate this graph can be requested for download (CSV).
-          </p>
-          <div class='course-completions-report__panel'>
-            {% if pageModel.hasRequestedReport %}
-              <p class='govuk-body'>
-                {{ i18n.reporting.report_download.success_message }}
-              </p>
-            {% else %}
-              <form class='course-completions-report__form' action='{{ downloadUrl }}' method='POST'>
-                <input type="hidden" name="_csrf" value="{{ _csrf }}"/>
-                {{ govukButton({
-                  text: "Request report (CSV)",
-                  preventDoubleClick: true,
-                  classes: "course-completions-report__button",
-                  attributes: {
-                    "data-submiturl": downloadUrl + "/js"
-                  }
-                }) }}
-              </form>
-            {% endif %}
-          </div>
-        {% else %}
-          <p class='govuk-body'>No data available</p>
-        {% endif %}
-      </div>
+      <h2 class='govuk-heading-m'>Download source data</h2>
+      {% if pageModel.chart %}
+        <p class='govuk-body'>
+          The data used to generate this graph can be requested for download (CSV).
+        </p>
+        {{ downloadSourceData({
+          downloadUrl: "/reporting/course-completions/download-source-data",
+          hasRequestedReport: pageModel.hasRequestReport
+        }) }}
+      {% else %}
+        <p class='govuk-body'>No data available</p>
+      {% endif %}
     {% endif %}
   </div>
 </div>
