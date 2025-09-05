@@ -3,7 +3,7 @@ import {ApiParams} from 'lib/apiParams'
 export class CreateReportRequestParams implements ApiParams {
 
 	constructor(public userId: string, public fullName: string, public userEmail: string, public reportDownloadEndpoint: string,
-				public organisationIds?: number[]) {
+				public selectedOrganisationIds?: number[]) {
 	}
 
 	public getAsApiParams() {
@@ -12,7 +12,7 @@ export class CreateReportRequestParams implements ApiParams {
 			fullName: this.fullName,
 			userEmail: this.userEmail,
 			downloadBaseUrl: this.reportDownloadEndpoint,
-			organisationIds: this.organisationIds
+			selectedOrganisationIds: this.selectedOrganisationIds
 		}
 	}
 }

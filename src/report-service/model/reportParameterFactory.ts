@@ -15,8 +15,7 @@ export class ReportParameterFactory {
 	createFromSession(session: ChooseOrganisationSession, type: Report): CreateReportRequestParams {
 		const reportTypeUrl = type === Report.COURSE_COMPLETIONS ? 'course-completions' : 'registered-learners'
 		return new CreateReportRequestParams(session.userUid, session.fullName,
-			session.userEmail, `${this.managementUrl}/reporting/${reportTypeUrl}/download-report`,
-			session.selectedOrganisations ? session.selectedOrganisations.map(o => o.id) : undefined)
+			session.userEmail, `${this.managementUrl}/reporting/${reportTypeUrl}/download-report`, session.getSelectedOrganisationIds())
 	}
 
 	public generateRegisteredLearnerReportRequestParams(session: ChooseOrganisationSession): CreateReportRequestParams {
@@ -32,8 +31,7 @@ export class ReportParameterFactory {
 
 	public generateCourseAggregationsParams(session: CourseCompletionsSession): GetCourseCompletionParameters {
 		const timePeriodParams = this.timePeriodParamsFactory.createFromSession(session)
-		return new GetCourseCompletionParameters(timePeriodParams, session.getCourseIds(),
-			session.selectedOrganisations && session.selectedOrganisations!.map(n => n.id.toString()))
+		return new GetCourseCompletionParameters(timePeriodParams, session.getCourseIds(), session.getSelectedOrganisationIds())
 	}
 
 }

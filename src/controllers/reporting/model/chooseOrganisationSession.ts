@@ -23,4 +23,8 @@ export class ChooseOrganisationSession implements IOrganisationSession {
 
 		return allOrganisationsSelected || specificOrganisationIdsSelected
 	}
+
+	getSelectedOrganisationIds() {
+		return (this.selectedOrganisations || []).map(org => org.id)
+	}
 }

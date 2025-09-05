@@ -34,6 +34,10 @@ export class CourseCompletionService {
 
 	async fetchCoursesWithIds(courseIds: string[]) {
 		return (await this.courseService.getCourseDropdown())
+			.map(c => {
+				console.log(c)
+				return c
+			})
 			.filter(course => courseIds.includes(course.id))
 	}
 

@@ -44,6 +44,7 @@ describe('courseCompletionsController tests', () => {
 					req.session!.chooseOrganisations = new ChooseOrganisationSession("email", "fullName", "uid", 1, [formattedOrg])
 					next()
 				}).use(app)
+				reportExportService.getRegisteredLearnerOverview.resolves({hasRequests: true})
 				const res = await session(subApp)
 					.get("/reporting/registered-learners")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER,REGISTERED_LEARNER_REPORTER'})

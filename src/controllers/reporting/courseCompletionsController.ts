@@ -228,6 +228,7 @@ export class CourseCompletionsController extends Controller {
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()
 				selectedCourses = await this.courseCompletionService.fetchCoursesWithIds(courseIds)
+				console.log(selectedCourses, courseIds)
 				if (selectedCourses.length !== courseIds.length) {
 					this.logger.debug("Course selections were invalid")
 					const errors = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}
