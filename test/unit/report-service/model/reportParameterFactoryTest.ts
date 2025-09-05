@@ -21,7 +21,7 @@ describe("Report parameter factory tests", () => {
 		expect(params.fullName).to.equal("Requester name")
 		expect(params.userId).to.equal("uid")
 		expect(params.selectedOrganisationIds![0]).to.equal(1)
-		expect(params.reportDownloadEndpoint).to.equal("email.com")
+		expect(params.reportDownloadEndpoint).to.equal("testUrl.com/reporting/registered-learners/download-report")
 	})
 
 	it('generateCourseCompletionReportRequestParams should create report request parameters from the session', () => {
@@ -32,6 +32,6 @@ describe("Report parameter factory tests", () => {
 		expect(params.fullName).to.equal("Requester name")
 		expect(params.userId).to.equal("uid")
 		expect(params.selectedOrganisationIds![0]).to.equal(1)
-		expect(params.reportDownloadEndpoint).to.equal("email.com")
+		expect(params.reportDownloadEndpoint).to.equal("testUrl.com/reporting/registered-learners/download-report")
 	})
 })
