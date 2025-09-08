@@ -6,10 +6,12 @@ import {OrganisationPageModelService} from '../../../../src/controllers/reportin
 import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
 import {RegisteredLearnersController} from '../../../../src/controllers/reporting/registeredLearnersController'
 import {ChooseOrganisationSession} from '../../../../src/controllers/reporting/model/chooseOrganisationSession'
+import {ReportExportService} from '../../../../src/controllers/reporting/reportExportService'
 
 describe('courseCompletionsController tests', () => {
 	let organisationPageModelService: sinon.SinonStubbedInstance<OrganisationPageModelService> = sinon.createStubInstance(OrganisationPageModelService)
-	const controller: RegisteredLearnersController = new RegisteredLearnersController(organisationPageModelService as any)
+	let reportExportService: sinon.SinonStubbedInstance<ReportExportService> = sinon.createStubInstance(ReportExportService)
+	const controller: RegisteredLearnersController = new RegisteredLearnersController(organisationPageModelService as any, reportExportService as any)
 	const app = getApp()
 	app.use(controller.path, controller.buildRouter())
 
@@ -39,9 +41,10 @@ describe('courseCompletionsController tests', () => {
 				const subApp = createSubApp()
 				const formattedOrg = new FormattedOrganisation(1, "Org", "O", "O")
 				subApp.all('*', (req, res, next) => {
-					req.session!.chooseOrganisations = new ChooseOrganisationSession(1, [formattedOrg])
+					req.session!.chooseOrganisations = new ChooseOrganisationSession("email", "fullName", "uid", 1, [formattedOrg])
 					next()
 				}).use(app)
+				reportExportService.getRegisteredLearnerOverview.resolves({hasRequests: true})
 				const res = await session(subApp)
 					.get("/reporting/registered-learners")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER,REGISTERED_LEARNER_REPORTER'})
