@@ -21,7 +21,7 @@ export function fetchChooseOrganisationSessionObject(req: Request): ChooseOrgani
 
 	const chooseOrganisationsSession = req.session!.chooseOrganisations
 	return chooseOrganisationsSession ? plainToInstance(ChooseOrganisationSession,
-		chooseOrganisationsSession as ChooseOrganisationSession) : new ChooseOrganisationSession()
+		chooseOrganisationsSession as ChooseOrganisationSession) : new ChooseOrganisationSession(req.user!.username, req.user!.fullName, req.user!.uid)
 }
 
 export function saveChooseOrganisationSessionObject(sessionObject: ChooseOrganisationSession, req: Request, cb: () => void): void {
