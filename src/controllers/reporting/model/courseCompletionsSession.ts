@@ -23,7 +23,7 @@ export class CourseCompletionsSession extends ChooseOrganisationSession {
 		public learningSelection?: LearningSelection,
 		public courses?: {name: string, id: string}[],
 		public chartData?: {text: string}[][]) {
-		super(organisationFormSelection, selectedOrganisations)
+		super(userEmail, fullName, userUid, organisationFormSelection, selectedOrganisations)
 	}
 
 	static create(userDetails: any) {

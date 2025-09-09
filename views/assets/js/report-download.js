@@ -16,12 +16,12 @@ const generateResultParagraph = (success) => {
 }
 
 
-const elems = document.getElementsByClassName("course-completions-report")
+const elems = document.getElementsByClassName("download-report")
 if (successMsg !== undefined && errorMsg !== undefined) {
 	for (const elem of elems) {
-		const panel = document.getElementsByClassName("course-completions-report__panel")[0]
-		const form = panel.getElementsByClassName("course-completions-report__form")[0]
-		let button = panel.getElementsByClassName("course-completions-report__button")[0]
+		const panel = document.getElementsByClassName("download-report__panel")[0]
+		const form = panel.getElementsByClassName("download-report__form")[0]
+		let button = panel.getElementsByClassName("download-report__button")[0]
 		let csrf = document.querySelector("[name='_csrf']").getAttribute("value")
 		if (button !== undefined && csrf !== null) {
 			const submitUrl = button.getAttribute('data-submiturl')

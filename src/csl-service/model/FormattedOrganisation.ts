@@ -13,9 +13,10 @@ export class FormattedOrganisation {
 
     getAbbreviationOrName() {
         let orgNameOrAbbreviation = this.abbreviation
-        if (orgNameOrAbbreviation === '') {
+        if (orgNameOrAbbreviation === null || orgNameOrAbbreviation === '') {
             orgNameOrAbbreviation = this.getName()
         }
+        console.log(orgNameOrAbbreviation)
         return orgNameOrAbbreviation
     }
 }

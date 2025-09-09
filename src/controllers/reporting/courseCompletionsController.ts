@@ -1,6 +1,5 @@
 import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
 import {NextFunction, Request, Response} from 'express'
-import {ReportService} from '../../report-service'
 import {ChooseCoursesModel} from './model/chooseCoursesModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {plainToInstance} from 'class-transformer'
@@ -18,10 +17,13 @@ import {CourseCompletionsFilterModel} from './model/courseCompletionsFilterModel
 import {BasicCourse} from '../../learning-catalogue/courseTypeAhead'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {OrganisationPageModelService} from './organisationPageModelService'
+import {CourseCompletionService} from '../../report-service/courseCompletionService'
+import {ReportExportService} from './reportExportService'
 
 export class CourseCompletionsController extends Controller {
 
-	constructor(protected reportService: ReportService,
+	constructor(protected courseCompletionService: CourseCompletionService,
+				protected reportExportService: ReportExportService,
 				protected organisationPageModelService: OrganisationPageModelService) {
 		super("/reporting/course-completions", 'CourseCompletionsController')
 	}
@@ -99,7 +101,7 @@ export class CourseCompletionsController extends Controller {
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
 				roleCheckMiddleware(mvpExportRole)
 			]),
-			getRequest("/download-report/:urlSlug", this.downloadExtract())
+			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract())
 		]
 	}
 
@@ -114,7 +116,7 @@ export class CourseCompletionsController extends Controller {
 	public renderReport() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
+			const pageData = await this.courseCompletionService.getCourseCompletionsReportGraphPage(session)
 
 			const errors = request.session!.filterModelErrors
 			if (errors) {
@@ -145,7 +147,7 @@ export class CourseCompletionsController extends Controller {
 
 	private async submitExportRequest(request: Request, response: Response) {
 		const session = fetchCourseCompletionSessionObject(request)!
-		return await this.reportService.submitExportRequest(session)
+		return await this.reportExportService.submitCourseCompletionExportRequest(session)
 	}
 
 	public submitExportRequestNoJs() {
@@ -160,25 +162,6 @@ export class CourseCompletionsController extends Controller {
 			await this.submitExportRequest(request, response)
 			response.status(200)
 			return response.send()
-		}
-	}
-
-	public downloadExtract() {
-		return async (request: Request, response: Response) => {
-			const reportResponse = await this.reportService.downloadCourseCompletionsReport(request.params.urlSlug)
-			if (reportResponse.file === null) {
-				if (reportResponse.code === 403) {
-					return response.render("page/unauthorised")
-				}
-				if (reportResponse.code === 404) {
-					return response.render("page/not-found")
-				}
-			} else {
-				const report = reportResponse.file
-				response.set(report.getHeaders())
-				response.status(200)
-				response.end(report.data)
-			}
 		}
 	}
 
@@ -198,7 +181,7 @@ export class CourseCompletionsController extends Controller {
 				})
 			}
 
-			const pageData = await this.reportService.getCourseCompletionsReportGraphPage(session)
+			const pageData = await this.courseCompletionService.getCourseCompletionsReportGraphPage(session)
 			return saveCourseCompletionSessionObject(pageData.session, request, async () => {
 				return response.render('page/reporting/courseCompletions/report', {pageModel: pageData.pageModel})
 			})
@@ -231,7 +214,7 @@ export class CourseCompletionsController extends Controller {
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
 			const session = fetchCourseCompletionSessionObject(request)!
-			const pageModel = await this.reportService.getChooseCoursePage(session.selectedOrganisations)
+			const pageModel = await this.courseCompletionService.getChooseCoursePage(session.selectedOrganisations)
 
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
@@ -244,7 +227,8 @@ export class CourseCompletionsController extends Controller {
 			let selectedCourses: BasicCourse[] = []
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()
-				selectedCourses = await this.reportService.fetchCoursesWithIds(courseIds)
+				selectedCourses = await this.courseCompletionService.fetchCoursesWithIds(courseIds)
+				console.log(selectedCourses, courseIds)
 				if (selectedCourses.length !== courseIds.length) {
 					this.logger.debug("Course selections were invalid")
 					const errors = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}

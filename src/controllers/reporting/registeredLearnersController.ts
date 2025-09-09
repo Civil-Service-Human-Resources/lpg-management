@@ -1,6 +1,6 @@
 import {Controller} from '../controller'
-import {CompoundRoleBase, registeredLearnerReportingRole} from '../../identity/identity'
-import {getRequest, postRequestWithBody, Route} from '../route'
+import {CompoundRoleBase, mvpExportRole, registeredLearnerReportingRole} from '../../identity/identity'
+import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
 import {NextFunction, Request, Response} from 'express'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
@@ -10,10 +10,13 @@ import {
 	fetchCourseCompletionSessionObject,
 	saveChooseOrganisationSessionObject,
 } from './utils'
+import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
+import {ReportExportService} from './reportExportService'
 
 export class RegisteredLearnersController extends Controller {
 
-	constructor(private organisationPageModelService: OrganisationPageModelService) {
+	constructor(private organisationPageModelService: OrganisationPageModelService,
+				private reportExportService: ReportExportService) {
 		super("/reporting/registered-learners", 'RegisteredLearnersController')
 	}
 
@@ -43,8 +46,36 @@ export class RegisteredLearnersController extends Controller {
 						behaviour: BehaviourOnError.REDIRECT,
 						path: '/reporting/registered-learners/choose-organisation'
 					}
-				})
+				}),
+			postRequest("/download-source-data", this.submitExportRequestNoJs(), [
+				roleCheckMiddleware(mvpExportRole)
+			]),
+			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
+				roleCheckMiddleware(mvpExportRole)
+			]),
+			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract())
 		]
+	}
+
+	private async submitExportRequest(request: Request, response: Response) {
+		const session = fetchChooseOrganisationSessionObject(request)!
+		return await this.reportExportService.submitRegisteredLearnerExportRequest(session)
+	}
+
+
+	public submitExportRequestNoJs() {
+		return async (request: Request, response: Response) => {
+			await this.submitExportRequest(request, response)
+			return response.redirect('/reporting/registered-learners')
+		}
+	}
+
+	public submitExportRequestJs() {
+		return async (request: Request, response: Response) => {
+			await this.submitExportRequest(request, response)
+			response.status(200)
+			return response.send()
+		}
 	}
 
 	renderChooseOrganisations() {
@@ -58,7 +89,8 @@ export class RegisteredLearnersController extends Controller {
 		return async (request: Request, response: Response) => {
 			const session = fetchChooseOrganisationSessionObject(request)
 			const organisationDepartments = session.organisationFormSelection == 'allOrganisations' ? 'all organisations' : session.selectedOrganisations!.length > 1 ? session.selectedOrganisations!.map(o => o.getAbbreviationOrName()).join(" - ") : session.selectedOrganisations![0].name
-			return response.render('page/reporting/registeredLearners/download-report', {pageModel: {organisationDepartments}})
+			const overview = await this.reportExportService.getRegisteredLearnerOverview()
+			return response.render('page/reporting/registeredLearners/download-report', {pageModel: {organisationDepartments, hasRequestReport: overview.hasRequests}})
 		}
 	}
 
