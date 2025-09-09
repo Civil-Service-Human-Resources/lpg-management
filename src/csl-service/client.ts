@@ -22,6 +22,7 @@ export class CslServiceClient {
 	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
 	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
+	private ORGANISATIONS_URL = "/organisations"
 
 	constructor(private readonly _http: OauthRestService, private readonly learningPlanCache: LearningPlanCache) { }
 
@@ -109,5 +110,9 @@ export class CslServiceClient {
 		return (await this._http.getRequest<{hasRequests: boolean}>({
 			url: this.REGISTERED_LEARNER_OVERVIEW
 		})).data
+	}
+
+	async delete(organisationalUnitId: number) {
+		await this._http.delete(`${this.ORGANISATIONS_URL}/${organisationalUnitId}`)
 	}
 }
