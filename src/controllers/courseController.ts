@@ -52,6 +52,10 @@ export class CourseController implements FormController {
 		this.router.post('/content-management/courses/title/', xss(), this.createCourseTitle())
 		this.router.post('/content-management/courses/title/:courseId', xss(), this.updateCourseTitle())
 
+		this.router.get('/content-management/courses/delete/:courseId', xss(), this.renderDeleteCourseConfirmationPage())
+		this.router.post('/content-management/courses/delete/:courseId', xss(), this.deleteCourse())
+		this.router.get('/content-management/courses/deleted', xss(), this.renderCourseDeletedPage())
+
 		this.router.get('/content-management/courses/details/:courseId?', xss(), this.getCourseDetails())
 		this.router.post('/content-management/courses/details/', xss(), this.createCourseDetails())
 		this.router.post('/content-management/courses/details/:courseId', xss(), this.updateCourseDetails())
@@ -108,7 +112,8 @@ export class CourseController implements FormController {
 				eventIdToModuleId,
 				grades,
 				sortedAudiences,
-				courseUrl
+				courseUrl,
+				showDeleteCourseLink: res.locals.course.hasBeenPublished !== undefined && res.locals.course.status === "Draft" && res.locals.course.hasBeenPublished === false
 			})
 		}
 	}
@@ -278,6 +283,55 @@ export class CourseController implements FormController {
 		}
 	}
 
+	renderDeleteCourseConfirmationPage(){
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const course = response.locals.course
+			if(course.hasBeenPublished === true){
+				response.redirect(`/content-management`)
+			}
+			else{
+				response.render('page/course/delete-course-confirmation')
+			}
+			
+		}
+	}
+
+	deleteCourse() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const courseId = request.params.courseId
+
+			request.session!.deletedCourseTitle = response.locals.course.title
+			await this.learningCatalogue
+					.deleteCourse(courseId)
+					.then(() => {
+						response.redirect(`/content-management/courses/deleted`)
+					})
+					.catch(error => {
+						next(error)
+					})
+			
+		}
+	}
+
+	renderCourseDeletedPage() {
+		return async (request: Request, response: Response, next: NextFunction) => {
+			const courseTitle = request.session!.deletedCourseTitle
+			delete request.session!.deletedCourseTitle
+
+			if(courseTitle === undefined){
+				response.redirect('/content-management')
+			}
+			else{
+				
+				response.render('page/course/course-deleted', {
+					courseTitle
+				})
+			}
+			
+			
+		}
+	}
+
 	sortModules() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			return await this.courseService
@@ -300,6 +354,7 @@ export class CourseController implements FormController {
 	publishCourse() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			let course = response.locals.course
+			course.hasBeenPublished = true
 
 			await this.learningCatalogue
 				.publishCourse(course)

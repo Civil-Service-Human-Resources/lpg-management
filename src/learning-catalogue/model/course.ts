@@ -60,6 +60,8 @@ export class Course {
 
 	topicId: string
 
+	hasBeenPublished: boolean
+
 	getCost() {
 		return this.modules.map(module => module.cost).reduce((acc: number, moduleCost) => acc + (moduleCost || 0), 0)
 	}
