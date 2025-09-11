@@ -113,7 +113,10 @@ export class CourseController implements FormController {
 				grades,
 				sortedAudiences,
 				courseUrl,
-				showDeleteCourseLink: res.locals.course.hasBeenPublished !== undefined && res.locals.course.status === "Draft" && res.locals.course.hasBeenPublished === false
+				showDeleteCourseLink: res.locals.course.hasBeenPublished !== undefined 
+					&& res.locals.course.status === "Draft" 
+					&& res.locals.course.hasBeenPublished === false
+					&& req.user?.hasLearningDelete()
 			})
 		}
 	}
