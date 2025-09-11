@@ -1,17 +1,17 @@
-import { plainToInstance } from 'class-transformer';
+import {plainToInstance} from 'class-transformer'
 
-import * as config from '../../config';
-import { OauthRestService } from '../../lib/http/oauthRestService';
-import { AgencyToken } from '../model/agencyToken';
-import { OrganisationalUnit } from '../model/organisationalUnit';
-import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageModel';
-import {
-    GetOrganisationRequestOptions, GetOrganisationsRequestOptions
-} from './getOrganisationsRequestOptions';
-import { GetOrganisationsResponse } from './getOrganisationsResponse';
+import * as config from '../../config'
+import {OauthRestService} from 'lib/http/oauthRestService'
+import {AgencyToken} from '../model/agencyToken'
+import {OrganisationalUnit} from '../model/organisationalUnit'
+import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
+import {GetOrganisationRequestOptions, GetOrganisationsRequestOptions} from './getOrganisationsRequestOptions'
+import {GetOrganisationsResponse} from './getOrganisationsResponse'
 import {AddDomainToOrgResponse} from './addDomainToOrgResponse'
 import {RemoveDomainFromOrgResponse} from './removeDomainFromOrgResponse'
 import {DeleteDomainFromOrgRequestOptions} from './deleteDomainFromOrgRequestOptions'
+import {getLogger} from '../../utils/logger'
+
 
 export class OrganisationalUnitClient {
 
@@ -21,6 +21,7 @@ export class OrganisationalUnitClient {
     private V2_BASE_URL = `/v2${this.BASE_URL}`
     private CSRS_URL = config.REGISTRY_SERVICE.url
     private MAX_PER_PAGE = 200
+    private logger  = getLogger("OrganisationalUnitClient")
 
     async getAllOrganisationalUnits(): Promise<OrganisationalUnit[]> {
         const orgs: OrganisationalUnit[] = []
@@ -71,8 +72,7 @@ export class OrganisationalUnitClient {
                 params: options
             }
         )
-        const responseData = plainToInstance(OrganisationalUnit, resp)
-        return responseData
+        return plainToInstance(OrganisationalUnit, resp)
     }
 
     async create(organisationalUnit: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {
@@ -88,6 +88,7 @@ export class OrganisationalUnitClient {
 
     async update(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel): Promise<void> {
         const parent = organisationalUnit.parentId ? `${this.CSRS_URL}${this.BASE_URL}/${organisationalUnit.parentId}` : null
+        this.logger.debug(`OrganisationalUnitClient.update.parent: '${parent}'`)
         await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}`, {
             code: organisationalUnit.code,
             name: organisationalUnit.name,
