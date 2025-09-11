@@ -13,6 +13,8 @@ import {Report} from '../controllers/reporting/Report'
 import {LearningPlanCache} from './learningPlanCache'
 import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
+import {OrganisationalUnitPageModel} from '../csrs/model/organisationalUnitPageModel'
+import * as config from '../config'
 
 export class CslServiceClient {
 
@@ -23,6 +25,8 @@ export class CslServiceClient {
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
 	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
 	private ORGANISATIONS_URL = "/organisations"
+	private ORGANISATIONAL_UNITS = "/organisationalUnits"
+	private CSRS_URL = config.REGISTRY_SERVICE.url
 
 	constructor(private readonly _http: OauthRestService, private readonly learningPlanCache: LearningPlanCache) { }
 
@@ -112,7 +116,26 @@ export class CslServiceClient {
 		})).data
 	}
 
-	async delete(organisationalUnitId: number) {
+	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		await this._http.delete(`${this.ORGANISATIONS_URL}/${organisationalUnitId}`)
+	}
+
+	async updateOrganisationalUnit(
+		organisationalUnitId: number,
+		organisationalUnit: OrganisationalUnitPageModel
+	): Promise<void> {
+		const parent = organisationalUnit.parentId
+			? `${this.CSRS_URL}${this.ORGANISATIONAL_UNITS}/${organisationalUnit.parentId}`
+			: null;
+
+		await this._http.putRequest<void>({
+			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}`,
+			data: {
+				code: organisationalUnit.code,
+				name: organisationalUnit.name,
+				abbreviation: organisationalUnit.abbreviation,
+				parent: parent
+			}
+		});
 	}
 }

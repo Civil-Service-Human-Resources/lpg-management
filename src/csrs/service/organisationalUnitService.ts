@@ -86,7 +86,7 @@ export class OrganisationalUnitService {
 
 	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
 		this.logger.debug(`Updating organisational unit ${organisationalUnitId} with page model ${JSON.stringify(organisationalUnitModel)}`)
-		await this.organisationalUnitClient.update(organisationalUnitId, organisationalUnitModel)
+		await this.cslServiceClient.updateOrganisationalUnit(organisationalUnitId, organisationalUnitModel)
 		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
 		organisationalUnit.updateWithPageModel(organisationalUnitModel)
 		this.logger.debug(`Resulting organisationalUnit ${JSON.stringify(organisationalUnit)}`)
@@ -96,7 +96,7 @@ export class OrganisationalUnitService {
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
-		await this.cslServiceClient.delete(organisationalUnitId)
+		await this.cslServiceClient.deleteOrganisationalUnit(organisationalUnitId)
 		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
 		if (typeahead === undefined) {
 			await this.refreshTypeahead(true)

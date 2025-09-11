@@ -10,8 +10,6 @@ import {GetOrganisationsResponse} from './getOrganisationsResponse'
 import {AddDomainToOrgResponse} from './addDomainToOrgResponse'
 import {RemoveDomainFromOrgResponse} from './removeDomainFromOrgResponse'
 import {DeleteDomainFromOrgRequestOptions} from './deleteDomainFromOrgRequestOptions'
-import {getLogger} from '../../utils/logger'
-
 
 export class OrganisationalUnitClient {
 
@@ -21,7 +19,6 @@ export class OrganisationalUnitClient {
     private V2_BASE_URL = `/v2${this.BASE_URL}`
     private CSRS_URL = config.REGISTRY_SERVICE.url
     private MAX_PER_PAGE = 200
-    private logger  = getLogger("OrganisationalUnitClient")
 
     async getAllOrganisationalUnits(): Promise<OrganisationalUnit[]> {
         const orgs: OrganisationalUnit[] = []
@@ -84,17 +81,6 @@ export class OrganisationalUnitClient {
             parent: parent
         })).data
         return plainToInstance(OrganisationalUnit, respData)
-    }
-
-    async update(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel): Promise<void> {
-        const parent = organisationalUnit.parentId ? `${this.CSRS_URL}${this.BASE_URL}/${organisationalUnit.parentId}` : null
-        this.logger.debug(`OrganisationalUnitClient.update.parent: '${parent}'`)
-        await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}`, {
-            code: organisationalUnit.code,
-            name: organisationalUnit.name,
-            abbreviation: organisationalUnit.abbreviation,
-            parent: parent
-        })
     }
 
     async createAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<AgencyToken> {
