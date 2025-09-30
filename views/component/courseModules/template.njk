@@ -9,7 +9,9 @@
                     <p class="govuk-body no-margin">{{ module.description }}</p>
 
                     {% if module.optional === true %}
-                        <p class="optional">This module is optional</p>
+                        <p class="optional govuk-!-font-weight-bold">This module is optional</p>
+                    {% else %}
+                        <p class="govuk-!-font-weight-bold">This module is mandatory</p>
                     {% endif %}
                 </div>
                 <div class="govuk-grid-column-one-third">
