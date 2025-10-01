@@ -5,6 +5,7 @@ import {ChooseOrganisationSession} from '../../controllers/reporting/model/choos
 import {Report} from '../../controllers/reporting/Report'
 import {TimePeriodParamsFactory} from './course-completions/timePeriodParamsFactory'
 import {CourseCompletionReportRequestParams} from './course-completions/courseCompletionReportRequestParams'
+import {getTimezoneString} from '../../utils/dateUtil'
 
 export class ReportParameterFactory {
 
@@ -15,7 +16,7 @@ export class ReportParameterFactory {
 	createFromSession(session: ChooseOrganisationSession, type: Report): CreateReportRequestParams {
 		const reportTypeUrl = type === Report.COURSE_COMPLETIONS ? 'course-completions' : 'registered-learners'
 		return new CreateReportRequestParams(session.userUid, session.fullName,
-			session.userEmail, `${this.managementUrl}/reporting/${reportTypeUrl}/download-report`, session.getSelectedOrganisationIds())
+			session.userEmail, `${this.managementUrl}/reporting/${reportTypeUrl}/download-report`, getTimezoneString(), session.getSelectedOrganisationIds())
 	}
 
 	public generateRegisteredLearnerReportRequestParams(session: ChooseOrganisationSession): CreateReportRequestParams {
@@ -31,7 +32,7 @@ export class ReportParameterFactory {
 
 	public generateCourseAggregationsParams(session: CourseCompletionsSession): GetCourseCompletionParameters {
 		const timePeriodParams = this.timePeriodParamsFactory.createFromSession(session)
-		return new GetCourseCompletionParameters(timePeriodParams, session.getCourseIds(), session.getSelectedOrganisationIds())
+		return new GetCourseCompletionParameters(timePeriodParams, getTimezoneString(), session.getCourseIds(), session.getSelectedOrganisationIds())
 	}
 
 }

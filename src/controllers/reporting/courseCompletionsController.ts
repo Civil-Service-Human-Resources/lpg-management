@@ -7,8 +7,8 @@ import {Controller} from '../controller'
 import {CompoundRoleBase, mvpExportRole, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
 import * as moment from 'moment'
-import { CourseCompletionsSession } from './model/courseCompletionsSession'
-import { getCsvContentFromData } from '../../utils/dataToCsv'
+import {CourseCompletionsSession} from './model/courseCompletionsSession'
+import {getCsvContentFromData} from '../../utils/dataToCsv'
 import {COURSE_COMPLETIONS_FEEDBACK} from '../../config'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
@@ -19,6 +19,7 @@ import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {OrganisationPageModelService} from './organisationPageModelService'
 import {CourseCompletionService} from '../../report-service/courseCompletionService'
 import {ReportExportService} from './reportExportService'
+import {Report} from './Report'
 
 export class CourseCompletionsController extends Controller {
 
@@ -101,7 +102,7 @@ export class CourseCompletionsController extends Controller {
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
 				roleCheckMiddleware(mvpExportRole)
 			]),
-			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract())
+			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract(Report.COURSE_COMPLETIONS))
 		]
 	}
 

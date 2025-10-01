@@ -68,15 +68,16 @@ describe('CslServiceClient', function() {
 
 	describe('Course completions calls with correct responses', () => {
 		const time = dayjs("2024-10-10T10:00:00").tz("UTC", true)
-		const timePeriod = new TimePeriodParameters(time, time, "+1")
+		const timePeriod = new TimePeriodParameters(time, time)
+		const tz = "+1"
 		it('Should get the course completion aggregation page data', async () => {
 			restService.postRequest = sinon.stub().resolves({
 				data: {
 
 				}
 			})
-			const params = new GetCourseCompletionParameters(timePeriod,
-				["course1"], ["org1"])
+			const params = new GetCourseCompletionParameters(timePeriod, tz,
+				["course1"], [1])
 			const expUrl = `/admin/reporting/course-completions/generate-graph`
 			await client.getCourseCompletionsAggregationsChart(params)
 			expect(restService.postRequest).to.have.been.calledOnceWith({url: expUrl,
@@ -85,7 +86,7 @@ describe('CslServiceClient', function() {
 				endDate: '2024-10-10T10:00:00',
 				timezone: '+1',
 				courseIds: ['course1'],
-				selectedOrganisationIds: ['org1'],
+				selectedOrganisationIds: [1],
 				gradeIds: undefined,
 				professionIds: undefined,
 			}
@@ -97,7 +98,7 @@ describe('CslServiceClient', function() {
 
 				}
 			})
-			const getCourseCompletionParameters = new GetCourseCompletionParameters(timePeriod, ["course1"], ["org1"])
+			const getCourseCompletionParameters = new GetCourseCompletionParameters(timePeriod, tz, ["course1"], [1])
 			const params = new CourseCompletionReportRequestParams("userId", "full name", "userEmail",
 				"https://baseUrl.com/reporting/course-completions/download-report", getCourseCompletionParameters)
 			const expUrl = `/admin/reporting/course-completions/request-source-data`
@@ -112,7 +113,7 @@ describe('CslServiceClient', function() {
 					endDate: "2024-10-10T10:00:00",
 					timezone: "+1",
 					courseIds: ["course1"],
-					selectedOrganisationIds: ["org1"],
+					selectedOrganisationIds: [1],
 					gradeIds: undefined,
 					professionIds: undefined,
 				}})

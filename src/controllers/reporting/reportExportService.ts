@@ -25,9 +25,9 @@ export class ReportExportService {
 		return await this.cslServiceClient.postReportExportRequest(Report.COURSE_COMPLETIONS, params)
 	}
 
-	public downloadExtract() {
+	public downloadExtract(reportType: Report) {
 		return async (request: Request, response: Response) => {
-			const reportResponse = await this.cslServiceClient.downloadCourseCompletionsReport(request.params.urlSlug)
+			const reportResponse = await this.cslServiceClient.downloadReportExport(reportType, request.params.urlSlug)
 			if (reportResponse.file === null) {
 				if (reportResponse.code === 403) {
 					return response.render("page/unauthorised")

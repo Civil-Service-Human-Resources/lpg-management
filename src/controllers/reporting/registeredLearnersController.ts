@@ -12,6 +12,7 @@ import {
 } from './utils'
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {ReportExportService} from './reportExportService'
+import {Report} from './Report'
 
 export class RegisteredLearnersController extends Controller {
 
@@ -53,7 +54,7 @@ export class RegisteredLearnersController extends Controller {
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
 				roleCheckMiddleware(mvpExportRole)
 			]),
-			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract())
+			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract(Report.REGISTERED_LEARNERS))
 		]
 	}
 
