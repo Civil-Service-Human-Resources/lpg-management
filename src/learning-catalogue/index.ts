@@ -148,6 +148,23 @@ export class LearningCatalogue {
 		}
 	}
 
+	async deleteCourse(courseId: string): Promise<void> {
+		try{
+			await this._courseService.delete(`/courses/${courseId}`)
+			let typeahead = await this.courseTypeaheadCache.getTypeahead()
+			if (typeahead !== undefined) {
+				typeahead.removeCourse(courseId)
+				await this.courseTypeaheadCache.setTypeahead(typeahead)
+			}
+		}
+		catch (e) {
+			if (e instanceof HttpException && e.statusCode === 407) {
+				return
+			}
+			throw e
+		}
+	}
+
 	async getRequiredLearning(departmentCodes: string[]): Promise<DefaultPageResults<Course>> {
 		return await this._courseService.listAllWithPagination(`/courses?mandatory=true&department=${departmentCodes}`)
 	}
