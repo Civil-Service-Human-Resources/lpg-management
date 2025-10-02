@@ -24,7 +24,7 @@ describe('OrganisationalUnitService tests', () => {
 	let organisationalUnitCache: sinon.SinonStubbedInstance<OrganisationalUnitCache>
 	let organisationalUnitTypeaheadCache: sinon.SinonStubbedInstance<OrganisationalUnitTypeaheadCache>
 	let agencyTokenCapacityUsedService: sinon.SinonStubbedInstance<AgencyTokenCapacityUsedHttpService>
-	let cslServieClient: sinon.SinonStubbedInstance<CslServiceClient>
+	let cslServiceClient: sinon.SinonStubbedInstance<CslServiceClient>
 	let organisationalUnitService: OrganisationalUnitService
 
 	beforeEach(() => {
@@ -32,13 +32,13 @@ describe('OrganisationalUnitService tests', () => {
 		organisationalUnitCache = sinon.createStubInstance(OrganisationalUnitCache)
 		organisationalUnitTypeaheadCache = sinon.createStubInstance(OrganisationalUnitTypeaheadCache)
 		agencyTokenCapacityUsedService = sinon.createStubInstance(AgencyTokenCapacityUsedHttpService)
-		cslServieClient = sinon.createStubInstance(CslServiceClient)
+		cslServiceClient = sinon.createStubInstance(CslServiceClient)
 		organisationalUnitService = new OrganisationalUnitService(
 			organisationalUnitCache as any,
 			organisationalUnitTypeaheadCache as any,
 			organisationalUnitClient as any,
 			agencyTokenCapacityUsedService as any,
-			cslServieClient as any
+			cslServiceClient as any
 		)
 		organisationalUnitCache.setMultiple.returns([])
 	})
@@ -156,7 +156,7 @@ describe('OrganisationalUnitService tests', () => {
 			organisationalUnitTypeaheadCache.getTypeahead.resolves(new OrganisationalUnitTypeAhead([org]))
 			await organisationalUnitService.deleteOrganisationalUnit(1)
 			expect(organisationalUnitCache.delete).to.be.calledWith(1)
-			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			expect(cslServiceClient.delete).to.be.calledWith(1)
 			expect(organisationalUnitTypeaheadCache.setTypeahead).to.be.called
 		})
 
@@ -178,7 +178,7 @@ describe('OrganisationalUnitService tests', () => {
 			expect(organisationalUnitCache.delete).to.be.calledWith(1)
 			expect(organisationalUnitCache.delete).to.be.calledWith(2)
 			expect(organisationalUnitCache.delete).to.be.calledWith(3)
-			expect(organisationalUnitClient.delete).to.be.calledWith(1)
+			expect(cslServiceClient.delete).to.be.calledWith(1)
 			const call = organisationalUnitTypeaheadCache.setTypeahead.firstCall
 			const calledTypeahead: OrganisationalUnitTypeAhead = call.args[0]
 			expect(calledTypeahead.typeahead.length).to.eql(1)

@@ -76,6 +76,13 @@
                                 text: 'Preview and edit'
                             }
                         ] %}
+                        {% if showDeleteCourseLink %}
+                            {% set action = actions.push({
+                                    link: '/content-management/courses/delete/' + course.id,
+                                    text: 'Delete this course'
+                            }) %}
+                        {% endif %}
+
                         {{ menu("Actions", actions) }}
 
                         {% set linkActions = [
