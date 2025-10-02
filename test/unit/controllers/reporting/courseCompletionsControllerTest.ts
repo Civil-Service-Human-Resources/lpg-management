@@ -110,7 +110,7 @@ describe('courseCompletionsController tests', () => {
 				new BasicCoursePageModel('2', 'course 2'),
 				new BasicCoursePageModel('3', 'course 3')
 			])
-			courseCompletionService.getChooseCoursePage.withArgs([formattedOrg]).resolves(chooseCoursesModel)
+			courseCompletionService.getChooseCoursePage.resolves(chooseCoursesModel)
 
 			describe('Validation', () => {
 				it('Should validate required learning selection', async () => {

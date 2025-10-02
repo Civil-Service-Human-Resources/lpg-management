@@ -27,7 +27,7 @@ export class CourseCompletionService {
 		const selectedOrganisations = session.selectedOrganisations
 		let requiredLearning: BasicCoursePageModel[] = []
 		let organisationDepartments: string = ""
-		if(selectedOrganisations){
+		if (selectedOrganisations) {
 			organisationDepartments  = selectedOrganisations.length > 1 ? selectedOrganisations.map(o => o.getAbbreviationOrName()).join(" - ") : selectedOrganisations[0].name
 			const requiredLearningResponse = await this.cslServiceClient.getRequiredLearningForOrganisations(selectedOrganisations.map(o => o.id),)
 			requiredLearning = requiredLearningResponse.getAllCourses()
@@ -38,8 +38,7 @@ export class CourseCompletionService {
 
 		const pageModel = new ChooseCoursesModel(organisationDepartments, requiredLearning, allCourses)
 
-		if (request.session!['pageModel'] !== undefined) {
-			request.session!['pageModel'] = undefined
+		if (validationPageModel !== undefined) {
 			pageModel.learning = validationPageModel.learning
 			if (pageModel.learning === LearningSelection.courseSearch) {
 				pageModel.courseSearch = validationPageModel.courseSearch
