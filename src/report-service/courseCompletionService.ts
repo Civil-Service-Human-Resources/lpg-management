@@ -1,13 +1,17 @@
 import {CourseService} from 'lib/courseService'
-import {BasicCoursePageModel, ChooseCoursesModel} from '../controllers/reporting/model/chooseCoursesModel'
+import {
+	BasicCoursePageModel,
+	ChooseCoursesModel, LearningSelection,
+} from '../controllers/reporting/model/chooseCoursesModel'
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 import {CslServiceClient} from '../csl-service/client'
 import {CourseCompletionsSession} from '../controllers/reporting/model/courseCompletionsSession'
 import {Chart} from './model/chart'
 import {ReportServicePageModelService} from './reportServicePageModelService'
-import {FormattedOrganisation} from '../csl-service/model/FormattedOrganisation'
 import {Table} from './model/course-completions/table'
 import {ReportParameterFactory} from './model/reportParameterFactory'
+import {Request} from 'express'
+import {fetchCourseCompletionSessionObject} from '../controllers/reporting/utils'
 
 export class CourseCompletionService {
 
@@ -17,7 +21,10 @@ export class CourseCompletionService {
 				private reportParameterFactory: ReportParameterFactory) {
 	}
 
-	async getChooseCoursePage(selectedOrganisations: FormattedOrganisation[] | undefined): Promise<ChooseCoursesModel> {
+	async getChooseCoursePage(request: Request): Promise<ChooseCoursesModel> {
+		const validationPageModel = request.session!['pageModel'] !== undefined ? request.session!['pageModel'] : undefined
+		const session = fetchCourseCompletionSessionObject(request)!
+		const selectedOrganisations = session.selectedOrganisations
 		let requiredLearning: BasicCoursePageModel[] = []
 		let organisationDepartments: string = ""
 		if(selectedOrganisations){
@@ -29,15 +36,21 @@ export class CourseCompletionService {
 		const allCourses = (await this.courseService.getCourseDropdown())
 			.map(course => new BasicCoursePageModel(course.id, course.name))
 
-		return new ChooseCoursesModel(organisationDepartments, requiredLearning, allCourses)
+		const pageModel = new ChooseCoursesModel(organisationDepartments, requiredLearning, allCourses)
+
+		if (request.session!['pageModel'] !== undefined) {
+			request.session!['pageModel'] = undefined
+			pageModel.learning = validationPageModel.learning
+			if (pageModel.learning === LearningSelection.courseSearch) {
+				pageModel.courseSearch = validationPageModel.courseSearch
+			}
+		}
+
+		return pageModel
 	}
 
 	async fetchCoursesWithIds(courseIds: string[]) {
 		return (await this.courseService.getCourseDropdown())
-			.map(c => {
-				console.log(c)
-				return c
-			})
 			.filter(course => courseIds.includes(course.id))
 	}
 

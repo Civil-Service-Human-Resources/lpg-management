@@ -214,9 +214,7 @@ export class CourseCompletionsController extends Controller {
 
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
-			const session = fetchCourseCompletionSessionObject(request)!
-			const pageModel = await this.courseCompletionService.getChooseCoursePage(session.selectedOrganisations)
-
+			const pageModel = await this.courseCompletionService.getChooseCoursePage(request)
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
 	}
@@ -229,7 +227,6 @@ export class CourseCompletionsController extends Controller {
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()
 				selectedCourses = await this.courseCompletionService.fetchCoursesWithIds(courseIds)
-				console.log(selectedCourses, courseIds)
 				if (selectedCourses.length !== courseIds.length) {
 					this.logger.debug("Course selections were invalid")
 					const errors = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}

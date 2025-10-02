@@ -11,7 +11,7 @@ export class ChooseOrganisationsModel {
     @Exclude()
     public showWholeCivilServiceOption: boolean = false
     @Exclude()
-    public maxAllowedOrganisations: number = REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS
+    public maxAllowedOrganisations: number = REPORTING.REPORTING_MAX_ORGANISATIONS
 
     // Data:
     @Exclude()
@@ -30,7 +30,7 @@ export class ChooseOrganisationsModel {
     public organisation: OrganisationSelection | number | undefined
 
     @ValidateIf(o => o.organisation === 'multiple-organisations')
-    @ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS, {
+    @ArrayMaxSize(REPORTING.REPORTING_MAX_ORGANISATIONS, {
         message: "reporting.validation.organisations.tooManyOrganisations"
     })
     @ArrayMinSize(1, {
