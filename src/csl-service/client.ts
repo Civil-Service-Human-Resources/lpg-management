@@ -14,7 +14,6 @@ import {LearningPlanCache} from './learningPlanCache'
 import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
 import {OrganisationalUnitPageModel} from '../csrs/model/organisationalUnitPageModel'
-import * as config from '../config'
 
 export class CslServiceClient {
 
@@ -25,8 +24,6 @@ export class CslServiceClient {
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
 	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
 	private ORGANISATIONS_URL = "/organisations"
-	private ORGANISATIONAL_UNITS = "/organisationalUnits"
-	private CSRS_URL = config.REGISTRY_SERVICE.url
 
 	constructor(private readonly _http: OauthRestService, private readonly learningPlanCache: LearningPlanCache) { }
 
@@ -125,7 +122,7 @@ export class CslServiceClient {
 		organisationalUnit: OrganisationalUnitPageModel
 	): Promise<void> {
 		const parent = organisationalUnit.parentId
-			? `${this.CSRS_URL}${this.ORGANISATIONAL_UNITS}/${organisationalUnit.parentId}`
+			? `${organisationalUnit.parentId}`
 			: null;
 
 		await this._http.putRequest<void>({
