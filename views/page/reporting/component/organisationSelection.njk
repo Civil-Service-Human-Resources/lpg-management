@@ -22,13 +22,14 @@
             {
                 value: params.firstOrganisationOption.id,
                 text: params.firstOrganisationOption.name,
-                checked: true
+                checked: true if params.organisation == undefined else params.organisation == params.firstOrganisationOption.id
             }
         ] %}
 
         {% set radioItems = (radioItems.push({
             value: "multiple-organisations",
             text: "Multiple organisations",
+            checked: params.organisation == "multiple-organisations",
             conditional: {
                 html: multipleOrganisationSelectionHtml
             }
@@ -37,7 +38,8 @@
         {% if params.showWholeCivilServiceOption %}
             {% set radioItems = (radioItems.push({
                 value: "allOrganisations",
-                text: "Whole Civil Service"
+                text: "Whole Civil Service",
+                checked: params.organisation == "allOrganisations"
             }), radioItems) %}
         {% endif %}
 

@@ -7,8 +7,8 @@ import {Controller} from '../controller'
 import {CompoundRoleBase, mvpExportRole, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
 import * as moment from 'moment'
-import { CourseCompletionsSession } from './model/courseCompletionsSession'
-import { getCsvContentFromData } from '../../utils/dataToCsv'
+import {CourseCompletionsSession} from './model/courseCompletionsSession'
+import {getCsvContentFromData} from '../../utils/dataToCsv'
 import {COURSE_COMPLETIONS_FEEDBACK} from '../../config'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
@@ -19,6 +19,7 @@ import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {OrganisationPageModelService} from './organisationPageModelService'
 import {CourseCompletionService} from '../../report-service/courseCompletionService'
 import {ReportExportService} from './reportExportService'
+import {Report} from './Report'
 
 export class CourseCompletionsController extends Controller {
 
@@ -101,7 +102,7 @@ export class CourseCompletionsController extends Controller {
 			postRequest("/download-source-data/js", this.submitExportRequestJs(), [
 				roleCheckMiddleware(mvpExportRole)
 			]),
-			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract())
+			getRequest("/download-report/:urlSlug", this.reportExportService.downloadExtract(Report.COURSE_COMPLETIONS))
 		]
 	}
 
@@ -213,9 +214,7 @@ export class CourseCompletionsController extends Controller {
 
 	public renderChooseCourses() {
 		return async (request: Request, response: Response) => {
-			const session = fetchCourseCompletionSessionObject(request)!
-			const pageModel = await this.courseCompletionService.getChooseCoursePage(session.selectedOrganisations)
-
+			const pageModel = await this.courseCompletionService.getChooseCoursePage(request)
 			response.render('page/reporting/courseCompletions/choose-courses', {pageModel})
 		}
 	}
@@ -228,7 +227,6 @@ export class CourseCompletionsController extends Controller {
 			if (['courseSearch', 'requiredLearning'].includes(pageModel.learning)) {
 				const courseIds = pageModel.getCourseIdsFromSelection()
 				selectedCourses = await this.courseCompletionService.fetchCoursesWithIds(courseIds)
-				console.log(selectedCourses, courseIds)
 				if (selectedCourses.length !== courseIds.length) {
 					this.logger.debug("Course selections were invalid")
 					const errors = {fields: {learning: ['reporting.course_completions.validation.invalidCourseIds']}, size: 1}

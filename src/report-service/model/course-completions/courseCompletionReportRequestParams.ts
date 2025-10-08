@@ -5,7 +5,7 @@ export class CourseCompletionReportRequestParams extends CreateReportRequestPara
 
 	constructor(public userId: string, public fullName: string, public userEmail: string, public reportDownloadEndpoint: string,
 				public getCourseCompletionParams: GetCourseCompletionParameters) {
-		super(userId, fullName, userEmail, reportDownloadEndpoint, getCourseCompletionParams.selectedOrganisationIds)
+		super(userId, fullName, userEmail, reportDownloadEndpoint, getCourseCompletionParams.timezone, getCourseCompletionParams.selectedOrganisationIds)
 	}
 
 	public getAsApiParams() {

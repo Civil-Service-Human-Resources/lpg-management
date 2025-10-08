@@ -39,8 +39,7 @@ export class TimePeriodParamsFactory {
 	}
 
 	createFromDates(startDate: Dayjs, endDate: Dayjs) {
-		const offsetInHours = startDate.utcOffset() / 60
-		return new TimePeriodParameters(startDate, endDate, `+${offsetInHours}`)
+		return new TimePeriodParameters(startDate, endDate)
 	}
 
 	createFromSession(session: CourseCompletionsSession) {

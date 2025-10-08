@@ -11,12 +11,23 @@ export class OrganisationPageModelService {
 	}
 
 	async renderChooseOrganisation(request: Request) {
+		let pageModel: ChooseOrganisationsModel | undefined
+		if (request.session!['pageModel'] !== undefined) {
+			pageModel = request.session!['pageModel']
+			request.session!['pageModel'] = undefined
+		}
 		const user = request.user!
 		const formattedOtherOrganisations = await this.getOrganisationsForUser(user)
-		const pageModel = new ChooseOrganisationsModel({
+		const firstOrganisation = {
 			name: user.organisationalUnit.name,
 			id: user.organisationalUnit.id
-		}, formattedOtherOrganisations)
+		}
+		if (pageModel !== undefined) {
+			pageModel.firstOrganisationOption = firstOrganisation
+			pageModel.multipleOrganisationsOptions = formattedOtherOrganisations
+		} else {
+			pageModel = new ChooseOrganisationsModel(firstOrganisation, formattedOtherOrganisations)
+		}
 		pageModel.showWholeCivilServiceOption = user.isReportingAllOrganisations()
 		return pageModel
 	}

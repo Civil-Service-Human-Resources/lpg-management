@@ -20,7 +20,6 @@ export class CslServiceClient {
 	private RESET_CACHE = '/reset-cache'
 	private REGISTERED_LEARNER_OVERVIEW = "/admin/reporting/registered-learners/overview"
 	private COURSE_COMPLETIONS_AGGREGATIONS_URL = "/admin/reporting/course-completions/generate-graph"
-	private COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL = "/admin/reporting/course-completions/download-report"
 	private FORMATTED_LIST_URL = "/organisations/formatted_list"
 	private GET_REQUIRED_LEARNING_MAP_URL = "/learning/required/for-departments"
 	private ORGANISATIONS_URL = "/organisations"
@@ -30,6 +29,11 @@ export class CslServiceClient {
 	private getReportRequestUrl(type: Report) {
 		const reportTypeUrl = type === Report.COURSE_COMPLETIONS ? 'course-completions' : 'registered-learners'
 		return `/admin/reporting/${reportTypeUrl}/request-source-data`
+	}
+
+	private getReportDownloadUrl(type: Report) {
+		const reportTypeUrl = type === Report.COURSE_COMPLETIONS ? 'course-completions' : 'registered-learners'
+		return `/admin/reporting/${reportTypeUrl}/download-report`
 	}
 
 	async clearCourseCache(courseId: string) {
@@ -80,8 +84,8 @@ export class CslServiceClient {
 		return plainToInstance(ReportExportRequestResponse, response.data)
 	}
 
-	async downloadCourseCompletionsReport(urlSlug: string): Promise<ReportResponse> {
-		return await this._http.getFile(`${this.COURSE_COMPLETIONS_DOWNLOAD_SOURCE_URL}/${urlSlug}`)
+	async downloadReportExport(reportType: Report, urlSlug: string): Promise<ReportResponse> {
+		return await this._http.getFile(`${this.getReportDownloadUrl(reportType)}/${urlSlug}`)
 	}
 
 	async getFormattedOrganisationList(params?: GetOrganisationsFormattedParams): Promise<FormattedOrganisationListResponse> {

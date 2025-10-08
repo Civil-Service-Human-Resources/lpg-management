@@ -10,6 +10,9 @@ dayjs.extend(timezone)
 dayjs.extend(advancedFormat)
 const tz = "Europe/London"
 
+export function getTimezoneString(): string {
+	return `+${getFrontendDayJs().utcOffset() / 60}`
+}
 
 export function getFrontendDayJs(obj?: any): Dayjs {
 	if (obj) {
