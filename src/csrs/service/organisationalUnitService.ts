@@ -1,13 +1,13 @@
-import { toInteger } from 'lodash';
-import { AgencyTokenCapacityUsedHttpService } from '../../identity/agencyTokenCapacityUsedHttpService';
-import { getLogger } from '../../utils/logger';
-import { OrganisationalUnitClient } from '../client/organisationalUnitClient';
-import { AgencyToken } from '../model/agencyToken';
-import { OrganisationalUnit } from '../model/organisationalUnit';
-import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageModel';
-import { OrganisationalUnitTypeAhead } from '../model/organisationalUnitTypeAhead';
-import { OrganisationalUnitCache } from '../organisationalUnitCache';
-import { OrganisationalUnitTypeaheadCache } from '../organisationalUnitTypeaheadCache';
+import {toInteger} from 'lodash'
+import {AgencyTokenCapacityUsedHttpService} from '../../identity/agencyTokenCapacityUsedHttpService'
+import {getLogger} from '../../utils/logger'
+import {OrganisationalUnitClient} from '../client/organisationalUnitClient'
+import {AgencyToken} from '../model/agencyToken'
+import {OrganisationalUnit} from '../model/organisationalUnit'
+import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
+import {OrganisationalUnitTypeAhead} from '../model/organisationalUnitTypeAhead'
+import {OrganisationalUnitCache} from '../organisationalUnitCache'
+import {OrganisationalUnitTypeaheadCache} from '../organisationalUnitTypeaheadCache'
 import {DomainUpdate, DomainUpdateSuccess} from '../model/page/domainUpdateSuccess'
 import {CslServiceClient} from '../../csl-service/client'
 
@@ -157,70 +157,22 @@ export class OrganisationalUnitService {
 		return typeahead
 	}
 
-	private async alterMultipleOrgsInCache(orgIds: number[], update: (org: OrganisationalUnit) => void) {
-		const orgsToFetch: number[] = []
-		const updateBatch: OrganisationalUnit[] = []
-		await Promise.all(orgIds.map(
-			async id => {
-				let org = await this.organisationalUnitCache.get(id)
-				if (org === undefined) {
-					orgsToFetch.push(id)
-				} else {
-					update(org)
-					updateBatch.push(org)
-				}
-			}
-		))
-		if (orgsToFetch.length > 0) {
-			updateBatch.push(...await this.organisationalUnitClient.getSpecificOrganisationalUnits(orgsToFetch))
-		}
-		if (updateBatch.length > 0) {
-			await this.refreshOrgs(updateBatch)
-		}
-	}
-
 	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
-		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
-		await this.cslServiceClient.clearOrganisationCache()
-		let parentOrg = await this.getOrganisation(organisationalUnitId)
-		parentOrg.insertAndSortDomain(response.domain)
-		await this.refreshOrgs([parentOrg])
-		if (response.updatedChildOrganisationIds.length > 0) {
-			this.alterMultipleOrgsInCache(response.updatedChildOrganisationIds, (org: OrganisationalUnit) => {
-				org.insertAndSortDomain(response.domain)
-			})
-			.then(() => {
-				this.logger.info(`Successfully added domain to ${response.updatedChildOrganisationIds.length} child organisations`)
-			})
-		}
+		const response = await this.cslServiceClient.addDomainToOrganisation(organisationalUnitId, domainString)
+		response.updatedIds.forEach(id => this.organisationalUnitCache.delete(id))
 		return {
-			organisationalUnit: parentOrg,
-			domain: domainString,
-			childOrgsUpdatedCount: response.updatedChildOrganisationIds.length,
+			...response,
 			update: DomainUpdate.ADDED
 		}
 	}
 
-	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccess> {
-		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}`)
-		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId,
-			{ includeSubOrgs })
-		await this.cslServiceClient.clearOrganisationCache()
-		let parentOrg = await this.getOrganisation(organisationalUnitId)
-		parentOrg.removeDomain(domainId)
-		await this.refreshOrgs([parentOrg])
-		if (response.updatedChildOrganisationIds.length > 0) {
-			this.alterMultipleOrgsInCache(response.updatedChildOrganisationIds, (org: OrganisationalUnit) => {
-				org.removeDomain(domainId)
-			}).then(() => {
-				this.logger.info(`Successfully removed domain from ${response.updatedChildOrganisationIds.length} child organisations`)
-			})
-		}
+	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrganisations: boolean): Promise<DomainUpdateSuccess> {
+		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}.${includeSubOrganisations ? '' : ' Not'} including sub organisations`)
+		const response = await this.cslServiceClient.removeDomainFromOrganisation(organisationalUnitId, domainId, includeSubOrganisations)
+		response.updatedIds.forEach(id => this.organisationalUnitCache.delete(id))
 		return {
-			organisationalUnit: parentOrg,
-			domain: response.domain.domain,
-			childOrgsUpdatedCount: response.updatedChildOrganisationIds.length,
+			...response,
 			update: DomainUpdate.REMOVED
 		}
 	}

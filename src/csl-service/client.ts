@@ -13,6 +13,7 @@ import {Report} from '../controllers/reporting/Report'
 import {LearningPlanCache} from './learningPlanCache'
 import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
+import {DomainUpdateSuccessResponse} from '../csrs/model/page/domainUpdateSuccess'
 import {OrganisationalUnitPageModel} from '../csrs/model/organisationalUnitPageModel'
 
 export class CslServiceClient {
@@ -118,7 +119,27 @@ export class CslServiceClient {
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
-		await this._http.delete(`${this.ORGANISATIONS_URL}/${organisationalUnitId}`)
+		await this._http.deleteRequest({
+			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}`
+		})
+	}
+
+	async addDomainToOrganisation(organisationalUnitId: number, domain: string): Promise<DomainUpdateSuccessResponse> {
+		return (await this._http.postRequest<DomainUpdateSuccessResponse>({
+			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}/domains`,
+			data: {
+				domain
+			}
+		})).data
+	}
+
+	async removeDomainFromOrganisation(organisationalUnitId: number, domainId: number, includeSubOrganisations: boolean): Promise<DomainUpdateSuccessResponse> {
+		return (await this._http.deleteRequest<DomainUpdateSuccessResponse>({
+			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}/domains/${domainId}`,
+			params: {
+				includeSubOrganisations
+			}
+		})).data
 	}
 
 	async updateOrganisationalUnit(

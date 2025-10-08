@@ -103,6 +103,10 @@ export class JsonRestService {
 		return this.get(url.parse(response.headers.location).path!)
 	}
 
+	async deleteRequest<T>(req: AxiosRequestConfig) {
+		return await this.makeRawAuthenticatedRequest<T>({method: 'DELETE', ...req})
+	}
+
 	async postRequest<T>(req: AxiosRequestConfig) {
 		return await this.makeRawAuthenticatedRequest<T>({method: 'POST', ...req})
 	}
@@ -189,6 +193,10 @@ export class JsonRestService {
 		return await this._http.delete(path, config)
 	}
 
+	/**
+	 * @deprecated Prefer putRequest over this, as this does not include detailed logging
+	 * @param path
+	 */
 	async delete(path: string) {
 		return await this._http.delete(path, this.getHeaders())
 	}
