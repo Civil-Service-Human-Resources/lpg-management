@@ -1,14 +1,12 @@
-import { plainToInstance } from 'class-transformer';
+import {plainToInstance} from 'class-transformer'
 
-import * as config from '../../config';
-import { OauthRestService } from '../../lib/http/oauthRestService';
-import { AgencyToken } from '../model/agencyToken';
-import { OrganisationalUnit } from '../model/organisationalUnit';
-import { OrganisationalUnitPageModel } from '../model/organisationalUnitPageModel';
-import {
-    GetOrganisationRequestOptions, GetOrganisationsRequestOptions
-} from './getOrganisationsRequestOptions';
-import { GetOrganisationsResponse } from './getOrganisationsResponse';
+import * as config from '../../config'
+import {OauthRestService} from 'lib/http/oauthRestService'
+import {AgencyToken} from '../model/agencyToken'
+import {OrganisationalUnit} from '../model/organisationalUnit'
+import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
+import {GetOrganisationRequestOptions, GetOrganisationsRequestOptions} from './getOrganisationsRequestOptions'
+import {GetOrganisationsResponse} from './getOrganisationsResponse'
 import {AddDomainToOrgResponse} from './addDomainToOrgResponse'
 import {RemoveDomainFromOrgResponse} from './removeDomainFromOrgResponse'
 import {DeleteDomainFromOrgRequestOptions} from './deleteDomainFromOrgRequestOptions'
@@ -71,8 +69,7 @@ export class OrganisationalUnitClient {
                 params: options
             }
         )
-        const responseData = plainToInstance(OrganisationalUnit, resp)
-        return responseData
+        return plainToInstance(OrganisationalUnit, resp)
     }
 
     async create(organisationalUnit: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {
@@ -84,16 +81,6 @@ export class OrganisationalUnitClient {
             parent: parent
         })).data
         return plainToInstance(OrganisationalUnit, respData)
-    }
-
-    async update(organisationalUnitId: number, organisationalUnit: OrganisationalUnitPageModel): Promise<void> {
-        const parent = organisationalUnit.parentId ? `${this.CSRS_URL}${this.BASE_URL}/${organisationalUnit.parentId}` : null
-        await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}`, {
-            code: organisationalUnit.code,
-            name: organisationalUnit.name,
-            abbreviation: organisationalUnit.abbreviation,
-            parent: parent
-        })
     }
 
     async createAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<AgencyToken> {

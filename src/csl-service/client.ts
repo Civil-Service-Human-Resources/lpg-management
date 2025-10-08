@@ -13,6 +13,7 @@ import {Report} from '../controllers/reporting/Report'
 import {LearningPlanCache} from './learningPlanCache'
 import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
+import {OrganisationalUnitPageModel} from '../csrs/model/organisationalUnitPageModel'
 
 export class CslServiceClient {
 
@@ -116,7 +117,26 @@ export class CslServiceClient {
 		})).data
 	}
 
-	async delete(organisationalUnitId: number) {
+	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		await this._http.delete(`${this.ORGANISATIONS_URL}/${organisationalUnitId}`)
+	}
+
+	async updateOrganisationalUnit(
+		organisationalUnitId: number,
+		organisationalUnit: OrganisationalUnitPageModel
+	): Promise<void> {
+		const parent = organisationalUnit.parentId
+			? `${organisationalUnit.parentId}`
+			: null;
+
+		await this._http.putRequest<void>({
+			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}`,
+			data: {
+				code: organisationalUnit.code,
+				name: organisationalUnit.name,
+				abbreviation: organisationalUnit.abbreviation,
+				parent: parent
+			}
+		});
 	}
 }
