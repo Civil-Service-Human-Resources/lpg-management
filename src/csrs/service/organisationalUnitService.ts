@@ -160,17 +160,19 @@ export class OrganisationalUnitService {
 	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
 		const response = await this.cslServiceClient.addDomainToOrganisation(organisationalUnitId, domainString)
-		response.updatedIds.forEach(id => this.organisationalUnitCache.delete(id))
+		const ids = [...response.updatedChildIds, organisationalUnitId]
+		ids.forEach(id => this.organisationalUnitCache.delete(id))
 		return {
 			...response,
 			update: DomainUpdate.ADDED
 		}
 	}
 
-	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrganisations: boolean): Promise<DomainUpdateSuccess> {
-		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}.${includeSubOrganisations ? '' : ' Not'} including sub organisations`)
-		const response = await this.cslServiceClient.removeDomainFromOrganisation(organisationalUnitId, domainId, includeSubOrganisations)
-		response.updatedIds.forEach(id => this.organisationalUnitCache.delete(id))
+	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccess> {
+		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}.${includeSubOrgs ? '' : ' Not'} including sub organisations`)
+		const response = await this.cslServiceClient.removeDomainFromOrganisation(organisationalUnitId, domainId, includeSubOrgs)
+		const ids = [...response.updatedChildIds, organisationalUnitId]
+		ids.forEach(id => this.organisationalUnitCache.delete(id))
 		return {
 			...response,
 			update: DomainUpdate.REMOVED

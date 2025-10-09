@@ -37,7 +37,7 @@
             <div class="panel panel-blue">
                 <div class="govuk-panel__body custom-panel panel-blue">
                     <p class="govuk-body">
-                        The domain <strong>{{ domainUpdateSuccess.domain }}</strong> has been successfully {{ addRemove }} this organisation{% if domainUpdateSuccess.childOrganisationsUpdatedCount > 0 %} and {{ domainUpdateSuccess.childOrgsUpdatedCount }} child organisations{% endif %}.
+                        The domain <strong>{{ domainUpdateSuccess.domain.domain }}</strong> has been successfully {{ addRemove }} this organisation{% if domainUpdateSuccess.updatedChildIds | length > 0 %} and {{ domainUpdateSuccess.updatedChildIds | length }} child organisations{% endif %}.
                     </p>
                 </div>
             </div>
@@ -61,50 +61,14 @@
         {% endif %}
         <form id="add-domain-form" action="/content-management/organisations/{{ organisationalUnit.id }}/domains" method="post">
             <input type="hidden" name="_csrf" value="{{ _csrf }}">
-            {% if errors.fields %}
-                {% if errors.fields.domainToAdd == 'domains.validation.domains.invalid' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.domains.validation.domains.invalid }
-                    }) }}
-                {% elif errors.fields.domainToAdd == 'domains.validation.domains.invalidFormat' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.domains.validation.domains.invalidFormat }
-                    }) }}
-                {% elif errors.fields.domainToAdd == 'domains.validation.domains.empty' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.domains.validation.domains.empty }
-                    }) }}
-                {% elif errors.fields.domainToAdd == 'domains.validation.domains.alreadyExists' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.domains.validation.domains.alreadyExists }
-                    }) }}
-                {% endif %}
-            {% else %}
-                {{ govukInput ({
-                    label: { text: "Add domain" },
-                    classes: "govuk-input--width-10",
-                    id: "domainToAdd",
-                    name: "domainToAdd",
-                    hint: { text: i18n.domains.validation.domains.hint }
-                }) }}
-            {% endif %}
-
+            {{ govukInput ({
+                label: { text: "Add domain" },
+                classes: "govuk-input--width-10",
+                id: "domainToAdd",
+                name: "domainToAdd",
+                hint: { text: i18n.domains.validation.domains.hint },
+                errorMessage: { text: errors.fields.domainToAdd | jsonpath(i18n) } if errors.fields else null
+            }) }}
             {{ govukButton ({
                 text: "Add domain",
                 classes: "button-blue button-blue-organisations",

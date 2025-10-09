@@ -9,7 +9,7 @@ export enum DomainUpdate {
 export interface DomainUpdateSuccessResponse {
 	organisationalUnit: OrganisationalUnit
 	domain: Domain
-	updatedIds: number[]
+	updatedChildIds: number[]
 }
 
 export interface DomainUpdateSuccess extends DomainUpdateSuccessResponse {

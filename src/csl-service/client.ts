@@ -133,11 +133,11 @@ export class CslServiceClient {
 		})).data
 	}
 
-	async removeDomainFromOrganisation(organisationalUnitId: number, domainId: number, includeSubOrganisations: boolean): Promise<DomainUpdateSuccessResponse> {
+	async removeDomainFromOrganisation(organisationalUnitId: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccessResponse> {
 		return (await this._http.deleteRequest<DomainUpdateSuccessResponse>({
 			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}/domains/${domainId}`,
 			params: {
-				includeSubOrganisations
+				includeSubOrgs
 			}
 		})).data
 	}
