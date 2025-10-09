@@ -37,6 +37,10 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 		]
 	}
 
+	public async generatePageModel() {
+
+	}
+
 	private getDomainFromRouterParamAndSetOnLocals() {
 		this.router.param('domainId', (req: Request, res: Response, next: NextFunction) => {
 			let organisationalUnit: OrganisationalUnit = res.locals.organisationalUnit
@@ -69,13 +73,17 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 			}
 			const domainStr: string = response.locals.input.domainToAdd
 			const domainUpdateSuccess = await this.organisationalUnitService.addDomain(organisationalUnit.id, domainStr)
-			return response.render('page/organisation/view-domains', { domainUpdateSuccess, organisationalUnit: domainUpdateSuccess.organisationalUnit })
+			request.session!.sessionFlash = { domainUpdateSuccess }
+			return request.session!.save(() => {
+				response.redirect(`/content-management/organisations/${organisationalUnit.id}/domains`)
+			})
 		}
 	}
 
 	public renderRemoveDomain() {
 		return async (request: Request, response: Response) => {
-			return response.render('page/organisation/delete-domain')
+			const pageModel = this.generatePageModel()
+			return response.render('page/organisation/delete-domain', {pageModel})
 		}
 	}
 

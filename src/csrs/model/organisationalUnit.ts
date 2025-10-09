@@ -36,16 +36,6 @@ export class OrganisationalUnit implements CacheableObject {
 	@Type(() => Domain)
 	domains: Domain[] = []
 
-	getFormattedName() {
-		const names = [this.name]
-		let currentParent = this.parent
-		while (currentParent) {
-			names.unshift(currentParent.name)
-			currentParent = currentParent.parent
-		}
-		return names.join(" | ")
-	}
-
 	updateWithPageModel(pageModel: OrganisationalUnitPageModel) {
 		this.abbreviation = pageModel.abbreviation
 		this.code = pageModel.code
@@ -99,7 +89,4 @@ export class OrganisationalUnit implements CacheableObject {
 		this.domains = this.domains.filter(d => d.id !== domainId )
 	}
 
-	getParentId(): number | null {
-		return this.parentId === undefined ? null : this.parentId
-	}
 }

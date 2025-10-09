@@ -1,3 +1,3 @@
 export interface DeleteDomainFromOrgRequestOptions {
-	includeSubOrgs: boolean
+	cascade: boolean
 }

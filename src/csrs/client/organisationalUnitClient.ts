@@ -7,9 +7,6 @@ import {OrganisationalUnit} from '../model/organisationalUnit'
 import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
 import {GetOrganisationRequestOptions, GetOrganisationsRequestOptions} from './getOrganisationsRequestOptions'
 import {GetOrganisationsResponse} from './getOrganisationsResponse'
-import {AddDomainToOrgResponse} from './addDomainToOrgResponse'
-import {RemoveDomainFromOrgResponse} from './removeDomainFromOrgResponse'
-import {DeleteDomainFromOrgRequestOptions} from './deleteDomainFromOrgRequestOptions'
 
 export class OrganisationalUnitClient {
 
@@ -97,16 +94,4 @@ export class OrganisationalUnitClient {
 		await this._http.delete(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`)
 	}
 
-	async addDomain(organisationalUnitId: number, domain: string): Promise<AddDomainToOrgResponse> {
-        const response = await this._http.postWithoutFollowing(`${this.BASE_URL}/${organisationalUnitId}/domains`, {domain})
-        return  plainToInstance(AddDomainToOrgResponse, response.data)
-	}
-
-	async removeDomain(organisationalUnitId: number, domainId: number, options: DeleteDomainFromOrgRequestOptions) {
-        const response = await this._http.deleteWithAuthAndConfig(`${this.BASE_URL}/${organisationalUnitId}/domains/${domainId}`,
-            {
-                params: options
-            })
-        return  plainToInstance(RemoveDomainFromOrgResponse, response.data)
-	}
 }
