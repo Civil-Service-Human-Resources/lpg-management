@@ -11,6 +11,7 @@ import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import { RequiredLearningCache } from 'src/csl-service/requiredLearningCache'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -22,6 +23,7 @@ export class AudienceController {
 	csrsService: CsrsService
 	audienceService: AudienceService
 	router: Router
+	requiredLearningCache: RequiredLearningCache
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
@@ -29,7 +31,8 @@ export class AudienceController {
 		audienceFactory: AudienceFactory,
 		courseService: CourseService,
 		csrsService: CsrsService,
-		audienceService: AudienceService
+		audienceService: AudienceService,
+		requiredLearningCache: RequiredLearningCache
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
@@ -40,6 +43,7 @@ export class AudienceController {
 		this.audienceService = audienceService
 		this.configurePathParametersProcessing()
 		this.setRouterPaths()
+		this.requiredLearningCache = requiredLearningCache
 	}
 
 	private configurePathParametersProcessing() {
@@ -339,7 +343,8 @@ export class AudienceController {
 
 			await this.learningCatalogue
 				.updateAudience(res.locals.course.id, res.locals.audience)
-				.then(() => {
+				.then(async () => {
+					await this.clearRequiredLearningCaches()
 					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
 				})
 				.catch(error => next(error))
@@ -371,10 +376,16 @@ export class AudienceController {
 
 			await this.learningCatalogue
 				.updateAudience(res.locals.course.id, res.locals.audience)
-				.then(() => {
+				.then(async () => {
+					await this.clearRequiredLearningCaches()
 					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
 				})
 				.catch(error => next(error))
 		}
+	}
+
+	private async clearRequiredLearningCaches(){
+		const cachedRequiredLearningIds: string[] = await this.requiredLearningCache.getAllIds()
+		await this.requiredLearningCache.deleteMultiple(cachedRequiredLearningIds)
 	}
 }

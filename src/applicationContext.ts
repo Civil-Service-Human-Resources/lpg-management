@@ -69,6 +69,7 @@ import {ProfileCache} from './csrs/profileCache'
 import { CslService } from './csl-service/service/cslService'
 import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
 import {LearningPlanCache} from './csl-service/learningPlanCache'
+import { RequiredLearningCache } from './csl-service/requiredLearningCache'
 
 export class ApplicationContext {
 
@@ -141,6 +142,7 @@ export class ApplicationContext {
 	civilServantProfileService: CivilServantProfileService
 	cslService: CslService
 	formattedOrganisationListCache: FormattedOrganisationListCache
+	requiredLearningCache: RequiredLearningCache
 
 	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
 
@@ -186,6 +188,8 @@ export class ApplicationContext {
 
 		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.cslService = new CslService(this.formattedOrganisationListCache, this.cslServiceClient)
+
+		this.requiredLearningCache = new RequiredLearningCache(redisClient, config.ORG_REDIS.ttl_seconds)
 
 		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
 
@@ -291,7 +295,8 @@ export class ApplicationContext {
 			this.audienceFactory,
 			this.courseService,
 			this.csrsService,
-			this.audienceService
+			this.audienceService,
+			this.requiredLearningCache
 		)
 		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
 		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)

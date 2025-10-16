@@ -1,8 +1,9 @@
 
-import { RedisClient } from 'redis'
+import { Multi, RedisClient } from 'redis'
 import { promisify } from 'util'
 import { Logger } from 'winston'
 import { getLogger } from '../utils/logger'
+import * as config from '../config/index'
 
 export abstract class Cache<T> {
 	protected logger: Logger
@@ -50,6 +51,31 @@ export abstract class Cache<T> {
 			this.logger.error(`Error deleting object from cache with key ${key}. Error: ${e}.`)
 			throw e
 		}
+	}
+
+	async deleteMultiple(ids: string[]){		
+		const pipeline: Multi = this.redisClient.multi()
+
+		ids.forEach(async (id) => {			
+			const formattedKey = this.getFormattedKey(id)
+			await promisify(pipeline.expire).bind(pipeline)(formattedKey, 0)
+		})
+
+		await promisify(pipeline.exec).bind(pipeline)()		
+	}
+
+	async getAllIds(): Promise<string[]> {
+		const keyPrefix: string = config.REDIS.keyPrefix
+		// redisClient.scan doesn't respect the configured keyPrefix
+		// so we need to add it to the MATCH pattern ourselves and then strip it from the results
+
+		const pattern: string = `${keyPrefix}${this.getBaseKey()}*`		
+		const scanResults = await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', '1000000')
+		
+		const ids: string[] = scanResults[1]
+			.map((key: string) => key.replace(new RegExp(`^${keyPrefix}`),  ''))		
+			.map((key: string) => key.replace(`${this.getBaseKey()}:`,  ''))		
+		return ids
 	}
 
 	protected getFormattedKey(keyPart: string | number) {
