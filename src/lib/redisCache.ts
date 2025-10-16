@@ -53,6 +53,11 @@ export abstract class Cache<T> {
 		}
 	}
 
+	async deleteAllIds(){
+		const ids = await this.getAllIds()
+		await this.deleteMultiple(ids)
+	}
+
 	async deleteMultiple(ids: string[]){		
 		const pipeline: Multi = this.redisClient.multi()
 

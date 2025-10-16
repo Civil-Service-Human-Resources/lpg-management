@@ -343,9 +343,11 @@ export class AudienceController {
 
 			await this.learningCatalogue
 				.updateAudience(res.locals.course.id, res.locals.audience)
-				.then(async () => {
-					await this.clearRequiredLearningCaches()
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+				.then(() => {
+					this.requiredLearningCache.deleteAllIds()
+					.then(() => {
+						res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+					})					
 				})
 				.catch(error => next(error))
 		}
@@ -376,16 +378,13 @@ export class AudienceController {
 
 			await this.learningCatalogue
 				.updateAudience(res.locals.course.id, res.locals.audience)
-				.then(async () => {
-					await this.clearRequiredLearningCaches()
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+				.then(() => {
+					this.requiredLearningCache.deleteAllIds()
+					.then(() => {
+						res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+					})
 				})
 				.catch(error => next(error))
 		}
-	}
-
-	private async clearRequiredLearningCaches(){
-		const cachedRequiredLearningIds: string[] = await this.requiredLearningCache.getAllIds()
-		await this.requiredLearningCache.deleteMultiple(cachedRequiredLearningIds)
 	}
 }
