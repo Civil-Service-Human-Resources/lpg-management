@@ -12,6 +12,8 @@ import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 import { RequiredLearningCache } from 'src/csl-service/requiredLearningCache'
+import { LearningPlanCache } from 'src/csl-service/learningPlanCache'
+import { LearningRecordCache } from 'src/csl-service/learningRecordCache'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -24,6 +26,8 @@ export class AudienceController {
 	audienceService: AudienceService
 	router: Router
 	requiredLearningCache: RequiredLearningCache
+	learningPlanCache: LearningPlanCache
+	learningRecordCache: LearningRecordCache
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
@@ -32,7 +36,9 @@ export class AudienceController {
 		courseService: CourseService,
 		csrsService: CsrsService,
 		audienceService: AudienceService,
-		requiredLearningCache: RequiredLearningCache
+		requiredLearningCache: RequiredLearningCache,
+		learningPlanCache: LearningPlanCache,
+		learningRecordCache: LearningRecordCache
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
@@ -44,6 +50,8 @@ export class AudienceController {
 		this.configurePathParametersProcessing()
 		this.setRouterPaths()
 		this.requiredLearningCache = requiredLearningCache
+		this.learningPlanCache = learningPlanCache
+		this.learningRecordCache = learningRecordCache
 	}
 
 	private configurePathParametersProcessing() {
@@ -344,10 +352,8 @@ export class AudienceController {
 			await this.learningCatalogue
 				.updateAudience(res.locals.course.id, res.locals.audience)
 				.then(() => {
-					this.requiredLearningCache.deleteAllIds()
-					.then(() => {
-						res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
-					})					
+					this.clearCache()
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)					
 				})
 				.catch(error => next(error))
 		}
@@ -379,12 +385,16 @@ export class AudienceController {
 			await this.learningCatalogue
 				.updateAudience(res.locals.course.id, res.locals.audience)
 				.then(() => {
-					this.requiredLearningCache.deleteAllIds()
-					.then(() => {
-						res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
-					})
+					this.clearCache()
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)					
 				})
 				.catch(error => next(error))
 		}
+	}
+
+	clearCache(){
+		this.requiredLearningCache.deleteAllIds()
+		this.learningPlanCache.deleteAllIds()
+		this.learningRecordCache.deleteAllIds()
 	}
 }

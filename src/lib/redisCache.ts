@@ -61,10 +61,8 @@ export abstract class Cache<T> {
 	async deleteMultiple(ids: string[]){		
 		const pipeline: Multi = this.redisClient.multi()
 
-		ids.forEach(async (id) => {			
-			const formattedKey = this.getFormattedKey(id)
-			await promisify(pipeline.expire).bind(pipeline)(formattedKey, 0)
-		})
+		const pipelineExpirePromises = ids.map(id => promisify(pipeline.expire).bind(pipeline)(this.getFormattedKey(id), 0))
+		Promise.all(pipelineExpirePromises)
 
 		await promisify(pipeline.exec).bind(pipeline)()		
 	}
@@ -74,12 +72,13 @@ export abstract class Cache<T> {
 		// redisClient.scan doesn't respect the configured keyPrefix
 		// so we need to add it to the MATCH pattern ourselves and then strip it from the results
 
-		const pattern: string = `${keyPrefix}${this.getBaseKey()}*`		
-		const scanResults = await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', '1000000')
+		const keyWithPrefix: string = `${keyPrefix}${this.getBaseKey()}`
+
+		const scanResults = await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', `${keyWithPrefix}*`, 'COUNT', '1000000')
 		
 		const ids: string[] = scanResults[1]
-			.map((key: string) => key.replace(new RegExp(`^${keyPrefix}`),  ''))		
-			.map((key: string) => key.replace(`${this.getBaseKey()}:`,  ''))		
+			.map((key: string) => key.replace(new RegExp(`^${keyWithPrefix}:`),  ''))			
+		
 		return ids
 	}
 
