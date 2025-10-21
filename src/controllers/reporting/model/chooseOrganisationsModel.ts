@@ -2,10 +2,11 @@ import {REPORTING} from '../../../config'
 import { FormattedOrganisation } from "src/csl-service/model/FormattedOrganisation"
 import {Exclude, Transform} from 'class-transformer'
 import {ArrayMaxSize, ArrayMinSize, ValidateIf} from 'class-validator'
+import {SubmittableForm} from '../../models/submittableForm'
 
 export type OrganisationSelection = 'allOrganisations' | 'multiple-organisations'
 
-export class ChooseOrganisationsModel {
+export class ChooseOrganisationsModel extends SubmittableForm {
 
     // Settings:
     @Exclude()
@@ -49,6 +50,7 @@ export class ChooseOrganisationsModel {
         firstOrganisationOption: { id: string, name: string },
         multipleOrganisationsOptions: FormattedOrganisation[]
     ) {
+        super()
         this.firstOrganisationOption = firstOrganisationOption
         this.multipleOrganisationsOptions = multipleOrganisationsOptions
     }

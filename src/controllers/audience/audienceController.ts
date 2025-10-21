@@ -9,8 +9,9 @@ import {CsrsService} from '../../csrs/service/csrsService'
 import {DateTime} from '../../lib/dateTime'
 import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
-import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {CslService} from '../../csl-service/service/cslService'
+import {FormattedOrganisation} from '../../csl-service/model/FormattedOrganisation'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -21,6 +22,7 @@ export class AudienceController {
 	courseService: CourseService
 	csrsService: CsrsService
 	audienceService: AudienceService
+	cslService: CslService
 	router: Router
 
 	constructor(
@@ -29,7 +31,8 @@ export class AudienceController {
 		audienceFactory: AudienceFactory,
 		courseService: CourseService,
 		csrsService: CsrsService,
-		audienceService: AudienceService
+		audienceService: AudienceService,
+		cslService: CslService
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
@@ -38,6 +41,7 @@ export class AudienceController {
 		this.csrsService = csrsService
 		this.router = Router()
 		this.audienceService = audienceService
+		this.cslService = cslService
 		this.configurePathParametersProcessing()
 		this.setRouterPaths()
 	}
@@ -107,9 +111,8 @@ export class AudienceController {
 	getOrganisation() {
 		return async (req: Request, res: Response) => {
 			const selectedOrganisations = res.locals.audience.departments
-
-			let organisations: OrganisationalUnitTypeAhead = await this.csrsService.listOrganisationalUnitsForTypehead()
-			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations.typeahead, selectedOrganisations: selectedOrganisations})
+			let organisations: FormattedOrganisation[] = await this.cslService.getAllOrganisationsTypeahead()
+			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations, selectedOrganisations: selectedOrganisations})
 		}
 	}
 

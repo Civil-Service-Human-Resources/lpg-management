@@ -15,6 +15,8 @@ import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
 import {DomainUpdateSuccessResponse} from '../csrs/model/page/domainUpdateSuccess'
 import {OrganisationalUnitPageModel} from '../csrs/model/organisationalUnitPageModel'
+import {DeleteOrganisationResponse} from './model/deleteOrganisationResponse'
+import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 
 export class CslServiceClient {
 
@@ -119,9 +121,10 @@ export class CslServiceClient {
 	}
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
-		await this._http.deleteRequest({
+		const response = await this._http.deleteRequest<DeleteOrganisationResponse>({
 			url: `${this.ORGANISATIONS_URL}/${organisationalUnitId}`
 		})
+		return plainToInstance(DeleteOrganisationResponse, response.data)
 	}
 
 	async addDomainToOrganisation(organisationalUnitId: number, domain: string): Promise<DomainUpdateSuccessResponse> {
@@ -159,5 +162,13 @@ export class CslServiceClient {
 				parent: parent
 			}
 		});
+	}
+
+	async getOrganisationalUnit(organisationalUnitId: number): Promise<OrganisationalUnit> {
+		return undefined
+	}
+
+	async createOrganisationalUnit(organisationalUnitModel: OrganisationalUnitPageModel) {
+		return Promise.resolve(undefined)
 	}
 }

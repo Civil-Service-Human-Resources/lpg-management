@@ -66,6 +66,7 @@
                 classes: "govuk-input--width-10",
                 id: "domainToAdd",
                 name: "domainToAdd",
+                value: pageModel.domainToAdd if pageModel.domainToAdd else "",
                 hint: { text: i18n.domains.validation.domains.hint },
                 errorMessage: { text: errors.fields.domainToAdd | jsonpath(i18n) } if errors.fields else null
             }) }}

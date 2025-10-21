@@ -2,8 +2,8 @@ import { CacheService } from '../../lib/cacheService';
 import { OauthRestService } from '../../lib/http/oauthRestService';
 import { JsonpathService } from '../../lib/jsonpathService';
 import { CivilServant } from '../model/civilServant';
-import { OrganisationalUnit } from '../model/organisationalUnit';
-import { OrganisationalUnitService } from './organisationalUnitService';
+import {CslService} from '../../csl-service/service/cslService'
+import {FormattedOrganisation} from '../../csl-service/model/FormattedOrganisation'
 
 export class CsrsService {
 
@@ -17,7 +17,7 @@ export class CsrsService {
 	constructor(
 		private readonly restService: OauthRestService,
 		private readonly cacheService: CacheService,
-		private readonly organisationalUnitService: OrganisationalUnitService) {}
+		private readonly cslService: CslService) {}
 
 	async editDescription(data: any, user: any) {
 		return await this.restService.postWithoutFollowingWithConfig('api/quiz/update',
@@ -135,21 +135,17 @@ export class CsrsService {
 		return interests
 	}
 
-	async listOrganisationalUnitsForTypehead() {
-		return await this.organisationalUnitService.getOrgDropdown()
-	}
-
 	async getDepartmentCodeToNameMapping() {
-		const dropdown = await this.organisationalUnitService.getOrgDropdown()
-		return dropdown.typeahead.reduce((map: any, object: OrganisationalUnit) => {
+		const dropdown = await this.cslService.getAllOrganisationsTypeahead()
+		return dropdown.reduce((map: any, object: FormattedOrganisation) => {
 			map[object.code] = object.name
 			return map
 		}, {})
 	}
 
 	async getDepartmentAbbreviationsFromCodes(codes: string[]) {
-		const dropdown = await this.organisationalUnitService.getOrgDropdown()
-		return dropdown.typeahead.filter(o => codes.includes(o.code) && o.abbreviation).map(o => o.abbreviation!)
+		const dropdown = await this.cslService.getAllOrganisationsTypeahead()
+		return dropdown.filter(o => codes.includes(o.code) && o.abbreviation).map(o => o.abbreviation!)
 	}
 
 	async getGradeCodeToNameMapping() {

@@ -37,10 +37,6 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 		]
 	}
 
-	public async generatePageModel() {
-
-	}
-
 	private getDomainFromRouterParamAndSetOnLocals() {
 		this.router.param('domainId', (req: Request, res: Response, next: NextFunction) => {
 			let organisationalUnit: OrganisationalUnit = res.locals.organisationalUnit
@@ -82,8 +78,7 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 
 	public renderRemoveDomain() {
 		return async (request: Request, response: Response) => {
-			const pageModel = this.generatePageModel()
-			return response.render('page/organisation/delete-domain', {pageModel})
+			return response.render('page/organisation/delete-domain')
 		}
 	}
 

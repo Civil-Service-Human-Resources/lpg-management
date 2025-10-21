@@ -85,30 +85,6 @@ export class AgencyTokenController extends OrganisationalUnitControllerBase impl
 
 			this.logger.debug(`Adding agency token to organisation: ${organisationalUnit.name}`)
 
-			const capacityIsValid = this.agencyTokenService.validateCapacity(request.body.capacity)
-			if (!capacityIsValid) {
-				const error = {fields: {capacity: ['agencyToken.validation.capacity.invalid']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
-			const domainsIsValid = this.agencyTokenService.validateDomains(request.session!.domainsForAgencyToken)
-			if (!domainsIsValid) {
-				let errorText = ''
-				if (!(Array.isArray(request.session!.domainsForAgencyToken) && request.session!.domainsForAgencyToken.length)) {
-					errorText = 'agencyToken.validation.domains.empty'
-				} else {
-					errorText = 'agencyToken.validation.domains.invalid'
-				}
-				const error = {fields: {domains: [errorText]}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
-			const agencyTokenNumberFormatIsValid = this.agencyTokenService.validateAgencyTokenNumber(request.body.tokenNumber)
-			if (!agencyTokenNumberFormatIsValid) {
-				const error = {fields: {tokenNumber: ['agencyToken.validation.tokenNumber.invalidFormat']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
 			const data = {
 				...request.body,
 				domains: request.session!.domainsForAgencyToken,
@@ -141,35 +117,6 @@ export class AgencyTokenController extends OrganisationalUnitControllerBase impl
 			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
 
 			this.logger.debug(`Updating agency token for organisation: ${organisationalUnit.name}`)
-
-			const capacityIsValid = this.agencyTokenService.validateCapacity(request.body.capacity)
-			if (!capacityIsValid) {
-				const error = {fields: {capacity: ['agencyToken.validation.capacity.invalid']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
-			if (request.body.capacity < organisationalUnit.agencyToken!.capacityUsed) {
-				const error = {fields: {capacity: ['agencyToken.validation.capacity.lessThanCurrentUsage']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
-			const domainsIsValid = this.agencyTokenService.validateDomains(request.session!.domainsForAgencyToken)
-			if (!domainsIsValid) {
-				let errorText = ''
-				if (!(Array.isArray(request.session!.domainsForAgencyToken) && request.session!.domainsForAgencyToken.length)) {
-					errorText = 'agencyToken.validation.domains.empty'
-				} else {
-					errorText = 'agencyToken.validation.domains.invalid'
-				}
-				const error = {fields: {domains: [errorText]}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
-			const agencyTokenNumberFormatIsValid = this.agencyTokenService.validateAgencyTokenNumber(request.body.tokenNumber)
-			if (!agencyTokenNumberFormatIsValid) {
-				const error = {fields: {tokenNumber: ['agencyToken.validation.tokenNumber.invalidFormat']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
 
 			const data = {
 				...request.body,
@@ -223,19 +170,8 @@ export class AgencyTokenController extends OrganisationalUnitControllerBase impl
 			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
 			const domainToAdd = request.body.domainToAdd
 
-			const domainIsValid = this.agencyTokenService.validateDomains([domainToAdd])
-			if (!domainIsValid) {
-				const error = {fields: {domains: ['agencyToken.validation.domains.invalidFormat']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-			}
-
 			if (request.session!.domainsForAgencyToken == undefined) {
 				request.session!.domainsForAgencyToken = []
-			}
-
-			if (request.session!.domainsForAgencyToken.includes(domainToAdd)) {
-				const error = {fields: {domains: ['agencyToken.validation.domains.alreadyExists']}, size: 1}
-				return this.redirectToAddEditAgencyTokenWithError(request, response, error)
 			}
 
 			request.session!.domainsForAgencyToken.push(domainToAdd)
