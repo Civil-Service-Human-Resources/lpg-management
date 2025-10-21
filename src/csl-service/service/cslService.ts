@@ -9,6 +9,10 @@ export class CslService {
         private formattedOrganisationListCache: FormattedOrganisationListCache,
         private cslClient: CslServiceClient) { }
 
+    async getAllOrganisationsTypeahead() {
+        return this.getOrganisationTypeahead(new GetOrganisationsFormattedParams())
+    }
+
     async getOrganisationTypeaheadForUser(user: any) {
         let params = new GetOrganisationsFormattedParams()
         if (!user.isUnrestrictedOrganisation()) {
@@ -16,6 +20,10 @@ export class CslService {
                 return o.id
             }), user.isTierOneReporter())
         }
+        return this.getOrganisationTypeahead(params)
+    }
+
+    async getOrganisationTypeahead(params: GetOrganisationsFormattedParams) {
         const cacheKey = params.getCacheKey()
         let typeahead = await this.formattedOrganisationListCache.get(cacheKey)
         if (typeahead === undefined) {

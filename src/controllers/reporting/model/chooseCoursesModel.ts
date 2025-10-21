@@ -1,6 +1,7 @@
 import {Exclude, Transform} from 'class-transformer'
 import {ArrayMaxSize, IsNotEmpty, ValidateIf} from 'class-validator'
 import {REPORTING} from '../../../config'
+import {SubmittableForm} from '../../models/submittableForm'
 
 export enum LearningSelection {
 	requiredLearning = "requiredLearning",
@@ -8,7 +9,7 @@ export enum LearningSelection {
 	allLearning = "allLearning"
 }
 
-export class ChooseCoursesModel {
+export class ChooseCoursesModel extends SubmittableForm {
 
 	// settings
 	@Exclude()
@@ -59,6 +60,7 @@ export class ChooseCoursesModel {
 
 	constructor(userDepartment?: string, requiredLearningList: BasicCoursePageModel[] = [],
 				courseSearchList: BasicCoursePageModel[] = []) {
+		super()
 		this.userDepartment = userDepartment
 		this.requiredLearningList = requiredLearningList
 		this.allRequiredLearning = requiredLearningList.map(c => c.value).join(",")

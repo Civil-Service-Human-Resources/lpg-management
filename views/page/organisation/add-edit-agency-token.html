@@ -11,168 +11,99 @@
 {% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
 {% from "../../component/audiences/macro.njk" import audiences with context %}
 
-{% block pageTitle %}{{ i18n.agencyToken.title.editAgencyToken if organisationalUnit.agencyToken else i18n.agencyToken.title.addAgencyToken }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ i18n.agencyToken.title.editAgencyToken if pageModel.tokenExists else i18n.agencyToken.title.addAgencyToken }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% set backButton = "/content-management/organisations/" + organisationalUnit.id + "/overview" %}
+{% set backButton = "/content-management/organisations/" + pageModel.organisationId + "/overview" %}
 
 {% block content %}
 
 {% set banner = true %}
-{% set form = sessionFlash.form %}
 {% set errors = sessionFlash.errors %}
-{{ errorSummary(errors.fields) }}
+{{ errorSummary(pageModel.errors.fields, true) }}
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{ organisationalUnit.name }}</h1>
-        <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.agencyToken.title.editAgencyToken if organisationalUnit.agencyToken else i18n.agencyToken.title.addAgencyToken }}</h2>
+        <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.agencyToken.title.editAgencyToken if pageModel.tokenExists else i18n.agencyToken.title.addAgencyToken }}</h2>
     </div>
 </div>
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-
         <h3 class="govuk-heading-s">List of permitted domains</h3>
-        {% if domainsForAgencyToken.length > 0 %}
-            <ul class="list modules" id="domains">
-                {% for domain in domainsForAgencyToken %}
-                    <li class="list-details list-domain">
-                        <p class="govuk-body title">{{ domain }}</p>
-                        <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/domain/delete" method="post">
-                            <input type="hidden" name="_csrf" value="{{ _csrf }}">
-                            <input class="hidden" name="domainToDelete" value="{{ domain }}" aria-label="{{ domain }}">
-                            <button class="govuk-link linkish-button" type="submit">Remove</button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p class="govuk-body">No domains have been added yet</p>
-        {% endif %}
-
-        <form id="add-domain-form" action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/domain" method="post">
-            <input type="hidden" name="_csrf" value="{{ _csrf }}">
-            {% if errors.fields.domains %}
-                {% if errors.fields.domains == 'agencyToken.validation.domains.invalid' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.agencyToken.validation.domains.invalid }
-                    }) }}
-                {% elif errors.fields.domains == 'agencyToken.validation.domains.invalidFormat' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.agencyToken.validation.domains.invalidFormat }
-                    }) }}
-                {% elif errors.fields.domains == 'agencyToken.validation.domains.empty' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.agencyToken.validation.domains.empty }
-                    }) }}
-                {% elif errors.fields.domains == 'agencyToken.validation.domains.alreadyExists' %}
-                    {{ govukInput ({
-                        label: { text: "Add domain" },
-                        classes: "govuk-input--width-10",
-                        id: "domainToAdd",
-                        name: "domainToAdd",
-                        errorMessage: { text: i18n.agencyToken.validation.domains.alreadyExists }
-                    }) }}
-                {% endif %}
+            {% if pageModel.domain.length > 0 %}
+                <form action='/content-management/organisations/{{ pageModel.organisationId }}/agency-token/domains' method="POST">
+                    <input type="hidden" name="_csrf" value="{{ _csrf }}">
+                    <ul class="list modules" id="domains">
+                        {% for domain in pageModel.domain %}
+                            <li class="list-details list-domain">
+                                <p class="govuk-body title">{{ domain }}</p>
+                                <button formaction='/content-management/organisations/{{ pageModel.organisationId }}/agency-token/domains?domainToRemove={{ domain }}' class="govuk-link linkish-button">Remove</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </form>
             {% else %}
+                <p class="govuk-body">No domains have been added yet</p>
+            {% endif %}
+            <form id='add-domain-form' action='/content-management/organisations/{{ pageModel.organisationId }}/agency-token/domains' method="POST">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {{ govukInput ({
                     label: { text: "Add domain" },
                     classes: "govuk-input--width-10",
                     id: "domainToAdd",
                     name: "domainToAdd",
-                    hint: { text: i18n.agencyToken.validation.domains.hint }
+                    value: pageModel.domainToAdd if pageModel.domainToAdd else "",
+                    hint: { text: i18n.agencyToken.validation.domains.hint },
+                    errorMessage: { text: pageModel.errors.fields.domainToAdd | jsonpath(i18n) } if pageModel.errors.fields.domainToAdd else null
                 }) }}
-            {% endif %}
+                {{ govukButton ({
+                    text: "Add domain",
+                    classes: "button-blue button-blue-organisations",
+                    type: "submit"
+                }) }}
+            </form>
 
-            {{ govukButton ({
-                text: "Add domain",
-                classes: "button-blue button-blue-organisations",
-                type: "submit"
-            }) }}
-        </form>
+        {% set formAction = "/content-management/organisations/" + pageModel.organisationId + "/agency-token" + "/edit" if pageModel.tokenExists else "" %}
 
-        {% if organisationalUnit.agencyToken %}
-        <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/edit" method="post">
-        {% else %}
-        <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token" method="post">
-        {% endif %}
+        <form action="{{ formAction }}" method="post">
+            {% for domain in pageModel.domain %}
+                <input class="hidden" name="domain" value="{{ domain }}" aria-label="{{ domain }}">
+            {% endfor %}
             <input type="hidden" name="_csrf" value="{{ _csrf }}">
-            {% if errors.fields.capacity == 'agencyToken.validation.capacity.lessThanCurrentUsage' %}
-                {{ govukInput ({
-                    label: { text: i18n.agencyToken.text.numberOfSpaces },
-                    classes: "govuk-input--width-10",
-                    id: "capacity",
-                    name: "capacity",
-                    type: "number",
-                    value: form.capacity | default(organisationalUnit.agencyToken.capacity),
-                    errorMessage: { text: i18n.agencyToken.validation.capacity.lessThanCurrentUsage }
-                }) }}
-            {% elif errors.fields.capacity == 'agencyToken.validation.capacity.invalid'%}
-                {{ govukInput ({
-                    label: { text: i18n.agencyToken.text.numberOfSpaces },
-                    classes: "govuk-input--width-10",
-                    id: "capacity",
-                    name: "capacity",
-                    type: "number",
-                    value: form.capacity | default(organisationalUnit.agencyToken.capacity),
-                    errorMessage: { text: i18n.agencyToken.validation.capacity.invalid }
-                }) }}
-            {% elif errors.fields.capacity %}
-                  {{ govukInput ({
-                    label: { text: i18n.agencyToken.text.numberOfSpaces },
-                    classes: "govuk-input--width-10",
-                    id: "capacity",
-                    name: "capacity",
-                    type: "number",
-                    value: form.capacity | default(organisationalUnit.agencyToken.capacity),
-                    errorMessage: { text: errors.fields.capacity }
-                }) }}
-            {% else %}
-                {{ govukInput ({
-                    label: { text: i18n.agencyToken.text.numberOfSpaces },
-                    classes: "govuk-input--width-10",
-                    id: "capacity",
-                    name: "capacity",
-                    type: "number",
-                    value: form.capacity | default(organisationalUnit.agencyToken.capacity)
-                }) }}
-            {% endif %}
+            {{ govukInput ({
+                label: { text: i18n.agencyToken.text.numberOfSpaces },
+                classes: "govuk-input--width-10",
+                id: "capacity",
+                name: "capacity",
+                type: "number",
+                value: pageModel.capacity,
+                errorMessage: { text: pageModel.errors.fields.capacity | jsonpath(i18n) } if pageModel.errors.fields.capacity else null
+            }) }}
 
-            {% if organisationalUnit.agencyToken %}
+            {% if pageModel.tokenExists %}
                 <p id=number-of-spaces-currently-in-use-text" class="govuk-body"><strong>Number of spaces currently in use</strong></p>
-                <p id="number-of-spaces-currently-in-use-value" class="govuk-body">{{ organisationalUnit.agencyToken.capacityUsed  }}</p>
+                <p id="number-of-spaces-currently-in-use-value" class="govuk-body">{{ pageModel.spacesInUse }}</p>
             {% endif %}
 
             <label for="token-number-input" class="govuk-label">Token number</label>
-            <p id="token-number-display-text" class="govuk-body">{{ agencyTokenNumber | default('Unspecified', true) }}</p>
-            <input id="token-number-input" name='tokenNumber' value="{{ agencyTokenNumber | default('Unspecified', true) }}" type="hidden">
+            <p id="token-number-display-text" class="govuk-body">{{ pageModel.tokenNumber | default('Unspecified', true) }}</p>
+            <input id="token-number-input" name='tokenNumber' value="{{ pageModel.tokenNumber | default('Unspecified', true) }}" type="hidden">
             <button class="govuk-link linkish-button" type="button" onclick="generateAndDisplayNewToken();">Re-generate token number</button><br/><br/>
 
             {{ govukButton ({
-                text: "Update token" if organisationalUnit.agencyToken else "Add token"
+                text: "Update token" if pageModel.tokenExists else "Add token"
             }) }}
 
         </form>
 
-        {% if organisationalUnit.agencyToken %}
-            <form action="/content-management/organisations/{{ organisationalUnit.id }}/agency-token/delete" method="get">
+        {% if pageModel.tokenExists %}
+            <form action="/content-management/organisations/{{ pageModel.organisationId }}/agency-token/delete" method="get">
                 <button id="delete-token-button" type="submit" class="govuk-button button-red">Delete token</button>
             </form>
         {% endif %}
 
-        <a href="/content-management/organisations/{{organisationalUnit.id}}/overview" class="govuk-link">Cancel</a>
+        <a href="/content-management/organisations/{{pageModel.id}}/overview" class="govuk-link">Cancel</a>
     </div>
 </div>
 

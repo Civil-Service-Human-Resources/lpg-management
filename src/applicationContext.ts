@@ -48,16 +48,8 @@ import {AudienceService} from './lib/audienceService'
 import {QuestionFactory} from './controllers/skills/questionFactory'
 import {QuizFactory} from './controllers/skills/quizFactory'
 import {Question} from "./controllers/skills/question"
-import {AgencyToken} from './csrs/model/agencyToken'
-import {AgencyTokenFactory} from './csrs/model/agencyTokenFactory'
 import {AgencyTokenService} from './lib/agencyTokenService'
-import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenController'
-import {AgencyTokenCapacityUsedHttpService} from './identity/agencyTokenCapacityUsedHttpService'
-import { OrganisationalUnitPageModel } from './csrs/model/organisationalUnitPageModel'
-import { OrganisationalUnitClient } from './csrs/client/organisationalUnitClient'
 import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
-import { AgencyTokenHttpService } from './csrs/agencyTokenHttpService'
-import { OrganisationalUnitTypeaheadCache } from './csrs/organisationalUnitTypeaheadCache'
 import {CslServiceClient} from './csl-service/client'
 import {Controller} from './controllers/controller'
 import { CivilServantProfileService } from './csrs/service/civilServantProfileService'
@@ -69,6 +61,7 @@ import {ProfileCache} from './csrs/profileCache'
 import { CslService } from './csl-service/service/cslService'
 import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
 import {LearningPlanCache} from './csl-service/learningPlanCache'
+import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenControllerNew'
 
 export class ApplicationContext {
 
@@ -118,21 +111,14 @@ export class ApplicationContext {
 	bookingFactory: BookingFactory
 	bookingValidator: Validator<Booking>
 	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
-	organisationalUnitPageModelValidator: Validator<OrganisationalUnitPageModel>
 	profileCache: ProfileCache
 	organisationalUnitCache: OrganisationalUnitCache
-	organisationalUnitTypeaheadCache: OrganisationalUnitTypeaheadCache
-	organisationalUnitClient: OrganisationalUnitClient
 	organisationController: OrganisationController
-	agencyTokenHttpService: AgencyTokenHttpService
-	agencyTokenCapacityUsedHttpService: AgencyTokenCapacityUsedHttpService
 	searchController: SearchController
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
 	skillsController: SkillsController
 	audienceService: AudienceService
-	agencyTokenFactory: AgencyTokenFactory
-	agencyTokenValidator: Validator<AgencyToken>
 	agencyTokenService: AgencyTokenService
 	agencyTokenController: AgencyTokenController
 	questionFactory: QuestionFactory
@@ -205,25 +191,14 @@ export class ApplicationContext {
 			checkperiod: config.CACHE.CHECK_PERIOD_SECONDS,
 		})
 
-		this.agencyTokenCapacityUsedHttpService = new AgencyTokenCapacityUsedHttpService(this.identityConfig, this.auth)
-
 		this.organisationalUnitCache = new OrganisationalUnitCache(
 			redisClient, config.ORG_REDIS.ttl_seconds
 		)
 
-		this.organisationalUnitTypeaheadCache = new OrganisationalUnitTypeaheadCache(
-			redisClient, config.ORG_REDIS.ttl_seconds
-		)
 		this.csrsConfig = createConfig(config.REGISTRY_SERVICE)
-		this.organisationalUnitClient = new OrganisationalUnitClient(new OauthRestService(this.csrsConfig, this.auth))
-		this.organisationalUnitService = new OrganisationalUnitService(
-			this.organisationalUnitCache,
-			this.organisationalUnitTypeaheadCache,
-			this.organisationalUnitClient,
-			this.agencyTokenCapacityUsedHttpService,
-			this.cslServiceClient)
+		this.organisationalUnitService = new OrganisationalUnitService(this.organisationalUnitCache, this.cslServiceClient)
 
-		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.organisationalUnitService)
+		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.cslService)
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
@@ -282,8 +257,6 @@ export class ApplicationContext {
 		)
 
 		this.audienceValidator = new Validator<Audience>(this.audienceFactory)
-		this.agencyTokenHttpService = new AgencyTokenHttpService(this.csrsConfig, this.auth)
-
 		this.audienceService = new AudienceService(this.csrsService)
 		this.audienceController = new AudienceController(
 			this.learningCatalogue,
@@ -291,26 +264,25 @@ export class ApplicationContext {
 			this.audienceFactory,
 			this.courseService,
 			this.csrsService,
-			this.audienceService
+			this.audienceService,
+			this.cslService
 		)
 		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
-		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)
 
 		this.organisationController = new OrganisationController(
-			this.organisationalUnitPageModelValidator,
 			this.organisationalUnitPageModelFactory,
 			this.organisationalUnitService
 		)
 
-		this.agencyTokenFactory = new AgencyTokenFactory()
-		this.agencyTokenValidator = new Validator<AgencyToken>(this.agencyTokenFactory)
-		this.agencyTokenService = new AgencyTokenService()
-		this.agencyTokenController = new AgencyTokenController(
-			this.agencyTokenValidator,
-			this.agencyTokenService,
-			this.organisationalUnitService,
-			this.agencyTokenFactory,
-		)
+		// this.agencyTokenFactory = new AgencyTokenFactory()
+		// this.agencyTokenValidator = new Validator<AgencyToken>(this.agencyTokenFactory)
+		// this.agencyTokenService = new AgencyTokenService()
+		// this.agencyTokenController = new AgencyTokenController(
+		// 	this.agencyTokenValidator,
+		// 	this.agencyTokenService,
+		// 	this.organisationalUnitService,
+		// 	this.agencyTokenFactory,
+		// )
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 		this.questionValidator = new Validator<Question>(this.questionFactory)

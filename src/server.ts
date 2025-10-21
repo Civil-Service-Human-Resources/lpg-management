@@ -48,6 +48,8 @@ import {OrganisationalUnitDomainsController} from './controllers/organisationalU
 import {Controller} from './controllers/controller'
 import {createConfig} from './lib/http/restServiceConfigFactory'
 import {HEALTH_CHECK} from './config'
+import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenControllerNew'
+import {AgencyTokenService} from './lib/agencyTokenService'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
@@ -68,8 +70,10 @@ const reportingControllers: Controller[] = buildReportingControllers(createConfi
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
 }), ctx.auth, ctx.courseService, ctx.cslServiceClient, ctx.cslService)
 
+
 const controllers: Controller[] = [
 	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
+	new AgencyTokenController(ctx.organisationalUnitService, new AgencyTokenService()),
 	...reportingControllers
 ]
 
@@ -85,7 +89,7 @@ app.use(ctx.eventController.router)
 app.use(ctx.organisationController.router)
 app.use(ctx.searchController.router)
 app.use(ctx.skillsController.router)
-app.use(ctx.agencyTokenController.router)
+// app.use(ctx.agencyTokenController.router)
 logger.debug(`Registering ${controllers.length} controllers`)
 controllers.forEach(c => {
 	app.use(c.path, c.buildRouter())

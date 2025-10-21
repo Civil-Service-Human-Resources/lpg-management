@@ -46,16 +46,6 @@ export class OrganisationalUnit implements CacheableObject {
 		}
 	}
 
-	getHierarchyAsArray() {
-		const hierarchy: OrganisationalUnit[] = [this]
-		let currentParent = this.parent
-		while (currentParent) {
-			hierarchy.push(currentParent)
-			currentParent = currentParent.parent
-		}
-		return hierarchy
-	}
-
 	getOrgAndChildren() {
 		const hierarchy: OrganisationalUnit[] = [this]
 		for (const org of this.children) {
