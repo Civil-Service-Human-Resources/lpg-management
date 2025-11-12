@@ -11,9 +11,6 @@ import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
-import { RequiredLearningCache } from 'src/csl-service/requiredLearningCache'
-import { LearningPlanCache } from 'src/csl-service/learningPlanCache'
-import { LearningRecordCache } from 'src/csl-service/learningRecordCache'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -25,9 +22,6 @@ export class AudienceController {
 	csrsService: CsrsService
 	audienceService: AudienceService
 	router: Router
-	requiredLearningCache: RequiredLearningCache
-	learningPlanCache: LearningPlanCache
-	learningRecordCache: LearningRecordCache
 
 	constructor(
 		learningCatalogue: LearningCatalogue,
@@ -35,10 +29,7 @@ export class AudienceController {
 		audienceFactory: AudienceFactory,
 		courseService: CourseService,
 		csrsService: CsrsService,
-		audienceService: AudienceService,
-		requiredLearningCache: RequiredLearningCache,
-		learningPlanCache: LearningPlanCache,
-		learningRecordCache: LearningRecordCache
+		audienceService: AudienceService
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
@@ -49,9 +40,6 @@ export class AudienceController {
 		this.audienceService = audienceService
 		this.configurePathParametersProcessing()
 		this.setRouterPaths()
-		this.requiredLearningCache = requiredLearningCache
-		this.learningPlanCache = learningPlanCache
-		this.learningRecordCache = learningRecordCache
 	}
 
 	private configurePathParametersProcessing() {

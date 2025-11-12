@@ -15,12 +15,12 @@ import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {DateTime} from '../../../../src/lib/dateTime'
 import * as moment from 'moment'
 import {Course} from '../../../../src/learning-catalogue/model/course'
-import {AudienceService} from 'lib/audienceService'
+import {AudienceService} from '../../../../src/lib/audienceService'
 import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 import {RequiredLearningCache} from '../../../../src/csl-service/requiredLearningCache'
 import { LearningPlanCache } from '../../../../src/csl-service/learningPlanCache'
 import { LearningRecordCache } from '../../../../src/csl-service/learningRecordCache'
-
+import { LearningCacheManager } from '../../../../src/lib/learningCacheManager'
 chai.use(sinonChai)
 
 describe('AudienceController', () => {
@@ -38,6 +38,7 @@ describe('AudienceController', () => {
 	let requiredLearningCache: RequiredLearningCache
 	let learningPlanCache: LearningPlanCache
 	let learningRecordCache: LearningRecordCache
+	let learningCacheManager: LearningCacheManager
 
 	const courseId = 'course-id'
 	const audienceId = 'audience-id'
@@ -52,8 +53,8 @@ describe('AudienceController', () => {
 		requiredLearningCache = <RequiredLearningCache>{}
 		learningPlanCache = <LearningPlanCache>{}
 		learningRecordCache = <LearningRecordCache>{}
-		audienceController = new AudienceController(learningCatalogue, audienceValidator, audienceFactory, courseService, csrsService, audienceService, requiredLearningCache, learningPlanCache, learningRecordCache)
-
+		audienceController = new AudienceController(learningCatalogue, audienceValidator, audienceFactory, courseService, csrsService, audienceService)
+		learningCacheManager = new LearningCacheManager(requiredLearningCache, learningPlanCache, learningRecordCache)
 
 		req = mockReq()
 		req.session!.save = callback => {
@@ -519,7 +520,7 @@ describe('AudienceController', () => {
 
 			await audienceController.setRequiredLearning()(req, res, next)
 
-			expect(learningCatalogue.updateAudience).to.have.been.calledOnceWith(course.id, audience)
+			expect(learningCatalogue.updateAudience).to.have.been.calledOnceWith(course.id, audience, {clearLearningCache: true})
 			expect(audience.requiredBy).to.eql(requiredBy)
 			expect(audience.frequency).to.eql(frequency)
 		})
@@ -545,13 +546,11 @@ describe('AudienceController', () => {
 			requiredLearningCache.deleteAllIds = sinon.stub().returns(Promise.resolve())
 			learningPlanCache.deleteAllIds = sinon.stub().returns(Promise.resolve())
 			learningRecordCache.deleteAllIds = sinon.stub().returns(Promise.resolve())
+			learningCacheManager.clearLearningCache = sinon.stub().returns(Promise.resolve())
 
 			await audienceController.deleteRequiredLearning()(req, res, next)
 
-			expect(learningCatalogue.updateAudience).to.have.been.calledOnceWith('courseId', audience)
-			expect(requiredLearningCache.deleteAllIds).to.have.been.calledOnceWith()
-			expect(learningPlanCache.deleteAllIds).to.have.been.calledOnceWith()
-			expect(learningRecordCache.deleteAllIds).to.have.been.calledOnceWith()
+			expect(learningCatalogue.updateAudience).to.have.been.calledOnceWith('courseId', audience, {clearLearningCache: true})
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/audiences/audienceId/configure`)
 			expect(audience.type).to.eql(Audience.Type.OPEN)
 			expect(audience.requiredBy).to.eql(undefined)

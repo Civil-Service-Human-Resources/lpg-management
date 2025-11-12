@@ -301,10 +301,7 @@ export class ApplicationContext {
 			this.audienceFactory,
 			this.courseService,
 			this.csrsService,
-			this.audienceService,
-			this.requiredLearningCache,
-			this.learningPlanCache,
-			this.learningRecordCache
+			this.audienceService
 		)
 		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
 		this.organisationalUnitPageModelValidator = new Validator<OrganisationalUnitPageModel>(this.organisationalUnitPageModelFactory)
