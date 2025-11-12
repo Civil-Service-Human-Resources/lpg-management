@@ -73,18 +73,33 @@ export abstract class Cache<T> {
 		// so we need to add it to the MATCH pattern ourselves and then strip it from the results
 
 		const keyWithPrefix: string = `${keyPrefix}${this.getBaseKey()}`
+		
+		const keys: string[] = await this.scanInBatches(`${keyWithPrefix}:*`, 1000)
 
-		const scanResults = await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', `${keyWithPrefix}*`, 'COUNT', '1000000')
-		
-		const ids: string[] = scanResults[1]
-			.map((key: string) => key.replace(new RegExp(`^${keyWithPrefix}:`),  ''))			
-		
+		const ids: string[] = keys
+			.map((key: string) => key.replace(new RegExp(`^${keyWithPrefix}:`),  ''))		
+
 		return ids
 	}
 
 	protected getFormattedKey(keyPart: string | number) {
 		return `${this.getBaseKey()}:${keyPart}`
 	}
+
+	protected async scanInBatches(pattern: string, batchSize: number){
+		const results = []
+		let cursor: string = '0'
+
+		do {
+			const [newCursor, resultsFromScan] = await await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', batchSize)
+			cursor = newCursor
+			results.push(...resultsFromScan)
+		}
+		while (cursor != '0')
+		return results
+
+	}
+
 
 	protected abstract getBaseKey(): string
 	protected abstract convert(cacheHit: any): T

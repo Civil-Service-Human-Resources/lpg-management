@@ -216,13 +216,16 @@ export class LearningCatalogue {
 	}
 
 	async updateAudience(courseId: string, audience: Audience): Promise<Audience> {
+		const updatedAudience = await this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
 		await this._cslService.clearCourseCache(courseId)
-		return this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
+
+		return updatedAudience
 	}
 
 	async deleteAudience(courseId: string, audienceId: string) {
+		const deletedAudience = await this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
 		await this._cslService.clearCourseCache(courseId)
-		return this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
+		return deletedAudience
 	}
 
 	set courseService(value: EntityService<Course>) {
