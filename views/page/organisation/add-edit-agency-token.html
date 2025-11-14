@@ -64,7 +64,7 @@
                 }) }}
             </form>
 
-        {% set formAction = "/content-management/organisations/" + pageModel.organisationId + "/agency-token" + "/edit" if pageModel.tokenExists else "" %}
+        {% set formAction = "/content-management/organisations/" + pageModel.organisationId + "/agency-token" + ("/edit" if pageModel.tokenExists else "") %}
 
         <form action="{{ formAction }}" method="post">
             {% for domain in pageModel.domain %}
@@ -76,19 +76,21 @@
                 classes: "govuk-input--width-10",
                 id: "capacity",
                 name: "capacity",
-                type: "number",
+                type: "text",
                 value: pageModel.capacity,
+                pattern: "[0-9]*",
+                inputmode: "numeric",
                 errorMessage: { text: pageModel.errors.fields.capacity | jsonpath(i18n) } if pageModel.errors.fields.capacity else null
             }) }}
 
             {% if pageModel.tokenExists %}
                 <p id=number-of-spaces-currently-in-use-text" class="govuk-body"><strong>Number of spaces currently in use</strong></p>
-                <p id="number-of-spaces-currently-in-use-value" class="govuk-body">{{ pageModel.spacesInUse }}</p>
+                <p id="number-of-spaces-currently-in-use-value" class="govuk-body">{{ pageModel.capacityUsed }}</p>
             {% endif %}
 
             <label for="token-number-input" class="govuk-label">Token number</label>
-            <p id="token-number-display-text" class="govuk-body">{{ pageModel.tokenNumber | default('Unspecified', true) }}</p>
-            <input id="token-number-input" name='tokenNumber' value="{{ pageModel.tokenNumber | default('Unspecified', true) }}" type="hidden">
+            <p id="token-number-display-text" class="govuk-body">{{ pageModel.token | default('Unspecified', true) }}</p>
+            <input id="token-number-input" name='token' value="{{ pageModel.token | default('Unspecified', true) }}" type="hidden">
             <button class="govuk-link linkish-button" type="button" onclick="generateAndDisplayNewToken();">Re-generate token number</button><br/><br/>
 
             {{ govukButton ({

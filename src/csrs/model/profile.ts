@@ -1,4 +1,4 @@
-import {CacheableObject} from 'lib/cacheableObject'
+import {CacheableObject} from 'lib/cache/cacheableObject'
 import {Type} from 'class-transformer'
 import {OrganisationalUnit} from './organisationalUnit'
 import {KeyValue} from 'lib/keyValue'

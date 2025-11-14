@@ -13,14 +13,15 @@ export class AgencyTokenService {
 		return token
 	}
 
-	async renderAgencyTokenPage(organisationalUnit: OrganisationalUnit) {
+	renderAgencyTokenPage(organisationalUnit: OrganisationalUnit) {
 		const pageModel = new EditAgencyToken(organisationalUnit.id, false, [], 0, 0, this.generateToken())
 		if (organisationalUnit.agencyToken) {
 			pageModel.tokenExists = true
-			pageModel.domain = organisationalUnit.agencyToken.agencyDomains.map(a => a.domain)
-			pageModel.spacesInUse = organisationalUnit.agencyToken.capacityUsed
+			pageModel.domain = organisationalUnit.agencyToken.agencyDomains
+				.map(d => d.domain)
+			pageModel.capacityUsed = organisationalUnit.agencyToken.capacityUsed
 			pageModel.capacity = organisationalUnit.agencyToken.capacity
-			pageModel.tokenNumber = organisationalUnit.agencyToken.token
+			pageModel.token = organisationalUnit.agencyToken.token
 		}
 		return pageModel
 	}

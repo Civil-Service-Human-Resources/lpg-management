@@ -7,7 +7,7 @@ import {BasicCoursePageModel, ChooseCoursesModel} from '../../../../src/controll
 import {CourseCompletionsSession} from '../../../../src/controllers/reporting/model/courseCompletionsSession'
 import {REPORTING} from '../../../../src/config'
 import * as moment from 'moment'
-import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 import {match} from 'sinon'
 import {OrganisationPageModelService} from '../../../../src/controllers/reporting/organisationPageModelService'
 import {CourseCompletionService} from '../../../../src/report-service/courseCompletionService'

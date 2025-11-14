@@ -28,15 +28,13 @@ import {CourseService} from './lib/courseService'
 import {CsrsService} from './csrs/service/csrsService'
 import {YoutubeService} from './youtube/youtubeService'
 import {OauthRestService} from './lib/http/oauthRestService'
-import {CacheService} from './lib/cacheService'
+import {CacheService} from './lib/cache/cacheService'
 import {DateRangeCommand} from './controllers/command/dateRangeCommand'
 import {DateRangeCommandFactory} from './controllers/command/factory/dateRangeCommandFactory'
 import {DateRange} from './learning-catalogue/model/dateRange'
 import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFactory'
 import {LinkModule} from './learning-catalogue/model/linkModule'
 import {SearchController} from './controllers/searchController'
-import {OrganisationController} from './controllers/organisationalUnit/organisationController'
-import {OrganisationalUnitPageModelFactory} from './csrs/model/organisationalUnitPageModelFactory'
 import {LearnerRecord} from './learner-record'
 import {InviteFactory} from './learner-record/model/factory/inviteFactory'
 import {BookingFactory} from './learner-record/model/factory/bookingFactory'
@@ -54,25 +52,31 @@ import {CslServiceClient} from './csl-service/client'
 import {Controller} from './controllers/controller'
 import { CivilServantProfileService } from './csrs/service/civilServantProfileService'
 import {CourseTypeAheadCache} from './learning-catalogue/courseTypeaheadCache'
-import {RestServiceConfig} from './lib/http/restServiceConfig'
-import {createConfig} from './lib/http/restServiceConfigFactory'
-import {redisClient} from './lib/redis'
+import {createConfig, createOAuthConfig} from './lib/http/restServiceConfigFactory'
+import {redisClient} from './lib/cache/redis'
 import {ProfileCache} from './csrs/profileCache'
-import { CslService } from './csl-service/service/cslService'
 import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
 import {LearningPlanCache} from './csl-service/learningPlanCache'
-import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenControllerNew'
+import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenController'
+import {OrganisationalUnitTreeCache} from './csrs/organisationalUnitTreeCache'
+import {OrganisationalUnitTree} from './csl-service/model/organisationalUnit/organisationalUnitTree'
+import {Cache} from './lib/cache/redisCache'
+import {OrganisationalUnitClient} from './csrs/client/organisationalUnitClient'
+import {EntityService} from './learning-catalogue/service/entityService'
+import {CourseTypeAhead} from './learning-catalogue/courseTypeAhead'
+import {OrganisationalUnitCacheManager} from './csrs/organisationalUnitCacheManager'
 
 export class ApplicationContext {
 
 	controllers: Controller[] = []
 
 	auth: Auth
-	identityConfig: RestServiceConfig
+	cslServiceConfig: OauthRestService
+	courseCatalogueAuth: OauthRestService
+
 	axiosInstance: AxiosInstance
 	cacheService: CacheService
 	homeController: HomeController
-	learningCatalogueConfig: RestServiceConfig
 	courseTypeaheadCache: CourseTypeAheadCache
 	learningCatalogue: LearningCatalogue
 	courseController: CourseController
@@ -94,26 +98,21 @@ export class ApplicationContext {
 	youtubeService: YoutubeService
 	faceToFaceController: FaceToFaceModuleController
 	eventController: EventController
-	mediaConfig: RestServiceConfig
 	courseService: CourseService
-	csrsConfig: RestServiceConfig
 	csrsService: CsrsService
 	dateRangeCommandFactory: DateRangeCommandFactory
 	dateRangeCommandValidator: Validator<DateRangeCommand>
 	dateRangeFactory: DateRangeFactory
 	dateRangeValidator: Validator<DateRange>
-	cslServiceConfig: RestServiceConfig
 	learningPlanCache: LearningPlanCache
 	cslServiceClient: CslServiceClient
 	learnerRecord: LearnerRecord
-	learnerRecordConfig: RestServiceConfig
 	inviteFactory: InviteFactory
 	bookingFactory: BookingFactory
 	bookingValidator: Validator<Booking>
-	organisationalUnitPageModelFactory: OrganisationalUnitPageModelFactory
 	profileCache: ProfileCache
+	organisationalUnitClient: OrganisationalUnitClient
 	organisationalUnitCache: OrganisationalUnitCache
-	organisationController: OrganisationController
 	searchController: SearchController
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
@@ -125,8 +124,8 @@ export class ApplicationContext {
 	quizFactory: QuizFactory
 	questionValidator: Validator<Question>
 	civilServantProfileService: CivilServantProfileService
-	cslService: CslService
 	formattedOrganisationListCache: FormattedOrganisationListCache
+	organisationalUnitTreeCache: OrganisationalUnitTreeCache
 
 	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
 
@@ -160,23 +159,17 @@ export class ApplicationContext {
 			this.lpgUiUrl
 		)
 
-		this.identityConfig = createConfig({
-			url: config.AUTHENTICATION.authenticationServiceUrl,
-			timeout: config.AUTHENTICATION.timeout,
-		})
-
 		this.learningPlanCache = new LearningPlanCache(redisClient, 1)
 
-		this.cslServiceConfig = createConfig(config.CSL_SERVICE)
-		this.cslServiceClient = new CslServiceClient(new OauthRestService(this.cslServiceConfig, this.auth), this.learningPlanCache)
+		this.cslServiceConfig = createOAuthConfig(config.CSL_SERVICE, this.auth)
+		this.cslServiceClient = new CslServiceClient(this.cslServiceConfig, this.learningPlanCache)
+		this.organisationalUnitClient = new OrganisationalUnitClient(this.cslServiceConfig)
 
-		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
-		this.cslService = new CslService(this.formattedOrganisationListCache, this.cslServiceClient)
-
-		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
-
-		this.courseTypeaheadCache = new CourseTypeAheadCache(redisClient, config.ORG_REDIS.ttl_seconds)
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslServiceClient, this.courseTypeaheadCache)
+		this.courseCatalogueAuth = createOAuthConfig(config.COURSE_CATALOGUE, this.auth)
+		this.courseTypeaheadCache = new CourseTypeAheadCache(
+			new Cache(redisClient, config.ORG_REDIS.ttl_seconds, 'courses', CourseTypeAhead),
+			new EntityService<Course>(this.courseCatalogueAuth, new CourseFactory()))
+		this.learningCatalogue = new LearningCatalogue(this.courseCatalogueAuth, this.cslServiceClient, this.courseTypeaheadCache)
 
 		this.courseFactory = new CourseFactory()
 
@@ -191,14 +184,15 @@ export class ApplicationContext {
 			checkperiod: config.CACHE.CHECK_PERIOD_SECONDS,
 		})
 
-		this.organisationalUnitCache = new OrganisationalUnitCache(
-			redisClient, config.ORG_REDIS.ttl_seconds
-		)
+		this.organisationalUnitCache = new OrganisationalUnitCache(redisClient, config.ORG_REDIS.ttl_seconds)
+		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
+		this.organisationalUnitTreeCache = new OrganisationalUnitTreeCache(
+			new Cache<OrganisationalUnitTree>(redisClient, config.ORG_REDIS.ttl_seconds, "organisationalUnits", OrganisationalUnitTree),
+			this.organisationalUnitClient)
 
-		this.csrsConfig = createConfig(config.REGISTRY_SERVICE)
-		this.organisationalUnitService = new OrganisationalUnitService(this.organisationalUnitCache, this.cslServiceClient)
+		this.organisationalUnitService = new OrganisationalUnitService(new OrganisationalUnitCacheManager(this.organisationalUnitCache, this.formattedOrganisationListCache, this.organisationalUnitTreeCache), this.organisationalUnitClient)
 
-		this.csrsService = new CsrsService(new OauthRestService(this.csrsConfig, this.auth), this.cacheService, this.cslService)
+		this.csrsService = new CsrsService(createOAuthConfig(config.REGISTRY_SERVICE, this.auth), this.cacheService, this.organisationalUnitService)
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
@@ -213,14 +207,12 @@ export class ApplicationContext {
 		this.moduleValidator = new Validator<Module>(this.moduleFactory)
 		this.youtubeModuleController = new YoutubeModuleController(this.learningCatalogue, this.moduleValidator, this.moduleFactory, this.youtubeService, this.courseService)
 
-		this.mediaConfig = createConfig({url: config.COURSE_CATALOGUE.url + '/media', timeout: config.COURSE_CATALOGUE.timeout})
-
 		this.moduleController = new ModuleController(this.learningCatalogue, this.moduleFactory)
 		this.fileController = new FileController(
 			this.learningCatalogue,
 			this.moduleValidator,
 			this.moduleFactory,
-			new OauthRestService(this.mediaConfig, this.auth),
+			createOAuthConfig({url: config.COURSE_CATALOGUE.url + '/media', timeout: config.COURSE_CATALOGUE.timeout}, this.auth),
 			this.courseService
 		)
 		this.linkModuleValidator = new Validator<LinkModule>(this.moduleFactory)
@@ -238,8 +230,7 @@ export class ApplicationContext {
 		this.bookingFactory = new BookingFactory()
 		this.inviteFactory = new InviteFactory()
 
-		this.learnerRecordConfig = createConfig(config.LEARNER_RECORD)
-		this.learnerRecord = new LearnerRecord(this.learnerRecordConfig, this.auth, this.bookingFactory, this.inviteFactory)
+		this.learnerRecord = new LearnerRecord(createOAuthConfig(config.LEARNER_RECORD, this.auth), this.bookingFactory, this.inviteFactory)
 
 		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
 
@@ -264,25 +255,8 @@ export class ApplicationContext {
 			this.audienceFactory,
 			this.courseService,
 			this.csrsService,
-			this.audienceService,
-			this.cslService
+			this.audienceService
 		)
-		this.organisationalUnitPageModelFactory = new OrganisationalUnitPageModelFactory()
-
-		this.organisationController = new OrganisationController(
-			this.organisationalUnitPageModelFactory,
-			this.organisationalUnitService
-		)
-
-		// this.agencyTokenFactory = new AgencyTokenFactory()
-		// this.agencyTokenValidator = new Validator<AgencyToken>(this.agencyTokenFactory)
-		// this.agencyTokenService = new AgencyTokenService()
-		// this.agencyTokenController = new AgencyTokenController(
-		// 	this.agencyTokenValidator,
-		// 	this.agencyTokenService,
-		// 	this.organisationalUnitService,
-		// 	this.agencyTokenFactory,
-		// )
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
 		this.questionValidator = new Validator<Question>(this.questionFactory)

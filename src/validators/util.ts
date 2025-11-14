@@ -3,8 +3,6 @@ import {ValidationErrorMapper} from '../learning-catalogue/validator/validationE
 
 export async function validateAndMapErrors(object: any, groups?: string[]): Promise<{fields: {[name: string]: string[]}} | undefined> {
 	const validationErrors = await validate(object, { skipMissingProperties: false, groups })
-	console.log(groups)
-	console.log(validationErrors)
 	if (validationErrors.length > 0) {
 		const errors = ValidationErrorMapper.map(validationErrors)
 		Object.keys(errors.fields).forEach(k => {

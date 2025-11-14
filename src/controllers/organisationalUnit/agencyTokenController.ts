@@ -1,210 +1,117 @@
-import {NextFunction, Request, Response} from 'express'
-import * as asyncHandler from 'express-async-handler'
-import {AgencyToken} from '../../csrs/model/agencyToken'
-import {AgencyTokenService} from '../../lib/agencyTokenService'
-import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
-import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
-import {Validator} from '../../learning-catalogue/validator/validator'
-import {Validate} from '../formValidator'
-import {AgencyTokenFactory} from '../../csrs/model/agencyTokenFactory'
 import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
-import {FormController} from '../formController'
+import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
+import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
+import {BehaviourOnError} from '../../validators/validatorMiddleware'
+import {Request, Response} from 'express'
+import {AgencyTokenService} from '../../lib/agencyTokenService'
+import {EditAgencyToken} from './model/editAgencyToken'
 
-const {xss} = require('express-xss-sanitizer')
+export class AgencyTokenController extends OrganisationalUnitControllerBase {
 
-
-export class AgencyTokenController extends OrganisationalUnitControllerBase implements FormController {
 	constructor(
-		public validator: Validator<AgencyToken>,
-		private agencyTokenService: AgencyTokenService,
-		organisationalUnitService: OrganisationalUnitService,
-		private agencyTokenFactory: AgencyTokenFactory,
+		protected organisationalUnitService: OrganisationalUnitService,
+		protected agencyTokenService: AgencyTokenService,
 	) {
 		super('AgencyTokenController', organisationalUnitService)
-		this.setRouterPaths()
 	}
 
-	/* istanbul ignore next */
-	protected setRouterPaths() {
-		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.addEditAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token', xss(), asyncHandler(this.createAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/edit', xss(), asyncHandler(this.updateAgencyToken()))
-		this.router.get('/content-management/organisations/:organisationalUnitId/agency-token/delete', xss(), asyncHandler(this.deleteAgencyTokenConfirmation()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/delete', xss(), asyncHandler(this.deleteAgencyToken()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain', xss(), asyncHandler(this.addDomainToAgencyTokenWithinSession()))
-		this.router.post('/content-management/organisations/:organisationalUnitId/agency-token/domain/delete', xss(), asyncHandler(this.deleteDomainFromAgencyTokenWithinSession()))
-	}
-
-	public addEditAgencyToken() {
-		return async (request: Request, response: Response) => {
-			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
-
-			if (!request.session!.agencyTokenNumber) {
-				if (organisationalUnit.agencyToken) {
-					request.session!.agencyTokenNumber = organisationalUnit.agencyToken.token
-				} else {
-					request.session!.agencyTokenNumber = this.agencyTokenService.generateToken()
+	protected getRoutes(): Route[] {
+		return [
+			getRequest('/:organisationalUnitId/agency-token', this.viewAgencyToken()),
+			postRequestWithBody('/:organisationalUnitId/agency-token', this.createAgencyToken(), {
+				dtoClass: EditAgencyToken,
+				groups: ['all'],
+				onError: {
+					behaviour: BehaviourOnError.SET_LOCALS
 				}
-			}
-			const agencyTokenNumber = request.session!.agencyTokenNumber
-
-			if (organisationalUnit.agencyToken && !request.session!.domainsForAgencyToken) {
-				request.session!.domainsForAgencyToken = organisationalUnit.agencyToken.agencyDomains.map(agencyDomain => {
-					return agencyDomain.domain
-				})
-			}
-
-			const domainsForAgencyToken = request.session!.domainsForAgencyToken
-
-			request.session!.save(() => {
-				response.render('page/organisation/add-edit-agency-token', {
-					organisationalUnit: organisationalUnit,
-					agencyTokenNumber: agencyTokenNumber,
-					domainsForAgencyToken: domainsForAgencyToken,
-				})
+			}),
+			postRequestWithBody('/:organisationalUnitId/agency-token/edit', this.editAgencyToken(), {
+				dtoClass: EditAgencyToken,
+				groups: ['all'],
+				onError: {
+					behaviour: BehaviourOnError.SET_LOCALS
+				}
+			}),
+			postRequest('/:organisationalUnitId/agency-token/delete', this.deleteAgencyToken()),
+			getRequest('/:organisationalUnitId/agency-token/delete', this.renderDeleteAgencyToken()),
+			postRequestWithBody('/:organisationalUnitId/agency-token/domains', this.editDomains(), {
+				dtoClass: EditAgencyToken,
+				groups: ['addDomain'],
+				onError: {
+					behaviour: BehaviourOnError.SET_LOCALS
+				}
 			})
+		]
+	}
+
+	public getPageModel = async (request: Request, response: Response) => {
+		let pageModel = this.agencyTokenPageModelSession.fetchObjectFromSession(request)
+		if (pageModel === undefined) {
+			pageModel = this.agencyTokenService.renderAgencyTokenPage(response.locals.organisationalUnit)
+			this.agencyTokenPageModelSession.saveObjectToSession(request, pageModel)
 		}
+		console.log(pageModel)
+		return pageModel
 	}
 
-	public redirectToAddEditAgencyTokenWithError(request: Request, response: Response, error: any) {
-		const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
-		request.session!.sessionFlash = {errors: error}
-
-		return request.session!.save(() => {
-			response.redirect(`/content-management/organisations/${organisationalUnit.id}/agency-token`)
-		})
+	public validatePageModel = async (request: Request, response: Response) => {
+		const pageModel = await this.getPageModel(request, response)
+		pageModel.validateAndUpdateWithEditAgencyTokenModel(response.locals.input)
+		this.agencyTokenPageModelSession.saveObjectToSession(request, pageModel)
+		return pageModel
 	}
 
-	@Validate({
-		fields: ['all'],
-		redirect: '/content-management/organisations/:organisationalUnitId/agency-token',
-	})
-	public createAgencyToken() {
-		return async (request: Request, response: Response, next: NextFunction) => {
-			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
-
-			this.logger.debug(`Adding agency token to organisation: ${organisationalUnit.name}`)
-
-			const data = {
-				...request.body,
-				domains: request.session!.domainsForAgencyToken,
-			}
-			const agencyToken: AgencyToken = this.agencyTokenFactory.create(data)
-
-			await this.organisationalUnitService
-				.createAgencyToken(organisationalUnit.id, agencyToken)
-				.then(() => {
-					this.deleteAgencyTokenDataStoredInSession(request)
-					response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
-				})
-				.catch(rejected => {
-					if (rejected.response.status == 400) {
-						const error = {fields: {capacity: rejected.response.data.capacity}, size: 1}
-						return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-					} else {
-						next(rejected)
-					}
-				})
-		}
-	}
-
-	@Validate({
-		fields: ['all'],
-		redirect: '/content-management/organisations/:organisationalUnitId/agency-token',
-	})
-	public updateAgencyToken() {
-		return async (request: Request, response: Response, next: NextFunction) => {
-			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
-
-			this.logger.debug(`Updating agency token for organisation: ${organisationalUnit.name}`)
-
-			const data = {
-				...request.body,
-				domains: request.session!.domainsForAgencyToken,
-			}
-			const agencyToken: AgencyToken = this.agencyTokenFactory.create(data)
-
-			await this.organisationalUnitService
-				.updateAgencyToken(organisationalUnit.id, agencyToken)
-				.then(() => {
-					this.deleteAgencyTokenDataStoredInSession(request)
-					response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
-				})
-				.catch(rejected => {
-					if (rejected.response.status == 400) {
-						const error = {fields: {capacity: rejected.response.data.capacity}, size: 1}
-						return this.redirectToAddEditAgencyTokenWithError(request, response, error)
-					} else {
-						next(rejected)
-					}
-				})
-		}
-	}
-
-	public deleteAgencyTokenConfirmation() {
+	public viewAgencyToken() {
 		return async (request: Request, response: Response) => {
-			response.render('page/organisation/delete-agency-token')
+			const pageModel = await this.getPageModel(request, response)
+			return response.render('page/organisation/add-edit-agency-token', {pageModel})
 		}
 	}
 
-	public deleteAgencyToken() {
-		return async (request: Request, response: Response, next: NextFunction) => {
+	public editDomains() {
+		return async (request: Request, response: Response) => {
+			const pageModel = await this.getPageModel(request, response)
+			pageModel.validateAddDomain(response.locals.input, request.query.domainToRemove as string | undefined)
+			this.agencyTokenPageModelSession.saveObjectToSession(request, pageModel)
+			return response.render('page/organisation/add-edit-agency-token', {pageModel})
+		}
+	}
+
+	private editAgencyToken() {
+		return async (request: Request, response: Response) => {
+			const pageModel = await this.validatePageModel(request, response)
+			if (!pageModel.hasErrors()) {
+				await this.organisationalUnitService.updateAgencyToken(pageModel.organisationId, pageModel)
+				return response.redirect(`/content-management/organisations/${pageModel.organisationId}/overview`)
+			}
+			return response.status(400).render('page/organisation/add-edit-agency-token', {pageModel})
+		}
+	}
+
+	private createAgencyToken() {
+		return async (request: Request, response: Response) => {
+			const pageModel = await this.validatePageModel(request, response)
+			if (!pageModel.hasErrors()) {
+				await this.organisationalUnitService.createAgencyToken(pageModel.organisationId, pageModel)
+				return response.redirect(`/content-management/organisations/${pageModel.organisationId}/overview`)
+			}
+			return response.status(400).render('page/organisation/add-edit-agency-token', {pageModel})
+		}
+	}
+
+	private renderDeleteAgencyToken() {
+		return async (request: Request, response: Response) => {
+			return response.render('page/organisation/delete-agency-token')
+		}
+	}
+
+	private deleteAgencyToken() {
+		return async (request: Request, response: Response) => {
 			const organisationalUnit = response.locals.organisationalUnit
-
-			this.logger.debug(`Deleting agency token from organisation: ${organisationalUnit.name}`)
-
-			await this.organisationalUnitService
-				.deleteAgencyToken(organisationalUnit.id)
-				.then(() => {
-					request.session!.sessionFlash = {displayAgencyTokenRemovedMessage: true, organisationalUnit: organisationalUnit}
-					return response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
-				})
-				.catch(error => {
-					next(error)
-				})
+			await this.organisationalUnitService.deleteAgencyToken(organisationalUnit)
+			request.session!.sessionFlash = {displayAgencyTokenRemovedMessage: true}
+			return response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 		}
 	}
 
-	public addDomainToAgencyTokenWithinSession() {
-		return async (request: Request, response: Response) => {
-			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
-			const domainToAdd = request.body.domainToAdd
-
-			if (request.session!.domainsForAgencyToken == undefined) {
-				request.session!.domainsForAgencyToken = []
-			}
-
-			request.session!.domainsForAgencyToken.push(domainToAdd)
-
-			request.session!.save(() => {
-				response.redirect(`/content-management/organisations/${organisationalUnit.id}/agency-token`)
-			})
-		}
-	}
-
-	public deleteDomainFromAgencyTokenWithinSession() {
-		return async (request: Request, response: Response) => {
-			const organisationalUnit: OrganisationalUnit = response.locals.organisationalUnit
-			const domainToDelete = request.body.domainToDelete
-
-			request.session!.domainsForAgencyToken.forEach((domain: string, index: number) => {
-				if (domain == domainToDelete) {
-					request.session!.domainsForAgencyToken.splice(index, 1)
-				}
-			})
-
-			request.session!.save(() => {
-				response.redirect(`/content-management/organisations/${organisationalUnit.id}/agency-token`)
-			})
-		}
-	}
-
-	private deleteAgencyTokenDataStoredInSession(request: any) {
-		if (request.session!.domainsForAgencyToken) {
-			delete request.session!.domainsForAgencyToken
-		}
-		if (request.session!.agencyTokenNumber) {
-			delete request.session!.agencyTokenNumber
-		}
-	}
 }

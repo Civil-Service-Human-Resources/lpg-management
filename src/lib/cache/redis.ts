@@ -1,4 +1,4 @@
-import * as config from '../config/index'
+import * as config from '../../config'
 import * as redis from 'redis'
 
 export const redisClient = createRedisClient()

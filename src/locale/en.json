@@ -6,7 +6,7 @@
 			"deleteAgencyToken": "Delete token"
 		},
 		"text": {
-			"tokenNumber": "Token number",
+			"token": "Token number",
 			"numberOfSpaces": "Number of spaces",
 			"domains": "Domains"
 		},
@@ -23,7 +23,7 @@
 				"invalid": "Invalid domains",
 				"hint":"For example: 'example.gov.uk'"
 			},
-			"tokenNumber": {
+			"token": {
 				"invalidFormat": "Invalid token number format – please re-generate token number"
 			}
 		}
@@ -182,7 +182,8 @@
 				"empty": "Organisation name is required"
 			},
 			"code": {
-				"empty": "Organisation code is required"
+				"empty": "Organisation code is required",
+				"length":  "Organisation code too long"
 			},
 			"organisation": {
 				"alreadyExists": "An organisation with this name or code already exists",

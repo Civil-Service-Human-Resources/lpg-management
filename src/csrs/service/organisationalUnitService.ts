@@ -1,62 +1,102 @@
 import {getLogger} from '../../utils/logger'
-import {AgencyToken} from '../model/agencyToken'
 import {OrganisationalUnit} from '../model/organisationalUnit'
 import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
-import {OrganisationalUnitCache} from '../organisationalUnitCache'
 import {DomainUpdate, DomainUpdateSuccess} from '../model/page/domainUpdateSuccess'
-import {CslServiceClient} from '../../csl-service/client'
+import {OrganisationalUnitClient} from '../client/organisationalUnitClient'
+import {
+	GetOrganisationsFormattedParams
+} from '../../csl-service/model/organisationalUnit/getOrganisationsFormattedParams'
+import {FormattedOrganisationList} from '../../csl-service/model/organisationalUnit/FormattedOrganisationList'
+import {EditAgencyToken} from '../../controllers/organisationalUnit/model/editAgencyToken'
+import {OrganisationalUnitNode} from '../../csl-service/model/organisationalUnit/organisationalUnitNode'
+import {OrganisationalUnitCacheManager} from '../organisationalUnitCacheManager'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
 
-	constructor(private readonly organisationalUnitCache: OrganisationalUnitCache,
-		private cslServiceClient: CslServiceClient) { }
+	constructor(private readonly organisationalUnitCacheManager: OrganisationalUnitCacheManager,
+		private organisationalUnitClient: OrganisationalUnitClient) { }
 
-	async getOrgTree(): Promise<OrganisationalUnit[]> {
-		return await this.cslServiceClient.getOrganisationalTree()
+	async getOrgTree(): Promise<OrganisationalUnitNode[]> {
+		return await this.organisationalUnitCacheManager.getTree()
+	}
+
+	async getAllOrganisationsTypeahead() {
+		return this.getOrganisationTypeahead(new GetOrganisationsFormattedParams())
+	}
+
+	async getOrganisationTypeaheadForUser(user: any) {
+		let params = new GetOrganisationsFormattedParams()
+		if (!user.isUnrestrictedOrganisation()) {
+			params = new GetOrganisationsFormattedParams(user.getDomain(), user.otherOrganisationalUnits.map((o: OrganisationalUnit) => {
+				return o.id
+			}), user.isTierOneReporter())
+		}
+		return this.getOrganisationTypeahead(params)
+	}
+
+	async getOrganisationTypeahead(params: GetOrganisationsFormattedParams) {
+		const cacheKey = params.getCacheKey()
+		let typeahead = await this.organisationalUnitCacheManager.getTypeahead(cacheKey)
+		if (typeahead === undefined) {
+			const formattedOrganisations = await this.organisationalUnitClient.getFormattedOrganisationList(params)
+			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.formattedOrganisationalUnitNames)
+			await this.organisationalUnitCacheManager.setTypeahead(cacheKey, typeahead)
+		}
+		return typeahead.formattedOrganisations
 	}
 
 	async getOrganisation(organisationalUnitId: number): Promise<OrganisationalUnit> {
-		let org = await this.organisationalUnitCache.get(organisationalUnitId)
+		let org = await this.organisationalUnitCacheManager.get(organisationalUnitId)
 		if (org === undefined) {
-			org = await this.cslServiceClient.getOrganisationalUnit(organisationalUnitId)
-			await this.organisationalUnitCache.setObject(org)
+			org = await this.organisationalUnitClient.get(organisationalUnitId)
+			await this.organisationalUnitCacheManager.update(org)
 		}
 		return org
 	}
 
 	async createOrganisationalUnit(organisationalUnitModel: OrganisationalUnitPageModel) {
-		return await this.cslServiceClient.createOrganisationalUnit(organisationalUnitModel)
+		const organisationalUnit = await this.organisationalUnitClient.create(organisationalUnitModel)
+		await this.organisationalUnitCacheManager.updateAndRefresh(organisationalUnit)
+		return organisationalUnit
 	}
 
-	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
-		this.logger.debug(`Updating organisational unit ${organisationalUnitId} with page model ${JSON.stringify(organisationalUnitModel)}`)
-		return await this.cslServiceClient.updateOrganisationalUnit(organisationalUnitId, organisationalUnitModel)
+	async updateOrganisationalUnit(organisationalUnit: OrganisationalUnit, updatedOrganisationalUnit: OrganisationalUnitPageModel) {
+		this.logger.debug(`Updating organisational unit ${organisationalUnit.id} with page model ${JSON.stringify(updatedOrganisationalUnit)}`)
+		organisationalUnit = await this.organisationalUnitClient.update(organisationalUnit.id, updatedOrganisationalUnit)
+		await this.organisationalUnitCacheManager.updateAndRefresh(organisationalUnit)
+		return organisationalUnit
 	}
+
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
-		const response = await this.cslServiceClient.deleteOrganisationalUnit(organisationalUnitId)
-		await Promise.all(response.deletedIds.map(id => this.organisationalUnitCache.delete(id)))
+		const response = await this.organisationalUnitClient.delete(organisationalUnitId)
+		await this.organisationalUnitCacheManager.deleteAndRefresh(response.deletedIds)
 	}
 
-	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
-		return await this.cslServiceClient.createAgencyToken(organisationalUnitId, agencyToken)
+	async createAgencyToken(organisationalUnitId: number, agencyToken: EditAgencyToken) {
+		const organisationalUnit = await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
+		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
-	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
-		return await this.cslServiceClient.updateAgencyToken(organisationalUnitId, agencyToken)
+	async updateAgencyToken(organisationalUnitId: number, agencyToken: EditAgencyToken) {
+		const organisationalUnit = await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
+		console.log("Updating cache with new token")
+		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
-	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
-		return await this.cslServiceClient.deleteAgencyToken(organisationalUnitId)
+	async deleteAgencyToken(organisationalUnit: OrganisationalUnit): Promise<void> {
+		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnit.id)
+		organisationalUnit.agencyToken = undefined
+		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
 	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
-		const response = await this.cslServiceClient.addDomainToOrganisation(organisationalUnitId, domainString)
+		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
 		const ids = [...response.updatedChildIds, organisationalUnitId]
-		ids.forEach(id => this.organisationalUnitCache.delete(id))
+		await this.organisationalUnitCacheManager.delete(ids)
 		return {
 			...response,
 			update: DomainUpdate.ADDED
@@ -65,12 +105,13 @@ export class OrganisationalUnitService {
 
 	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}.${includeSubOrgs ? '' : ' Not'} including sub organisations`)
-		const response = await this.cslServiceClient.removeDomainFromOrganisation(organisationalUnitId, domainId, includeSubOrgs)
+		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId, includeSubOrgs)
 		const ids = [...response.updatedChildIds, organisationalUnitId]
-		ids.forEach(id => this.organisationalUnitCache.delete(id))
+		await this.organisationalUnitCacheManager.delete(ids)
 		return {
 			...response,
 			update: DomainUpdate.REMOVED
 		}
 	}
+
 }

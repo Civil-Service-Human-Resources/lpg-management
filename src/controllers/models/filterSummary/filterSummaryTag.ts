@@ -1,6 +1,6 @@
 import {CourseCompletionsSession} from '../../reporting/model/courseCompletionsSession'
 import dayjs = require('dayjs')
-import {FormattedOrganisation} from '../../../csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../csl-service/model/organisationalUnit/FormattedOrganisation'
 
 export class FilterSummaryTag {
 	/**

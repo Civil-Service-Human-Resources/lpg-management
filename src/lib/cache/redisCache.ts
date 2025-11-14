@@ -2,11 +2,13 @@
 import { RedisClient } from 'redis'
 import { promisify } from 'util'
 import { Logger } from 'winston'
-import { getLogger } from '../utils/logger'
+import { getLogger } from '../../utils/logger'
+import {ClassConstructor, plainToClass} from 'class-transformer'
 
-export abstract class Cache<T> {
+export class Cache<T> {
 	protected logger: Logger
-	constructor(protected readonly redisClient: RedisClient, protected readonly defaultTTL: number) {
+	constructor(protected readonly redisClient: RedisClient, protected readonly defaultTTL: number,
+				protected readonly keySpace: string, protected readonly clazz: ClassConstructor<T>,) {
 		this.logger = getLogger('Cache')
 	}
 
@@ -28,10 +30,13 @@ export abstract class Cache<T> {
 	async set(id: string | number, object: T, ttlOverride?: number) {
 		const key = this.getFormattedKey(id)
 		try {
+			ttlOverride = ttlOverride ? ttlOverride : this.defaultTTL
+			const strObject = JSON.stringify(object)
+			this.logger.debug(`Setting object ${strObject} to cache key ${key} and ttl ${ttlOverride}`)
 			await promisify(this.redisClient.setex).bind(this.redisClient)(
 				key,
-				ttlOverride ? ttlOverride : this.defaultTTL,
-				JSON.stringify(object)
+				ttlOverride,
+				strObject
 			)
 		} catch (e) {
 			this.logger.error(`Error setting object to cache with key ${key}. Object: ${JSON.stringify(object)} Error: ${e}.`)
@@ -52,10 +57,20 @@ export abstract class Cache<T> {
 		}
 	}
 
-	protected getFormattedKey(keyPart: string | number) {
-		return `${this.getBaseKey()}:${keyPart}`
+	async update(id: string | number, fn: (object: T) => void) {
+		let object = await this.get(id)
+		if (object) {
+			fn(object)
+			await this.set(id, object)
+		}
 	}
 
-	protected abstract getBaseKey(): string
-	protected abstract convert(cacheHit: any): T
+	protected getFormattedKey(keyPart: string | number) {
+		return `${this.keySpace}:${keyPart}`
+	}
+
+	protected convert(cacheHit: string): T {
+		return plainToClass(this.clazz, cacheHit)
+	}
+
 }

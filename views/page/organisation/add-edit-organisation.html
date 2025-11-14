@@ -36,7 +36,7 @@
                     <div class="autocomplete-wrapper">
                         <select name="parentId" id="parent">
                             <option value=""></option>
-                            {% set parent = form.parentId|default(organisationalUnit.parent.id) %}
+                            {% set parent = form.parentId|default(organisationalUnit.parentId) %}
                             {% for key in organisationalUnits %}
                                 {% if key.id !== organisationalUnit.id %}
                                     {% if parent == key.id %}
@@ -44,7 +44,7 @@
                                     {% else %}
                                         {% set selected='' %}
                                     {% endif %}
-                                    <option value={{ key.id }} {{ selected }}>{{ key.formattedName }}</option>
+                                    <option value={{ key.id }} {{ selected }}>{{ key.name }}</option>
                                 {% endif %}
                             {% endfor %}
                         </select>

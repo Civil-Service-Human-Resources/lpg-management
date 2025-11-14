@@ -26,27 +26,8 @@ export class EntityService<T> {
 		return pageResults
 	}
 
-	async listAll(path: string): Promise<DefaultPageResults<T>> {
-		const data = await this._restService.get(path)
-
-		data.results = (data || []).map(this._factory.create)
-
-		return data.results
-	}
-
-	async listAllAsRawData(path: string): Promise<DefaultPageResults<T>> {
-		const data = await this._restService.get(path)
-
-		return data
-	}
-
 	async create(path: string, entity: any): Promise<T> {
 		const data = await this._restService.post(path, entity)
-		return this._factory.create(data)
-	}
-
-	async createWithoutFollowing(path: string, entity: any): Promise<T> {
-		const data = await this._restService.postWithoutFollowing(path, entity)
 		return this._factory.create(data)
 	}
 
@@ -59,15 +40,8 @@ export class EntityService<T> {
 		return await this._restService.put(path, entity)
 	}
 
-	async patch(path: string, entity: any): Promise<T> {
-		return await this._restService.patch(path, entity)
-	}
-
 	async delete(path: string): Promise<void> {
 		await this._restService.delete(path)
 	}
 
-	set factory(value: Factory<T>) {
-		this._factory = value
-	}
 }
