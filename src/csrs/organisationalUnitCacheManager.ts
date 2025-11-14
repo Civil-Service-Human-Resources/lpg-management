@@ -43,12 +43,12 @@ export class OrganisationalUnitCacheManager {
 	}
 
 	async deleteAndRefresh(ids: number[]) {
-		await Promise.all(ids.map(id => this.organisationalUnitCache.delete(id)))
+		await this.delete(ids)
+		await this.organisationalUnitTreeCache.delete()
+		await this.clearTypeahead()
 	}
 
 	async delete(ids: number[]) {
-		await this.deleteAndRefresh(ids)
-		await this.organisationalUnitTreeCache.delete()
-		await this.clearTypeahead()
+		await Promise.all(ids.map(id => this.organisationalUnitCache.delete(id)))
 	}
 }
