@@ -12,7 +12,6 @@ function validateDomainDoesNotExist(validationOptions?: ValidationOptions) {
 			constraints: [],
 			validator: {
 				validate(domain: string, args: ValidationArguments) {
-					console.log(args.object)
 					return ! (args.object as AddDomain).domain.includes(domain)
 				},
 			},

@@ -1,5 +1,5 @@
 import {Type} from 'class-transformer'
-import {FormattedOrganisation} from '../../../csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../csl-service/model/organisationalUnit/FormattedOrganisation'
 import {OrganisationSelection} from './chooseOrganisationsModel'
 import {IOrganisationSession} from './IOrganisationSession'
 

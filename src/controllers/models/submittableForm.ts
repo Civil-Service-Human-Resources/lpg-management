@@ -6,12 +6,14 @@ export class SubmittableForm {
 	}
 
 	addError(error: {[name: string]: string[]}) {
-		if (this.errors !== undefined) {
-			for (const field of Object.keys(error)) {
-				if (this.errors.fields[field] !== undefined) {
-					this.errors.fields[field].push(...error[field])
-				}
+		if (this.errors === undefined) {
+			this.errors = { fields: {} }
+		}
+		for (const field of Object.keys(error)) {
+			if (this.errors.fields[field] === undefined) {
+				this.errors.fields[field] = []
 			}
+			this.errors.fields[field].push(...error[field])
 		}
 	}
 

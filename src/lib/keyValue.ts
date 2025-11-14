@@ -1,4 +1,4 @@
-import {CacheableObject} from 'lib/cacheableObject'
+import {CacheableObject} from 'lib/cache/cacheableObject'
 
 export interface KeyValue extends CacheableObject {
 	id: number

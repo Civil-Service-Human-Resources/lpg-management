@@ -6,12 +6,12 @@ import * as sinonChai from 'sinon-chai'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
-import {OauthRestService} from 'lib/http/oauthRestService'
 import {BookingFactory} from '../../../src/learner-record/model/factory/bookingFactory'
 import {Booking} from '../../../src/learner-record/model/booking'
 import {InviteFactory} from '../../../src/learner-record/model/factory/inviteFactory'
 import {Invite} from '../../../src/learner-record/model/invite'
 import {RestServiceConfig} from 'lib/http/restServiceConfig'
+import {OauthRestService} from '../../../src/lib/http/oauthRestService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -23,13 +23,14 @@ describe('Leaner Record Tests', () => {
 	let restService: OauthRestService
 
 	const config = new RestServiceConfig('http://example.org', 60000)
+	const oauthRestService = new OauthRestService(config, {} as Auth)
 
 	beforeEach(() => {
 		inviteFactory = <InviteFactory>{}
 		bookingFactory = <BookingFactory>{}
 		restService = <OauthRestService>{}
 
-		learnerRecord = new LearnerRecord(config, {} as Auth, bookingFactory, inviteFactory)
+		learnerRecord = new LearnerRecord(oauthRestService, bookingFactory, inviteFactory)
 		learnerRecord.restService = restService
 	})
 

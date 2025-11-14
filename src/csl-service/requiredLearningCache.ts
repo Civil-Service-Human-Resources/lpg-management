@@ -1,12 +1,8 @@
-import {plainToClass} from 'class-transformer'
-import {CacheableObjectCache} from '../lib/cacheableObjectCache'
+import { Cache } from '../lib/cache/redisCache'
+import { RedisClient } from 'redis'
 
-export class RequiredLearningCache extends CacheableObjectCache<any> {
-    getBaseKey(): string {
-        return 'requiredLearning'
-    }
-
-    protected convert(cacheHit: string): {} {
-        return plainToClass(Object, cacheHit)
-    }
+export class RequiredLearningCache extends Cache<any> {
+    constructor(redisClient: RedisClient, defaultTTL: number) {
+            super(redisClient, defaultTTL, 'requiredLearning', {} as any)
+        }
 }

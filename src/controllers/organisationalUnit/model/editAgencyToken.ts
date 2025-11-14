@@ -1,4 +1,4 @@
-import {Transform} from 'class-transformer'
+import {Exclude, Transform} from 'class-transformer'
 import {
 	ArrayNotEmpty,
 	IsArray, IsNotEmpty,
@@ -28,18 +28,18 @@ export class EditAgencyToken extends SubmittableForm {
 	@Transform(({value}) => { return value.toLowerCase() })
 	public domainToAdd?: string
 
+	@Transform(({value}) => {
+		return parseInt(value)
+	})
 	@IsNotEmpty({
 		message: 'agencyToken.validation.capacity.required',
 		groups: ['all']
 	})
-	@Transform(({value}) => {
-		return parseInt(value)
-	})
-	@Min(0, {
+	@Min(1, {
 		message: 'agencyToken.validation.capacity.invalid',
 		groups: ['all']
 	})
-	@Max(2147483647, {
+	@Max(5000, {
 		message: 'agencyToken.validation.capacity.invalid',
 		groups: ['all']
 	})
@@ -63,22 +63,23 @@ export class EditAgencyToken extends SubmittableForm {
 	public domain: string[] = []
 
 	@Matches(/^[A-Z0-9]+$/, {
-		message: 'agencyToken.validation.tokenNumber.invalidFormat',
+		message: 'agencyToken.validation.token.invalidFormat',
 		groups: ['all']
 	})
-	public tokenNumber: string
+	public token: string
 
 	// data
-	public spacesInUse: number
+	@Exclude()
+	public capacityUsed: number
 
-	constructor(organisationId: number, tokenExists: boolean, domain: string[], capacity: number, spacesInUse: number, tokenNumber: string) {
+	constructor(organisationId: number, tokenExists: boolean, domain: string[], capacity: number, capacityUsed: number, token: string) {
 		super()
 		this.organisationId = organisationId
 		this.tokenExists = tokenExists
 		this.domain = domain
 		this.capacity = capacity
-		this.spacesInUse = spacesInUse
-		this.tokenNumber = tokenNumber
+		this.capacityUsed = capacityUsed
+		this.token = token
 	}
 
 	validateAddDomain(model: EditAgencyToken, domainToRemove?: string) {
@@ -105,8 +106,8 @@ export class EditAgencyToken extends SubmittableForm {
 			this.capacity = model.capacity
 		} else {
 			this.capacity = model.capacity
-			this.tokenNumber = model.tokenNumber
-			if (this.capacity < this.spacesInUse) {
+			this.token = model.token
+			if (this.capacity < this.capacityUsed) {
 				this.addError({capacity: ['agencyToken.validation.capacity.lessThanCurrentUsage']})
 			}
 		}

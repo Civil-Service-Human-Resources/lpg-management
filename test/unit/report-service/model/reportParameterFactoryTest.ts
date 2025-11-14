@@ -5,7 +5,7 @@ import * as dayjs from 'dayjs'
 import {ReportParameterFactory} from '../../../../src/report-service/model/reportParameterFactory'
 import {ChooseOrganisationSession} from '../../../../src/controllers/reporting/model/chooseOrganisationSession'
 import {expect} from 'chai'
-import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 import {CourseCompletionsSession} from '../../../../src/controllers/reporting/model/courseCompletionsSession'
 
 describe("Report parameter factory tests", () => {

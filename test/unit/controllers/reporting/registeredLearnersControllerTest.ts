@@ -3,7 +3,7 @@ import {createSubApp, getApp} from '../../../utils/testApp'
 const session = require('supertest-session')
 import {expect} from 'chai'
 import {OrganisationPageModelService} from '../../../../src/controllers/reporting/organisationPageModelService'
-import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 import {RegisteredLearnersController} from '../../../../src/controllers/reporting/registeredLearnersController'
 import {ChooseOrganisationSession} from '../../../../src/controllers/reporting/model/chooseOrganisationSession'
 import {ReportExportService} from '../../../../src/controllers/reporting/reportExportService'

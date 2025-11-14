@@ -1,7 +1,7 @@
 import {DashboardTimePeriodType} from './dashboardTimePeriod'
 import {CourseCompletionsGraphModel} from './courseCompletionsGraphModel'
 import {LearningSelection} from './chooseCoursesModel'
-import {FormattedOrganisation} from '../../../csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../csl-service/model/organisationalUnit/FormattedOrganisation'
 import {OrganisationSelection} from './chooseOrganisationsModel'
 import {ChooseOrganisationSession} from './chooseOrganisationSession'
 

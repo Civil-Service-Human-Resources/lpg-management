@@ -1,4 +1,4 @@
-import { CacheableObject } from "lib/cacheableObject";
+import { CacheableObject } from "lib/cache/cacheableObject";
 import { FormattedOrganisation } from "./FormattedOrganisation";
 import {Type} from 'class-transformer'
 
