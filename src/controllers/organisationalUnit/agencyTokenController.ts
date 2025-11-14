@@ -50,7 +50,6 @@ export class AgencyTokenController extends OrganisationalUnitControllerBase {
 			pageModel = this.agencyTokenService.renderAgencyTokenPage(response.locals.organisationalUnit)
 			this.agencyTokenPageModelSession.saveObjectToSession(request, pageModel)
 		}
-		console.log(pageModel)
 		return pageModel
 	}
 

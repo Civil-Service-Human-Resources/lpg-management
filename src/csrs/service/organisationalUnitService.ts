@@ -82,7 +82,6 @@ export class OrganisationalUnitService {
 
 	async updateAgencyToken(organisationalUnitId: number, agencyToken: EditAgencyToken) {
 		const organisationalUnit = await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
-		console.log("Updating cache with new token")
 		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
