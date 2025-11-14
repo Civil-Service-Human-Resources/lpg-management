@@ -39,7 +39,7 @@
                     {% set org = organisationalUnits | parseOrganisation(s) %}
                     <ul class="list modules" id="modules">
                         <li class="list-details" id="1233" >
-                            <p class="govuk-body title">{{ org.name }}</p>
+                            <p class="govuk-body title">{{ org.getName() }}</p>
                             <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete/{{org.code}}">Remove</a></p>
                         </li>
                     </ul>
@@ -61,7 +61,7 @@
                         <select class = "autocomplete__organisations" name="parent" id="parent">
                             <option value="" selected></option>
                             {% for key in organisationalUnits %}
-                                <option value={{ key.code }}>{{ key.formattedName }}</option>
+                                <option value={{ key.code }}>{{ key.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -86,4 +86,3 @@
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/main-bundle.min.js"></script>
 {% endblock %}
-
