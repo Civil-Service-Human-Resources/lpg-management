@@ -86,7 +86,6 @@ app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
 app.use(ctx.searchController.router)
 app.use(ctx.skillsController.router)
-// app.use(ctx.agencyTokenController.router)
 logger.debug(`Registering ${controllers.length} controllers`)
 controllers.forEach(c => {
 	app.use(c.path, c.buildRouter())
