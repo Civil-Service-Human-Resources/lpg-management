@@ -1,7 +1,11 @@
 import { FormattedOrganisation } from "./FormattedOrganisation";
+import {Type} from 'class-transformer'
 
 export class FormattedOrganisationListResponse{
-    constructor(
-        public formattedOrganisationalUnitNames: FormattedOrganisation[]
-    ) {}
+    @Type(() => FormattedOrganisation)
+    public formattedOrganisationalUnitNames: FormattedOrganisation[]
+
+    constructor(formattedOrganisationalUnitNames: FormattedOrganisation[]) {
+        this.formattedOrganisationalUnitNames = formattedOrganisationalUnitNames
+    }
 }
