@@ -69,6 +69,9 @@ import {ProfileCache} from './csrs/profileCache'
 import { CslService } from './csl-service/service/cslService'
 import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
 import {LearningPlanCache} from './csl-service/learningPlanCache'
+import { RequiredLearningCache } from './csl-service/requiredLearningCache'
+import {LearningRecordCache} from './csl-service/learningRecordCache'
+import { LearningCacheManager } from './lib/learningCacheManager'
 
 export class ApplicationContext {
 
@@ -141,6 +144,9 @@ export class ApplicationContext {
 	civilServantProfileService: CivilServantProfileService
 	cslService: CslService
 	formattedOrganisationListCache: FormattedOrganisationListCache
+	requiredLearningCache: RequiredLearningCache
+	learningRecordCache: LearningRecordCache
+	learningCacheManager: LearningCacheManager
 
 	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
 
@@ -187,10 +193,14 @@ export class ApplicationContext {
 		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.cslService = new CslService(this.formattedOrganisationListCache, this.cslServiceClient)
 
+		this.requiredLearningCache = new RequiredLearningCache(redisClient, config.ORG_REDIS.ttl_seconds)
+		this.learningRecordCache = new LearningRecordCache(redisClient, config.ORG_REDIS.ttl_seconds)
+
 		this.learningCatalogueConfig = createConfig(config.COURSE_CATALOGUE)
 
 		this.courseTypeaheadCache = new CourseTypeAheadCache(redisClient, config.ORG_REDIS.ttl_seconds)
-		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslServiceClient, this.courseTypeaheadCache)
+		this.learningCacheManager = new LearningCacheManager(this.requiredLearningCache, this.learningPlanCache, this.learningRecordCache)
+		this.learningCatalogue = new LearningCatalogue(this.learningCatalogueConfig, this.auth, this.cslServiceClient, this.courseTypeaheadCache, this.learningCacheManager)
 
 		this.courseFactory = new CourseFactory()
 

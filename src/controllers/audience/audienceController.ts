@@ -338,9 +338,9 @@ export class AudienceController {
 			res.locals.audience.frequency = undefined
 
 			await this.learningCatalogue
-				.updateAudience(res.locals.course.id, res.locals.audience)
+				.updateAudience(res.locals.course.id, res.locals.audience, {clearLearningCache: true})
 				.then(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)					
 				})
 				.catch(error => next(error))
 		}
@@ -370,9 +370,9 @@ export class AudienceController {
 			}
 
 			await this.learningCatalogue
-				.updateAudience(res.locals.course.id, res.locals.audience)
+				.updateAudience(res.locals.course.id, res.locals.audience, {clearLearningCache: true})
 				.then(() => {
-					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)					
 				})
 				.catch(error => next(error))
 		}

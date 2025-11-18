@@ -16,6 +16,7 @@ import {BasicCourse, CourseTypeAhead} from './courseTypeAhead'
 import {RestServiceConfig} from '../lib/http/restServiceConfig'
 import {HttpException} from '../lib/exception/HttpException'
 import {Status} from './model/status'
+import { LearningCacheManager } from 'lib/learningCacheManager'
 
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
@@ -25,9 +26,10 @@ export class LearningCatalogue {
 	private _restService: OauthRestService
 	private _cslService: CslServiceClient
 	private courseTypeaheadCache: CourseTypeAheadCache
+	private learningCacheManager: LearningCacheManager
 
 	constructor(config: RestServiceConfig, auth: Auth, cslService: CslServiceClient,
-				courseTypeaheadCache: CourseTypeAheadCache) {
+				courseTypeaheadCache: CourseTypeAheadCache, learningCacheManager: LearningCacheManager) {
 		this._restService = new OauthRestService(config, auth)
 
 		this._eventService = new EntityService<Event>(this._restService, new EventFactory())
@@ -41,6 +43,7 @@ export class LearningCatalogue {
 		this._cslService = cslService
 
 		this.courseTypeaheadCache = courseTypeaheadCache
+		this.learningCacheManager = learningCacheManager
 	}
 
 	async listPublishedCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
@@ -215,14 +218,19 @@ export class LearningCatalogue {
 		return this._audienceService.get(`/courses/${courseId}/audiences/${audienceId}`)
 	}
 
-	async updateAudience(courseId: string, audience: Audience): Promise<Audience> {
+	async updateAudience(courseId: string, audience: Audience, options: UpdateAudienceOptions = {clearLearningCache: false}): Promise<Audience> {
+		const updatedAudience = await this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
 		await this._cslService.clearCourseCache(courseId)
-		return this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
+		if(options.clearLearningCache) {
+			this.learningCacheManager.clearLearningCache()
+		}
+		return updatedAudience
 	}
 
 	async deleteAudience(courseId: string, audienceId: string) {
+		const deletedAudience = await this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
 		await this._cslService.clearCourseCache(courseId)
-		return this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
+		return deletedAudience
 	}
 
 	set courseService(value: EntityService<Course>) {
@@ -241,4 +249,8 @@ export class LearningCatalogue {
 		this._audienceService = value
 	}
 
+}
+
+interface UpdateAudienceOptions {
+	clearLearningCache?: boolean
 }

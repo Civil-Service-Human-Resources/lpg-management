@@ -1,8 +1,9 @@
 
-import { RedisClient } from 'redis'
+import { Multi, RedisClient } from 'redis'
 import { promisify } from 'util'
 import { Logger } from 'winston'
 import { getLogger } from '../utils/logger'
+import * as config from '../config/index'
 
 export abstract class Cache<T> {
 	protected logger: Logger
@@ -52,9 +53,53 @@ export abstract class Cache<T> {
 		}
 	}
 
+	async deleteAllIds(){
+		const ids = await this.getAllIds()
+		await this.deleteMultiple(ids)
+	}
+
+	async deleteMultiple(ids: string[]){		
+		const pipeline: Multi = this.redisClient.multi()
+
+		const pipelineExpirePromises = ids.map(id => promisify(pipeline.expire).bind(pipeline)(this.getFormattedKey(id), 0))
+		Promise.all(pipelineExpirePromises)
+
+		await promisify(pipeline.exec).bind(pipeline)()		
+	}
+
+	async getAllIds(): Promise<string[]> {
+		const keyPrefix: string = config.REDIS.keyPrefix
+		// redisClient.scan doesn't respect the configured keyPrefix
+		// so we need to add it to the MATCH pattern ourselves and then strip it from the results
+
+		const keyWithPrefix: string = `${keyPrefix}${this.getBaseKey()}`
+		
+		const keys: string[] = await this.scanInBatches(`${keyWithPrefix}:*`, 1000)
+
+		const ids: string[] = keys
+			.map((key: string) => key.replace(new RegExp(`^${keyWithPrefix}:`),  ''))		
+
+		return ids
+	}
+
 	protected getFormattedKey(keyPart: string | number) {
 		return `${this.getBaseKey()}:${keyPart}`
 	}
+
+	protected async scanInBatches(pattern: string, batchSize: number){
+		const results = []
+		let cursor: string = '0'
+
+		do {
+			const [newCursor, resultsFromScan] = await await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', batchSize)
+			cursor = newCursor
+			results.push(...resultsFromScan)
+		}
+		while (cursor != '0')
+		return results
+
+	}
+
 
 	protected abstract getBaseKey(): string
 	protected abstract convert(cacheHit: any): T
