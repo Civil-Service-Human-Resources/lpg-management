@@ -1,20 +1,11 @@
-import {AgencyDomain} from './agencyDomain'
-import {IsNumberString} from 'class-validator'
+import {Domain} from './domain'
 
 export class AgencyToken {
-	id: string
-
-	uid: string
-
-	token: string
-
-	@IsNumberString({
-		groups: ['all', 'capacity'],
-		message: 'agencyToken.validation.capacity.invalid',
-	})
-	capacity: number
-
-	capacityUsed: number
-
-	agencyDomains: AgencyDomain[]
+	constructor (
+		public uid: string,
+		public token: string,
+		public capacity: number,
+		public capacityUsed: number,
+		public agencyDomains: Domain[]
+	) {}
 }

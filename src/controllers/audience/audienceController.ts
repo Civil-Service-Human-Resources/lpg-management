@@ -9,8 +9,8 @@ import {CsrsService} from '../../csrs/service/csrsService'
 import {DateTime} from '../../lib/dateTime'
 import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
-import { OrganisationalUnitTypeAhead } from '../../csrs/model/organisationalUnitTypeAhead'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -29,7 +29,7 @@ export class AudienceController {
 		audienceFactory: AudienceFactory,
 		courseService: CourseService,
 		csrsService: CsrsService,
-		audienceService: AudienceService
+		audienceService: AudienceService,
 	) {
 		this.learningCatalogue = learningCatalogue
 		this.audienceValidator = audienceValidator
@@ -107,9 +107,8 @@ export class AudienceController {
 	getOrganisation() {
 		return async (req: Request, res: Response) => {
 			const selectedOrganisations = res.locals.audience.departments
-
-			let organisations: OrganisationalUnitTypeAhead = await this.csrsService.listOrganisationalUnitsForTypehead()
-			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations.typeahead, selectedOrganisations: selectedOrganisations})
+			let organisations: FormattedOrganisation[] = await this.csrsService.getAllOrganisations()
+			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations, selectedOrganisations: selectedOrganisations})
 		}
 	}
 

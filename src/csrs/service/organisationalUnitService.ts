@@ -1,167 +1,101 @@
-import {toInteger} from 'lodash'
-import {AgencyTokenCapacityUsedHttpService} from '../../identity/agencyTokenCapacityUsedHttpService'
 import {getLogger} from '../../utils/logger'
-import {OrganisationalUnitClient} from '../client/organisationalUnitClient'
-import {AgencyToken} from '../model/agencyToken'
 import {OrganisationalUnit} from '../model/organisationalUnit'
 import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
-import {OrganisationalUnitTypeAhead} from '../model/organisationalUnitTypeAhead'
-import {OrganisationalUnitCache} from '../organisationalUnitCache'
-import {OrganisationalUnitTypeaheadCache} from '../organisationalUnitTypeaheadCache'
 import {DomainUpdate, DomainUpdateSuccess} from '../model/page/domainUpdateSuccess'
-import {CslServiceClient} from '../../csl-service/client'
+import {OrganisationalUnitClient} from '../client/organisationalUnitClient'
+import {
+	GetOrganisationsFormattedParams
+} from '../../csl-service/model/organisationalUnit/getOrganisationsFormattedParams'
+import {FormattedOrganisationList} from '../../csl-service/model/organisationalUnit/FormattedOrganisationList'
+import {EditAgencyToken} from '../../controllers/organisationalUnit/model/editAgencyToken'
+import {OrganisationalUnitNode} from '../../csl-service/model/organisationalUnit/organisationalUnitNode'
+import {OrganisationalUnitCacheManager} from '../organisationalUnitCacheManager'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
 
-	constructor(private readonly organisationalUnitCache: OrganisationalUnitCache,
-		private readonly organisationalUnitTypeaheadCache : OrganisationalUnitTypeaheadCache,
-		private readonly organisationalUnitClient: OrganisationalUnitClient,
-		private readonly agencyTokenCapacityUsedService: AgencyTokenCapacityUsedHttpService,
-		private cslServiceClient: CslServiceClient) { }
+	constructor(private readonly organisationalUnitCacheManager: OrganisationalUnitCacheManager,
+		private organisationalUnitClient: OrganisationalUnitClient) { }
 
-	async getOrgDropdown(): Promise<OrganisationalUnitTypeAhead> {
-		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
+	async getOrgTree(): Promise<OrganisationalUnitNode[]> {
+		return await this.organisationalUnitCacheManager.getTree()
+	}
+
+	async getAllOrganisationsTypeahead() {
+		return this.getOrganisationTypeahead(new GetOrganisationsFormattedParams())
+	}
+
+	async getOrganisationTypeaheadForUser(user: any) {
+		let params = new GetOrganisationsFormattedParams()
+		if (!user.isUnrestrictedOrganisation()) {
+			params = new GetOrganisationsFormattedParams(user.getDomain(), user.otherOrganisationalUnits.map((o: OrganisationalUnit) => {
+				return o.id
+			}), user.isTierOneReporter())
+		}
+		return this.getOrganisationTypeahead(params)
+	}
+
+	async getOrganisationTypeahead(params: GetOrganisationsFormattedParams) {
+		const cacheKey = params.getCacheKey()
+		let typeahead = await this.organisationalUnitCacheManager.getTypeahead(cacheKey)
 		if (typeahead === undefined) {
-			typeahead = await this.refreshTypeahead()
+			const formattedOrganisations = await this.organisationalUnitClient.getFormattedOrganisationList(params)
+			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.formattedOrganisationalUnitNames)
+			await this.organisationalUnitCacheManager.setTypeahead(cacheKey, typeahead)
 		}
-		return typeahead
+		return typeahead.formattedOrganisations
 	}
 
-	async getOrgHierarchy(
-		organisationId: number,
-		hierarchy: OrganisationalUnit[] = []
-	): Promise<OrganisationalUnit[]> {
-		const org = await this.organisationalUnitCache.get(organisationId)
-		if (org == null) {
-			const orgWithAllParents = await this.organisationalUnitClient.getOrganisationalUnit(
-				organisationId,
-				{includeParents: true}
-			)
-			const orgArray = orgWithAllParents.getHierarchyAsArray()
-			await this.organisationalUnitCache.setMultiple(orgArray)
-			hierarchy.push(...orgArray)
-		} else {
-			hierarchy.push(org)
-			if (org.parentId) {
-				return await this.getOrgHierarchy(org.parentId, hierarchy)
-			}
-		}
-		return hierarchy
-	}
-
-	async getOrgTree(): Promise<OrganisationalUnit[]> {
-		const dropdown = await this.getOrgDropdown()
-		return dropdown.getAsTree()
-	}
-
-	async getOrganisation(
-		organisationalUnitId: number,
-		includeParent: boolean = false
-	): Promise<OrganisationalUnit> {
-		let org = await this.organisationalUnitCache.get(organisationalUnitId)
+	async getOrganisation(organisationalUnitId: number): Promise<OrganisationalUnit> {
+		let org = await this.organisationalUnitCacheManager.get(organisationalUnitId)
 		if (org === undefined) {
-			org = await this.organisationalUnitClient.getOrganisationalUnit(
-				organisationalUnitId,
-				{includeParents: includeParent}
-			)
-			await this.organisationalUnitCache.setMultiple(org.getHierarchyAsArray())
-		}
-		if (includeParent && org.parentId != null && org.parent == null) {
-			org.parent = await this.getOrganisation(org.parentId)
-		}
-		if (org.agencyToken) {
-			org.agencyToken.capacityUsed = toInteger((await this.agencyTokenCapacityUsedService.getCapacityUsed(org.agencyToken.uid)).capacityUsed)
+			org = await this.organisationalUnitClient.get(organisationalUnitId)
+			await this.organisationalUnitCacheManager.update(org)
 		}
 		return org
 	}
 
 	async createOrganisationalUnit(organisationalUnitModel: OrganisationalUnitPageModel) {
-		const newOrgWithId = await this.organisationalUnitClient.create(organisationalUnitModel)
-		newOrgWithId.updateWithPageModel(organisationalUnitModel)
-		await this.refreshSpecificOrg(newOrgWithId)
-		await this.cslServiceClient.clearOrganisationCache()
-		return newOrgWithId
+		const organisationalUnit = await this.organisationalUnitClient.create(organisationalUnitModel)
+		await this.organisationalUnitCacheManager.updateAndRefresh(organisationalUnit)
+		return organisationalUnit
 	}
 
-	async updateOrganisationalUnit(organisationalUnitId: number, organisationalUnitModel: OrganisationalUnitPageModel) {
-		this.logger.debug(`Updating organisational unit ${organisationalUnitId} with page model ${JSON.stringify(organisationalUnitModel)}`)
-		await this.cslServiceClient.updateOrganisationalUnit(organisationalUnitId, organisationalUnitModel)
-		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
-		organisationalUnit.updateWithPageModel(organisationalUnitModel)
-		this.logger.debug(`Resulting organisationalUnit ${JSON.stringify(organisationalUnit)}`)
-		await this.refreshSpecificOrg(organisationalUnit)
-		await this.cslServiceClient.clearOrganisationCache()
+	async updateOrganisationalUnit(organisationalUnit: OrganisationalUnit, updatedOrganisationalUnit: OrganisationalUnitPageModel) {
+		this.logger.debug(`Updating organisational unit ${organisationalUnit.id} with page model ${JSON.stringify(updatedOrganisationalUnit)}`)
+		organisationalUnit = await this.organisationalUnitClient.update(organisationalUnit.id, updatedOrganisationalUnit)
+		await this.organisationalUnitCacheManager.updateAndRefresh(organisationalUnit)
+		return organisationalUnit
 	}
+
 
 	async deleteOrganisationalUnit(organisationalUnitId: number) {
 		this.logger.debug(`Deleting organisational Unit ${organisationalUnitId}`)
-		await this.cslServiceClient.deleteOrganisationalUnit(organisationalUnitId)
-		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead(true)
-		} else {
-			const deletedIds = typeahead.removeOrganisation(organisationalUnitId)
-			await Promise.all(deletedIds.map(id => this.organisationalUnitCache.delete(id)))
-			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-		}
+		const response = await this.organisationalUnitClient.delete(organisationalUnitId)
+		await this.organisationalUnitCacheManager.deleteAndRefresh(response.deletedIds)
 	}
 
-	async createAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
-		const newTokenWithId = await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
-		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
-		organisationalUnit.agencyToken = newTokenWithId
-		await this.refreshSpecificOrg(organisationalUnit)
-		await this.cslServiceClient.clearOrganisationCache()
+	async createAgencyToken(organisationalUnitId: number, agencyToken: EditAgencyToken) {
+		const organisationalUnit = await this.organisationalUnitClient.createAgencyToken(organisationalUnitId, agencyToken)
+		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
-	async updateAgencyToken(organisationalUnitId: number, agencyToken: AgencyToken) {
-		agencyToken = await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
-		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
-		organisationalUnit.agencyToken = agencyToken
-		await this.refreshSpecificOrg(organisationalUnit)
-		await this.cslServiceClient.clearOrganisationCache()
+	async updateAgencyToken(organisationalUnitId: number, agencyToken: EditAgencyToken) {
+		const organisationalUnit = await this.organisationalUnitClient.updateAgencyToken(organisationalUnitId, agencyToken)
+		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
-	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
-		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnitId)
-		const organisationalUnit = await this.getOrganisation(organisationalUnitId)
+	async deleteAgencyToken(organisationalUnit: OrganisationalUnit): Promise<void> {
+		await this.organisationalUnitClient.deleteAgencyToken(organisationalUnit.id)
 		organisationalUnit.agencyToken = undefined
-		await this.refreshSpecificOrg(organisationalUnit)
-		await this.cslServiceClient.clearOrganisationCache()
-	}
-
-	private async refreshSpecificOrg(organisationalUnit: OrganisationalUnit) {
-		await this.refreshOrgs([organisationalUnit])
-	}
-
-	private async refreshOrgs(organisationalUnits: OrganisationalUnit[]) {
-		this.logger.info(`Refreshing ${organisationalUnits.length} organisational units`)
-		await this.organisationalUnitCache.setMultiple(organisationalUnits)
-		let typeahead = await this.organisationalUnitTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead()
-		} else {
-			typeahead.upsertAndSort(organisationalUnits)
-			await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-		}
-	}
-
-	private async refreshTypeahead(refreshIndividuals: boolean = false) {
-		const organisationalUnits = await this.organisationalUnitClient.getAllOrganisationalUnits()
-		if (refreshIndividuals) {
-			await this.organisationalUnitCache.setMultiple(organisationalUnits)
-		}
-        const typeahead = OrganisationalUnitTypeAhead.createAndSort(organisationalUnits)
-        await this.organisationalUnitTypeaheadCache.setTypeahead(typeahead)
-		return typeahead
+		await this.organisationalUnitCacheManager.update(organisationalUnit)
 	}
 
 	async addDomain(organisationalUnitId: number, domainString: string): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Adding ${domainString} to Organisational Unit ${organisationalUnitId}`)
-		const response = await this.cslServiceClient.addDomainToOrganisation(organisationalUnitId, domainString)
+		const response = await this.organisationalUnitClient.addDomain(organisationalUnitId, domainString)
 		const ids = [...response.updatedChildIds, organisationalUnitId]
-		ids.forEach(id => this.organisationalUnitCache.delete(id))
+		await this.organisationalUnitCacheManager.delete(ids)
 		return {
 			...response,
 			update: DomainUpdate.ADDED
@@ -170,12 +104,13 @@ export class OrganisationalUnitService {
 
 	async removeDomain(organisationalUnitId: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccess> {
 		this.logger.info(`Removing domain with ID ${domainId} from Organisational Unit ${organisationalUnitId}.${includeSubOrgs ? '' : ' Not'} including sub organisations`)
-		const response = await this.cslServiceClient.removeDomainFromOrganisation(organisationalUnitId, domainId, includeSubOrgs)
+		const response = await this.organisationalUnitClient.removeDomain(organisationalUnitId, domainId, includeSubOrgs)
 		const ids = [...response.updatedChildIds, organisationalUnitId]
-		ids.forEach(id => this.organisationalUnitCache.delete(id))
+		await this.organisationalUnitCacheManager.delete(ids)
 		return {
 			...response,
 			update: DomainUpdate.REMOVED
 		}
 	}
+
 }

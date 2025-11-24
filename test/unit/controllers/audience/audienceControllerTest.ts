@@ -16,11 +16,12 @@ import {DateTime} from '../../../../src/lib/dateTime'
 import * as moment from 'moment'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 import {AudienceService} from '../../../../src/lib/audienceService'
-import { OrganisationalUnitTypeAhead } from '../../../../src/csrs/model/organisationalUnitTypeAhead'
 import {RequiredLearningCache} from '../../../../src/csl-service/requiredLearningCache'
 import { LearningPlanCache } from '../../../../src/csl-service/learningPlanCache'
 import { LearningRecordCache } from '../../../../src/csl-service/learningRecordCache'
 import { LearningCacheManager } from '../../../../src/lib/learningCacheManager'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
+
 chai.use(sinonChai)
 
 describe('AudienceController', () => {
@@ -122,8 +123,8 @@ describe('AudienceController', () => {
 			res.locals.audience = {
 				departments: departments,
 			}
-			const organisations = new OrganisationalUnitTypeAhead([])
-			csrsService.listOrganisationalUnitsForTypehead = sinon.stub().resolves(organisations)
+			const organisations: FormattedOrganisation[] = []
+			csrsService.getAllOrganisations = sinon.stub().resolves(organisations)
 			await audienceController.getOrganisation()(req, res)
 
 			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {organisationalUnits: [], selectedOrganisations: departments})
@@ -187,11 +188,10 @@ describe('AudienceController', () => {
 
 			const hmrcCode = 'hmrc'
 			const dwpCode = 'dwp'
-			csrsService.listOrganisationalUnitsForTypehead = sinon.stub().returns({
-				_embedded: {
-					organisationalUnits: [{code: hmrcCode, name: 'HM Revenue & Customs'}, {code: dwpCode, name: 'Department for Work and Pensions'}],
-				},
-			})
+			csrsService.getAllOrganisations = sinon.stub().resolves([
+				new FormattedOrganisation(1, "HMRC", hmrcCode),
+				new FormattedOrganisation(2, "DWP", dwpCode)
+			])
 			audienceService.getAudienceName = sinon.stub().returns('my audience name')
 			learningCatalogue.updateAudience = sinon.stub().returns(Promise.resolve(audience))
 

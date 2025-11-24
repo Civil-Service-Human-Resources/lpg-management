@@ -14,8 +14,8 @@ import {Audience} from '../../../src/learning-catalogue/model/audience'
 import {CslServiceClient} from '../../../src/csl-service/client'
 import {RestServiceConfig} from '../../../src/lib/http/restServiceConfig'
 import {CourseTypeAheadCache} from '../../../src/learning-catalogue/courseTypeaheadCache'
-import {BasicCourse, CourseTypeAhead} from '../../../src/learning-catalogue/courseTypeAhead'
 import {plainToInstance} from 'class-transformer'
+import {OauthRestService} from '../../../src/lib/http/oauthRestService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -29,7 +29,7 @@ describe('Learning Catalogue tests', () => {
 	let courseTypeaheadCache: sinon.SinonStubbedInstance<CourseTypeAheadCache>
 
 	const config = new RestServiceConfig('http://example.org', 60000)
-	const typeahead = new CourseTypeAhead([new BasicCourse("course1", "Course 1")])
+	const oauthConfig = new OauthRestService(config, {} as Auth)
 
 	let learningCatalogue: LearningCatalogue
 
@@ -42,7 +42,7 @@ describe('Learning Catalogue tests', () => {
 		cslService.clearCourseCache = sinon.stub()
 		courseTypeaheadCache = sinon.createStubInstance(CourseTypeAheadCache)
 
-		learningCatalogue = new LearningCatalogue(config, {} as Auth, cslService, courseTypeaheadCache as any)
+		learningCatalogue = new LearningCatalogue(oauthConfig, cslService, courseTypeaheadCache as any)
 		learningCatalogue.courseService = courseService
 		learningCatalogue.moduleService = moduleService
 		learningCatalogue.eventService = eventService
@@ -78,33 +78,24 @@ describe('Learning Catalogue tests', () => {
 		it('should call courseService and update the cache when updating a course', async () => {
 			const course: Course = plainToInstance(Course, {id: "id", title: "title"})
 			courseService.update = sinon.stub().resolves(course)
-
-			courseTypeaheadCache.getTypeahead.withArgs().resolves(typeahead)
 			await learningCatalogue.updateCourse(course)
-
-			expect(courseTypeaheadCache.setTypeahead).to.have.been.calledOnce
+			expect(courseTypeaheadCache.updateCourse).to.have.been.calledOnce
 			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
 		})
 
 		it('should call courseService when publishing a course', async () => {
 			const course: Course = <Course>{}
 			courseService.update = sinon.stub()
-
-			courseTypeaheadCache.getTypeahead.withArgs().resolves(typeahead)
 			await learningCatalogue.publishCourse(course)
-
-			expect(courseTypeaheadCache.setTypeahead).to.have.been.calledOnce
+			expect(courseTypeaheadCache.addCourse).to.have.been.calledOnce
 			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
 		})
 
 		it('should call courseService when archiving a course', async () => {
 			const course: Course = plainToInstance(Course, {id: "id", title: "title"})
 			courseService.update = sinon.stub().resolves(course)
-
-			courseTypeaheadCache.getTypeahead.withArgs().resolves(typeahead)
 			await learningCatalogue.archiveCourse(course)
-
-			expect(courseTypeaheadCache.setTypeahead).to.have.been.calledOnce
+			expect(courseTypeaheadCache.removeCourse).to.have.been.calledOnce
 			return expect(courseService.update).to.have.been.calledOnceWith(`/courses/${course.id}`, course)
 		})
 

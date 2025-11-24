@@ -1,97 +1,110 @@
+import {DeleteOrganisationResponse} from '../../csl-service/model/organisationalUnit/deleteOrganisationResponse'
 import {plainToInstance} from 'class-transformer'
-
-import * as config from '../../config'
-import {OauthRestService} from 'lib/http/oauthRestService'
-import {AgencyToken} from '../model/agencyToken'
-import {OrganisationalUnit} from '../model/organisationalUnit'
+import {DomainUpdateSuccessResponse} from '../model/page/domainUpdateSuccess'
 import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
-import {GetOrganisationRequestOptions, GetOrganisationsRequestOptions} from './getOrganisationsRequestOptions'
-import {GetOrganisationsResponse} from './getOrganisationsResponse'
+import {OrganisationalUnit} from '../model/organisationalUnit'
+import {AxiosResponse} from 'axios'
+import {OauthRestService} from 'lib/http/oauthRestService'
+import {
+	GetOrganisationsFormattedParams
+} from '../../csl-service/model/organisationalUnit/getOrganisationsFormattedParams'
+import {
+	FormattedOrganisationListResponse
+} from '../../csl-service/model/organisationalUnit/FormattedOrganisationListResponse'
+import {OrganisationalUnitTree} from '../../csl-service/model/organisationalUnit/organisationalUnitTree'
+import {EditAgencyToken} from '../../controllers/organisationalUnit/model/editAgencyToken'
 
 export class OrganisationalUnitClient {
 
-    constructor(private readonly _http: OauthRestService) { }
+	private ORGANISATIONS_URL = "/organisations"
+	private DOMAINS_URL = (organisationalUnitId: number) => `/organisations/${organisationalUnitId}/domains`
+	private AGENCY_TOKENS_URL = (organisationalUnitId: number) => `/organisations/${organisationalUnitId}/agency-token`
+	private FORMATTED_LIST_URL = `${this.ORGANISATIONS_URL}/formatted_list`
+	private TREE_URL = `${this.ORGANISATIONS_URL}/overview-tree`
 
-    private BASE_URL = "/organisationalUnits"
-    private V2_BASE_URL = `/v2${this.BASE_URL}`
-    private CSRS_URL = config.REGISTRY_SERVICE.url
-    private MAX_PER_PAGE = 200
+	constructor(private readonly _http: OauthRestService, ) { }
 
-    async getAllOrganisationalUnits(): Promise<OrganisationalUnit[]> {
-        const orgs: OrganisationalUnit[] = []
-        const response = await this.getOrganisationalUnits({
-            size: 1,
-            page: 0
-        })
-        if (response.totalElements >= 1) {
-            const totalPages = Math.ceil(response.totalElements / this.MAX_PER_PAGE)
-            const requests: any[] = []
-            for (let page = 0; page < totalPages; page++) {
-                requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page})
-                .then((data) => {
-                    orgs.push(...data.content)
-                }))
-            }
-            await Promise.all(requests)
-        }
-        return orgs
-    }
-
-    async getSpecificOrganisationalUnits(ids: number[]): Promise<OrganisationalUnit[]> {
-        const orgs: OrganisationalUnit[] = []
-        const totalPages = Math.ceil(ids.length / this.MAX_PER_PAGE)
-        const requests: any[] = []
-        for (let page = 0; page < totalPages; page++) {
-            requests.push(this.getOrganisationalUnits({size: this.MAX_PER_PAGE, page, ids: ids.join(",")})
-                .then((data) => {
-                    orgs.push(...data.content)
-                }))
-        }
-        await Promise.all(requests)
-        return orgs
-    }
-
-    async getOrganisationalUnits(options: GetOrganisationsRequestOptions): Promise<GetOrganisationsResponse> {
-        const resp: GetOrganisationsResponse = await this._http.getWithAuthAndConfig(
-            this.V2_BASE_URL, {
-                params: options
-            }
-        )
-        return plainToInstance(GetOrganisationsResponse, resp)
-    }
-
-    async getOrganisationalUnit(organisationalUnitId: number, options?: GetOrganisationRequestOptions): Promise<OrganisationalUnit> {
-        const resp: OrganisationalUnit = await this._http.getWithAuthAndConfig(
-            `${this.V2_BASE_URL}/${organisationalUnitId}`, {
-                params: options
-            }
-        )
-        return plainToInstance(OrganisationalUnit, resp)
-    }
-
-    async create(organisationalUnit: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {
-		const parent = organisationalUnit.parentId ? `${this.CSRS_URL}${this.BASE_URL}/${organisationalUnit.parentId}` : null
-        const respData: OrganisationalUnit = (await this._http.postWithoutFollowing<OrganisationalUnit>(this.BASE_URL, {
-            code: organisationalUnit.code,
-            name: organisationalUnit.name,
-            abbreviation: organisationalUnit.abbreviation,
-            parent: parent
-        })).data
-        return plainToInstance(OrganisationalUnit, respData)
-    }
-
-    async createAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<AgencyToken> {
-        const response = await this._http.post(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`, agencyToken)
-        return plainToInstance(AgencyToken, response)
-    }
-
-    async updateAgencyToken(organisationalUnitId: number, agencyToken: any): Promise<AgencyToken> {
-		const resp = await this._http.patch(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`, agencyToken)
-        return plainToInstance(AgencyToken, resp)
+	private async buildOrganisationalUnitResponse(response: Promise<AxiosResponse<OrganisationalUnit>>) {
+		return plainToInstance(OrganisationalUnit, (await response).data)
 	}
 
-	async deleteAgencyToken(organisationalUnitId: number): Promise<void> {
-		await this._http.delete(`${this.BASE_URL}/${organisationalUnitId}/agencyToken`)
+	async getFormattedOrganisationList(params?: GetOrganisationsFormattedParams): Promise<FormattedOrganisationListResponse> {
+		const response = await this._http.getRequest({
+			url: this.FORMATTED_LIST_URL,
+			params
+		})
+		return plainToInstance(FormattedOrganisationListResponse, response.data)
+	}
+
+	async addDomain(id: number, domain: string): Promise<DomainUpdateSuccessResponse> {
+		return (await this._http.postRequest<DomainUpdateSuccessResponse>({
+			url: this.DOMAINS_URL(id),
+			data: {
+				domain
+			}
+		})).data
+	}
+
+	async removeDomain(id: number, domainId: number, includeSubOrgs: boolean): Promise<DomainUpdateSuccessResponse> {
+		return (await this._http.deleteRequest<DomainUpdateSuccessResponse>({
+			url: `${this.DOMAINS_URL(id)}/${domainId}`,
+			params: {
+				includeSubOrgs
+			}
+		})).data
+	}
+
+	async update(id: number, data: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {
+		return await this.buildOrganisationalUnitResponse(this._http.putRequest<OrganisationalUnit>({
+			url: `${this.ORGANISATIONS_URL}/${id}`,
+			data
+		}));
+	}
+
+	async get(id: number): Promise<OrganisationalUnit> {
+		return await this.buildOrganisationalUnitResponse(this._http.getRequest<OrganisationalUnit>({
+			url: `${this.ORGANISATIONS_URL}/${id}`
+		}));
+	}
+
+	async create(data: OrganisationalUnitPageModel): Promise<OrganisationalUnit> {
+		return await this.buildOrganisationalUnitResponse(this._http.postRequest<OrganisationalUnit>({
+			url: this.ORGANISATIONS_URL,
+			data
+		}));
+	}
+
+	async delete(id: number) {
+		const response = await this._http.deleteRequest<DeleteOrganisationResponse>({
+			url: `${this.ORGANISATIONS_URL}/${id}`
+		})
+		return plainToInstance(DeleteOrganisationResponse, response.data)
+	}
+
+	async createAgencyToken(organisationalUnitId: number, data: EditAgencyToken) {
+		return await this.buildOrganisationalUnitResponse(this._http.postRequest<OrganisationalUnit>({
+			url: this.AGENCY_TOKENS_URL(organisationalUnitId),
+			data
+		}));
+	}
+
+	async updateAgencyToken(organisationalUnitId: number, data: EditAgencyToken) {
+		return await this.buildOrganisationalUnitResponse(this._http.putRequest<OrganisationalUnit>({
+			url: this.AGENCY_TOKENS_URL(organisationalUnitId),
+			data
+		}));
+	}
+
+	async deleteAgencyToken(organisationalUnitId: number) {
+		await this.buildOrganisationalUnitResponse(this._http.deleteRequest<OrganisationalUnit>({
+			url: this.AGENCY_TOKENS_URL(organisationalUnitId)
+		}));
+	}
+
+	async getTree() {
+		return plainToInstance(OrganisationalUnitTree, (await this._http.getRequest<OrganisationalUnitTree>({
+			url: this.TREE_URL
+		})).data)
 	}
 
 }

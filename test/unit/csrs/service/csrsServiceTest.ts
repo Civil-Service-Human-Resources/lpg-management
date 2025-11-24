@@ -6,10 +6,9 @@ import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
 import {CsrsService} from '../../../../src/csrs/service/csrsService'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
-import {CacheService} from '../../../../src/lib/cacheService'
+import {CacheService} from '../../../../src/lib/cache/cacheService'
 import {OrganisationalUnitService} from '../../../../src/csrs/service/organisationalUnitService'
-import {OrganisationalUnitTypeAhead} from '../../../../src/csrs/model/organisationalUnitTypeAhead'
-import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -112,16 +111,10 @@ describe('CsrsService tests', () => {
 		it('should return a map from department code to name', async () => {
 			const hmrcName = 'HM Revenue & Customs'
 			const dwpName = 'Department for Work & Pensions'
-			const org1 = new OrganisationalUnit()
-			org1.code = 'hmrc'
-			org1.name = hmrcName
-			const org2 = new OrganisationalUnit()
-			org2.code = 'dwp'
-			org2.name = dwpName
+			const org1 = new FormattedOrganisation(1, hmrcName, 'hmrc')
+			const org2 = new FormattedOrganisation(2, dwpName, 'dwp')
 			const expectedNames = [org1, org2]
-			const typeahead = new OrganisationalUnitTypeAhead(expectedNames)
-
-			organisationalUnitService.getOrgDropdown = sinon.stub().returns(typeahead)
+			organisationalUnitService.getAllOrganisationsTypeahead = sinon.stub().resolves(expectedNames)
 
 			expect(await csrsService.getDepartmentCodeToNameMapping()).to.be.deep.equal({
 				hmrc: hmrcName,
@@ -151,15 +144,12 @@ describe('CsrsService tests', () => {
 		it('should return a map from department code to abbreviation', async () => {
 			const hmrcAbbreviation = 'HMRC'
 			const dwpAbbreviation = 'DWP'
-			const org1 = new OrganisationalUnit()
-			org1.code = 'hmrc'
-			org1.abbreviation = hmrcAbbreviation
-			const org2 = new OrganisationalUnit()
-			org2.code = 'dwp'
-			org2.abbreviation = dwpAbbreviation
+			const hmrcName = 'HM Revenue & Customs'
+			const dwpName = 'Department for Work & Pensions'
+			const org1 = new FormattedOrganisation(1, hmrcName, 'hmrc', hmrcAbbreviation)
+			const org2 = new FormattedOrganisation(2, dwpName, 'dwp', dwpAbbreviation)
 			const expectedCodes = [org1, org2]
-			const typeahead = new OrganisationalUnitTypeAhead(expectedCodes)
-			organisationalUnitService.getOrgDropdown = sinon.stub().resolves(typeahead)
+			organisationalUnitService.getAllOrganisationsTypeahead = sinon.stub().resolves(expectedCodes)
 			expect(await csrsService.getDepartmentAbbreviationsFromCodes(['hmrc', 'dwp'])).to.be.deep.equal([hmrcAbbreviation, dwpAbbreviation])
 		})
 	})

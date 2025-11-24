@@ -2,12 +2,12 @@ import {plainToInstance} from 'class-transformer'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {Request, Response} from 'express'
 import {ChooseOrganisationSession} from './model/chooseOrganisationSession'
-import {FormattedOrganisation} from '../../csl-service/model/FormattedOrganisation'
-import {CslService} from '../../csl-service/service/cslService'
+import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
+import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
 
 export class OrganisationPageModelService {
 
-	constructor(private cslService: CslService) {
+	constructor(private organisationalUnitService: OrganisationalUnitService) {
 	}
 
 	async renderChooseOrganisation(request: Request) {
@@ -33,7 +33,7 @@ export class OrganisationPageModelService {
 	}
 
 	async getOrganisationsForUser(user: any): Promise<FormattedOrganisation[]> {
-		return await this.cslService.getOrganisationTypeaheadForUser(user)
+		return await this.organisationalUnitService.getOrganisationTypeaheadForUser(user)
 	}
 
 	async handleSubmit(req: Request, res: Response, session: ChooseOrganisationSession) {

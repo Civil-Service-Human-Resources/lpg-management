@@ -1,9 +1,8 @@
-import { CacheService } from '../../lib/cacheService';
+import { CacheService } from '../../lib/cache/cacheService';
 import { OauthRestService } from '../../lib/http/oauthRestService';
 import { JsonpathService } from '../../lib/jsonpathService';
-import { CivilServant } from '../model/civilServant';
-import { OrganisationalUnit } from '../model/organisationalUnit';
-import { OrganisationalUnitService } from './organisationalUnitService';
+import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
+import {OrganisationalUnitService} from './organisationalUnitService'
 
 export class CsrsService {
 
@@ -31,10 +30,6 @@ export class CsrsService {
 
 	async getCivilServant() {
 		return await this.restService.get('/civilServants/me')
-	}
-
-	async getCivilServantWithUid(userId: string): Promise<CivilServant> {
-		return await this.restService.get(`/civilServants/resource/${userId}`)
 	}
 
 	async createQuizByProfessionID(data: any, user: any) {
@@ -135,21 +130,17 @@ export class CsrsService {
 		return interests
 	}
 
-	async listOrganisationalUnitsForTypehead() {
-		return await this.organisationalUnitService.getOrgDropdown()
-	}
-
 	async getDepartmentCodeToNameMapping() {
-		const dropdown = await this.organisationalUnitService.getOrgDropdown()
-		return dropdown.typeahead.reduce((map: any, object: OrganisationalUnit) => {
-			map[object.code] = object.name
+		const dropdown = await this.organisationalUnitService.getAllOrganisationsTypeahead()
+		return dropdown.reduce((map: any, object: FormattedOrganisation) => {
+			map[object.code] = object.getName()
 			return map
 		}, {})
 	}
 
 	async getDepartmentAbbreviationsFromCodes(codes: string[]) {
-		const dropdown = await this.organisationalUnitService.getOrgDropdown()
-		return dropdown.typeahead.filter(o => codes.includes(o.code) && o.abbreviation).map(o => o.abbreviation!)
+		const dropdown = await this.organisationalUnitService.getAllOrganisationsTypeahead()
+		return dropdown.filter(o => codes.includes(o.code) && o.abbreviation).map(o => o.abbreviation!)
 	}
 
 	async getGradeCodeToNameMapping() {
@@ -192,4 +183,7 @@ export class CsrsService {
 		return await this.restService.getWithConfig(reportUrl, this.getAuthorizationHeader(user))
 	}
 
+	async getAllOrganisations() {
+		return await this.organisationalUnitService.getAllOrganisationsTypeahead()
+	}
 }

@@ -1,6 +1,6 @@
 import {describe} from 'mocha'
 import {expect} from 'chai'
-import {CacheService} from '../../../src/lib/cacheService'
+import {CacheService} from '../../../src/lib/cache/cacheService'
 
 describe('CacheService', () => {
 	let cacheService: CacheService

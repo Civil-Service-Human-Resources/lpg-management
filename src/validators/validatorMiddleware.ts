@@ -8,6 +8,7 @@ const logger = getLogger("ValidationMiddleware")
 
 export interface ValidationOptions<T extends SubmittableForm> {
 	dtoClass: ClassConstructor<T>,
+	groups?: string[],
 	onError: {
 		behaviour: BehaviourOnError,
 		path?: string,
@@ -16,8 +17,9 @@ export interface ValidationOptions<T extends SubmittableForm> {
 }
 
 export enum BehaviourOnError {
-	REDIRECT = 'REDIRECT',
-	RENDER_TEMPLATE = 'RENDER_TEMPLATE'
+	REDIRECT,
+	RENDER_TEMPLATE,
+	SET_LOCALS
 }
 
 export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOptions<T>) => {
@@ -25,7 +27,7 @@ export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOpt
 		logger.debug(`Validating request body ${JSON.stringify(req.body)} against class ${opts.dtoClass.name}`)
 		const output: T = plainToInstance(opts.dtoClass, req.body)
 		if (req.body !== undefined) {
-			const errors = await validateAndMapErrors(output)
+			const errors = await validateAndMapErrors(output, opts.groups)
 			if (errors !== undefined) {
 				logger.debug(errors)
 				Object.keys(errors.fields).forEach(k => {
@@ -52,6 +54,9 @@ export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOpt
 					return req.session!.save(() => {
 						res.redirect(redirect)
 					})
+				} else if (opts.onError.behaviour === BehaviourOnError.SET_LOCALS) {
+					res.locals.input = output;
+					next()
 				} else {
 					if (!opts.onError.path) {
 						throw new Error(`Template can't be blank when rendering after a validation error`)
