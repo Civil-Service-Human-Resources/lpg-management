@@ -6,12 +6,12 @@ import * as sinonChai from 'sinon-chai'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
-import {OauthRestService} from 'lib/http/oauthRestService'
 import {BookingFactory} from '../../../src/learner-record/model/factory/bookingFactory'
 import {Booking} from '../../../src/learner-record/model/booking'
 import {InviteFactory} from '../../../src/learner-record/model/factory/inviteFactory'
 import {Invite} from '../../../src/learner-record/model/invite'
 import {RestServiceConfig} from 'lib/http/restServiceConfig'
+import {OauthRestService} from '../../../src/lib/http/oauthRestService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -23,13 +23,14 @@ describe('Leaner Record Tests', () => {
 	let restService: OauthRestService
 
 	const config = new RestServiceConfig('http://example.org', 60000)
+	const oauthRestService = new OauthRestService(config, {} as Auth)
 
 	beforeEach(() => {
 		inviteFactory = <InviteFactory>{}
 		bookingFactory = <BookingFactory>{}
 		restService = <OauthRestService>{}
 
-		learnerRecord = new LearnerRecord(config, {} as Auth, bookingFactory, inviteFactory)
+		learnerRecord = new LearnerRecord(oauthRestService, bookingFactory, inviteFactory)
 		learnerRecord.restService = restService
 	})
 
@@ -52,30 +53,6 @@ describe('Leaner Record Tests', () => {
 		restService.get = sinon.stub().throws(new Error(`An error occurred when GETTING`))
 
 		expect(learnerRecord.getEventBookings(eventId)).to.be.rejectedWith(`An error occurred when trying to get event bookings: Error: An error occurred when GETTING`)
-	})
-
-	it('should update booking', async () => {
-		const eventId = 'test-event-id'
-		const booking: Booking = new Booking()
-		booking.id = 99
-		booking.status = Booking.Status.REQUESTED
-
-		restService.patch = sinon.stub()
-		await learnerRecord.updateBooking(eventId, booking)
-
-		expect(restService.patch).to.have.been.calledOnceWith('/event/test-event-id/booking/99', {
-			status: booking.status,
-			cancellationReason: undefined,
-		})
-	})
-
-	it('should throw error if error occurs with PATCH request', async () => {
-		const eventId = 'eventId'
-		const booking = new Booking()
-
-		restService.patch = sinon.stub().throws(new Error(`An error occurred when PATCHING`))
-
-		expect(learnerRecord.updateBooking(eventId, booking)).to.be.rejectedWith('An error occurred when trying to update booking: Error: An error occurred when PATCHING')
 	})
 
 	it('should call rest service when getting invitees', async () => {

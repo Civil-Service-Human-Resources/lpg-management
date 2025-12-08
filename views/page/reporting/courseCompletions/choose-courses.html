@@ -67,7 +67,7 @@
           conditional: {
               html: requiredHtml
           },
-          checked: true
+          checked: true if pageModel.learning == undefined else pageModel.learning == "requiredLearning"
         }), radioItems) %}
 
       {% endif %}
@@ -78,12 +78,13 @@
         conditional: {
             html: courseSearch
         },
-        checked: pageModel.requiredLearningList | length == 0
+        checked: pageModel.learning == "courseSearch"
     }), radioItems) %}
 
     {% set radioItems = (radioItems.push({
       value: "allLearning",
       text: "All learning",
+        checked: pageModel.learning == "allLearning",
       hint: {
         text: "Does not include course breakdown"
       }

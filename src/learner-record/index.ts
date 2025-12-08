@@ -1,11 +1,8 @@
 import {OauthRestService} from '../lib/http/oauthRestService'
-import {Auth} from '../identity/auth'
 import {Invite} from './model/invite'
 import {InviteFactory} from './model/factory/inviteFactory'
-import {Booking} from './model/booking'
 import {BookingFactory} from './model/factory/bookingFactory'
 import { getLogger } from '../utils/logger'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 export class LearnerRecord {
 	logger = getLogger('LearnerRecord')
@@ -13,9 +10,8 @@ export class LearnerRecord {
 	private _inviteFactory: InviteFactory
 	private _bookingFactory: BookingFactory
 
-	constructor(config: RestServiceConfig, auth: Auth, bookingFactory: BookingFactory, inviteFactory: InviteFactory) {
-		this._restService = new OauthRestService(config, auth)
-
+	constructor(config: OauthRestService, bookingFactory: BookingFactory, inviteFactory: InviteFactory) {
+		this._restService = config
 		this._bookingFactory = bookingFactory
 		this._inviteFactory = inviteFactory
 	}
@@ -28,17 +24,6 @@ export class LearnerRecord {
 			return bookings
 		} catch (e) {
 			throw new Error(`An error occurred when trying to get event bookings: ${e}`)
-		}
-	}
-
-	async updateBooking(eventId: string, booking: Booking) {
-		try {
-			await this._restService.patch(`/event/${eventId}/booking/${booking.id}`, {
-				status: booking.status,
-				cancellationReason: booking.cancellationReason,
-			})
-		} catch (e) {
-			throw new Error(`An error occurred when trying to update booking: ${e}`)
 		}
 	}
 

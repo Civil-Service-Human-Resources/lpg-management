@@ -45,9 +45,9 @@
 
         <h3 class="govuk-heading-m">Organisation details</h3>
         <ul class="list module-list">
-            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><h4>Parent organisation</h4></p><p class="govuk-body no-margin">{{ organisationalUnit.parent.name | default("Unspecified", true) }}</p></li>
-            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><h4>Organisation code</h4></p><p class="govuk-body no-margin">{{ organisationalUnit.code | default("Unspecified", true) }}</p></li>
-            <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><h4>Organisation abbreviation</h4></p><p class="govuk-body no-margin">{{ organisationalUnit.abbreviation | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><h4>Parent organisation</h4><p class="govuk-body no-margin">{{ organisationalUnit.parentName | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><h4>Organisation code</h4><p class="govuk-body no-margin">{{ organisationalUnit.code | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><h4>Organisation abbreviation</h4><p class="govuk-body no-margin">{{ organisationalUnit.abbreviation | default("Unspecified", true) }}</p></li>
         </ul>
         <div class="title-container">
             <h3 class="govuk-heading-m">Organisation email domains</h3>
@@ -79,7 +79,7 @@
                 <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Token spaces</strong></p><p class="govuk-body no-margin">{{ token.capacity | default("Unspecified", true) }}</p>
                 <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Token spaces currently in use</strong></p><p class="govuk-body no-margin">{{ token.capacityUsed  }}</p>
                 <li class="list-item module-item u--border--bgrey"><p class="govuk-body no-margin"><strong>Token domains</strong></p>
-                {% for domain in token.agencyDomains%}
+                {% for domain in token.agencyDomains %}
                     <p class="govuk-body no-margin">{{ domain.domain | default("Unspecified", true) }}</p>
                 {% endfor %}
                 </li>
@@ -102,7 +102,7 @@
                     }
                 ] %}
 
-                {% if organisationalUnit.parent.name !== undefined %}
+                {% if organisationalUnit.parentName !== null %}
                     {% set unlinkParentAction = {
                         link: "/content-management/organisations/" + organisationalUnit.id + "/unlink-parent-confirm",
                         text: "Unlink parent organisation"

@@ -1,0 +1,57 @@
+{% from "radios/macro.njk" import govukRadios %}
+{% from "select/macro.njk" import govukSelect %}
+
+{% macro organisationSelection(params) %}
+
+    {% set multipleOrganisationSelectionHtml %}
+        <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
+            <label class="govuk-label" for="organisationSearch">All organisations</label>
+            <div id="subject-hint" class="govuk-hint">
+                <span id="course-completions-js-hint" class='hidden'>Start typing to filter available organisations.</span> You can select up to {{params.maxAllowedOrganisations}} organisations.
+            </div>
+            <select id="organisationSearch" name="organisationSearch" class="govuk-input" aria-labelledby="organisationSearch" multiple>
+                {% for organisation in params.multipleOrganisationsOptions %}
+                    <option {% if  (params.organisationSearch or []).indexOf(organisation.id) > -1 %}selected{% endif %} value={{ organisation.id }}>{{ organisation.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endset -%}
+
+    <div class="govuk-form-group">
+        {% set radioItems = [
+            {
+                value: params.firstOrganisationOption.id,
+                text: params.firstOrganisationOption.name,
+                checked: true if params.organisation == undefined else params.organisation == params.firstOrganisationOption.id
+            }
+        ] %}
+
+        {% set radioItems = (radioItems.push({
+            value: "multiple-organisations",
+            text: "Multiple organisations",
+            checked: params.organisation == "multiple-organisations",
+            conditional: {
+                html: multipleOrganisationSelectionHtml
+            }
+        }), radioItems) %}
+
+        {% if params.showWholeCivilServiceOption %}
+            {% set radioItems = (radioItems.push({
+                value: "allOrganisations",
+                text: "Whole Civil Service",
+                checked: params.organisation == "allOrganisations"
+            }), radioItems) %}
+        {% endif %}
+
+        {{ govukRadios({
+            name: "organisation",
+            fieldset: {
+                legend: {
+                    text: "Which organisation would you like to report on?",
+                    classes: "govuk-fieldset__legend--s"
+                }
+            },
+            items: radioItems
+        }) }}
+    </div>
+{% endmacro %}

@@ -1,17 +1,18 @@
 import {REPORTING} from '../../../config'
-import { FormattedOrganisation } from "src/csl-service/model/FormattedOrganisation"
+import { FormattedOrganisation } from "../../../csl-service/model/organisationalUnit/FormattedOrganisation"
 import {Exclude, Transform} from 'class-transformer'
 import {ArrayMaxSize, ArrayMinSize, ValidateIf} from 'class-validator'
+import {SubmittableForm} from '../../models/submittableForm'
 
 export type OrganisationSelection = 'allOrganisations' | 'multiple-organisations'
 
-export class ChooseOrganisationsModel {
+export class ChooseOrganisationsModel extends SubmittableForm {
 
     // Settings:
     @Exclude()
     public showWholeCivilServiceOption: boolean = false
     @Exclude()
-    public maxAllowedOrganisations: number = REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS
+    public maxAllowedOrganisations: number = REPORTING.REPORTING_MAX_ORGANISATIONS
 
     // Data:
     @Exclude()
@@ -27,14 +28,14 @@ export class ChooseOrganisationsModel {
             return value
         }
     })
-    public organisation: OrganisationSelection | number
+    public organisation: OrganisationSelection | number | undefined
 
     @ValidateIf(o => o.organisation === 'multiple-organisations')
-    @ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS, {
-        message: `You have chosen too many organisations. You can choose up to ${REPORTING.COURSE_COMPLETIONS_MAX_ORGANISATIONS} organisations`
+    @ArrayMaxSize(REPORTING.REPORTING_MAX_ORGANISATIONS, {
+        message: "reporting.validation.organisations.tooManyOrganisations"
     })
     @ArrayMinSize(1, {
-        message: "Please choose at least one organisation before proceeding."
+        message: "reporting.validation.organisations.minimumOrganisations"
     })
     @Transform(({value}) => {
         if (typeof value === "string") {
@@ -49,6 +50,7 @@ export class ChooseOrganisationsModel {
         firstOrganisationOption: { id: string, name: string },
         multipleOrganisationsOptions: FormattedOrganisation[]
     ) {
+        super()
         this.firstOrganisationOption = firstOrganisationOption
         this.multipleOrganisationsOptions = multipleOrganisationsOptions
     }
@@ -59,8 +61,7 @@ export class ChooseOrganisationsModel {
         } else if (this.organisation == 'allOrganisations') {
             return undefined
         } else {
-            return [this.organisation]
+            return this.organisation ? [this.organisation] : []
         }
     }
-
 }

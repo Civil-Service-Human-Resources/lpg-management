@@ -3,14 +3,19 @@ import {CslServiceClient} from '../../../src/csl-service/client'
 import {OauthRestService} from 'lib/http/oauthRestService'
 import * as sinon from 'sinon'
 import {CancelBookingDto} from '../../../src/csl-service/model/CancelBookingDto'
-import {expect} from 'chai'
 import * as chai from 'chai'
+import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {
-	GetCourseCompletionParameters
+	GetCourseCompletionParameters,
 } from '../../../src/report-service/model/course-completions/getCourseCompletionParameters'
 import {TimePeriodParameters} from '../../../src/report-service/model/course-completions/timePeriodParameters'
-import {CreateReportRequestParams} from '../../../src/report-service/model/course-completions/createReportRequestParams'
+import {
+	CourseCompletionReportRequestParams,
+} from '../../../src/report-service/model/course-completions/courseCompletionReportRequestParams'
+import {Report} from '../../../src/controllers/reporting/Report'
+
+import {LearningPlanCache} from '../../../src/csl-service/learningPlanCache'
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')
@@ -23,11 +28,14 @@ dayjs.extend(advancedFormat)
 chai.use(sinonChai)
 describe('CslServiceClient', function() {
 	let restService: OauthRestService
+	let cache: LearningPlanCache
 	let client: CslServiceClient
 
 	beforeEach(() => {
 		restService = <OauthRestService>{}
-		client = new CslServiceClient(restService)
+		cache = <LearningPlanCache>{}
+		cache.delete = sinon.stub().resolves()
+		client = new CslServiceClient(restService, cache)
 	})
 
 	describe('Event API calls with correct responses', () => {
@@ -60,15 +68,16 @@ describe('CslServiceClient', function() {
 
 	describe('Course completions calls with correct responses', () => {
 		const time = dayjs("2024-10-10T10:00:00").tz("UTC", true)
-		const timePeriod = new TimePeriodParameters(time, time, "+1")
+		const timePeriod = new TimePeriodParameters(time, time)
+		const tz = "+1"
 		it('Should get the course completion aggregation page data', async () => {
 			restService.postRequest = sinon.stub().resolves({
 				data: {
 
 				}
 			})
-			const params = new GetCourseCompletionParameters(timePeriod,
-				["course1"], ["org1"])
+			const params = new GetCourseCompletionParameters(timePeriod, tz,
+				["course1"], [1])
 			const expUrl = `/admin/reporting/course-completions/generate-graph`
 			await client.getCourseCompletionsAggregationsChart(params)
 			expect(restService.postRequest).to.have.been.calledOnceWith({url: expUrl,
@@ -77,7 +86,7 @@ describe('CslServiceClient', function() {
 				endDate: '2024-10-10T10:00:00',
 				timezone: '+1',
 				courseIds: ['course1'],
-				selectedOrganisationIds: ['org1'],
+				selectedOrganisationIds: [1],
 				gradeIds: undefined,
 				professionIds: undefined,
 			}
@@ -89,10 +98,11 @@ describe('CslServiceClient', function() {
 
 				}
 			})
-			const params = new CreateReportRequestParams("userId", "full name", "userEmail",
-				"https://baseUrl.com/reporting/course-completions/download-report", timePeriod, ["course1"], ["org1"])
+			const getCourseCompletionParameters = new GetCourseCompletionParameters(timePeriod, tz, ["course1"], [1])
+			const params = new CourseCompletionReportRequestParams("userId", "full name", "userEmail",
+				"https://baseUrl.com/reporting/course-completions/download-report", getCourseCompletionParameters)
 			const expUrl = `/admin/reporting/course-completions/request-source-data`
-			await client.postCourseCompletionsExportRequest(params)
+			await client.postReportExportRequest(Report.COURSE_COMPLETIONS, params)
 			expect(restService.postRequest).to.have.been.calledOnceWith({url: expUrl,
 				data: {
 					userId: "userId",
@@ -103,7 +113,7 @@ describe('CslServiceClient', function() {
 					endDate: "2024-10-10T10:00:00",
 					timezone: "+1",
 					courseIds: ["course1"],
-					selectedOrganisationIds: ["org1"],
+					selectedOrganisationIds: [1],
 					gradeIds: undefined,
 					professionIds: undefined,
 				}})

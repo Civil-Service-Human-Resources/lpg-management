@@ -8,14 +8,13 @@ import {AudienceFactory} from './model/factory/audienceFactory'
 import {EventFactory} from './model/factory/eventFactory'
 import {Event} from './model/event'
 import {Audience} from './model/audience'
-import {Auth} from '../identity/auth'
 import {OauthRestService} from '../lib/http/oauthRestService'
 import {CslServiceClient} from '../csl-service/client'
 import {CourseTypeAheadCache} from './courseTypeaheadCache'
-import {BasicCourse, CourseTypeAhead} from './courseTypeAhead'
-import {RestServiceConfig} from '../lib/http/restServiceConfig'
+import {CourseTypeAhead} from './courseTypeAhead'
 import {HttpException} from '../lib/exception/HttpException'
 import {Status} from './model/status'
+import { LearningCacheManager } from 'lib/learningCacheManager'
 
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>
@@ -25,10 +24,13 @@ export class LearningCatalogue {
 	private _restService: OauthRestService
 	private _cslService: CslServiceClient
 	private courseTypeaheadCache: CourseTypeAheadCache
+	private learningCacheManager: LearningCacheManager
 
-	constructor(config: RestServiceConfig, auth: Auth, cslService: CslServiceClient,
-				courseTypeaheadCache: CourseTypeAheadCache) {
-		this._restService = new OauthRestService(config, auth)
+
+	constructor(config: OauthRestService, cslService: CslServiceClient,
+				courseTypeaheadCache: CourseTypeAheadCache, learningCacheManager: LearningCacheManager) {
+		this._restService = config
+
 
 		this._eventService = new EntityService<Event>(this._restService, new EventFactory())
 
@@ -41,10 +43,7 @@ export class LearningCatalogue {
 		this._cslService = cslService
 
 		this.courseTypeaheadCache = courseTypeaheadCache
-	}
-
-	async listPublishedCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
-		return await this._courseService.listAllWithPagination(`/courses?page=${page}&size=${size}&visibility=PRIVATE&visibility=PUBLIC&status=PUBLISHED`)
+		this.learningCacheManager = learningCacheManager
 	}
 
 	async listCourses(page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
@@ -58,35 +57,7 @@ export class LearningCatalogue {
 	}
 
 	async getCourseTypeAhead(): Promise<CourseTypeAhead> {
-		let typeahead = await this.courseTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			typeahead = await this.refreshTypeahead()
-		}
-		return typeahead
-	}
-
-	async fetchAllPublishedCourses(): Promise<Course[]> {
-		const courses: Course[] = []
-		const response = await this.listPublishedCourses(0, 1)
-		if (response.totalResults >= 1) {
-			const totalPages = Math.ceil(response.totalResults / 200)
-			const requests: any[] = []
-			for (let page = 0; page < totalPages; page++) {
-				requests.push(this.listPublishedCourses(page, 200)
-					.then((data) => {
-						courses.push(...data.results)
-					}))
-			}
-			await Promise.all(requests)
-		}
-		return courses
-	}
-
-	private async refreshTypeahead() {
-		const courses = await this.fetchAllPublishedCourses()
-		const typeahead = CourseTypeAhead.createAndSort(courses.map(c => new BasicCourse(c.id, c.title)))
-		await this.courseTypeaheadCache.setTypeahead(typeahead)
-		return typeahead
+		return await this.courseTypeaheadCache.get()
 	}
 
 	async createCourse(course: Course): Promise<Course> {
@@ -96,25 +67,13 @@ export class LearningCatalogue {
 	async updateCourse(course: Course): Promise<void> {
 		await this._cslService.clearCourseCache(course.id)
 		await this._courseService.update(`/courses/${course.id}`, course)
-		let typeahead = await this.courseTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead()
-		} else {
-			typeahead.updateCourse(course)
-			await this.courseTypeaheadCache.setTypeahead(typeahead)
-		}
+		await this.courseTypeaheadCache.updateCourse(course)
 	}
 
 	async publishCourse(course: Course): Promise<Course> {
 		course.status = Status.PUBLISHED
 		await this._cslService.clearCourseCache(course.id)
-		let typeahead = await this.courseTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead()
-		} else {
-			typeahead.addCourse(course)
-			await this.courseTypeaheadCache.setTypeahead(typeahead)
-		}
+		await this.courseTypeaheadCache.addCourse(course)
 		return this._courseService.update(`/courses/${course.id}`, course)
 	}
 
@@ -122,13 +81,7 @@ export class LearningCatalogue {
 		course.status = Status.ARCHIVED
 		await this._cslService.clearCourseCache(course.id)
 		await this._courseService.update(`/courses/${course.id}`, course)
-		let typeahead = await this.courseTypeaheadCache.getTypeahead()
-		if (typeahead === undefined) {
-			await this.refreshTypeahead()
-		} else {
-			typeahead.removeCourse(course.id)
-			await this.courseTypeaheadCache.setTypeahead(typeahead)
-		}
+		await this.courseTypeaheadCache.removeCourse(course.id)
 		return course
 	}
 
@@ -143,6 +96,19 @@ export class LearningCatalogue {
 		} catch (e) {
 			if (e instanceof HttpException && e.statusCode === 404) {
 				return null
+			}
+			throw e
+		}
+	}
+
+	async deleteCourse(courseId: string): Promise<void> {
+		try{
+			await this._courseService.delete(`/courses/${courseId}`)
+			await this.courseTypeaheadCache.removeCourse(courseId)
+		}
+		catch (e) {
+			if (e instanceof HttpException && e.statusCode === 407) {
+				return
 			}
 			throw e
 		}
@@ -198,14 +164,19 @@ export class LearningCatalogue {
 		return this._audienceService.get(`/courses/${courseId}/audiences/${audienceId}`)
 	}
 
-	async updateAudience(courseId: string, audience: Audience): Promise<Audience> {
+	async updateAudience(courseId: string, audience: Audience, options: UpdateAudienceOptions = {clearLearningCache: false}): Promise<Audience> {
+		const updatedAudience = await this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
 		await this._cslService.clearCourseCache(courseId)
-		return this._audienceService.update(`/courses/${courseId}/audiences/${audience.id}`, audience)
+		if(options.clearLearningCache) {
+			this.learningCacheManager.clearLearningCache()
+		}
+		return updatedAudience
 	}
 
 	async deleteAudience(courseId: string, audienceId: string) {
+		const deletedAudience = await this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
 		await this._cslService.clearCourseCache(courseId)
-		return this._audienceService.delete(`/courses/${courseId}/audiences/${audienceId}`)
+		return deletedAudience
 	}
 
 	set courseService(value: EntityService<Course>) {
@@ -224,4 +195,8 @@ export class LearningCatalogue {
 		this._audienceService = value
 	}
 
+}
+
+interface UpdateAudienceOptions {
+	clearLearningCache?: boolean
 }

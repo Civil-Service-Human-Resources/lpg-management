@@ -43,14 +43,11 @@ const app = express()
 const ctx = new ApplicationContext()
 const { xss } = require('express-xss-sanitizer')
 import * as middleware from './middleware/lpgManagementMiddleware'
-import {buildReportService} from './report-service/builder'
-import {OrganisationalUnitDomainsController} from './controllers/organisationalUnit/organisationalUnitDomainsController'
+import {buildReportingControllers} from './report-service/builder'
 import {Controller} from './controllers/controller'
-import {CourseCompletionsController} from './controllers/reporting/courseCompletionsController'
-import {ReportingController} from './controllers/reporting/reportingController'
-import {createConfig} from './lib/http/restServiceConfigFactory'
-import {RegisteredLearnersController} from './controllers/reporting/registeredLearnersController'
+import {createOAuthConfig} from './lib/http/restServiceConfigFactory'
 import {HEALTH_CHECK} from './config'
+import {buildOrganisationalUnitControllers} from './controllers/organisationalUnit/builder'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
@@ -65,17 +62,17 @@ middleware.applyAll(app)
 
 ctx.auth.configure(app)
 
-const reportService = buildReportService(createConfig({
+const reportingControllers: Controller[] = buildReportingControllers(createOAuthConfig({
 	url: config.REPORT_SERVICE.url,
 	timeout: config.REPORT_SERVICE.timeout,
 	detailedLogs: config.REPORT_SERVICE.detailedLogs
-}), ctx.auth, ctx.courseService, ctx.cslServiceClient, ctx.cslService)
+}, ctx.auth), ctx.courseService, ctx.cslServiceClient, ctx.organisationalUnitService)
+
+const organisationalUnitControllers: Controller[] = buildOrganisationalUnitControllers(ctx.organisationalUnitService)
 
 const controllers: Controller[] = [
-	new OrganisationalUnitDomainsController(ctx.organisationalUnitService),
-	new ReportingController(reportService),
-	new CourseCompletionsController(reportService),
-	new RegisteredLearnersController()
+	...reportingControllers,
+	...organisationalUnitControllers
 ]
 
 app.use(ctx.addToResponseLocals())
@@ -87,10 +84,8 @@ app.use(ctx.youtubeModuleController.router)
 app.use(ctx.linkModuleController.router)
 app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
-app.use(ctx.organisationController.router)
 app.use(ctx.searchController.router)
 app.use(ctx.skillsController.router)
-app.use(ctx.agencyTokenController.router)
 logger.debug(`Registering ${controllers.length} controllers`)
 controllers.forEach(c => {
 	app.use(c.path, c.buildRouter())

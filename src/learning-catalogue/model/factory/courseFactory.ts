@@ -30,6 +30,7 @@ export class CourseFactory {
 		course.learningProvider = plainToInstance(LearningProvider, data.learningProvider)
 		course.visibility = Visibility[data.visibility as keyof typeof Visibility]
 		course.topicId = data.topicId
+		course.hasBeenPublished = data.hasBeenPublished
 
 		if (course.modules) {
 			let duration = 0

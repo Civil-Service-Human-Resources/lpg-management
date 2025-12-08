@@ -4,6 +4,7 @@ const { xss } = require('express-xss-sanitizer')
 import * as asyncHandler from 'express-async-handler'
 import {HTTP_SETTINGS} from '../config'
 import {getLogger} from '../utils/logger'
+import {SubmittableForm} from './models/submittableForm'
 
 const logger = getLogger('route')
 
@@ -66,7 +67,7 @@ export const postRequest = <T> (path: string,
 	return basicRequest(path, Method.POST, handler, additionalMiddleware, isAsync)
 }
 
-export const postRequestWithBody = <T> (path: string,
+export const postRequestWithBody = <T extends SubmittableForm> (path: string,
 									  handler: (req: Request, res: Response, next: NextFunction) => void,
 									  validationOptions: ValidationOptions<T>,
 									  additionalMiddleware: ((req: Request, res: Response, next: NextFunction) => void)[] = [],

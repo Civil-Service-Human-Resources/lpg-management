@@ -89,10 +89,6 @@ export class JsonRestService {
 		return {}
 	}
 
-	async postWithoutFollowing<ResponseType>(path: string, resource: any) {
-		return await this._http.post<ResponseType>(path, resource, this.getHeaders())
-	}
-
 	async postWithoutFollowingWithConfig(path: string, resource: any, config: any) {
 		return await this._http.post(path, resource, config)
 	}
@@ -101,6 +97,10 @@ export class JsonRestService {
 		const response: AxiosResponse = await this._http.post(path, resource, this.getHeaders())
 
 		return this.get(url.parse(response.headers.location).path!)
+	}
+
+	async deleteRequest<T>(req: AxiosRequestConfig) {
+		return await this.makeRawAuthenticatedRequest<T>({method: 'DELETE', ...req})
 	}
 
 	async postRequest<T>(req: AxiosRequestConfig) {
@@ -183,24 +183,16 @@ export class JsonRestService {
 		return await this._http.delete(path, config)
 	}
 
-	async deleteWithAuthAndConfig(path: string, config: any) {
-		const headers: any = this.getHeaders()
-		config.headers = headers.headers
-		return await this._http.delete(path, config)
-	}
-
+	/**
+	 * @deprecated Prefer deleteRequest over this, as this does not include detailed logging
+	 * @param path
+	 */
 	async delete(path: string) {
 		return await this._http.delete(path, this.getHeaders())
 	}
 
 	async patch(path: string, resource: any) {
 		return (await this._http.patch(path, resource, this.getHeaders())).data
-	}
-
-	async patchWithJsonPatch(path: string, resource: any) {
-		let headersObj: any = this.getHeaders()
-		headersObj.headers['Content-Type'] = 'application/json-patch+json'
-		return (await this._http.patch(path, resource, headersObj)).data
 	}
 
 	set http(value: AxiosInstance) {

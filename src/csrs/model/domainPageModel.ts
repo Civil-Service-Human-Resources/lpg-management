@@ -1,8 +1,9 @@
 import {IsValidDomain} from '../../validators/isValidDomain'
 import {IsNotEmpty} from 'class-validator'
 import {Transform} from 'class-transformer'
+import {SubmittableForm} from '../../controllers/models/submittableForm'
 
-export class DomainPageModel {
+export class DomainPageModel extends SubmittableForm {
 	@IsValidDomain({
 		message: 'domains.validation.domains.invalidFormat'
 	})
@@ -13,6 +14,6 @@ export class DomainPageModel {
 	domainToAdd: string
 }
 
-export class DeleteDomainPageModel {
+export class DeleteDomainPageModel extends SubmittableForm {
 	removeFromSubOrgs: boolean = false
 }

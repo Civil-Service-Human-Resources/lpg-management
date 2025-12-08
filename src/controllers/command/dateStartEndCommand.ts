@@ -28,8 +28,6 @@ function isStartDateBeforeEndDate(validationOptions?: ValidationOptions) {
 			constraints: [],
 			validator: {
 				validate(startDate: any, args: ValidationArguments) {
-					console.log(startDate)
-					console.log((args.object as any)['endDate'])
 					return moment(startDate, 'YYYY-MM-DD', true) < moment((args.object as any)['endDate'], 'YYYY-MM-DD', true)
 				},
 			},

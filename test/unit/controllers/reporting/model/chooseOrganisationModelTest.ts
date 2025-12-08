@@ -1,5 +1,5 @@
 import {ChooseOrganisationsModel} from '../../../../../src/controllers/reporting/model/chooseOrganisationsModel'
-import {FormattedOrganisation} from '../../../../../src/csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 import {expect} from 'chai'
 
 describe('Choose organisation model tests', () => {

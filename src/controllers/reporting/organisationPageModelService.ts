@@ -1,0 +1,58 @@
+import {plainToInstance} from 'class-transformer'
+import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
+import {Request, Response} from 'express'
+import {ChooseOrganisationSession} from './model/chooseOrganisationSession'
+import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
+import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
+
+export class OrganisationPageModelService {
+
+	constructor(private organisationalUnitService: OrganisationalUnitService) {
+	}
+
+	async renderChooseOrganisation(request: Request) {
+		let pageModel: ChooseOrganisationsModel | undefined
+		if (request.session!['pageModel'] !== undefined) {
+			pageModel = request.session!['pageModel']
+			request.session!['pageModel'] = undefined
+		}
+		const user = request.user!
+		const formattedOtherOrganisations = await this.getOrganisationsForUser(user)
+		const firstOrganisation = {
+			name: user.organisationalUnit.name,
+			id: user.organisationalUnit.id
+		}
+		if (pageModel !== undefined) {
+			pageModel.firstOrganisationOption = firstOrganisation
+			pageModel.multipleOrganisationsOptions = formattedOtherOrganisations
+		} else {
+			pageModel = new ChooseOrganisationsModel(firstOrganisation, formattedOtherOrganisations)
+		}
+		pageModel.showWholeCivilServiceOption = user.isReportingAllOrganisations()
+		return pageModel
+	}
+
+	async getOrganisationsForUser(user: any): Promise<FormattedOrganisation[]> {
+		return await this.organisationalUnitService.getOrganisationTypeaheadForUser(user)
+	}
+
+	async handleSubmit(req: Request, res: Response, session: ChooseOrganisationSession) {
+		let currentUser = req.user
+		const pageModel = plainToInstance(ChooseOrganisationsModel, res.locals.input as ChooseOrganisationsModel)
+		const selectedOrganisationIds = pageModel.getSelectedOrganisationIds()
+		const selectedOrganisations = selectedOrganisationIds ? (await this.getOrganisationsForUser(currentUser))
+			.filter(o => selectedOrganisationIds.includes(o.id)) : undefined
+		session.organisationFormSelection = pageModel.organisation
+		session.selectedOrganisations = selectedOrganisations
+		if (!session.hasSelectedOrganisations()) {
+			const errors = {fields: {organisation: ["reporting.validation.organisations.minimumOrganisations"]}, size: 1}
+			req.session!.sessionFlash = {
+				errors,
+			}
+			req.session!.save(() => {
+				res.redirect('/reporting/course-completions/choose-organisation')
+			})
+		}
+	}
+
+}

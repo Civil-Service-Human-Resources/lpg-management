@@ -7,8 +7,8 @@ import {Module} from '../../learning-catalogue/model/module'
 import moment = require('moment')
 import * as config from '../../config'
 import * as fileType from '../../lib/fileType'
-import {OauthRestService} from 'lib/http/oauthRestService'
-import {CourseService} from 'lib/courseService'
+import {OauthRestService} from '../../lib/http/oauthRestService'
+import {CourseService} from '../../lib/courseService'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 const { xss } = require('express-xss-sanitizer')
 

@@ -69,7 +69,10 @@ export class OrganisationalUnitDomainsController extends OrganisationalUnitContr
 			}
 			const domainStr: string = response.locals.input.domainToAdd
 			const domainUpdateSuccess = await this.organisationalUnitService.addDomain(organisationalUnit.id, domainStr)
-			return response.render('page/organisation/view-domains', { domainUpdateSuccess, organisationalUnit: domainUpdateSuccess.organisationalUnit })
+			request.session!.sessionFlash = { domainUpdateSuccess }
+			return request.session!.save(() => {
+				response.redirect(`/content-management/organisations/${organisationalUnit.id}/domains`)
+			})
 		}
 	}
 

@@ -1,6 +1,5 @@
 import * as sinon from 'sinon'
 import {createSubApp, getApp} from '../../../utils/testApp'
-import {ReportService} from '../../../../src/report-service'
 const session = require('supertest-session')
 import {expect} from 'chai'
 import {CourseCompletionsController} from '../../../../src/controllers/reporting/courseCompletionsController'
@@ -8,12 +7,17 @@ import {BasicCoursePageModel, ChooseCoursesModel} from '../../../../src/controll
 import {CourseCompletionsSession} from '../../../../src/controllers/reporting/model/courseCompletionsSession'
 import {REPORTING} from '../../../../src/config'
 import * as moment from 'moment'
-import {FormattedOrganisation} from '../../../../src/csl-service/model/FormattedOrganisation'
+import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 import {match} from 'sinon'
+import {OrganisationPageModelService} from '../../../../src/controllers/reporting/organisationPageModelService'
+import {CourseCompletionService} from '../../../../src/report-service/courseCompletionService'
+import {ReportExportService} from '../../../../src/controllers/reporting/reportExportService'
 
 describe('courseCompletionsController tests', () => {
-	let reportService: sinon.SinonStubbedInstance<ReportService> = sinon.createStubInstance(ReportService)
-	const controller: CourseCompletionsController = new CourseCompletionsController(reportService as any)
+	let courseCompletionService: sinon.SinonStubbedInstance<CourseCompletionService> = sinon.createStubInstance(CourseCompletionService)
+	let reportExportService: sinon.SinonStubbedInstance<ReportExportService> = sinon.createStubInstance(ReportExportService)
+	let organisationPageModelService: sinon.SinonStubbedInstance<OrganisationPageModelService> = sinon.createStubInstance(OrganisationPageModelService)
+	const controller: CourseCompletionsController = new CourseCompletionsController(courseCompletionService as any, reportExportService as any, organisationPageModelService as any)
 	const app = getApp()
 	app.use(controller.path, controller.buildRouter())
 
@@ -42,7 +46,7 @@ describe('courseCompletionsController tests', () => {
 
 	describe('Select organisational unit tests', () => {
 		it('should redirect to the choose courses screen when valid organisations have been selected', async () => {
-			reportService.getOrganisationsForUser.withArgs(match.any).resolves([{id:1}])
+			organisationPageModelService.getOrganisationsForUser.withArgs(match.any).resolves([{id:1}])
 			const res = await session(app)
 				.post("/reporting/course-completions/choose-organisation")
 				.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -106,7 +110,7 @@ describe('courseCompletionsController tests', () => {
 				new BasicCoursePageModel('2', 'course 2'),
 				new BasicCoursePageModel('3', 'course 3')
 			])
-			reportService.getChooseCoursePage.withArgs([formattedOrg]).resolves(chooseCoursesModel)
+			courseCompletionService.getChooseCoursePage.resolves(chooseCoursesModel)
 
 			describe('Validation', () => {
 				it('Should validate required learning selection', async () => {
@@ -121,7 +125,7 @@ describe('courseCompletionsController tests', () => {
 				})
 
 				it('Should validate valid course IDs', async () => {
-					reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([])
+					courseCompletionService.fetchCoursesWithIds.withArgs(['course1']).resolves([])
 					const res = await session(subApp)
 						.post("/reporting/course-completions/choose-courses")
 						.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -172,7 +176,7 @@ describe('courseCompletionsController tests', () => {
 			})
 
 			it('Should successfully redirect with correct required learning selections', async () => {
-				reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
+				courseCompletionService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
 				const res = await session(subApp)
 					.post("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -185,7 +189,7 @@ describe('courseCompletionsController tests', () => {
 			})
 
 			it('Should successfully redirect with correct course search selections', async () => {
-				reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
+				courseCompletionService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
 				const res = await session(subApp)
 					.post("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
@@ -198,7 +202,7 @@ describe('courseCompletionsController tests', () => {
 			})
 
 			it('Should successfully redirect with all learning selected', async () => {
-				reportService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
+				courseCompletionService.fetchCoursesWithIds.withArgs(['course1']).resolves([new BasicCoursePageModel("course1", "course 1")])
 				const res = await session(subApp)
 					.post("/reporting/course-completions/choose-courses")
 					.set({"roles": 'MVP_REPORTER,ORGANISATION_REPORTER'})
