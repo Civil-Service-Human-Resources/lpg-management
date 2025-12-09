@@ -9,6 +9,13 @@ export class RegisteredLearnerOrganisationPageModelService extends OrganisationP
 		super(organisationalUnitService)
 	}
 
+	isSelectionValid(pageModel: ChooseOrganisationsModel, user: any) {
+		if (pageModel.organisation === 'allOrganisations') {
+			return user.isRegisteredLearnerAllOrganisations()
+		}
+		return true
+	}
+
 	async renderChooseOrganisation(request: Request): Promise<ChooseOrganisationsModel> {
 		const pageModel = await super.renderChooseOrganisation(request);
 		pageModel.showWholeCivilServiceOption = request.user!.isRegisteredLearnerAllOrganisations()

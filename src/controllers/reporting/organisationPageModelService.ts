@@ -36,9 +36,25 @@ export class OrganisationPageModelService {
 		return await this.organisationalUnitService.getOrganisationTypeaheadForUser(user)
 	}
 
+	isSelectionValid(pageModel: ChooseOrganisationsModel, user: any) {
+		if (pageModel.organisation === 'allOrganisations') {
+			return user.isReportingAllOrganisations()
+		}
+		return true
+	}
+
 	async handleSubmit(req: Request, res: Response, session: ChooseOrganisationSession) {
 		let currentUser = req.user
 		const pageModel = plainToInstance(ChooseOrganisationsModel, res.locals.input as ChooseOrganisationsModel)
+		if (!this.isSelectionValid(pageModel, currentUser)) {
+			const errors = {fields: {organisation: ["reporting.validation.organisations.tooManyOrganisations"]}, size: 1}
+			req.session!.sessionFlash = {
+				errors,
+			}
+			return req.session!.save(() => {
+				res.redirect('/reporting/course-completions/choose-organisation')
+			})
+		}
 		const selectedOrganisationIds = pageModel.getSelectedOrganisationIds()
 		const selectedOrganisations = selectedOrganisationIds ? (await this.getOrganisationsForUser(currentUser))
 			.filter(o => selectedOrganisationIds.includes(o.id)) : undefined
