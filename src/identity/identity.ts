@@ -36,6 +36,7 @@ export enum Role {
 	TIER1_REPORTING = 'TIER1_REPORTING',
 	REGISTERED_LEARNER_REPORTER = 'REGISTERED_LEARNER_REPORTER',
 	LEARNING_UNARCHIVE = 'LEARNING_UNARCHIVE',
+	REGISTERED_LEARNER_ALL_ORGANISATIONS = 'REGISTERED_LEARNER_ALL_ORGANISATIONS',
 }
 
 export enum CompoundRole {
@@ -331,6 +332,10 @@ export class Identity {
 
 	isReportingAllOrganisations() {
 		return this.hasRole(Role.REPORTING_ALL_ORGANISATIONS)
+	}
+
+	isRegisteredLearnerAllOrganisations() {
+		return this.hasRole(Role.REGISTERED_LEARNER_ALL_ORGANISATIONS)
 	}
 
 	isTierOneReporter(){

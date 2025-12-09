@@ -4,7 +4,6 @@ import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
 import {NextFunction, Request, Response} from 'express'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
-import {OrganisationPageModelService} from './organisationPageModelService'
 import {
 	fetchChooseOrganisationSessionObject,
 	fetchCourseCompletionSessionObject,
@@ -13,10 +12,11 @@ import {
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {ReportExportService} from './reportExportService'
 import {Report} from './Report'
+import {RegisteredLearnerOrganisationPageModelService} from './registeredLearnerOrganisationPageModelService'
 
 export class RegisteredLearnersController extends Controller {
 
-	constructor(private organisationPageModelService: OrganisationPageModelService,
+	constructor(private organisationPageModelService: RegisteredLearnerOrganisationPageModelService,
 				private reportExportService: ReportExportService) {
 		super("/reporting/registered-learners", 'RegisteredLearnersController')
 	}
