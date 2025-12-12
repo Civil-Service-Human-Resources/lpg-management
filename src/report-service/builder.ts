@@ -19,6 +19,9 @@ import {CourseCompletionsController} from '../controllers/reporting/courseComple
 import {RegisteredLearnersController} from '../controllers/reporting/registeredLearnersController'
 import {OrganisationPageModelService} from '../controllers/reporting/organisationPageModelService'
 import {OrganisationalUnitService} from '../csrs/service/organisationalUnitService'
+import {
+	RegisteredLearnerOrganisationPageModelService
+} from '../controllers/reporting/registeredLearnerOrganisationPageModelService'
 
 const hourXaxisSettings = new XAxisSettings("Time", "hA", "hour")
 const dayXaxisSettings = new XAxisSettings("Date", "dddd Do MMMM", "day")
@@ -37,8 +40,9 @@ export function buildReportingControllers(oauthRestService: OauthRestService, co
 	const courseCompletionService = new CourseCompletionService(courseService, cslServiceClient, reportServicePageModelService, reportParameterFactory)
 	const reportExportService = new ReportExportService(cslServiceClient, reportParameterFactory)
 	const organisationPageModelService = new OrganisationPageModelService(organisationalUnitService)
+	const registeredLearnerOrganisationPageModelService = new RegisteredLearnerOrganisationPageModelService(organisationalUnitService)
 
 	return [new ReportingController(new ReportService(client)),
 		new CourseCompletionsController(courseCompletionService, reportExportService, organisationPageModelService),
-		new RegisteredLearnersController(organisationPageModelService, reportExportService)]
+		new RegisteredLearnersController(registeredLearnerOrganisationPageModelService, reportExportService)]
 }
