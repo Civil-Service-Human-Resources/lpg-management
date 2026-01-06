@@ -473,8 +473,8 @@ describe('EventController', function() {
 		const dateRanges: DateRange[] = [dateRange]
 		response.locals.event = {dateRanges}
 
-		learnerRecord.inviteLearner = sinon.stub().returns(new Invite())
-		learnerRecord.inviteLearner('eventId', new Invite()).catch = sinon.stub()
+		cslService.inviteLearnerToEvent = sinon.stub().returns(new Invite())
+		cslService.inviteLearnerToEvent('courseId', 'moduleId', 'eventID', 'test@test.com').catch = sinon.stub()
 
 		inviteFactory.create = sinon.stub().returns(new Invite())
 

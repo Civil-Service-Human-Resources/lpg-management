@@ -9,7 +9,6 @@ import * as chaiAsPromised from 'chai-as-promised'
 import {BookingFactory} from '../../../src/learner-record/model/factory/bookingFactory'
 import {Booking} from '../../../src/learner-record/model/booking'
 import {InviteFactory} from '../../../src/learner-record/model/factory/inviteFactory'
-import {Invite} from '../../../src/learner-record/model/invite'
 import {RestServiceConfig} from 'lib/http/restServiceConfig'
 import {OauthRestService} from '../../../src/lib/http/oauthRestService'
 
@@ -74,48 +73,16 @@ describe('Leaner Record Tests', () => {
 		expect(learnerRecord.getEventInvitees(eventId)).to.be.rejectedWith(`An error occurred when trying to get event invitees: Error: Test Error`)
 	})
 
-	it('should call rest service when posting invitee', async () => {
-		const eventId = 'eventId'
-		const invite: Invite = new Invite()
-
-		restService.post = sinon.stub()
-
-		await learnerRecord.inviteLearner(eventId, invite)
-
-		expect(restService.post).to.have.been.calledOnceWith('/event/eventId/invitee', invite)
-	})
-
-	it('should throw 409 error if learner already invited', async () => {
-		const eventId = 'eventId'
-		const invite: Invite = new Invite()
-
-		restService.post = sinon.stub().throws(new Error('Learner has already been invite to course: 409'))
-
-		expect(learnerRecord.inviteLearner(eventId, invite)).to.be.rejectedWith(`Learner has already been invite to course: 409`)
-	})
-
-	it('should throw 404 error if learner does not exist', async () => {
-		const eventId = 'eventId'
-		const invite: Invite = new Invite()
-
-		restService.post = sinon.stub().throws(new Error('Email address not registered: 404'))
-
-		expect(learnerRecord.inviteLearner(eventId, invite)).to.be.rejectedWith(`Email address not registered: 404`)
-	})
-
 	it('should post new event to learner record', async () => {
 		const eventId = 'eventId'
-		const uri = 'test/path/to/eventId'
-
 		const event = {
 			uid: eventId,
-			uri: uri,
 			status: 'Active',
 		}
 
 		restService.post = sinon.stub().returns(event)
 
-		const response = await learnerRecord.createEvent(eventId, uri)
+		const response = await learnerRecord.createEvent(eventId)
 
 		expect(response).to.equal(event)
 		expect(restService.post).to.have.been.calledOnceWith('/event', event)

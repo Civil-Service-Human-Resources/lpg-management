@@ -1,5 +1,4 @@
 import {OauthRestService} from '../lib/http/oauthRestService'
-import {Invite} from './model/invite'
 import {InviteFactory} from './model/factory/inviteFactory'
 import {BookingFactory} from './model/factory/bookingFactory'
 import { getLogger } from '../utils/logger'
@@ -38,15 +37,10 @@ export class LearnerRecord {
 		}
 	}
 
-	async inviteLearner(eventId: string, invite: Invite): Promise<Invite> {
-		return await this._restService.post(`/event/${eventId}/invitee`, invite)
-	}
-
-	async createEvent(eventId: string, uri: string) {
+	async createEvent(eventId: string) {
 		try {
 			return await this._restService.post(`/event`, {
 				uid: eventId,
-				uri: uri,
 				status: 'Active',
 			})
 		} catch (e) {

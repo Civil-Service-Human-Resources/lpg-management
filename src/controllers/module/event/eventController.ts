@@ -12,7 +12,6 @@ import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFac
 import {DateTime} from '../../../lib/dateTime'
 import {LearnerRecord} from '../../../learner-record'
 import {InviteFactory} from '../../../learner-record/model/factory/inviteFactory'
-import * as config from '../../../config'
 import {Booking} from '../../../learner-record/model/booking'
 import * as asyncHandler from 'express-async-handler'
 import {Validate} from '../../formValidator'
@@ -55,20 +54,6 @@ export class EventController implements FormController {
 
 		const roleCheck = asyncHandler(roleCheckMiddleware(eventViewingRole))
 
-		this.router.param(
-			'eventId',
-			asyncHandler(async (req: Request, res: Response, next: NextFunction, eventId: string) => {
-				const invitees = await this.learnerRecord.getEventInvitees(eventId)
-
-				if (invitees) {
-					res.locals.invitees = invitees
-					next()
-				} else {
-					res.status(404)
-					return res.render("page/not-found")
-				}
-			})
-		)
 		applyLearningCatalogueMiddleware({getModule: true, getEvent: true}, this.router, this.learningCatalogue)
 
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), roleCheck, asyncHandler(this.getLocation()))
@@ -80,7 +65,9 @@ export class EventController implements FormController {
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), roleCheck, asyncHandler(this.updateLocation()))
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', xss(), roleCheck, asyncHandler(this.getDatePreview()))
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-overview/:eventId', xss(), roleCheck, asyncHandler(this.getEventOverview()))
+
+		// Use uid parameters here to avoid the middleware
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events-overview/:eventUid', xss(), roleCheck, asyncHandler(this.getEventOverview()))
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.getDateTime()))
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.setDateTime()))
@@ -364,10 +351,8 @@ export class EventController implements FormController {
 					next(error)
 				})
 
-				const eventUri = `${config.COURSE_CATALOGUE.url}/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${savedEvent.id}`
-
 				await this.learnerRecord
-					.createEvent(savedEvent.id, eventUri)
+					.createEvent(savedEvent.id)
 					.then(() => {
 						res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${savedEvent.id}`)
 					})
@@ -425,15 +410,9 @@ export class EventController implements FormController {
 
 	public getEventOverview() {
 		return async (req: Request, res: Response) => {
-			const event = res.locals.event
-			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
-
-			const bookings = await this.learnerRecord.getEventBookings(event.id)
-			const activeBookings = bookings.filter((booking: Booking) => booking.status != Booking.Status.CANCELLED)
-
+			const eventOverview = await this.cslService.getEventOverview(req.params.courseUid, req.params.moduleUid, req.params.eventUid)
 			res.render('page/course/module/events/events-overview', {
-				bookings: activeBookings,
-				eventDateWithMonthAsText,
+				pageModel: eventOverview,
 			})
 		}
 	}
@@ -473,14 +452,7 @@ export class EventController implements FormController {
 
 	public inviteLearner() {
 		return async (req: Request, res: Response) => {
-			const data = {
-				...req.body,
-			}
-
-			const emailAddress = data.learnerEmail
-
-			data.event = `${config.COURSE_CATALOGUE.url}/courses/${req.params.courseId}/modules/${req.params.moduleId}/events/${req.params.eventId}`
-
+			const emailAddress = req.body.learnerEmail
 			req.session!.sessionFlash = {
 				emailAddressFoundMessage: 'email_address_found_message',
 				emailAddress: emailAddress,
@@ -493,7 +465,7 @@ export class EventController implements FormController {
 					emailAddress: emailAddress,
 				}
 			} else {
-				await this.learnerRecord.inviteLearner(req.params.eventId, this.inviteFactory.create(data)).catch(error => {
+				await this.cslService.inviteLearnerToEvent(req.params.courseId, req.params.moduleId, req.params.eventId, emailAddress).catch(error => {
 					if ((error.response.status = 400)) {
 						req.session!.sessionFlash = {
 							emailAddressFoundMessage: error.response.data.errors[0],

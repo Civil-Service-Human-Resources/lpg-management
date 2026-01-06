@@ -7,10 +7,12 @@
 
 {% extends "../../../../component/Page.njk" %}
 
-{% block pageTitle %}{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}} - {{ i18n['event_overview'] }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}
+    {{pageModel.venue.location}}, {{event.dates[0]}} - {{ i18n['event_overview'] }} - {{ i18n.proposition_name }}
+{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/" + course.id + "/overview" %}
+{% set backButton = "/content-management/courses/" + pageModel.courseId + "/overview" %}
 
 {% block content %}
 
@@ -39,38 +41,38 @@
     {% if eventCancelledMessage %}
         <div class="panel panel-blue">
             <div class="govuk-panel__body custom-panel">
-                <p class="govuk-body">This event on <strong>{{(event.dateRanges[0].date) | dateWithMonthAsText}}</strong> for <strong>{{course.title}}</strong> has been cancelled</p>
+                <p class="govuk-body">This event on <strong>{{pageModel.dates[0]}}</strong> for <strong>{{pageModel.courseTitle}}</strong> has been cancelled</p>
             </div>
         </div>
     {% endif %}
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l no-margin">{{event.venue.location | default("Location unset", true)}}, {{(event.dateRanges[0].date) | dateWithMonthAsText}}</h1>
+      <h1 class="govuk-heading-l no-margin">{{pageModel.venue}}, {{pageModel.dates[0]}}</h1>
     </div>
   </div>
      <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-          <p class="govuk-body">This event is for the <strong>{{module.title | default("Module title", true)}}</strong> module on the <a href="/content-management/courses/{{course.id}}/overview" class="govuk-link">{{course.title}}</a> course</p>
+          <p class="govuk-body">This event is for the <strong>{{pageModel.moduleTitle}}</strong> module on the <a href="/content-management/courses/{{pageModel.courseId}}/overview" class="govuk-link">{{pageModel.courseTitle}}</a> pageModel.courseIp>
           <div class="event-overview">
             <h3 class="govuk-heading-m">Event overview</h3>
 
-            {% set dateList = [] %}
-              {% for dateRange in event.dateRanges %}
-                {% set eventDate = dateList.push('<p class="govuk-body no-margin">'+(dateRange.date | dateWithMonthAsText)+'</p>') %}
-              {% endfor %}
-              {% set list = dateList|join %}
+                {% set dateList = [] %}
+                  {% for date in pageModel.dates %}
+                    {% set eventDate = dateList.push('<p class="govuk-body no-margin">' + date + '</p>') %}
+                  {% endfor %}
+                {% set list = dateList|join %}
 
               {{ govukTable({
                 firstCellIsHeader: true,
-                classes: "course-table event-table",
+                classes: "pageModel.courseIable event-table",
                 rows: [
                   [
                     {
                       text: "Number of spaces"
                     },
                     {
-                      text: event.venue.availability + " of " + event.venue.capacity + " available",
+                      text: pageModel.venue.availability + " of " + pageModel.venue.capacity + " available",
                       format: "numeric"
                     }
                   ],
@@ -79,7 +81,7 @@
                         text: "Minimum capacity"
                       },
                       {
-                        text: event.venue.minCapacity,
+                        text: pageModel.venue.minCapacity,
                         format: "numeric"
                       }
                   ],
@@ -98,7 +100,7 @@
                       text: "Town/city"
                     },
                     {
-                      text: event.venue.location,
+                      text: pageModel.venue.location,
                       format: "numeric"
                     }
                   ],
@@ -107,7 +109,7 @@
                       text: "Venue address"
                     },
                     {
-                      text: event.venue.address,
+                      text: pageModel.venue.address,
                       format: "numeric"
                     }
                   ]
@@ -115,10 +117,10 @@
               }) }}
             </div>
 
-            {% if event.status == "Active" and course.status == "Published" and identity.hasLearningEdit() %}
+            {% if pageModel.status == "Active" and pageModel.courseStatus == "Published" and identity.hasLearningEdit() %}
                 <div class="add-invitee">
                     <h3 class="govuk-heading-m">Invite learners</h3>
-                    <form action="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}/invite" method="post" class="attendee-form">
+                    <form action="/content-management/courses/{{pageModel.courseId}}/modules/{{pageModel.moduleId}}/events/{{pageModel.id}}/invite" method="post" class="attendee-form">
                         <input type="hidden" name="_csrf" value="{{ _csrf }}">
                         <label for="learnerEmail" class="govuk-body no-margin"><strong>Email address of invitee</strong></label>
                         <div class="input-with-button invitee">
@@ -147,20 +149,20 @@
                     </form>
                 </div>
             {% endif %}
-            <div class="course-attendees">
+            <div class="pageModel.courseIttendees">
               <h3 class="govuk-heading-m">Event attendees</h3>
-              {% if bookings.length > 0 %}
+              {% if pageModel.bookings.length > 0 %}
                 <ul class="attendees headers">
                   <li class="list-headers"><p class="govuk-body header title"><strong>Email Address</strong></p><p class="govuk-body header payment"><strong>Payment</strong></p><p class="govuk-body header title"><strong>Booking Reference</strong></p><span class="button-header"></span></li>
                 </ul>
                 <ul class="attendees list">
-                    {% for booking in bookings %}
+                    {% for booking in pageModel.bookings %}
                         {% if booking.status === "Requested" %}
                             {% set payment = i18n.attendee.status.Requested %}
                         {% elif booking.status === "Confirmed" %}
                             {% set payment = i18n.attendee.status.Confirmed %}
                         {% endif %}
-                        <li class="list-details"><p class="govuk-body title">{{ booking.learnerEmail}}</p><p class="govuk-body payment">{{ payment }}</p><p class="govuk-body payment">{{ booking.bookingReference }}</p><p class="buttons govuk-body"><a class="govuk-link" href="/content-management/courses/{{course.id}}/modules/{{module.id}}/events/{{event.id}}/attendee/{{booking.id}}">View</a></p></li>
+                        <li class="list-details"><p class="govuk-body title">{{ booking.learnerEmail}}</p><p class="govuk-body payment">{{ payment }}</p><p class="govuk-body payment">{{ booking.bookingReference }}</p><p class="buttons govuk-body"><a class="govuk-link" href="/content-management/courses/{{pageModel.courseId}}/modules/{{pageModel.moduleId}}/events/{{pageModel.eventId}}/attendee/{{booking.id}}">View</a></p></li>
                     {% endfor %}
                 </ul>
               {% else %}
@@ -168,46 +170,46 @@
               {% endif %}
 
             </div>
-            {% if invitees.length > 0 %}
-            <div class="course-invitees">
-                <h3 class="govuk-heading-m">Event invitees</h3>
-                <ul class="attendees headers">
-                    <li class="list-headers"><p class="govuk-body header title"><strong>Email address</strong></p></li>
-                </ul>
-                <ul class="attendees list">
-                    {% for invitee in invitees %}
-                    <li class="list-details"><p class="govuk-body title">{{ invitee.learnerEmail}}</p></li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {% if pageModel.invitedEmails.length > 0 %}
+                <div class="pageModel.courseInvitees">
+                    <h3 class="govuk-heading-m">Event invitees</h3>
+                    <ul class="attendees headers">
+                        <li class="list-headers"><p class="govuk-body header title"><strong>Email address</strong></p></li>
+                    </ul>
+                    <ul class="attendees list">
+                        {% for invitee in pageModel.invitedEmails %}
+                        <li class="list-details"><p class="govuk-body">{{ invitee.learnerEmail}}</p></li>
+                        {% endfor %}
+                    </ul>
+                </div>
             {% endif %}
         </div>
         <div class="govuk-grid-column-one-third">
-          {% if course.status !== "Archived" %}
+          {% if pageModel.courseItatus !== "Archived" %}
             <div class="right-menu">
               {% block statusWithLabel %}
-                {{ statusWithLabel(event.status) }}
+                {{ statusWithLabel(pageModel.status) }}
               {% endblock %}
-              {% if event.status == "Cancelled" %}
+              {% if pageModel.status == "Cancelled" %}
                 {% block cancellationReason %}
-                    {{ cancellationReason("This event has been cancelled because " + event.cancellationReason) }}
+                    {{ cancellationReason("This event has been cancelled because " + pageModel.cancellationReason) }}
                 {% endblock %}
               {% else %}
                 {% block menu %}
                 {% set actions = [] %}
                 {% if identity.hasLearningCreate() %}
                     {% set action = actions.push({
-                        link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/dateRanges/',
+                        link: '/content-management/courses/' + pageModel.courseId + '/modules/' + pageModel.moduleId + '/events/' + pageModel.eventId + '/dateRanges/',
                         text: 'Edit time and date'
                     }) %}
                     {% set action = actions.push({
-                        link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/location/',
+                        link: '/content-management/courses/' + pageModel.courseId + '/modules/' + pageModel.moduleId + '/events/' + pageModel.eventId + '/location/',
                         text: 'Edit location and capacity'
                     }) %}
                     {% endif %}
                     {% if identity.hasLearningDelete() %}
                         {% set action = actions.push({
-                            link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/cancel',
+                            link: '/content-management/courses/' + pageModel.courseId + '/modules/' + pageModel.moduleId + '/events/' + pageModel.eventId + '/cancel',
                             text: 'Cancel this event'
                         }) %}
                 {% endif %}
