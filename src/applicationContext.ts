@@ -36,9 +36,6 @@ import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFact
 import {LinkModule} from './learning-catalogue/model/linkModule'
 import {SearchController} from './controllers/searchController'
 import {LearnerRecord} from './learner-record'
-import {InviteFactory} from './learner-record/model/factory/inviteFactory'
-import {BookingFactory} from './learner-record/model/factory/bookingFactory'
-import {Booking} from './learner-record/model/booking'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
 import {ReportService} from './report-service'
 import {SkillsController} from './controllers/skills/skillsController'
@@ -109,9 +106,6 @@ export class ApplicationContext {
 	learningPlanCache: LearningPlanCache
 	cslServiceClient: CslServiceClient
 	learnerRecord: LearnerRecord
-	inviteFactory: InviteFactory
-	bookingFactory: BookingFactory
-	bookingValidator: Validator<Booking>
 	profileCache: ProfileCache
 	organisationalUnitClient: OrganisationalUnitClient
 	organisationalUnitCache: OrganisationalUnitCache
@@ -238,20 +232,13 @@ export class ApplicationContext {
 		this.dateRangeFactory = new DateRangeFactory()
 		this.dateRangeValidator = new Validator<DateRange>(this.dateRangeFactory)
 
-		this.bookingFactory = new BookingFactory()
-		this.inviteFactory = new InviteFactory()
-
-		this.learnerRecord = new LearnerRecord(createOAuthConfig(config.LEARNER_RECORD, this.auth), this.bookingFactory, this.inviteFactory)
-
-		this.bookingValidator = new Validator<Booking>(this.bookingFactory)
+		this.learnerRecord = new LearnerRecord(createOAuthConfig(config.LEARNER_RECORD, this.auth))
 
 		this.eventController = new EventController(
 			this.learningCatalogue,
 			this.learnerRecord,
 			this.eventValidator,
-			this.bookingValidator,
 			this.eventFactory,
-			this.inviteFactory,
 			this.dateRangeCommandValidator,
 			this.dateRangeValidator,
 			this.dateRangeCommandFactory,

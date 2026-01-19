@@ -1,39 +1,33 @@
 {% from "table/macro.njk" import govukTable %}
 {% from "input/macro.njk" import govukInput %}
 {% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "../../../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
 {% from "../../../../component/menu/macro.njk" import menu %}
 {% from "../../../../component/cancellationReason/macro.njk" import cancellationReason with context %}
 
 {% extends "../../../../component/Page.njk" %}
 
+{% set title = pageModel.getTitle() %}
+
 {% block pageTitle %}
-    {{pageModel.venue.location}}, {{event.dates[0]}} - {{ i18n['event_overview'] }} - {{ i18n.proposition_name }}
+    {{title}} - {{ i18n['event_overview'] }} - {{ i18n.proposition_name }}
 {% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/" + pageModel.courseId + "/overview" %}
+{% set backButton = pageModel.getCourseOverviewUrl() %}
 
 {% block content %}
 
-    {% set emailAddressFoundMessage = sessionFlash.emailAddressFoundMessage %}
     {% set eventCancelledMessage = sessionFlash.eventCancelledMessage %}
-    {% set emailAddress = sessionFlash.emailAddress %}
+    {% set emailAddressFoundMessage = sessionFlash.emailAddressFoundMessage %}
     {% set errors = sessionFlash.errors %}
+    {{ errorSummary(errors.fields, true) }}
 
     {% if emailAddressFoundMessage %}
-        {% set panelError = "error" %}
-        {% if emailAddressFoundMessage == "email_address_found_message" %}
-            {% set emailAddressFoundMessage = i18n[emailAddressFoundMessage] %}
-            {% set panelError = "panel-blue" %}
-        {% endif %}
-        <div class="panel {{panelError}}">
+        <div class="panel panel-blue">
             <div class="govuk-panel__body custom-panel">
-                {% if emailAddressFoundMessage == "validation_email_address_invalid" %}
-                    <p class="govuk-body">{{i18n[emailAddressFoundMessage]}}</p>
-                {% else %}
-                    <p class="govuk-body"><strong>{{ emailAddress }}</strong> {{emailAddressFoundMessage}}</p>
-                {% endif %}
+                <p class="govuk-body"><strong>{{ sessionFlash.emailAddress }}</strong> {{i18n[emailAddressFoundMessage]}}</p>
             </div>
         </div>
     {% endif %}
@@ -48,12 +42,12 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h1 class="govuk-heading-l no-margin">{{pageModel.venue}}, {{pageModel.dates[0]}}</h1>
+      <h1 class="govuk-heading-l no-margin">{{title}}</h1>
     </div>
   </div>
      <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-          <p class="govuk-body">This event is for the <strong>{{pageModel.moduleTitle}}</strong> module on the <a href="/content-management/courses/{{pageModel.courseId}}/overview" class="govuk-link">{{pageModel.courseTitle}}</a> pageModel.courseIp>
+          <p class="govuk-body">This event is for the <strong>{{pageModel.moduleTitle}}</strong> module on the <a href="{{ pageModel.getCourseOverviewUrl() }}" class="govuk-link">{{pageModel.courseTitle}}</a> course.
           <div class="event-overview">
             <h3 class="govuk-heading-m">Event overview</h3>
 
@@ -65,7 +59,7 @@
 
               {{ govukTable({
                 firstCellIsHeader: true,
-                classes: "pageModel.courseIable event-table",
+                classes: "course-table event-table",
                 rows: [
                   [
                     {
@@ -120,72 +114,77 @@
             {% if pageModel.status == "Active" and pageModel.courseStatus == "Published" and identity.hasLearningEdit() %}
                 <div class="add-invitee">
                     <h3 class="govuk-heading-m">Invite learners</h3>
-                    <form action="/content-management/courses/{{pageModel.courseId}}/modules/{{pageModel.moduleId}}/events/{{pageModel.id}}/invite" method="post" class="attendee-form">
+                    <form action="{{ pageModel.getInviteUrl() }}" method="post" class="attendee-form">
                         <input type="hidden" name="_csrf" value="{{ _csrf }}">
-                        <label for="learnerEmail" class="govuk-body no-margin"><strong>Email address of invitee</strong></label>
                         <div class="input-with-button invitee">
-                            {% if errors.fields %}
-                                {{ govukInput({
-                                    id: "learnerEmail",
-                                    name: "learnerEmail",
-                                    errorMessage: {
-                                        text: i18n[errors.fields.emailAddress]
-                                    }
-                                }) }}
-                                {{ govukButton({
-                                    text: "Invite",
-                                    classes: "button-blue"
-                                }) }}
-                            {% else %}
-                                {{ govukInput({
-                                    id: "learnerEmail",
-                                    name: "learnerEmail"
-                                }) }}
-                                {{ govukButton({
-                                    text: "Invite"
-                                }) }}
-                            {% endif %}
+                            {{ govukInput({
+                                label: {
+                                    text: "Email address of invitee"
+                                },
+                                id: "learnerEmail",
+                                name: "learnerEmail",
+                                value: sessionFlash.learnerEmail,
+                                errorMessage: {
+                                    text: i18n[errors.fields.learnerEmail]
+                                } if errors.fields else null
+                            }) }}
+                            {{ govukButton({
+                                text: "Invite",
+                                classes: "button-blue" if errors.fields else null
+                            }) }}
                         </div>
                     </form>
                 </div>
             {% endif %}
-            <div class="pageModel.courseIttendees">
+            <div class="course-attendees">
               <h3 class="govuk-heading-m">Event attendees</h3>
-              {% if pageModel.bookings.length > 0 %}
-                <ul class="attendees headers">
-                  <li class="list-headers"><p class="govuk-body header title"><strong>Email Address</strong></p><p class="govuk-body header payment"><strong>Payment</strong></p><p class="govuk-body header title"><strong>Booking Reference</strong></p><span class="button-header"></span></li>
-                </ul>
-                <ul class="attendees list">
+                {% if pageModel.bookings.length > 0 %}
+                    {% set viewHeader %}
+                        <span class="govuk-visually-hidden">View</span>
+                    {% endset %}
+
+                    {% set head = [{text: "Email address"}, {text: "Payment"},
+                    {text: "Booking Reference"}, {html: viewHeader}] %}
+
+                    {% set rows = [[]] %}
                     {% for booking in pageModel.bookings %}
                         {% if booking.status === "Requested" %}
                             {% set payment = i18n.attendee.status.Requested %}
                         {% elif booking.status === "Confirmed" %}
                             {% set payment = i18n.attendee.status.Confirmed %}
                         {% endif %}
-                        <li class="list-details"><p class="govuk-body title">{{ booking.learnerEmail}}</p><p class="govuk-body payment">{{ payment }}</p><p class="govuk-body payment">{{ booking.bookingReference }}</p><p class="buttons govuk-body"><a class="govuk-link" href="/content-management/courses/{{pageModel.courseId}}/modules/{{pageModel.moduleId}}/events/{{pageModel.eventId}}/attendee/{{booking.id}}">View</a></p></li>
-                    {% endfor %}
-                </ul>
-              {% else %}
-                <p class="govuk-body">This event doesn't have any attendees yet.</p>
-              {% endif %}
 
+                        {% set bookingUrl %}
+                            <a class="govuk-link" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
+                        {% endset %}
+                        {% set rows = (rows.push([{text: booking.learnerEmail}, {text: payment},
+                        {text: booking.reference}, {html: bookingUrl}]), rows) %}
+                    {% endfor %}
+
+                    {{ govukTable(
+                        {
+                            head: head,
+                            rows: rows
+                        }
+                    ) }}
+                {% else %}
+                    <p class="govuk-body">This event doesn't have any attendees yet.</p>
+                {% endif %}
             </div>
             {% if pageModel.invitedEmails.length > 0 %}
-                <div class="pageModel.courseInvitees">
+                <div class="course-invitees">
                     <h3 class="govuk-heading-m">Event invitees</h3>
-                    <ul class="attendees headers">
-                        <li class="list-headers"><p class="govuk-body header title"><strong>Email address</strong></p></li>
-                    </ul>
+                    <h4 class="govuk-heading-s">Email address</h4>
                     <ul class="attendees list">
-                        {% for invitee in pageModel.invitedEmails %}
-                        <li class="list-details"><p class="govuk-body">{{ invitee.learnerEmail}}</p></li>
+                        {% for email in pageModel.invitedEmails %}
+                            <li class="list-details"><p class="govuk-body">{{ email }}</p></li>
                         {% endfor %}
                     </ul>
                 </div>
             {% endif %}
         </div>
         <div class="govuk-grid-column-one-third">
-          {% if pageModel.courseItatus !== "Archived" %}
+          {% if pageModel.courseStatus !== "Archived" %}
             <div class="right-menu">
               {% block statusWithLabel %}
                 {{ statusWithLabel(pageModel.status) }}
@@ -199,17 +198,17 @@
                 {% set actions = [] %}
                 {% if identity.hasLearningCreate() %}
                     {% set action = actions.push({
-                        link: '/content-management/courses/' + pageModel.courseId + '/modules/' + pageModel.moduleId + '/events/' + pageModel.eventId + '/dateRanges/',
+                        link: pageModel.getEditDateTimeUrl(),
                         text: 'Edit time and date'
                     }) %}
                     {% set action = actions.push({
-                        link: '/content-management/courses/' + pageModel.courseId + '/modules/' + pageModel.moduleId + '/events/' + pageModel.eventId + '/location/',
+                        link: pageModel.getEditLocationUrl(),
                         text: 'Edit location and capacity'
                     }) %}
                     {% endif %}
                     {% if identity.hasLearningDelete() %}
                         {% set action = actions.push({
-                            link: '/content-management/courses/' + pageModel.courseId + '/modules/' + pageModel.moduleId + '/events/' + pageModel.eventId + '/cancel',
+                            link: pageModel.getCancelUrl(),
                             text: 'Cancel this event'
                         }) %}
                 {% endif %}

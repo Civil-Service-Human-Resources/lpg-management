@@ -2,42 +2,44 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "../../../../component/menu/macro.njk" import menu %}
 
+{% set title = "Attendee details" %}
+
 {% set banner = true %}
-{% set backButton = "/content-management/courses/" + course.id + "/modules/" + module.id + "/events-overview/" + event.id %}
+{% set backButton = pageModel.getBackLink() %}
 
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="gov-uk-heading-l">Attendee details</h1>
             <div class="event-overview">
-                <h2 class="govuk-heading-m">{{eventDateWithMonthAsText}}, {{event.venue.location}}</h2>
-                <p class="govuk-body">This event is for the <strong>{{module.title}}</strong> module on the <strong>{{course.title}}</strong> course.</p>
+                <h2 class="govuk-heading-m">{{ pageModel.title }}</h2>
+                <p class="govuk-body">This event is for the <strong>{{pageModel.moduleTitle}}</strong> module on the <strong>{{pageModel.courseTitle}}</strong> course.</p>
                 <h3 class="govuk-heading-m">Attendee</h3>
                 <div class="attendee-details">
                     <ul class="attendees list">
-                        <li class="list-details view"><p class="govuk-body"><strong>Email</strong></p><p class="govuk-body">{{ booking.learnerEmail }}</p></li>
+                        <li class="list-details view"><p class="govuk-body"><strong>Email</strong></p><p class="govuk-body"> {{ pageModel.learnerEmail }}</p></li>
                         <li class="list-details column-view">
                             <span class="list-details span-view">
                                 <p class="govuk-body"><strong>Booking status</strong></p>
                                 <p class="govuk-body">
-                                    {% if booking.status === "Requested" %}
+                                    {% if pageModel.status === "Requested" %}
                                         {{i18n.attendee.status.Requested}}
-                                    {% elif booking.status === "Confirmed" %}
+                                    {% elif pageModel.status === "Confirmed" %}
                                         {{i18n.attendee.status.Confirmed}}
-                                    {% elif booking.status === "Cancelled" %}
+                                    {% elif pageModel.status === "Cancelled" %}
                                         {{i18n.attendee.status.Cancelled}}
                                     {% endif %}
                                 </p>
                             </span>
-                            {% if booking.status === "Requested" and identity.hasLearningEdit()%}
-                                <form action="/content-management/courses/{{ course.id }}/modules/{{ module.id }}/events/{{ event.id }}/attendee/{{ booking.id }}/update" method="post" class="attendee-button">
+                            {% if pageModel.status === "Requested" and identity.hasLearningEdit()%}
+                                <form action="{{ pageModel.getChangeToBookedLink() }}" method="post" class="attendee-button">
                                     <input type="hidden" name="_csrf" value="{{ _csrf }}">
                                     <button type="submit" class="linkish-button">Change to booked</button>
                                 </form>
                             {% endif %}
                         </li>
-                        {% if booking.poNumber %}
-                            <li class="list-details view"><p class="govuk-body"><strong>PO Number</strong></p><p class="govuk-body">{{ booking.poNumber }}</p></li>
+                        {% if pageModel.poNumber %}
+                            <li class="list-details view"><p class="govuk-body"><strong>PO Number</strong></p><p class="govuk-body"> {{ pageModel.poNumber }}</p></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -47,17 +49,15 @@
             <div class="right-menu">
                     {% block menu %}
                     {% set actions = [] %}
-                    {% if course.status !== "Archived" and identity.hasLearningDelete() %}
+                    {% if pageModel.courseStatus !== "Archived" and identity.hasLearningDelete() %}
                         {% set action = actions.push({
-                            link: '/content-management/courses/' + course.id + '/modules/' + module.id + '/events/' + event.id + '/attendee/' + booking.id + '/cancel',
+                            link: pageModel.getCancelLink(),
                             text: 'Cancel Attendee'
                         }) %}
                     {% endif %}
                     {{ menu("Actions", actions) }}
                     {% endblock %}
             </div>
-        </div>
-        <div class="govuk-grid-column-oneo-third">
         </div>
     </div>
 {% endblock %}

@@ -1,47 +1,22 @@
 import {OauthRestService} from '../lib/http/oauthRestService'
-import {InviteFactory} from './model/factory/inviteFactory'
-import {BookingFactory} from './model/factory/bookingFactory'
-import { getLogger } from '../utils/logger'
+import {getLogger} from '../utils/logger'
 
 export class LearnerRecord {
 	logger = getLogger('LearnerRecord')
 	private _restService: OauthRestService
-	private _inviteFactory: InviteFactory
-	private _bookingFactory: BookingFactory
 
-	constructor(config: OauthRestService, bookingFactory: BookingFactory, inviteFactory: InviteFactory) {
+	constructor(config: OauthRestService) {
 		this._restService = config
-		this._bookingFactory = bookingFactory
-		this._inviteFactory = inviteFactory
-	}
-
-	async getEventBookings(eventId: string) {
-		try {
-			const data = await this._restService.get(`/event/${eventId}/booking`)
-			const bookings = (data || []).map(this._bookingFactory.create)
-
-			return bookings
-		} catch (e) {
-			throw new Error(`An error occurred when trying to get event bookings: ${e}`)
-		}
-	}
-
-	async getEventInvitees(eventId: string) {
-		try {
-			const data = await this._restService.get(`/event/${eventId}/invitee`)
-
-			const invites = (data || []).map(this._inviteFactory.create)
-			return invites
-		} catch (e) {
-			throw new Error(`An error occurred when trying to get event invitees: ${e}`)
-		}
 	}
 
 	async createEvent(eventId: string) {
 		try {
-			return await this._restService.post(`/event`, {
-				uid: eventId,
-				status: 'Active',
+			return await this._restService.postRequest({
+				url: '/event',
+				data: {
+					uid: eventId,
+					status: 'Active',
+				}
 			})
 		} catch (e) {
 			throw new Error(`An error occurred when trying to create an event: ${e}`)

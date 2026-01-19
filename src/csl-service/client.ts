@@ -41,7 +41,7 @@ export class CslServiceClient {
 			{
 				url: `/admin/management/courses/${courseId}/modules/${moduleId}/events/${eventId}/overview`,
 			})
-		return plainToInstance(EventOverview, response)
+		return plainToInstance(EventOverview, response.data)
 	}
 
 	async inviteLearnerToEvent(courseId: string, moduleId: string, eventId: string, learnerEmail: string) {

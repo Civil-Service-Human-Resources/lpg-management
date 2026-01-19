@@ -3,4 +3,5 @@ export class BookingOverview {
 	reference: string;
 	learnerEmail: string;
 	status: string;
+	poNumber?: string
 }

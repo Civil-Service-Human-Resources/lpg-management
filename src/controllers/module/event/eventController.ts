@@ -9,22 +9,21 @@ import * as moment from 'moment'
 import {DateRangeCommand} from '../../command/dateRangeCommand'
 import {DateRange} from '../../../learning-catalogue/model/dateRange'
 import {DateRangeCommandFactory} from '../../command/factory/dateRangeCommandFactory'
-import {DateTime} from '../../../lib/dateTime'
 import {LearnerRecord} from '../../../learner-record'
-import {InviteFactory} from '../../../learner-record/model/factory/inviteFactory'
-import {Booking} from '../../../learner-record/model/booking'
 import * as asyncHandler from 'express-async-handler'
-import {Validate} from '../../formValidator'
 import {FormController} from '../../formController'
 import {Course} from '../../../learning-catalogue/model/course'
 import {Module} from '../../../learning-catalogue/model/module'
 import { getLogger } from '../../../utils/logger'
-import * as EmailValidator from 'email-validator'
 import {CslServiceClient} from '../../../csl-service/client'
 import {CancelBookingDto} from '../../../csl-service/model/CancelBookingDto'
 import {applyLearningCatalogueMiddleware} from '../../middleware/learningCatalogueMiddleware'
 import {roleCheckMiddleware} from '../../middleware/roleCheckMiddleware'
 import {eventViewingRole} from '../../../identity/identity'
+import {plainToInstance} from 'class-transformer'
+import {LearnerEmailModel} from './model/learnerEmailModel'
+import {validateAndMapErrors} from '../../../validators/util'
+import {BookingOverviewPageModel} from './model/BookingOverviewPageModel'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -36,10 +35,8 @@ export class EventController implements FormController {
 	constructor(
 		public learningCatalogue: LearningCatalogue,
 		public learnerRecord: LearnerRecord,
-		public eventValidator: Validator<Event>,
-		public validator: Validator<Booking>,
+		public validator: Validator<Event>,
 		public eventFactory: EventFactory,
-		public inviteFactory: InviteFactory,
 		public dateRangeCommandValidator: Validator<DateRangeCommand>,
 		public dateRangeValidator: Validator<DateRange>,
 		public dateRangeCommandFactory: DateRangeCommandFactory,
@@ -80,17 +77,17 @@ export class EventController implements FormController {
 
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), roleCheck, asyncHandler(this.updateDateRange()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId', xss(), roleCheck, asyncHandler(this.getAttendeeDetails()))
-
+		// Use uid parameters here to avoid the middleware
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid', xss(), roleCheck, asyncHandler(this.getAttendeeDetails()))
 		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/update', xss(), roleCheck, asyncHandler(this.updateBooking()))
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), roleCheck, asyncHandler(this.cancelEvent()))
 		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), roleCheck, asyncHandler(this.setCancelEvent()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/attendee/:bookingId/cancel', xss(), roleCheck, asyncHandler(this.getCancelBooking()))
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), roleCheck, asyncHandler(this.getCancelBooking()))
 		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), roleCheck, asyncHandler(this.cancelBooking()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/invite', xss(), roleCheck, asyncHandler(this.inviteLearner()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/invite', xss(), roleCheck, asyncHandler(this.inviteLearner()))
 	}
 
 	public getDateTime() {
@@ -189,7 +186,7 @@ export class EventController implements FormController {
 			let data = {
 				...request.body,
 			}
-
+			console.log(data)
 			const courseId = request.params.courseId
 			const moduleId = request.params.moduleId
 			const eventId = request.params.eventId
@@ -336,7 +333,7 @@ export class EventController implements FormController {
 				},
 			}
 
-			const errors = await this.eventValidator.check(data, ['event.location'])
+			const errors = await this.validator.check(data, ['event.location'])
 
 			if (errors.size) {
 				res.render('page/course/module/events/event-location', {
@@ -350,6 +347,8 @@ export class EventController implements FormController {
 				const savedEvent: any = await this.learningCatalogue.createEvent(req.params.courseId, req.params.moduleId, event).catch(error => {
 					next(error)
 				})
+
+				console.log(savedEvent)
 
 				await this.learnerRecord
 					.createEvent(savedEvent.id)
@@ -381,7 +380,7 @@ export class EventController implements FormController {
 				},
 			}
 
-			const errors = await this.eventValidator.check(data, ['event.location'])
+			const errors = await this.validator.check(data, ['event.location'])
 
 			if (errors.size) {
 				res.render('page/course/module/events/event-location', {
@@ -452,59 +451,56 @@ export class EventController implements FormController {
 
 	public inviteLearner() {
 		return async (req: Request, res: Response) => {
-			const emailAddress = req.body.learnerEmail
+			const learnerEmailModel = plainToInstance(LearnerEmailModel, req.body as LearnerEmailModel)
 			req.session!.sessionFlash = {
 				emailAddressFoundMessage: 'email_address_found_message',
-				emailAddress: emailAddress,
+				emailAddress: learnerEmailModel.learnerEmail,
 			}
 
-			if (!EmailValidator.validate(emailAddress)) {
+			let errors = await validateAndMapErrors(learnerEmailModel)
+
+			if (errors !== undefined) {
 				req.session!.sessionFlash = {
-					errors: {fields: {emailAddress: 'validation_email_address_invalid'}},
+					errors,
 					emailAddressFoundMessage: 'validation_email_address_invalid',
-					emailAddress: emailAddress,
+					emailAddress: learnerEmailModel.learnerEmail,
+					learnerEmail: learnerEmailModel.learnerEmail
 				}
 			} else {
-				await this.cslService.inviteLearnerToEvent(req.params.courseId, req.params.moduleId, req.params.eventId, emailAddress).catch(error => {
-					if ((error.response.status = 400)) {
-						req.session!.sessionFlash = {
-							emailAddressFoundMessage: error.response.data.errors[0],
-							emailAddress: emailAddress,
-						}
-					} else {
-						req.session!.sessionFlash = {
-							emailAddressFoundMessage: 'could_not_invite_learner',
-							emailAddress: emailAddress,
-						}
+				try {
+					await this.cslService.inviteLearnerToEvent(req.params.courseUid, req.params.moduleUid, req.params.eventUid, learnerEmailModel.learnerEmail)
+				} catch (error) {
+					const errorSession = {
+						errors: {fields: {learnerEmail: ['could_not_invite_learner_unknown_error']}},
+						emailAddressFoundMessage: 'validation_email_address_invalid',
+						emailAddress: learnerEmailModel.learnerEmail,
+						learnerEmail: learnerEmailModel.learnerEmail
 					}
-				})
+					if (error.statusCode === 404) {
+						errorSession.errors = {fields: {learnerEmail: ['email_address_not_found_message']}}
+					} else if (error.statusCode === 400) {
+						errorSession.errors = {fields: {learnerEmail: ['could_not_invite_learner']}}
+					}
+					req.session!.sessionFlash = errorSession
+				}
 			}
 
 			return req.session!.save(() => {
-				res.redirect(`/content-management/courses/${req.params.courseId}/modules/${req.params.moduleId}/events-overview/${req.params.eventId}`)
+				res.redirect(`/content-management/courses/${req.params.courseUid}/modules/${req.params.moduleUid}/events-overview/${req.params.eventUid}`)
 			})
 		}
 	}
 
 	public getAttendeeDetails() {
 		return async (req: Request, res: Response) => {
-			const course: Course = res.locals.course
-			const module: Module = res.locals.module
-
-			const event = res.locals.event
-			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
-
-			const bookings = await this.learnerRecord.getEventBookings(event.id)
-			const bookingId = req.params.bookingId
-			// @ts-ignore
-			const booking = this.findBooking(bookings, bookingId)
-
-			res.render('page/course/module/events/attendee', {
-				booking,
-				eventDateWithMonthAsText,
-				course: course,
-				module: module,
-			})
+			const eventOverview = await this.cslService.getEventOverview(req.params.courseUid, req.params.moduleUid, req.params.eventUid)
+			const pageModel = BookingOverviewPageModel.fromEventOverview(eventOverview, parseInt(req.params.bookingUid))
+			if (pageModel === undefined) {
+				res.status(404)
+				res.render("page/not-found")
+			} else {
+				res.render('page/course/module/events/attendee', {pageModel})
+			}
 		}
 	}
 
@@ -522,31 +518,22 @@ export class EventController implements FormController {
 
 	public getCancelBooking() {
 		return async (req: Request, res: Response, next: NextFunction) => {
-			const event = res.locals.event
-			const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
-
-			const bookings = await this.learnerRecord.getEventBookings(event.id)
-			const bookingId = req.params.bookingId
-			// @ts-ignore
-			const booking = this.findBooking(bookings, bookingId)
-
-			await this.learnerRecord
-				.getBookingCancellationReasons()
-				.then(cancellationReasons => {
-					return res.render('page/course/module/events/cancel-attendee', {
-						booking: booking,
-						eventDateWithMonthAsText: eventDateWithMonthAsText,
-						cancellationReasons: cancellationReasons,
+			const eventOverview = await this.cslService.getEventOverview(req.params.courseUid, req.params.moduleUid, req.params.eventUid)
+			const pageModel = BookingOverviewPageModel.fromEventOverview(eventOverview, parseInt(req.params.bookingUid))
+			if (pageModel === undefined) {
+				res.status(404)
+				return res.render("page/not-found")
+			} else {
+				await this.learnerRecord
+					.getBookingCancellationReasons()
+					.then(cancellationReasons => {
+						return res.render('page/course/module/events/cancel-attendee', {pageModel, cancellationReasons})
 					})
-				})
-				.catch(error => next(error))
+					.catch(error => next(error))
+			}
 		}
 	}
 
-	@Validate({
-		fields: ['reason'],
-		redirect: `/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel`,
-	})
 	public cancelBooking() {
 		return async (req: Request, res: Response) => {
 			const data = {
@@ -557,15 +544,18 @@ export class EventController implements FormController {
 			const moduleUid = req.params.moduleUid
 			const eventUid = req.params.eventUid
 
+			if (data.reason === '') {
+				req.session!.sessionFlash = {
+					errors: {fields: {cancellationReason: ['attendee.validation.cancellationReason.empty']}}}
+				return req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseUid}/modules/${req.params.moduleUid}/events/${req.params.eventUid}/attendee/${req.params.bookingUid}/cancel`)
+				})
+			}
+
 			await this.cslService.cancelBooking(courseUid, moduleUid, eventUid,
-				req.params.bookingUid, new CancelBookingDto(data.cancellationReason))
+				req.params.bookingUid, new CancelBookingDto(data.reason))
 
 			return res.redirect(`/content-management/courses/${courseUid}/modules/${moduleUid}/events-overview/${eventUid}`)
 		}
-	}
-	private findBooking(bookings: any, bookingId: number): Booking {
-		return bookings.find(function(booking: Booking) {
-			return booking.id == bookingId
-		})
 	}
 }

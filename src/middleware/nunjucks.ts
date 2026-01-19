@@ -18,6 +18,8 @@ export class NunjucksMiddleware extends Middleware {
 				noCache: ENV === 'development',
 				express: app,
 			})
+		const exampleYear = new Date(Date.now()).getFullYear() + 1
+		env.addGlobal('exampleYear', exampleYear)
 		// Filters
 		env.addFilter('appendIdPrefix', (value: string, idPrefix?: string) => {
 			if (idPrefix) {

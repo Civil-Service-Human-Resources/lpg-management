@@ -1,3 +1,4 @@
+{% from "table/macro.njk" import govukTable %}
 {% from "button/macro.njk" import govukButton %}
 {% from "date-input/macro.njk" import govukDateInput %}
 {% from "select/macro.njk" import govukSelect %}
@@ -27,21 +28,28 @@
             <p class="govuk-body">This event is for the <strong>{{ module.title }}</strong> module on the <strong>{{ course.title }}</strong> course.</p>
 
             {% if event.dateRanges and event.dateRanges.length > 0 %}
-                <div class="event-container">
-                    <ul class="event-list headers">
-                        <li class="events">
-                            <p class="govuk-body event-header date">Date</p><p class="govuk-body event-header time">Start time</p><p class="govuk-body event-header time">End time</p><span class="spacer"></span>
-                        </li>
-                    </ul>
-                    <ul class="event-list">
-                        {% for dateRange in event.dateRanges %}
-                            <li class="events u--border--bgrey">
-                                <p class="govuk-body event date">{{ dateRange.date | dateWithMonthAsText }}</p><p class="govuk-body event time">{{ dateRange.startTime }}</p><p class="govuk-body event time">{{ dateRange.endTime }}</p><p class="govuk-body event edit">
-                                <a href="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/{{event.id}}/dateRanges/{{loop.index0}}" class="govuk-link">Edit</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                {% set editHeader %}
+                    <span class="govuk-visually-hidden">Edit</span>
+                {% endset %}
+
+                {% set head = [{text: "Date"}, {text: "Start time"}, {text: "End time"}, {html: editHeader}] %}
+
+                {% set rows = [[]] %}
+                {% for dateRange in event.dateRanges %}
+                {% set editUrl %}
+                    <a class="govuk-link" href="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/{{event.id}}/dateRanges/{{loop.index0}}">Edit</a>
+                    <span class='govuk-visually-hidden'> {{dateRange.date | dateWithMonthAsText}} {{dateRange.startTime}} to {{dateRange.endTime}}</span>
+                {% endset %}
+                    {% set rows = (rows.push([{text: dateRange.date | dateWithMonthAsText}, {text: dateRange.startTime},
+                    {text: dateRange.endTime}, {html: editUrl}]), rows) %}
+                {% endfor %}
+
+                {{ govukTable(
+                    {
+                        head: head,
+                        rows: rows
+                    }
+                ) }}
             {% endif %}
 
             <form action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/{{event.id}}/dateRanges/{{dateRangeIndex}}" method="post">
