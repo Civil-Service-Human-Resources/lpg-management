@@ -449,11 +449,6 @@ export class EventController implements FormController {
 	public inviteLearner() {
 		return async (req: Request, res: Response) => {
 			const learnerEmailModel = plainToInstance(LearnerEmailModel, req.body as LearnerEmailModel)
-			req.session!.sessionFlash = {
-				emailAddressFoundMessage: 'email_address_found_message',
-				emailAddress: learnerEmailModel.learnerEmail,
-			}
-
 			let errors = await validateAndMapErrors(learnerEmailModel)
 
 			if (errors !== undefined) {
@@ -461,20 +456,27 @@ export class EventController implements FormController {
 					errors,
 					learnerEmail: learnerEmailModel.learnerEmail
 				}
-			} else {
-				try {
-					await this.cslService.inviteLearnerToEvent(req.params.courseUid, req.params.moduleUid, req.params.eventUid, learnerEmailModel.learnerEmail)
-				} catch (error) {
-					const errorSession = {
-						errors: {fields: {learnerEmail: ['could_not_invite_learner_unknown_error']}},
-						learnerEmail: learnerEmailModel.learnerEmail
-					}
-					if (error.statusCode === 404) {
-						errorSession.errors = {fields: {learnerEmail: ['email_address_not_found_message']}}
-					} else if (error.statusCode === 400) {
-						errorSession.errors = {fields: {learnerEmail: ['could_not_invite_learner']}}
-					}
-					req.session!.sessionFlash = errorSession
+				return req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseUid}/modules/${req.params.moduleUid}/events-overview/${req.params.eventUid}`)
+				})
+			}
+
+			try {
+				await this.cslService.inviteLearnerToEvent(req.params.courseUid, req.params.moduleUid, req.params.eventUid, learnerEmailModel.learnerEmail)
+				req.session!.sessionFlash = {
+					emailAddressFoundMessage: 'email_address_found_message',
+					emailAddress: learnerEmailModel.learnerEmail,
+				}
+			} catch (error) {
+				let errorMsg = 'could_not_invite_learner_unknown_error'
+				if (error.statusCode === 404) {
+					errorMsg = 'email_address_not_found_message'
+				} else if (error.statusCode === 400) {
+					errorMsg = 'could_not_invite_learner'
+				}
+				req.session!.sessionFlash = {
+					errors: {fields: {learnerEmail: [errorMsg]}},
+					learnerEmail: learnerEmailModel.learnerEmail
 				}
 			}
 
