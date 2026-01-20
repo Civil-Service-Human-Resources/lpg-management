@@ -186,7 +186,6 @@ export class EventController implements FormController {
 			let data = {
 				...request.body,
 			}
-			console.log(data)
 			const courseId = request.params.courseId
 			const moduleId = request.params.moduleId
 			const eventId = request.params.eventId
@@ -348,8 +347,6 @@ export class EventController implements FormController {
 					next(error)
 				})
 
-				console.log(savedEvent)
-
 				await this.learnerRecord
 					.createEvent(savedEvent.id)
 					.then(() => {
@@ -462,8 +459,6 @@ export class EventController implements FormController {
 			if (errors !== undefined) {
 				req.session!.sessionFlash = {
 					errors,
-					emailAddressFoundMessage: 'validation_email_address_invalid',
-					emailAddress: learnerEmailModel.learnerEmail,
 					learnerEmail: learnerEmailModel.learnerEmail
 				}
 			} else {
@@ -472,8 +467,6 @@ export class EventController implements FormController {
 				} catch (error) {
 					const errorSession = {
 						errors: {fields: {learnerEmail: ['could_not_invite_learner_unknown_error']}},
-						emailAddressFoundMessage: 'validation_email_address_invalid',
-						emailAddress: learnerEmailModel.learnerEmail,
 						learnerEmail: learnerEmailModel.learnerEmail
 					}
 					if (error.statusCode === 404) {
