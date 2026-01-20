@@ -143,7 +143,7 @@
                         <span class="govuk-visually-hidden">View</span>
                     {% endset %}
 
-                    {% set head = [{text: "Email address"}, {text: "Payment"},
+                    {% set head = [{text: "Email address"}, {text: "Payment", classes: "no-wrap"},
                     {text: "Booking Reference"}, {html: viewHeader}] %}
 
                     {% set rows = [[]] %}
@@ -155,9 +155,9 @@
                         {% endif %}
 
                         {% set bookingUrl %}
-                            <a class="govuk-link" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
+                            <a class="govuk-link no-wrap" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
                         {% endset %}
-                        {% set rows = (rows.push([{text: booking.learnerEmail}, {text: payment},
+                        {% set rows = (rows.push([{text: booking.learnerEmail, classes: "no-wrap"}, {text: payment},
                         {text: booking.reference}, {html: bookingUrl}]), rows) %}
                     {% endfor %}
 
