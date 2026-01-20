@@ -537,7 +537,7 @@ export class EventController implements FormController {
 			const moduleUid = req.params.moduleUid
 			const eventUid = req.params.eventUid
 
-			if (data.reason === '') {
+			if (data.cancellationReason === '') {
 				req.session!.sessionFlash = {
 					errors: {fields: {cancellationReason: ['attendee.validation.cancellationReason.empty']}}}
 				return req.session!.save(() => {
@@ -545,8 +545,16 @@ export class EventController implements FormController {
 				})
 			}
 
-			await this.cslService.cancelBooking(courseUid, moduleUid, eventUid,
-				req.params.bookingUid, new CancelBookingDto(data.reason))
+			try {
+				await this.cslService.cancelBooking(courseUid, moduleUid, eventUid,
+					req.params.bookingUid, new CancelBookingDto(data.cancellationReason))
+			} catch (error) {
+				req.session!.sessionFlash = {
+					errors: {fields: {cancellationReason: ['attendee.validation.cancellationReason.empty']}}}
+				return req.session!.save(() => {
+					res.redirect(`/content-management/courses/${req.params.courseUid}/modules/${req.params.moduleUid}/events/${req.params.eventUid}/attendee/${req.params.bookingUid}/cancel`)
+				})
+			}
 
 			return res.redirect(`/content-management/courses/${courseUid}/modules/${moduleUid}/events-overview/${eventUid}`)
 		}

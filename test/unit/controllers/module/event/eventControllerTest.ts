@@ -489,7 +489,7 @@ describe('EventController', function() {
 		await eventController.inviteLearner()(request, response)
 
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`)
-		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('validation_email_address_invalid')
+		expect(request.session.sessionFlash.errors.fields.learnerEmail[0]).is.equal('validation_email_address_invalid')
 	})
 
 	it('should render attendee details page', async function() {
@@ -590,7 +590,7 @@ describe('EventController', function() {
 		// @ts-ignore
 		request.params.bookingUid = 99
 
-		request.body.reason = ''
+		request.body.cancellationReason = ''
 		await registerLearner(request, response)
 
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseUid/modules/moduleUid/events/eventUid/attendee/99/cancel`)
