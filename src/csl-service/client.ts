@@ -11,6 +11,7 @@ import {Report} from '../controllers/reporting/Report'
 import {LearningPlanCache} from './learningPlanCache'
 import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
+import {EventOverview} from './model/management/EventOverview'
 
 export class CslServiceClient {
 
@@ -33,6 +34,24 @@ export class CslServiceClient {
 
 	async clearCourseCache(courseId: string) {
 		await this._http.get(`${this.RESET_CACHE}/course/${courseId}`)
+	}
+
+	async getEventOverview(courseId: string, moduleId: string, eventId: string) {
+		const response = await this._http.getRequest<EventOverview>(
+			{
+				url: `/admin/management/courses/${courseId}/modules/${moduleId}/events/${eventId}/overview`,
+			})
+		return plainToInstance(EventOverview, response.data)
+	}
+
+	async inviteLearnerToEvent(courseId: string, moduleId: string, eventId: string, learnerEmail: string) {
+		await this._http.postRequest(
+			{
+				url: `/admin/courses/${courseId}/modules/${moduleId}/events/${eventId}/invite`,
+				data: {
+					learnerEmail
+				}
+			})
 	}
 
 	async cancelBooking(courseId: string, moduleId: string, eventId: string, bookingId: string, dto: CancelBookingDto) {
@@ -96,5 +115,4 @@ export class CslServiceClient {
 			url: this.REGISTERED_LEARNER_OVERVIEW
 		})).data
 	}
-
 }

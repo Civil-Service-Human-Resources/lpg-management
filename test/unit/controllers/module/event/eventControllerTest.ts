@@ -15,13 +15,11 @@ import {DateRangeCommand} from '../../../../../src/controllers/command/dateRange
 import {DateRangeCommandFactory} from '../../../../../src/controllers/command/factory/dateRangeCommandFactory'
 import {Venue} from '../../../../../src/learning-catalogue/model/venue'
 import {LearnerRecord} from '../../../../../src/learner-record'
-import {InviteFactory} from '../../../../../src/learner-record/model/factory/inviteFactory'
-import {Invite} from '../../../../../src/learner-record/model/invite'
-import {Booking} from '../../../../../src/learner-record/model/booking'
-import {DateTime} from '../../../../../src/lib/dateTime'
 import {Course} from '../../../../../src/learning-catalogue/model/course'
 import {Module} from '../../../../../src/learning-catalogue/model/module'
 import {CslServiceClient} from '../../../../../src/csl-service/client'
+import {EventOverview} from '../../../../../src/csl-service/model/management/EventOverview'
+import {BookingOverviewPageModel} from '../../../../../src/controllers/module/event/model/BookingOverviewPageModel'
 
 chai.use(sinonChai)
 
@@ -29,10 +27,8 @@ describe('EventController', function() {
 	let eventController: EventController
 	let learningCatalogue: LearningCatalogue
 	let learnerRecord: LearnerRecord
-	let validator: Validator<Booking>
 	let eventValidator: Validator<Event>
 	let eventFactory: EventFactory
-	let inviteFactory: InviteFactory
 	let dateRangeCommandValidator: Validator<DateRangeCommand>
 	let dateRangeValidator: Validator<DateRange>
 	let dateRangeCommandFactory: DateRangeCommandFactory
@@ -44,9 +40,7 @@ describe('EventController', function() {
 		learningCatalogue = <LearningCatalogue>{}
 		learnerRecord = <LearnerRecord>{}
 		eventValidator = <Validator<Event>>{}
-		validator = <Validator<Booking>>{}
 		eventFactory = <EventFactory>{}
-		inviteFactory = <InviteFactory>{}
 		dateRangeCommandValidator = <Validator<DateRangeCommand>>{}
 		dateRangeValidator = <Validator<DateRange>>{}
 		dateRangeCommandFactory = <DateRangeCommandFactory>{}
@@ -56,9 +50,7 @@ describe('EventController', function() {
 			learningCatalogue,
 			learnerRecord,
 			eventValidator,
-			validator,
 			eventFactory,
-			inviteFactory,
 			dateRangeCommandValidator,
 			dateRangeValidator,
 			dateRangeCommandFactory,
@@ -443,13 +435,11 @@ describe('EventController', function() {
 
 		response.locals.event = event
 
-		learnerRecord.getEventBookings = sinon.stub().returns([new Booking()])
-		learningCatalogue.getCourse = sinon.stub().returns(course)
-		learningCatalogue.getModule = sinon.stub().returns(module)
+		cslService.getEventOverview = sinon.stub().resolves({})
 
 		await getEventOverview(request, response)
 
-		expect(learnerRecord.getEventBookings).to.have.been.calledOnceWith(event.id)
+		expect(cslService.getEventOverview).to.have.been.calledOnceWith(course.id, module.id, event.id)
 		expect(response.render).to.have.been.calledWith('page/course/module/events/events-overview')
 	})
 
@@ -464,19 +454,16 @@ describe('EventController', function() {
 		request.body.learnerEmail = 'test@test.com'
 		request.user = {accessToken: 'test-token'}
 
-		request.params.courseId = 'courseId'
-		request.params.moduleId = 'moduleId'
-		request.params.eventId = 'eventId'
+		request.params.courseUid = 'courseId'
+		request.params.moduleUid = 'moduleId'
+		request.params.eventUid = 'eventId'
 
 		const dateRange = new DateRange()
 		dateRange.date = '01-01-2020'
 		const dateRanges: DateRange[] = [dateRange]
 		response.locals.event = {dateRanges}
 
-		learnerRecord.inviteLearner = sinon.stub().returns(new Invite())
-		learnerRecord.inviteLearner('eventId', new Invite()).catch = sinon.stub()
-
-		inviteFactory.create = sinon.stub().returns(new Invite())
+		cslService.inviteLearnerToEvent = sinon.stub()
 
 		await eventController.inviteLearner()(request, response)
 
@@ -495,54 +482,50 @@ describe('EventController', function() {
 		request.body.learnerEmail = 'test'
 		request.user = {accessToken: 'test-token'}
 
-		request.params.courseId = 'courseId'
-		request.params.moduleId = 'moduleId'
-		request.params.eventId = 'eventId'
+		request.params.courseUid = 'courseId'
+		request.params.moduleUid = 'moduleId'
+		request.params.eventUid = 'eventId'
 
 		await eventController.inviteLearner()(request, response)
 
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseId/modules/moduleId/events-overview/eventId`)
-		expect(request.session.sessionFlash.emailAddressFoundMessage).is.equal('validation_email_address_invalid')
+		expect(request.session.sessionFlash.errors.fields.learnerEmail[0]).is.equal('validation_email_address_invalid')
 	})
 
 	it('should render attendee details page', async function() {
-		const date: string = '2020-02-01'
-		const dateRange = new DateRange()
-		dateRange.date = date
-
-		const event: Event = new Event()
-		event.dateRanges = [dateRange]
-
-		const course: Course = new Course()
-		const module: Module = new Module()
-
-		const eventDateWithMonthAsText = DateTime.convertDate(event.dateRanges[0].date)
-
-		const booking: Booking = new Booking()
-		booking.id = 99
-		const bookings = [booking]
-
 		const getAttendeeDetails: (request: Request, response: Response) => void = eventController.getAttendeeDetails()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
 
-		response.locals.event = event
 		// @ts-ignore
-		request.params.bookingId = 99
+		request.params.courseUid = 'course'
+		request.params.moduleUid = 'module'
+		request.params.eventUid = 'event'
+		request.params.bookingUid = '99'
+		const eventOverview = new EventOverview()
+		eventOverview.id = 'eventId'
+		eventOverview.dates = ['01 Jan 2026']
+		eventOverview.status = 'status'
+		eventOverview.cancellationReason = 'cancellationReason'
+		eventOverview.moduleId = 'moduleId'
+		eventOverview.moduleTitle = 'moduleTitle'
+		eventOverview.courseId = 'courseId'
+		eventOverview.courseTitle = 'courseTitle'
+		eventOverview.courseStatus = 'courseStatus'
+		eventOverview.venue =  {location: 'Bristol', address: 'Bristol', capacity: 2, minCapacity: 1, availability: 1}
+		eventOverview.bookings = [{id: 99, status: 'REQUESTED', reference: 'ABCDEF', learnerEmail: 'email@email.com'}]
+		cslService.getEventOverview = sinon.stub().resolves(eventOverview)
 
-		learnerRecord.getEventBookings = sinon.stub().returns(bookings)
-		response.locals.course = course
-		response.locals.module = module
+		const overview = new BookingOverviewPageModel(99, 'courseId',
+			'moduleId', 'eventId', 'Bristol, 01 Jan 2026', 'moduleTitle', 'courseTitle',
+			'courseStatus', 'ABCDEF', 'email@email.com', 'REQUESTED')
 
 		await getAttendeeDetails(request, response)
 
-		expect(learnerRecord.getEventBookings).to.have.been.calledOnceWith(event.id)
+		expect(cslService.getEventOverview).to.have.been.calledOnceWith('course', 'module', 'event')
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/events/attendee', {
-			booking,
-			eventDateWithMonthAsText,
-			course,
-			module,
+			pageModel: overview
 		})
 	})
 
@@ -583,9 +566,6 @@ describe('EventController', function() {
 		request.body.reason = 'cancel'
 
 		cslService.cancelBooking = sinon.stub().resolves({})
-
-		validator.check = sinon.stub().returns({})
-
 		await registerLearner(request, response)
 
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseUid/modules/moduleUid/events-overview/eventUid`)
@@ -600,6 +580,8 @@ describe('EventController', function() {
 			callback(undefined)
 		}
 
+		cslService.cancelBooking = sinon.stub().resolves({})
+
 		const registerLearner: (request: Request, response: Response) => void = eventController.cancelBooking()
 
 		request.params.courseUid = 'courseUid'
@@ -608,10 +590,7 @@ describe('EventController', function() {
 		// @ts-ignore
 		request.params.bookingUid = 99
 
-		request.body.reason = ''
-
-		validator.check = sinon.stub().returns({fields: {reason: 'reason missing'}, size: 1})
-
+		request.body.cancellationReason = ''
 		await registerLearner(request, response)
 
 		expect(response.redirect).to.have.been.calledOnceWith(`/content-management/courses/courseUid/modules/moduleUid/events/eventUid/attendee/99/cancel`)
@@ -660,37 +639,40 @@ describe('EventController', function() {
 	})
 
 	it('should render cancel attendee page', async function() {
-		let dateRange: DateRange = new DateRange()
-		dateRange.date = '2018-01-02'
-
-		const event: Event = new Event()
-		event.id = 'eventId'
-		event.dateRanges = [dateRange]
-
-		const booking: Booking = new Booking()
-		booking.id = 99
-
-		const eventDateWithMonthAsText: string = DateTime.convertDate(event.dateRanges[0].date)
-
 		const getCancelAttendee: (request: Request, response: Response, next: NextFunction) => void = eventController.getCancelBooking()
 
 		const request: Request = mockReq()
 		const response: Response = mockRes()
 		const next: NextFunction = sinon.stub()
+		request.params.courseUid = 'course'
+		request.params.moduleUid = 'module'
+		request.params.eventUid = 'event'
+		request.params.bookingUid = '99'
+		const eventOverview = new EventOverview()
+		eventOverview.id = 'eventId'
+		eventOverview.dates = ['01 Jan 2026']
+		eventOverview.status = 'status'
+		eventOverview.cancellationReason = 'cancellationReason'
+		eventOverview.moduleId = 'moduleId'
+		eventOverview.moduleTitle = 'moduleTitle'
+		eventOverview.courseId = 'courseId'
+		eventOverview.courseTitle = 'courseTitle'
+		eventOverview.courseStatus = 'courseStatus'
+		eventOverview.venue =  {location: 'Bristol', address: 'Bristol', capacity: 2, minCapacity: 1, availability: 1}
+		eventOverview.bookings = [{id: 99, status: 'REQUESTED', reference: 'ABCDEF', learnerEmail: 'email@email.com'}]
+		cslService.getEventOverview = sinon.stub().resolves(eventOverview)
 
-		response.locals.event = event
-		// @ts-ignore
-		request.params.bookingId = 99
-
-		learnerRecord.getEventBookings = sinon.stub().returns([booking])
+		const overview = new BookingOverviewPageModel(99, 'courseId',
+			'moduleId', 'eventId', 'Bristol, 01 Jan 2026', 'moduleTitle', 'courseTitle',
+			'courseStatus', 'ABCDEF', 'email@email.com', 'REQUESTED')
+		cslService.getEventOverview = sinon.stub().resolves(eventOverview)
 		learnerRecord.getBookingCancellationReasons = sinon.stub().returns(Promise.resolve(undefined))
 
 		await getCancelAttendee(request, response, next)
 
 		expect(response.render).to.have.been.calledOnceWith('page/course/module/events/cancel-attendee', {
-			booking: booking,
 			cancellationReasons: undefined,
-			eventDateWithMonthAsText: eventDateWithMonthAsText,
+			pageModel: overview,
 		})
 	})
 

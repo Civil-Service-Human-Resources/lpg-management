@@ -6,7 +6,7 @@
 {% block pageTitle %}{{ i18n.attendee.title.cancel }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% set banner = true %}
-{% set backButton = "/content-management/courses/" + courseId + "/modules/" + moduleId + "/events/" + event.id + "/attendee/" + booking.id %}
+{% set backButton = pageModel.getUrl() %}
 
 {% block content %}
 
@@ -17,21 +17,21 @@
     <div class="govuk-grid-column-two-thirds">
         <h1 class="gov-uk-heading-l">{{i18n.attendee.title.cancel}}</h1>
         <div class="event-overview">
-            <h2 class="govuk-heading-m">{{eventDateWithMonthAsText}}, {{event.venue.location}}</h2>
-            <p class="govuk-body">This event is for the <strong>{{module.title}}</strong> module on the <strong>{{course.title}}</strong> course.</p>
+            <h2 class="govuk-heading-m">{{pageModel.title}}</h2>
+            <p class="govuk-body">This event is for the <strong>{{pageModel.moduleTitle}}</strong> module on the <strong>{{pageModel.courseTitle}}</strong> course.</p>
             <h3 class="govuk-heading-m">Attendee</h3>
             <div class="attendee-details">
                 <ul class="attendees list">
-                    <li class="list-details view"><p class="govuk-body"><strong>Email</strong></p><p class="govuk-body">{{ booking.learnerEmail }}</p></li>
+                    <li class="list-details view"><p class="govuk-body"><strong>Email</strong></p><p class="govuk-body">{{ pageModel.learnerEmail }}</p></li>
                     <li class="list-details column-view">
                             <span class="list-details span-view">
                                 <p class="govuk-body"><strong>Booking status</strong></p>
                                 <p class="govuk-body">
-                                    {% if booking.status === "Requested" %}
+                                    {% if pageModel.status === "Requested" %}
                                         {{i18n.attendee.status.Requested}}
-                                    {% elif booking.status === "Confirmed" %}
+                                    {% elif pageModel.status === "Confirmed" %}
                                         {{i18n.attendee.status.Confirmed}}
-                                    {% elif booking.status === "Cancelled" %}
+                                    {% elif pageModel.status === "Cancelled" %}
                                         {{i18n.attendee.status.Cancelled}}
                                     {% endif %}
                                 </p>
@@ -39,14 +39,26 @@
                     </li>
                 </ul>
             </div>
-            <form action="/content-management/courses/{{courseId}}/modules/{{moduleId}}/events/{{event.id}}/attendee/{{booking.id}}/cancel" method="post">
+            <form action="{{ pageModel.getCancelLink() }}" method="post">
                 <input type="hidden" name="_csrf" value="{{ _csrf }}">
-                <select class="govuk-select" id="cancellationReason" name="cancellationReason">
-                    <option value="">Choose a cancellation reason</option>
-                    {% for cancellationReason, value in  cancellationReasons %}
-                        <option value="{{cancellationReason}}">{{value}}</option>
-                    {% endfor %}
-                </select>
+                {% set reasons = [{
+                    value: "",
+                    text: "Choose a cancellation reason"
+                }] %}
+                {% for cancellationReason, value in  cancellationReasons %}
+                    {% set reasons = (reasons.push({
+                        "text": value,
+                        "value": cancellationReason
+                    }), reasons)%}
+                {% endfor %}
+                {{ govukSelect({
+                    id: "cancellationReason",
+                    name: "cancellationReason",
+                    label: {
+                        text: "Cancellation Reason"
+                    },
+                    items: reasons
+                }) }}
                 <div class="button-container">
                     {{ govukButton({
                         text: "Cancel Attendee",
