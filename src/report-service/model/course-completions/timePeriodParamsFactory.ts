@@ -1,6 +1,6 @@
 import {TimePeriodParameters} from './timePeriodParameters'
-import {getFrontendDayJs} from '../../../utils/dateUtil'
-import {Dayjs, OpUnitType} from 'dayjs'
+import {getDayjs, getFrontendDayJs, getStartOfJs} from '../../../utils/dateUtil'
+import {Dayjs} from 'dayjs'
 import {CourseCompletionsSession} from '../../../controllers/reporting/model/courseCompletionsSession'
 
 export class TimePeriodParamsFactory {
@@ -31,10 +31,9 @@ export class TimePeriodParamsFactory {
 
 	createForCustom(startYear: string, startMonth: string, startDay: string,
 					endYear: string, endMonth: string, endDay: string,): TimePeriodParameters {
-		let start = getFrontendDayJs(`${startYear}-${startMonth}-${startDay}`)
-		let end = getFrontendDayJs(`${endYear}-${endMonth}-${endDay}`)
-		let startOf: OpUnitType = end.diff(start, 'day') <= 31 ? 'day' : 'month'
-		start = start.startOf(startOf)
+		let start = getDayjs(`${startYear}-${startMonth}-${startDay}`)
+		let end = getDayjs(`${endYear}-${endMonth}-${endDay}`)
+		start = getStartOfJs(start, end)
 		return this.createFromDates(start, end)
 	}
 
