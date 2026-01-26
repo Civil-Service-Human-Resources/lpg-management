@@ -14,7 +14,7 @@ export function getTimezoneString(): string {
 	return `+${getFrontendDayJs().utcOffset() / 60}`
 }
 
-export function getStartOfJs(start: any, end: any) {
+export function getStartOfJs(start: any, end: any): Dayjs {
 	let startOf: OpUnitType = end.diff(start, 'day') <= 31 ? 'day' : 'month'
 	start = start.startOf(startOf)
 	if (startOf === 'day') {
