@@ -17,7 +17,8 @@ export class ReportServiceClient {
 			to: dateRange.endDate
 		}
 		this.logger.info(`Generating report request for URL: ${url} and params: ${JSON.stringify(params)}`)
-		return await this._http.getWithAuthAndConfig(url, {params})
+		const response = await this._http.getRequest<string>({url, params})
+		return response.data
 	}
 
 	async getReportBookingInformation(dateRange: DateStartEnd): Promise<string> {

@@ -12,11 +12,17 @@
             }) %}
         {% endfor %}
 
+        {% set hoursLabel %}
+            <label class="govuk-label" for="{{name}}-hours">
+                <span class="govuk-visually-hidden">{{ header }}</span> {{firstLabel}}
+            </label>
+        {% endset %}
+
         {{ govukSelect({
-            id: name,
+            id: name + "-hours",
             name: name,
             label: {
-                text: firstLabel
+                html: hoursLabel
             },
             items: hours
         }) }}
@@ -33,11 +39,17 @@
             }) %}
         {% endfor %}
 
+        {% set minutesLabel %}
+            <label class="govuk-label" for="{{name}}-minutes">
+                <span class="govuk-visually-hidden">{{ header }}</span> {{secondLabel}}
+            </label>
+        {% endset %}
+
         {{ govukSelect({
-            id: name,
+            id: name + "-minutes",
             name: name,
             label: {
-                text: secondLabel
+                html: minutesLabel
             },
             items: minutes
         }) }}
