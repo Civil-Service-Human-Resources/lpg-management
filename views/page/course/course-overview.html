@@ -73,7 +73,8 @@
                         {% set actions = [
                             {
                                 link: '/content-management/courses/' + course.id + "/preview",
-                                text: 'Preview and edit'
+                                text: "Preview and edit",
+                                visuallyHiddenText: course.title
                             }
                         ] %}
                         {% if showDeleteCourseLink %}

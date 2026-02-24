@@ -13,11 +13,17 @@
                         rel="noreferrer noopener"
                     {% endif %}
                     aria-label="{{ action.ariaLabel }}">
-                    {{ action.text }} {{" (opens in new tab)" if action.openInNewTab else ""}}</a>
+                    {{ action.text }}
+                    {% if action.visuallyHiddenText %}
+                        <span class="govuk-visually-hidden">
+                          {{ action.visuallyHiddenText }}
+                        </span>
+                    {% endif %}
+                    {{" (opens in new tab)" if action.openInNewTab else ""}}</a>
             </li>
         {% endfor %}
     </ul>
-    {% if (delete === true} %}
+    {% if delete === true %}
         {{ govukButton({
             text: "Delete",
             "classes": "govuk-button--delete"
