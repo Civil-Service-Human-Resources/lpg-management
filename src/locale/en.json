@@ -92,6 +92,7 @@
 	"course": {
 		"pageTitle": {
             "addCourseVisibility": "Add course visibility",
+			"editCourseVisibility": "Edit course visibility",
 			"addCourseTitle": "Add course title",
 			"editCourseTitle": "Edit course title",
 			"addCourseDetails": "Add course details",
