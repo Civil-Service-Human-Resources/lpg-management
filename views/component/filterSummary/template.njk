@@ -3,7 +3,7 @@
 {% macro rows(rows) %}
     <div class='filter-summary__rows'>
         {% for row in rows %}
-            {{ filterSummaryRow(row["summaryText"], row["tags"], row['submitUrl'], row['changeLink'], row['changeText']) }}
+            {{ filterSummaryRow(row["summaryText"], row["tags"], row['submitUrl'], row['changeLink'], row['changeText'], row['isList']) }}
         {% endfor %}
     </div>
 {% endmacro %}

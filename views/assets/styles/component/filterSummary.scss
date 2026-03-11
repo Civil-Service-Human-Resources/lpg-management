@@ -12,6 +12,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  dd{
+    display: inline;
+    margin-left: 0;
+
+    .description-details-container{
+      display: inline;
+    }
+
+    ul{
+      list-style: none;
+      padding-left: 0;
+
+      li{
+        display: inline;
+      }
+    }
+  }
 }
 
 .filter-summary__row:nth-child(even) {
@@ -61,7 +79,6 @@
 }
 
 .filter-summary__tags {
-  display: flex;
   flex-wrap: wrap;
   align-items: center;
 }
@@ -69,8 +86,13 @@
 .filter-summary__tags-summary {
   @include govuk-responsive-margin(2, "right");
   font-weight: 700;
+  display: inline;
 }
 
 .filter-summary__changeLink {
   white-space: nowrap;
+}
+
+.filter-summary__tag-container{
+  display: inline;
 }
