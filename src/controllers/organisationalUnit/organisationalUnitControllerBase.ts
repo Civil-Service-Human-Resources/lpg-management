@@ -3,7 +3,7 @@ import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitSe
 import * as asyncHandler from 'express-async-handler'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {Controller} from '../controller'
-import {AnyOfCompoundRole, CompoundRoleBase, Role} from '../../identity/identity'
+import {IUserRole, organisationManagerRole} from '../../identity/identity'
 import {SessionableObjectService} from '../reporting/utils'
 import {EditAgencyToken} from './model/editAgencyToken'
 
@@ -18,8 +18,8 @@ export abstract class OrganisationalUnitControllerBase extends Controller {
 		this.getOrganisationFromRouterParamAndSetOnLocals()
 	}
 
-	protected getRequiredRoles(): CompoundRoleBase[] {
-		return [new AnyOfCompoundRole([Role.ORGANISATION_MANAGER, Role.CSL_AUTHOR, Role.LEARNING_MANAGER])]
+	protected getRequiredRole(): IUserRole | undefined {
+		return organisationManagerRole
 	}
 
 	// prettier-ignore

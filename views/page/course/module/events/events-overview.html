@@ -212,7 +212,9 @@
                             text: 'Cancel this event'
                         }) %}
                 {% endif %}
-                {{ menu("Actions", actions) }}
+                {% if actions | length > 0 %}
+                    {{ menu("Actions", actions) }}
+                {% endif %}
                 {% endblock %}
               {% endif %}
             </div>

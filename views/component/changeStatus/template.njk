@@ -14,8 +14,8 @@
         {% endif %}
     {% elif status === "Published" %}
         <p class="govuk-body">This course has been published. Any further edits will be shown immediately.</p>
-        <p class="govuk-body">Archiving this course will stop it being listed and prevent further interactions.</p>
         {% if identity.hasLearningArchive() %}
+            <p class="govuk-body">Archiving this course will stop it being listed and prevent further interactions.</p>
             <a href="/content-management/courses/{{course.id }}/archive" class="govuk-button red-button">Archive this course</a>
         {% endif %}
     {% elif status === "Archived" %}

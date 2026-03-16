@@ -10,26 +10,13 @@ export enum Role {
 	LEARNING_EDIT = 'LEARNING_EDIT',
 	LEARNING_DELETE = 'LEARNING_DELETE',
 	ORGANISATION_AUTHOR = 'ORGANISATION_AUTHOR',
-	PROFESSION_AUTHOR = 'PROFESSION_AUTHOR',
 	LEARNING_PUBLISH = 'LEARNING_PUBLISH',
 	LEARNING_ARCHIVE = 'LEARNING_ARCHIVE',
 	KPMG_SUPPLIER_AUTHOR = 'KPMG_SUPPLIER_AUTHOR',
-	KORNFERRY_SUPPLIER_AUTHOR = 'KORNFERRY_SUPPLIER_AUTHOR',
-	KNOWLEDGEPOOL_SUPPLIER_AUTHOR = 'KNOWLEDGEPOOL_SUPPLIER_AUTHOR',
-	LEARNING_PROVIDER_MANAGER = 'LEARNING_PROVIDER_MANAGER',
-	SKILLS_MANAGER = 'SKILLS_MANAGER',
 	CSHR_REPORTER = 'CSHR_REPORTER',
 	DOWNLOAD_BOOKING_FEED = 'DOWNLOAD_BOOKING_FEED',
-	IDENTITY_DELETE = 'IDENTITY_DELETE',
-	IDENTITY_MANAGER = 'IDENTITY_MANAGER',
-	KORNFERRY_SUPPLIER_REPORTER = 'KORNFERRY_SUPPLIER_REPORTER',
-	KPMG_SUPPLIER_REPORTER = 'KPMG_SUPPLIER_REPORTER',
-	MANAGE_CALL_OFF_PO = 'MANAGE_CALL_OFF_PO',
 	ORGANISATION_REPORTER = 'ORGANISATION_REPORTER',
-	PROFESSION_MANAGER = 'PROFESSION_MANAGER',
-	PROFESSION_REPORTER = 'PROFESSION_REPORTER',
 	MVP_REPORTER = 'MVP_REPORTER',
-	SUPER_REPORTER = 'SUPER_REPORTER',
 	UNRESTRICTED_ORGANISATION = 'UNRESTRICTED_ORGANISATION',
 	REPORT_EXPORT = 'REPORT_EXPORT',
 	REPORTING_ALL_ORGANISATIONS = 'REPORTING_ALL_ORGANISATIONS',
@@ -66,7 +53,7 @@ export class AnyOfCompoundRole extends CompoundRoleBase {
 	}
 
 	getDescription(): string {
-		return `ANY of the following roles: ${this.roles}`
+		return `ANY of the following roles: [${this.roles}]`
 	}
 }
 
@@ -88,15 +75,24 @@ export class AllOfCompoundRole extends CompoundRoleBase {
 	}
 
 	getDescription(): string {
-		return `ALL of the following roles: ${this.roles}.`
+		return `ALL of the following roles: [${this.roles}]`
 	}
 }
 
-export class UserRole {
+export interface IUserRole {
+	checkRoles(userRoles: string[]): boolean
+	getDescription(): string
+}
+
+export class UserRole implements IUserRole {
 	public compoundRoles: CompoundRoleBase[]
 	constructor(...compoundRoles: CompoundRoleBase[]) {
 		this.compoundRoles = compoundRoles
 	}
+
+	getDescription(): string {
+        return "[" + this.compoundRoles.map(r => r.getDescription()).join(" AND ") + "]"
+    }
 
 	public checkRoles(userRoles: string[]): boolean {
 		let authorised = true
@@ -109,16 +105,56 @@ export class UserRole {
 	}
 }
 
-export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER, Role.PROFESSION_REPORTER,
-Role.ORGANISATION_REPORTER, Role.KPMG_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_REPORTER, Role.REGISTERED_LEARNER_REPORTER))
+export class ORUserRole implements IUserRole {
+	public compoundRoles: IUserRole[]
+	constructor(...roles: IUserRole[]) {
+		this.compoundRoles = roles
+	}
+
+	getDescription(): string {
+        return this.compoundRoles.map(r => r.getDescription()).join(" OR ")
+    }
+
+	public checkRoles(userRoles: string[]): boolean {
+		let authorised = false
+		for (const compoundRole of this.compoundRoles) {
+			if (compoundRole.checkRoles(userRoles)) {
+				return true
+			}
+		}
+		return authorised
+	}
+}
+
+export const superAdminRole = new UserRole(Any(Role.LEARNING_MANAGER))
+
+const buildSuperUserRole = (role: IUserRole): IUserRole => {
+	return new ORUserRole(role, superAdminRole)
+}
+
+// Reporting
+export const reporterRole = new UserRole(Any(Role.CSHR_REPORTER,
+Role.ORGANISATION_REPORTER, Role.REGISTERED_LEARNER_REPORTER))
 export const registeredLearnerReportingRole = new UserRole(All(Role.REGISTERED_LEARNER_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.ORGANISATION_REPORTER, Role.CSHR_REPORTER))
 export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
-export const eventViewingRole = new UserRole(Any(Role.CSL_AUTHOR, Role.LEARNING_MANAGER, Role.ORGANISATION_AUTHOR, Role.KPMG_SUPPLIER_AUTHOR, Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR, Role.KORNFERRY_SUPPLIER_AUTHOR))
-export const learningPublishRole = new UserRole(Any(Role.LEARNING_PUBLISH, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
-export const learningArchiveRole = new UserRole(Any(Role.LEARNING_ARCHIVE, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
-export const learningUnarchiveRole = new UserRole(Any(Role.LEARNING_UNARCHIVE, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
-export const learningEditRole = new UserRole(Any(Role.LEARNING_EDIT, Role.CSL_AUTHOR, Role.LEARNING_MANAGER))
+
+// Course authoring
+export const authorRoles = Any(Role.ORGANISATION_AUTHOR, Role.CSL_AUTHOR, Role.KPMG_SUPPLIER_AUTHOR)
+const buildAuthorRole = (...roles: Role[]): IUserRole => {
+	return buildSuperUserRole(new UserRole(authorRoles, Any(...roles)))
+}
+
+export const learningViewingRole = buildSuperUserRole(new UserRole(authorRoles))
+export const learningCreateRole = buildAuthorRole(Role.LEARNING_CREATE)
+export const learningPublishRole = buildAuthorRole(Role.LEARNING_PUBLISH)
+export const learningArchiveRole = buildAuthorRole(Role.LEARNING_ARCHIVE)
+export const learningUnarchiveRole = buildAuthorRole(Role.LEARNING_UNARCHIVE)
+export const learningEditRole = buildAuthorRole(Role.LEARNING_EDIT)
+export const learningDeleteRole = buildAuthorRole(Role.LEARNING_DELETE)
+
+// Organisation management
+export const organisationManagerRole = new UserRole(Any(Role.ORGANISATION_MANAGER, Role.LEARNING_MANAGER))
 
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
@@ -178,21 +214,15 @@ export class Identity {
 		return this.hasAnyRole([
 			Role.CSHR_REPORTER,
 			Role.CSL_AUTHOR,
-			Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR,
-			Role.KORNFERRY_SUPPLIER_AUTHOR,
-			Role.KPMG_SUPPLIER_AUTHOR,
 			Role.LEARNING_ARCHIVE,
 			Role.LEARNING_CREATE,
 			Role.LEARNING_DELETE,
 			Role.LEARNING_EDIT,
 			Role.LEARNING_MANAGER,
 			Role.LEARNING_PUBLISH,
-			Role.MANAGE_CALL_OFF_PO,
 			Role.ORGANISATION_AUTHOR,
 			Role.ORGANISATION_MANAGER,
 			Role.ORGANISATION_REPORTER,
-			Role.PROFESSION_AUTHOR,
-			Role.PROFESSION_MANAGER,
 			Role.REGISTERED_LEARNER_REPORTER
 		])
 	}
@@ -201,7 +231,7 @@ export class Identity {
 		return this.hasRole(Role.MVP_REPORTER) && (this.isOrganisationReporter() || this.isCshrReporter())
 	}
 
-	roleCheck(role: UserRole) {
+	roleCheck(role: IUserRole) {
 		return role.checkRoles(this.roles)
 	}
 
@@ -215,115 +245,59 @@ export class Identity {
 
 	hasEventViewingRole() {
 		// coarse-grained check for general permission to view events
-		return this.roleCheck(eventViewingRole)
+		return this.roleCheck(learningViewingRole)
 	}
 
 	isOrganisationManager() {
-		return this.hasRole(Role.ORGANISATION_MANAGER)
-	}
-
-	isOrganisationManagerOrSuperUser() {
-		return this.hasRole(Role.ORGANISATION_MANAGER) || this.isSuperUser()
+		return this.roleCheck(organisationManagerRole)
 	}
 
 	isLearningManager() {
 		return this.hasRole(Role.LEARNING_MANAGER)
 	}
 
-	isCslAuthor() {
-		return this.hasRole(Role.CSL_AUTHOR)
-	}
-
 	isSuperUser() {
-		return this.isCslAuthor() || this.isLearningManager()
-	}
-
-	isOrganisationAuthorOrSuperUser() {
-		return this.hasRole(Role.ORGANISATION_AUTHOR) || this.isSuperUser()
-	}
-
-	isOrganisationAuthor() {
-		return this.hasRole(Role.ORGANISATION_AUTHOR)
-	}
-
-	isProfessionAuthorOrSuperUser() {
-		return this.hasRole(Role.PROFESSION_AUTHOR) || this.isSuperUser()
-	}
-
-	isProfessionAuthor() {
-		return this.hasRole(Role.PROFESSION_AUTHOR)
-	}
-
-	isSupplierAuthor() {
-		return this.hasRole(Role.KPMG_SUPPLIER_AUTHOR) || this.hasRole(Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR) || this.hasRole(Role.KORNFERRY_SUPPLIER_AUTHOR)
-	}
-
-	isLearningProviderManager() {
-		return this.hasRole(Role.LEARNING_PROVIDER_MANAGER)
+		return this.isLearningManager()
 	}
 
 	hasLearningCreate() {
-		return this.hasRole(Role.LEARNING_CREATE) || this.isSuperUser()
+		return this.roleCheck(learningCreateRole)
 	}
 
 	hasLearningEdit() {
-		return this.isRole(learningEditRole)
+		return this.roleCheck(learningEditRole)
 	}
 
 	hasLearningDelete() {
-		return this.hasRole(Role.LEARNING_DELETE) || this.isSuperUser()
+		return this.roleCheck(learningDeleteRole)
 	}
 
 	hasLearningPublish() {
-		return this.hasRole(Role.LEARNING_PUBLISH) || this.isSuperUser()
+		return this.roleCheck(learningPublishRole)
 	}
 
 	hasLearningArchive() {
-		return this.hasRole(Role.LEARNING_ARCHIVE) || this.isSuperUser()
+		return this.roleCheck(learningArchiveRole)
 	}
 
 	hasLearningUnarchive() {
-		return this.isRole(learningUnarchiveRole)
-	}
-
-	isRole(role: UserRole) {
-		return role.checkRoles(this.roles)
+		return this.roleCheck(learningUnarchiveRole)
 	}
 
 	isReporter() {
-		return this.isRole(reporterRole)
-	}
-
-	isLearner() {
-		return this.hasRole(Role.LEARNER)
+		return this.roleCheck(reporterRole)
 	}
 
 	isCshrReporter() {
 		return this.hasRole('CSHR_REPORTER')
 	}
 
-	isProfessionReporter() {
-		return this.hasRole('PROFESSION_REPORTER')
-	}
-
 	isOrganisationReporter() {
 		return this.hasRole(Role.ORGANISATION_REPORTER)
 	}
 
-	isKPMGSupplierReporter() {
-		return this.hasRole('KPMG_SUPPLIER_REPORTER')
-	}
-
-	isKornferrySupplierReporter() {
-		return this.hasRole('KORNFERRY_SUPPLIER_REPORTER')
-	}
-
 	isSkillsManagerOrSuperUser() {
-		return this.hasRole(Role.SKILLS_MANAGER) || this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter() || this.isProfessionReporter()
-	}
-
-	isSuperReporter(){
-		return this.hasRole(Role.SUPER_REPORTER)
+		return this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter()
 	}
 
 	isUnrestrictedOrganisation() {

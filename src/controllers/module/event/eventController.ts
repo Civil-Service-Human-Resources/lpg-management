@@ -19,7 +19,7 @@ import {CslServiceClient} from '../../../csl-service/client'
 import {CancelBookingDto} from '../../../csl-service/model/CancelBookingDto'
 import {applyLearningCatalogueMiddleware} from '../../middleware/learningCatalogueMiddleware'
 import {roleCheckMiddleware} from '../../middleware/roleCheckMiddleware'
-import {eventViewingRole} from '../../../identity/identity'
+import {learningViewingRole, learningCreateRole} from '../../../identity/identity'
 import {plainToInstance} from 'class-transformer'
 import {LearnerEmailModel} from './model/learnerEmailModel'
 import {validateAndMapErrors} from '../../../validators/util'
@@ -49,7 +49,7 @@ export class EventController implements FormController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 
-		const roleCheck = asyncHandler(roleCheckMiddleware(eventViewingRole))
+		const roleCheck = asyncHandler(roleCheckMiddleware(learningCreateRole))
 
 		applyLearningCatalogueMiddleware({getModule: true, getEvent: true}, this.router, this.learningCatalogue)
 
@@ -64,7 +64,7 @@ export class EventController implements FormController {
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', xss(), roleCheck, asyncHandler(this.getDatePreview()))
 
 		// Use uid parameters here to avoid the middleware
-		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events-overview/:eventUid', xss(), roleCheck, asyncHandler(this.getEventOverview()))
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events-overview/:eventUid', xss(), asyncHandler(roleCheckMiddleware(learningViewingRole)), asyncHandler(this.getEventOverview()))
 
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.getDateTime()))
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.setDateTime()))

@@ -1,5 +1,5 @@
 import {Controller} from '../controller'
-import {CompoundRoleBase, mvpExportRole, registeredLearnerReportingRole} from '../../identity/identity'
+import {IUserRole, mvpExportRole, registeredLearnerReportingRole} from '../../identity/identity'
 import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
 import {NextFunction, Request, Response} from 'express'
 import {ChooseOrganisationsModel} from './model/chooseOrganisationsModel'
@@ -21,8 +21,8 @@ export class RegisteredLearnersController extends Controller {
 		super("/reporting/registered-learners", 'RegisteredLearnersController')
 	}
 
-	protected getRequiredRoles(): CompoundRoleBase[] {
-		return registeredLearnerReportingRole.compoundRoles
+	protected getRequiredRole(): IUserRole {
+		return registeredLearnerReportingRole
 	}
 
 	private checkForOrgIdsInSessionMiddleware() {

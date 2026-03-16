@@ -4,8 +4,12 @@ import {getRequest, postRequestWithBody, Route} from '../../../src/controllers/r
 import {BehaviourOnError} from '../../../src/validators/validatorMiddleware'
 import {expect} from 'chai'
 import * as express from 'express'
+import { IUserRole } from 'src/identity/identity'
 
 class TestController extends Controller {
+    protected getRequiredRole(): IUserRole | undefined {
+        return undefined
+    }
 
 	constructor() {
 		super("/testController", "testController")
