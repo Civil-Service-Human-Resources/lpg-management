@@ -11,6 +11,9 @@ import * as moment from 'moment'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
+import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
+import {learningEditRole} from '../../identity/identity'
+import * as asyncHandler from 'express-async-handler'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -47,32 +50,35 @@ export class AudienceController {
 	}
 
 	private setRouterPaths() {
-		this.router.post('/content-management/courses/:courseId/audiences/', xss(), this.setAudienceName())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/configure', xss(), this.getConfigureAudience())
+		const roleCheck = asyncHandler(roleCheckMiddleware(learningEditRole))
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation', xss(), this.getOrganisation())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/organisation', xss(), this.setOrganisation())
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation/delete/:organisationCode', xss(), this.deleteOrganisation())
+		this.router.post('/content-management/courses/:courseId/audiences/', xss(), roleCheck, this.setAudienceName())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/delete', xss(), this.deleteAudienceConfirmation())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/delete', xss(), this.deleteAudience())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/configure', xss(), roleCheck, this.getConfigureAudience())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', xss(), this.getAreasOfWork())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', xss(), this.setAreasOfWork())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete', xss(), this.deleteAreasOfWork())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation', xss(), roleCheck, this.getOrganisation())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/organisation', xss(), roleCheck, this.setOrganisation())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/organisation/delete/:organisationCode', xss(), roleCheck, this.deleteOrganisation())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', xss(), this.getCoreLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', xss(), this.setCoreLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/core-learning/delete', xss(), this.deleteCoreLearning())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/delete', xss(), roleCheck, this.deleteAudienceConfirmation())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/delete', xss(), roleCheck, this.deleteAudience())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), this.getGrades())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), this.setGrades())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades/delete', xss(), this.deleteGrades())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', xss(), roleCheck, this.getAreasOfWork())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work', xss(), roleCheck, this.setAreasOfWork())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/area-of-work/delete', xss(), roleCheck, this.deleteAreasOfWork())
 
-		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), this.getRequiredLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), this.setRequiredLearning())
-		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning/delete', xss(), this.deleteRequiredLearning())
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', xss(), roleCheck, this.getCoreLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/add-core-learning', xss(), roleCheck, this.setCoreLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/core-learning/delete', xss(), roleCheck, this.deleteCoreLearning())
+
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), roleCheck, this.getGrades())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades', xss(), roleCheck, this.setGrades())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/grades/delete', xss(), roleCheck, this.deleteGrades())
+
+		this.router.get('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), roleCheck, this.getRequiredLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning', xss(), roleCheck, this.setRequiredLearning())
+		this.router.post('/content-management/courses/:courseId/audiences/:audienceId/required-learning/delete', xss(), roleCheck, this.deleteRequiredLearning())
 	}
 
 	setAudienceName() {

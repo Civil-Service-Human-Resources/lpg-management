@@ -10,6 +10,8 @@ import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../../utils/logger'
 const xss = require('xss')
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
+import {learningEditRole} from '../../identity/identity'
 
 
 export class LinkModuleController {
@@ -35,10 +37,10 @@ export class LinkModuleController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.addLinkModule()))
-		this.router.get('/content-management/courses/:courseId/module-link', asyncHandler(this.addLinkModule()))
-		this.router.post('/content-management/courses/:courseId/module-link', asyncHandler(this.setLinkModule()))
-		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', asyncHandler(this.updateLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link/:moduleId?', asyncRoleCheck(learningEditRole), asyncHandler(this.addLinkModule()))
+		this.router.get('/content-management/courses/:courseId/module-link', asyncRoleCheck(learningEditRole), asyncHandler(this.addLinkModule()))
+		this.router.post('/content-management/courses/:courseId/module-link', asyncRoleCheck(learningEditRole), asyncHandler(this.setLinkModule()))
+		this.router.post('/content-management/courses/:courseId/module-link/:moduleId?', asyncRoleCheck(learningEditRole), asyncHandler(this.updateLinkModule()))
 	}
 
 	public addLinkModule() {

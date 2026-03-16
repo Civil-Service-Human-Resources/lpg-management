@@ -10,6 +10,8 @@ import * as fileType from '../../lib/fileType'
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {CourseService} from '../../lib/courseService'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
+import {learningEditRole} from '../../identity/identity'
 const { xss } = require('express-xss-sanitizer')
 
 export class FileController {
@@ -41,12 +43,12 @@ export class FileController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/module-file/:moduleId?', xss(), this.getFile('file'))
-		this.router.get('/content-management/courses/:courseId/module-elearning/:moduleId?', xss(), this.getFile('elearning'))
-		this.router.get('/content-management/courses/:courseId/module-mp4/:moduleId?', xss(), this.getFile('video'))
-		this.router.get('/content-management/courses/:courseId/module-video/:moduleId?', xss(), this.getFile('video'))
-		this.router.post('/content-management/courses/:courseId/module-file', xss(), this.setFile())
-		this.router.post('/content-management/courses/:courseId/module-file/:moduleId', xss(), this.editFile())
+		this.router.get('/content-management/courses/:courseId/module-file/:moduleId?', asyncRoleCheck(learningEditRole), xss(), this.getFile('file'))
+		this.router.get('/content-management/courses/:courseId/module-elearning/:moduleId?', asyncRoleCheck(learningEditRole), xss(), this.getFile('elearning'))
+		this.router.get('/content-management/courses/:courseId/module-mp4/:moduleId?', asyncRoleCheck(learningEditRole), xss(), this.getFile('video'))
+		this.router.get('/content-management/courses/:courseId/module-video/:moduleId?', asyncRoleCheck(learningEditRole), xss(), this.getFile('video'))
+		this.router.post('/content-management/courses/:courseId/module-file', asyncRoleCheck(learningEditRole), xss(), this.setFile())
+		this.router.post('/content-management/courses/:courseId/module-file/:moduleId', asyncRoleCheck(learningEditRole), xss(), this.editFile())
 	}
 
 	public getFile(type: string) {

@@ -3,6 +3,8 @@ import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactor
 import {LearningCatalogue} from '../../learning-catalogue'
 import { getLogger } from '../../utils/logger'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
+import {learningEditRole} from '../../identity/identity'
 const { xss } = require('express-xss-sanitizer')
 
 export class ModuleController {
@@ -21,9 +23,9 @@ export class ModuleController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: false}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/add-module', xss(), this.addModule())
-		this.router.post('/content-management/courses/:courseId/add-module', xss(), this.setModule())
-		this.router.get('/content-management/courses/:courseId/:moduleId/delete', xss(), this.deleteModule())
+		this.router.get('/content-management/courses/:courseId/add-module', asyncRoleCheck(learningEditRole), xss(), this.addModule())
+		this.router.post('/content-management/courses/:courseId/add-module', asyncRoleCheck(learningEditRole), xss(), this.setModule())
+		this.router.get('/content-management/courses/:courseId/:moduleId/delete', asyncRoleCheck(learningEditRole), xss(), this.deleteModule())
 	}
 
 	public addModule() {

@@ -6,6 +6,8 @@ import {Module} from '../../learning-catalogue/model/module'
 import * as asyncHandler from 'express-async-handler'
 import {CourseService} from 'lib/courseService'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
+import {learningEditRole} from '../../identity/identity'
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -28,6 +30,7 @@ export class FaceToFaceModuleController {
 
 	/* istanbul ignore next */
 	private setRouterPaths() {
+		this.router.all('/content-management/courses/:courseId/module-face-to-face/*', asyncRoleCheck(learningEditRole))
 		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/module-face-to-face/:moduleId?', xss(), asyncHandler(this.getModule()))
 		this.router.post('/content-management/courses/:courseId/module-face-to-face/', xss(), asyncHandler(this.setModule()))

@@ -2,7 +2,7 @@ import {NextFunction, Request, Response, Router} from 'express'
 import {Route} from './route'
 import * as winston from 'winston'
 import {getLogger} from '../utils/logger'
-import {CompoundRoleBase} from '../identity/identity'
+import {IUserRole} from '../identity/identity'
 import {compoundRoleCheckMiddleware} from './middleware/roleCheckMiddleware'
 
 export abstract class Controller {
@@ -26,19 +26,19 @@ export abstract class Controller {
 		return []
 	}
 
-	protected getRequiredRoles(): CompoundRoleBase[] {
-		return []
-	}
+	protected abstract getRequiredRole(): IUserRole | undefined
 
 	protected getControllerMiddleware(): ((req: Request, res: Response, next: NextFunction) => void)[] {
 		return []
 	}
 
 	private applyRoleRestrictions() {
-		const requiredRoles = this.getRequiredRoles()
-		if (requiredRoles.length > 0) {
-			this.logger.debug(`Restricting controller to roles: [${requiredRoles.map(rr => rr.getDescription())}]`)
-			this.router.use(compoundRoleCheckMiddleware(requiredRoles))
+		const requiredRole = this.getRequiredRole()
+		if (requiredRole !== undefined) {
+			this.logger.debug(`Restricting controller to roles: ${requiredRole.getDescription()}`)
+			this.router.use(compoundRoleCheckMiddleware(requiredRole))
+		} else {
+			this.logger.debug('Controller does not have any assigned roles')
 		}
 	}
 

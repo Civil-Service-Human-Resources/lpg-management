@@ -42,11 +42,10 @@
                 {{ courseEvents(course, faceToFaceModules, identity) }}
             {% endblock %}
         </div>
-        {% if not identity.isSupplierAuthor() %}
         <div class="section">
             <div class="title-container">
                 <h2 class="govuk-heading-m">Course audiences</h2>
-                {% if course.status !== "Archived" and identity.hasLearningCreate() %}
+                {% if course.status !== "Archived" and identity.hasLearningEdit() %}
                 <form action="/content-management/courses/{{ course.id }}/audiences/" method="post">
                     <input type="hidden" name="_csrf" value="{{ _csrf }}">
                     <button class="govuk-link linkish-button add-audience-link" id="name" name="name" value="temp-audience-name">Add an audience</button>
@@ -57,7 +56,6 @@
                 {{ audiences(course, sortedAudiences, identity) }}
             {% endblock %}
         </div>
-        {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
