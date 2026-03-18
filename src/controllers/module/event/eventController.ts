@@ -49,33 +49,26 @@ export class EventController implements FormController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 
-		const roleCheck = asyncHandler(roleCheckMiddleware(learningCreateRole))
-
 		applyLearningCatalogueMiddleware({getModule: true, getEvent: true}, this.router, this.learningCatalogue)
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), roleCheck, asyncHandler(this.getLocation()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', xss(), roleCheck, asyncHandler(this.editLocation()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.editLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.updateLocation()))
 
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), roleCheck, asyncHandler(this.setLocation()))
-
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), roleCheck, asyncHandler(this.updateLocation()))
-
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events-preview/:eventId?', xss(), roleCheck, asyncHandler(this.getDatePreview()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.setLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.getLocation()))
 
 		// Use uid parameters here to avoid the middleware
 		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events-overview/:eventUid', xss(), asyncHandler(roleCheckMiddleware(learningViewingRole)), asyncHandler(this.getEventOverview()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.getDateTime()))
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), roleCheck, asyncHandler(this.setDateTime()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.getDateTime()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.setDateTime()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), roleCheck, asyncHandler(this.editDateRange()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), roleCheck, asyncHandler(this.dateRangeOverview()))
-
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), roleCheck, asyncHandler(this.addDateRange()))
-
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), roleCheck, asyncHandler(this.updateDateRange()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.dateRangeOverview()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.addDateRange()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.editDateRange()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.updateDateRange()))
 
 		// Use uid parameters here to avoid the middleware
 		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.getAttendeeDetails()))
@@ -84,8 +77,8 @@ export class EventController implements FormController {
 		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), asyncHandler(roleCheckMiddleware(learningDeleteRole)), asyncHandler(this.cancelEvent()))
 		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningDeleteRole)), asyncHandler(this.setCancelEvent()))
 
-		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.getCancelBooking()))
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.cancelBooking()))
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningDeleteRole)), asyncHandler(this.getCancelBooking()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningDeleteRole)), asyncHandler(this.cancelBooking()))
 
 		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/invite', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.inviteLearner()))
 	}
@@ -298,15 +291,6 @@ export class EventController implements FormController {
 						})
 				}
 			}
-		}
-	}
-
-	public getDatePreview() {
-		return async (req: Request, res: Response) => {
-			const course: Course = res.locals.course
-			const module: Course = res.locals.module
-
-			res.render('page/course/module/events/events-preview', {course: course, module: module})
 		}
 	}
 
