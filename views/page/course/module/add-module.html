@@ -65,7 +65,7 @@
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
                 <div class="added-modules govuk-!-padding-bottom-5 govuk-!-padding-top-5">
-                    {% if identity.hasLearningCreate() %}
+                    {% if identity.hasLearningEdit() %}
                         <form action="/content-management/courses/{{ course.id }}/add-module" method="post" class="module-form">
                             <input type="hidden" name="_csrf" value="{{ _csrf }}">
                             <h3 class="govuk-heading-m">Add a module</h3>
