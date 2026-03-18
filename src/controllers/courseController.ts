@@ -49,24 +49,27 @@ export class CourseController implements FormController {
 	private configureRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: false, getEvent: false}, this.router, this.learningCatalogue)
 		this.router.get('/content-management/courses/:courseId/overview', asyncHandler(roleCheckMiddleware(learningViewingRole)), xss(), asyncHandler(this.courseOverview()))
-		this.router.get('/content-management/courses/:courseId/preview', asyncHandler(roleCheckMiddleware(learningViewingRole)), xss(), this.coursePreview())
+		this.router.get('/content-management/courses/:courseId/preview', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.coursePreview())
 
-		this.router.get('/content-management/courses/visibility/:courseId?', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseVisibility())
+		this.router.get('/content-management/courses/visibility/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseVisibility())
 		this.router.post('/content-management/courses/visibility/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.setCourseVisibility())
-		this.router.post('/content-management/courses/visibility/:courseId', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.updateCourseVisibility())
-		this.router.post('/content-management/courses/visibility/:courseId/confirm', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.confirmCourseVisibilityUpdate())
+		this.router.get('/content-management/courses/visibility/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.updateCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId/confirm', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.confirmCourseVisibilityUpdate())
 
-		this.router.get('/content-management/courses/title/:courseId?', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseTitle())
+		this.router.get('/content-management/courses/title/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseTitle())
 		this.router.post('/content-management/courses/title/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.createCourseTitle())
-		this.router.post('/content-management/courses/title/:courseId', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.updateCourseTitle())
+		this.router.get('/content-management/courses/title/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseTitle())
+		this.router.post('/content-management/courses/title/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.updateCourseTitle())
+
+		this.router.get('/content-management/courses/details/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseDetails())
+		this.router.post('/content-management/courses/details/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.createCourseDetails())
+		this.router.get('/content-management/courses/details/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseDetails())
+		this.router.post('/content-management/courses/details/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.updateCourseDetails())
 
 		this.router.get('/content-management/courses/delete/:courseId', asyncHandler(roleCheckMiddleware(learningDeleteRole)), xss(), this.renderDeleteCourseConfirmationPage())
 		this.router.post('/content-management/courses/delete/:courseId', asyncHandler(roleCheckMiddleware(learningDeleteRole)), xss(), this.deleteCourse())
 		this.router.get('/content-management/courses/deleted', asyncHandler(roleCheckMiddleware(learningDeleteRole)), xss(), this.renderCourseDeletedPage())
-
-		this.router.get('/content-management/courses/details/:courseId?', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseDetails())
-		this.router.post('/content-management/courses/details/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.createCourseDetails())
-		this.router.post('/content-management/courses/details/:courseId', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.updateCourseDetails())
 
 		this.router.get('/content-management/courses/:courseId/sort-modules', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.sortModules())
 		this.router.get('/content-management/courses/:courseId/archive', asyncHandler(roleCheckMiddleware(learningArchiveRole)), xss(), this.getArchiveConfirmation())
