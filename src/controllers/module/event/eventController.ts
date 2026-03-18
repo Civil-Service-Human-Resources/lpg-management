@@ -19,7 +19,7 @@ import {CslServiceClient} from '../../../csl-service/client'
 import {CancelBookingDto} from '../../../csl-service/model/CancelBookingDto'
 import {applyLearningCatalogueMiddleware} from '../../middleware/learningCatalogueMiddleware'
 import {roleCheckMiddleware} from '../../middleware/roleCheckMiddleware'
-import {learningViewingRole, learningCreateRole} from '../../../identity/identity'
+import {learningViewingRole, learningCreateRole, learningDeleteRole, learningEditRole} from '../../../identity/identity'
 import {plainToInstance} from 'class-transformer'
 import {LearnerEmailModel} from './model/learnerEmailModel'
 import {validateAndMapErrors} from '../../../validators/util'
@@ -78,16 +78,16 @@ export class EventController implements FormController {
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/dateRanges/:dateRangeIndex', xss(), roleCheck, asyncHandler(this.updateDateRange()))
 
 		// Use uid parameters here to avoid the middleware
-		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid', xss(), roleCheck, asyncHandler(this.getAttendeeDetails()))
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/update', xss(), roleCheck, asyncHandler(this.updateBooking()))
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.getAttendeeDetails()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/update', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.updateBooking()))
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), roleCheck, asyncHandler(this.cancelEvent()))
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), roleCheck, asyncHandler(this.setCancelEvent()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/cancel', xss(), asyncHandler(roleCheckMiddleware(learningDeleteRole)), asyncHandler(this.cancelEvent()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningDeleteRole)), asyncHandler(this.setCancelEvent()))
 
-		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), roleCheck, asyncHandler(this.getCancelBooking()))
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), roleCheck, asyncHandler(this.cancelBooking()))
+		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.getCancelBooking()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/attendee/:bookingUid/cancel', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.cancelBooking()))
 
-		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/invite', xss(), roleCheck, asyncHandler(this.inviteLearner()))
+		this.router.post('/content-management/courses/:courseUid/modules/:moduleUid/events/:eventUid/invite', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.inviteLearner()))
 	}
 
 	public getDateTime() {

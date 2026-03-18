@@ -154,11 +154,14 @@
                             {% set payment = i18n.attendee.status.Confirmed %}
                         {% endif %}
 
-                        {% set bookingUrl %}
-                            <a class="govuk-link no-wrap" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
-                        {% endset %}
                         {% set rows = (rows.push([{text: booking.learnerEmail, classes: "no-wrap"}, {text: payment},
-                        {text: booking.reference}, {html: bookingUrl}]), rows) %}
+                        {text: booking.reference}]), rows) %}
+                        {% if identity.hasLearningEdit() %}
+                            {% set bookingUrl %}
+                                <a class="govuk-link no-wrap" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
+                            {% endset %}
+                            {% set row = rows.push({html: bookingUrl}) %}
+                        {% endif %}
                     {% endfor %}
 
                     {{ govukTable(
