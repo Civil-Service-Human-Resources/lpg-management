@@ -16,7 +16,14 @@ import * as asyncHandler from 'express-async-handler'
 import { getLogger } from '../utils/logger'
 import {applyLearningCatalogueMiddleware} from './middleware/learningCatalogueMiddleware'
 import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
-import {learningArchiveRole, learningPublishRole, learningUnarchiveRole} from '../identity/identity'
+import {
+	learningViewingRole,
+	learningArchiveRole, learningCreateRole,
+	learningDeleteRole,
+	learningEditRole,
+	learningPublishRole,
+	learningUnarchiveRole,
+} from '../identity/identity'
 const { xss } = require('express-xss-sanitizer')
 
 export class CourseController implements FormController {
@@ -41,45 +48,35 @@ export class CourseController implements FormController {
 	/* istanbul ignore next */
 	private configureRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: false, getEvent: false}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/overview', xss(), asyncHandler(this.checkForEventViewRole()), asyncHandler(this.courseOverview()))
-		this.router.get('/content-management/courses/:courseId/preview', xss(), this.checkForEventViewRole(), this.coursePreview())
+		this.router.get('/content-management/courses/:courseId/overview', asyncHandler(roleCheckMiddleware(learningViewingRole)), xss(), asyncHandler(this.courseOverview()))
+		this.router.get('/content-management/courses/:courseId/preview', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.coursePreview())
 
-		this.router.get('/content-management/courses/visibility/:courseId?', xss(), this.getCourseVisibility())
-		this.router.post('/content-management/courses/visibility/', xss(), this.setCourseVisibility())
-		this.router.post('/content-management/courses/visibility/:courseId', xss(), this.updateCourseVisibility())
-		this.router.post('/content-management/courses/visibility/:courseId/confirm', xss(), this.confirmCourseVisibilityUpdate())
-		this.router.get('/content-management/courses/title/:courseId?', xss(), this.getCourseTitle())
-		this.router.post('/content-management/courses/title/', xss(), this.createCourseTitle())
-		this.router.post('/content-management/courses/title/:courseId', xss(), this.updateCourseTitle())
+		this.router.get('/content-management/courses/visibility/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseVisibility())
+		this.router.post('/content-management/courses/visibility/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.setCourseVisibility())
+		this.router.get('/content-management/courses/visibility/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.updateCourseVisibility())
+		this.router.post('/content-management/courses/visibility/:courseId/confirm', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.confirmCourseVisibilityUpdate())
 
-		this.router.get('/content-management/courses/delete/:courseId', xss(), this.renderDeleteCourseConfirmationPage())
-		this.router.post('/content-management/courses/delete/:courseId', xss(), this.deleteCourse())
-		this.router.get('/content-management/courses/deleted', xss(), this.renderCourseDeletedPage())
+		this.router.get('/content-management/courses/title/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseTitle())
+		this.router.post('/content-management/courses/title/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.createCourseTitle())
+		this.router.get('/content-management/courses/title/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseTitle())
+		this.router.post('/content-management/courses/title/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.updateCourseTitle())
 
-		this.router.get('/content-management/courses/details/:courseId?', xss(), this.getCourseDetails())
-		this.router.post('/content-management/courses/details/', xss(), this.createCourseDetails())
-		this.router.post('/content-management/courses/details/:courseId', xss(), this.updateCourseDetails())
+		this.router.get('/content-management/courses/details/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseDetails())
+		this.router.post('/content-management/courses/details/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.createCourseDetails())
+		this.router.get('/content-management/courses/details/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseDetails())
+		this.router.post('/content-management/courses/details/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.updateCourseDetails())
 
-		this.router.get('/content-management/courses/:courseId/sort-modules', xss(), this.sortModules())
+		this.router.get('/content-management/courses/delete/:courseId', asyncHandler(roleCheckMiddleware(learningDeleteRole)), xss(), this.renderDeleteCourseConfirmationPage())
+		this.router.post('/content-management/courses/delete/:courseId', asyncHandler(roleCheckMiddleware(learningDeleteRole)), xss(), this.deleteCourse())
+		this.router.get('/content-management/courses/deleted', asyncHandler(roleCheckMiddleware(learningDeleteRole)), xss(), this.renderCourseDeletedPage())
+
+		this.router.get('/content-management/courses/:courseId/sort-modules', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.sortModules())
 		this.router.get('/content-management/courses/:courseId/archive', asyncHandler(roleCheckMiddleware(learningArchiveRole)), xss(), this.getArchiveConfirmation())
 		this.router.post('/content-management/courses/:courseId/status/publish', asyncHandler(roleCheckMiddleware(learningPublishRole)), xss(), this.publishCourse())
 		this.router.post('/content-management/courses/:courseId/status/archive', asyncHandler(roleCheckMiddleware(learningArchiveRole)), xss(), this.archiveCourse())
 		this.router.post('/content-management/courses/:courseId/status/unarchive', asyncHandler(roleCheckMiddleware(learningUnarchiveRole)), xss(), this.unarchiveCourse())
-		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules', xss(), this.sortModules())
-	}
-
-	public checkForEventViewRole() {
-		return (req: Request, res: Response, next: NextFunction) => {
-			if (req.user && req.user.hasEventViewingRole()) {
-				next()
-			} else {
-				if (req.user && req.user.uid) {
-					this.logger.error('Rejecting user without event viewing role ' + req.user.uid + ' with IP '
-						+ req.ip + ' from page ' + req.originalUrl)
-					}
-				res.render('page/unauthorised')
-			}
-		}
+		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.sortModules())
 	}
 
 	courseOverview() {

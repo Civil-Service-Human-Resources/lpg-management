@@ -46,18 +46,20 @@
             </div>
         </div>
         <div class="govuk-grid-column-one-third">
-            <div class="right-menu">
+            {% set actions = [] %}
+            {% if pageModel.courseStatus !== "Archived" and identity.hasLearningDelete() %}
+                {% set action = actions.push({
+                    link: pageModel.getCancelLink(),
+                    text: 'Cancel Attendee'
+                }) %}
+            {% endif %}
+            {% if actions | length > 0 %}
+                <div class="right-menu">
                     {% block menu %}
-                    {% set actions = [] %}
-                    {% if pageModel.courseStatus !== "Archived" and identity.hasLearningDelete() %}
-                        {% set action = actions.push({
-                            link: pageModel.getCancelLink(),
-                            text: 'Cancel Attendee'
-                        }) %}
-                    {% endif %}
-                    {{ menu("Actions", actions) }}
+                        {{ menu("Actions", actions) }}
                     {% endblock %}
-            </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

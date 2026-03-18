@@ -146,7 +146,7 @@
                     {% set head = [{text: "Email address"}, {text: "Payment", classes: "no-wrap"},
                     {text: "Booking Reference"}, {html: viewHeader}] %}
 
-                    {% set rows = [[]] %}
+                    {% set rows = [] %}
                     {% for booking in pageModel.bookings %}
                         {% if booking.status === "Requested" %}
                             {% set payment = i18n.attendee.status.Requested %}
@@ -154,17 +154,21 @@
                             {% set payment = i18n.attendee.status.Confirmed %}
                         {% endif %}
 
-                        {% set bookingUrl %}
-                            <a class="govuk-link no-wrap" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
-                        {% endset %}
-                        {% set rows = (rows.push([{text: booking.learnerEmail, classes: "no-wrap"}, {text: payment},
-                        {text: booking.reference}, {html: bookingUrl}]), rows) %}
+                        {% set rows = (rows.push({text: booking.learnerEmail, classes: "no-wrap"}, {text: payment},
+                        {text: booking.reference}), rows) %}
+
+                        {% if identity.hasLearningEdit() %}
+                            {% set bookingUrl %}
+                                <a class="govuk-link no-wrap" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
+                            {% endset %}
+                            {% set rows = (rows.push({html: bookingUrl}), rows) %}
+                        {% endif %}
                     {% endfor %}
 
                     {{ govukTable(
                         {
                             head: head,
-                            rows: rows
+                            rows: [rows]
                         }
                     ) }}
                 {% else %}
@@ -196,7 +200,7 @@
               {% else %}
                 {% block menu %}
                 {% set actions = [] %}
-                {% if identity.hasLearningCreate() %}
+                {% if identity.hasLearningEdit() %}
                     {% set action = actions.push({
                         link: pageModel.getEditDateTimeUrl(),
                         text: 'Edit time and date'
@@ -212,7 +216,9 @@
                             text: 'Cancel this event'
                         }) %}
                 {% endif %}
-                {{ menu("Actions", actions) }}
+                {% if actions | length > 0 %}
+                    {{ menu("Actions", actions) }}
+                {% endif %}
                 {% endblock %}
               {% endif %}
             </div>

@@ -1,21 +1,25 @@
 import {getLogger} from '../../utils/logger'
 import {NextFunction, Request, Response} from 'express'
-import {CompoundRoleBase, UserRole} from '../../identity/identity'
+import {IUserRole} from '../../identity/identity'
+import * as asyncHandler from 'express-async-handler'
 
 const logger  = getLogger("roleCheck")
 
-export const roleCheckMiddleware = (role: UserRole) => (req: Request, res: Response, next: NextFunction) => {
-	return compoundRoleCheckMiddleware(role.compoundRoles)(req, res, next)
+export const asyncRoleCheck = (role: IUserRole) => (req: Request, res: Response, next: NextFunction) => {
+	return asyncHandler(roleCheckMiddleware(role)(req, res, next))
 }
 
-export const compoundRoleCheckMiddleware = (requiredRoles: CompoundRoleBase[]) => (req: Request, res: Response, next: NextFunction) => {
+export const roleCheckMiddleware = (role: IUserRole) => (req: Request, res: Response, next: NextFunction) => {
+	return compoundRoleCheckMiddleware(role)(req, res, next)
+}
+
+export const compoundRoleCheckMiddleware = (requiredRole: IUserRole) => (req: Request, res: Response, next: NextFunction) => {
 	let errorMsg: string = ""
 	if (req.user) {
 		const userRoles: string[] = req.user.roles
-		const requiredRoleDescriptions = requiredRoles.map(r => r.getDescription()).join(" ")
-		logger.debug(`Checking user '${req.user.uid}' against required roles ${requiredRoleDescriptions}`)
-		if (!requiredRoles.every(rr => rr.checkRoles(userRoles))) {
-			errorMsg = `User '${req.user.uid}' does not have the correct roles assigned for URL ${req.originalUrl}. User has roles: [${userRoles}], required Roles are: ` + requiredRoleDescriptions
+		logger.debug(`Checking user '${req.user.uid}' against required roles: ${requiredRole.getDescription()}`)
+		if (!requiredRole.checkRoles(userRoles)) {
+			errorMsg = `User '${req.user.uid}' does not have the correct roles assigned for URL ${req.originalUrl}. User has roles: [${userRoles}], required Roles are: ` + requiredRole.getDescription()
 		} else {
 			return next()
 		}
@@ -25,5 +29,5 @@ export const compoundRoleCheckMiddleware = (requiredRoles: CompoundRoleBase[]) =
 
 	logger.error(errorMsg);
 	res.status(401)
-	res.render('page/unauthorised');
+	return res.render('page/unauthorised');
 }

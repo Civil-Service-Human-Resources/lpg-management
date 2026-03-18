@@ -35,36 +35,32 @@
         {{ pagination(paginationBaseUrl) }}
     </div>
     <div class="govuk-grid-column-one-third">
-        <div class="right-menu">
-            {% block menu %}
-            {% set actions = [] %}
-            {% if identity.hasLearningCreate() %}
-                {% set action = actions.push({
-                    link: '/content-management/courses/visibility',
-                    text: 'Add a new course'
-                }) %}
-            {% endif %}
-            {% if identity.isLearningProviderManager() %}
-                {% set action = actions.push({
-                    link: '/content-management/learning-providers',
-                    text: 'Manage learning providers'
-                }) %}
-            {% endif %}
-            {% if identity.isOrganisationManagerOrSuperUser() %}
-                {% set action = actions.push({
-                    link: '/content-management/organisations/manage',
-                    text: 'Manage organisations'
-                }) %}
-            {% endif %}
-            {% if identity.isSkillsManagerOrSuperUser() %}
-                {% set action = actions.push({
-                    link: '/content-management/skills',
-                    text: 'Manage quiz'
-                }) %}
-            {% endif %}
-            {{ menu("Actions", actions) }}
-            {% endblock %}
-        </div>
+        {% set actions = [] %}
+        {% if identity.hasLearningCreate() %}
+            {% set action = actions.push({
+                link: '/content-management/courses/visibility',
+                text: 'Add a new course'
+            }) %}
+        {% endif %}
+        {% if identity.isOrganisationManager() %}
+            {% set action = actions.push({
+                link: '/content-management/organisations/manage',
+                text: 'Manage organisations'
+            }) %}
+        {% endif %}
+        {% if identity.isSkillsManagerOrSuperUser() %}
+            {% set action = actions.push({
+                link: '/content-management/skills',
+                text: 'Manage quiz'
+            }) %}
+        {% endif %}
+        {% if actions | length > 0 %}
+            <div class="right-menu">
+                {% block menu %}
+                {{ menu("Actions", actions) }}
+                {% endblock %}
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

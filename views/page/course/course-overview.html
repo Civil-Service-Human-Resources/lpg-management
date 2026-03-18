@@ -42,11 +42,10 @@
                 {{ courseEvents(course, faceToFaceModules, identity) }}
             {% endblock %}
         </div>
-        {% if not identity.isSupplierAuthor() %}
         <div class="section">
             <div class="title-container">
                 <h2 class="govuk-heading-m">Course audiences</h2>
-                {% if course.status !== "Archived" and identity.hasLearningCreate() %}
+                {% if course.status !== "Archived" and identity.hasLearningEdit() %}
                 <form action="/content-management/courses/{{ course.id }}/audiences/" method="post">
                     <input type="hidden" name="_csrf" value="{{ _csrf }}">
                     <button class="govuk-link linkish-button add-audience-link" id="name" name="name" value="temp-audience-name">Add an audience</button>
@@ -57,7 +56,6 @@
                 {{ audiences(course, sortedAudiences, identity) }}
             {% endblock %}
         </div>
-        {% endif %}
     </div>
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
@@ -68,34 +66,36 @@
                 {{ changeStatus(course.status) }}
             {% endblock %}
             {% if course.status !== "Archived" %}
-                {% if identity.hasLearningEdit() %}
-                    {% block menu %}
-                        {% set actions = [
-                            {
+                {% block menu %}
+                    {% set actions = [] %}
+                    {% if identity.hasLearningEdit() %}
+                        {% set action = actions.push({
                                 link: '/content-management/courses/' + course.id + "/preview",
                                 text: "Preview and edit",
                                 visuallyHiddenText: course.title
-                            }
-                        ] %}
-                        {% if showDeleteCourseLink %}
-                            {% set action = actions.push({
-                                    link: '/content-management/courses/delete/' + course.id,
-                                    text: 'Delete this course'
                             }) %}
-                        {% endif %}
+                    {% endif %}
+                    {% if showDeleteCourseLink %}
+                        {% set action = actions.push({
+                                link: '/content-management/courses/delete/' + course.id,
+                                text: 'Delete this course'
+                        }) %}
+                    {% endif %}
 
+                    {% if actions | length > 0 %}
                         {{ menu("Actions", actions) }}
+                    {% endif %}
 
-                        {% set linkActions = [
-                            {
-                                link: courseUrl,
-                                text: 'View this course on Civil Service Learning',
-                                openInNewTab: true
-                            }
-                        ] %}
-                        {{ menu("Course link", linkActions) }}
+                    {% set linkActions = [
+                        {
+                            link: courseUrl,
+                            text: 'View this course on Civil Service Learning',
+                            openInNewTab: true
+                        }
+                    ] %}
+                    {{ menu("Course link", linkActions) }}
 
-                        {% if course.status === "Published" %}
+                    {% if course.status === "Published" %}
                         <div id="course-copy" class="js-only govuk-!-padding-2">
                             {{ govukButton({
                             text: "Copy link to clipboard",
@@ -103,9 +103,8 @@
                             }) }}
                             <div id="course-copy-notification" class="govuk-body govuk-!-margin-top-2" role="status"></div>
                         </div>
-                        {% endif %}
-                    {% endblock %}
-                {% endif %}
+                    {% endif %}
+                {% endblock %}
             {% endif %}
         </div>
     </div>
