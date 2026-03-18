@@ -297,7 +297,7 @@ export class Identity {
 	}
 
 	isSkillsManagerOrSuperUser() {
-		return this.isSuperUser() || this.isCshrReporter() || this.isOrganisationReporter()
+		return this.isSuperUser()
 	}
 
 	isUnrestrictedOrganisation() {
