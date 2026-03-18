@@ -66,34 +66,36 @@
                 {{ changeStatus(course.status) }}
             {% endblock %}
             {% if course.status !== "Archived" %}
-                {% if identity.hasLearningEdit() %}
-                    {% block menu %}
-                        {% set actions = [
-                            {
+                {% block menu %}
+                    {% set actions = [] %}
+                    {% if identity.hasLearningEdit() %}
+                        {% set action = actions.push({
                                 link: '/content-management/courses/' + course.id + "/preview",
                                 text: "Preview and edit",
                                 visuallyHiddenText: course.title
-                            }
-                        ] %}
-                        {% if showDeleteCourseLink %}
-                            {% set action = actions.push({
-                                    link: '/content-management/courses/delete/' + course.id,
-                                    text: 'Delete this course'
                             }) %}
-                        {% endif %}
+                    {% endif %}
+                    {% if showDeleteCourseLink %}
+                        {% set action = actions.push({
+                                link: '/content-management/courses/delete/' + course.id,
+                                text: 'Delete this course'
+                        }) %}
+                    {% endif %}
 
+                    {% if actions | length > 0 %}
                         {{ menu("Actions", actions) }}
+                    {% endif %}
 
-                        {% set linkActions = [
-                            {
-                                link: courseUrl,
-                                text: 'View this course on Civil Service Learning',
-                                openInNewTab: true
-                            }
-                        ] %}
-                        {{ menu("Course link", linkActions) }}
+                    {% set linkActions = [
+                        {
+                            link: courseUrl,
+                            text: 'View this course on Civil Service Learning',
+                            openInNewTab: true
+                        }
+                    ] %}
+                    {{ menu("Course link", linkActions) }}
 
-                        {% if course.status === "Published" %}
+                    {% if course.status === "Published" %}
                         <div id="course-copy" class="js-only govuk-!-padding-2">
                             {{ govukButton({
                             text: "Copy link to clipboard",
@@ -101,9 +103,8 @@
                             }) }}
                             <div id="course-copy-notification" class="govuk-body govuk-!-margin-top-2" role="status"></div>
                         </div>
-                        {% endif %}
-                    {% endblock %}
-                {% endif %}
+                    {% endif %}
+                {% endblock %}
             {% endif %}
         </div>
     </div>
