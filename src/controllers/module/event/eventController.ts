@@ -52,11 +52,10 @@ export class EventController implements FormController {
 		applyLearningCatalogueMiddleware({getModule: true, getEvent: true}, this.router, this.learningCatalogue)
 
 
-		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.editLocation()))
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.updateLocation()))
-
-		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.setLocation()))
 		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/create', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.getLocation()))
+		this.router.get('/content-management/courses/:courseId/modules/:moduleId/events/:eventId/location', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.editLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/', xss(), asyncHandler(roleCheckMiddleware(learningCreateRole)), asyncHandler(this.setLocation()))
+		this.router.post('/content-management/courses/:courseId/modules/:moduleId/events/location/:eventId', xss(), asyncHandler(roleCheckMiddleware(learningEditRole)), asyncHandler(this.updateLocation()))
 
 		// Use uid parameters here to avoid the middleware
 		this.router.get('/content-management/courses/:courseUid/modules/:moduleUid/events-overview/:eventUid', xss(), asyncHandler(roleCheckMiddleware(learningViewingRole)), asyncHandler(this.getEventOverview()))
@@ -296,6 +295,7 @@ export class EventController implements FormController {
 
 	public getLocation() {
 		return async (req: Request, res: Response) => {
+			console.log("LOCATION")
 			res.render('page/course/module/events/event-location', {
 				event: JSON.parse(req.body.eventJson || '{}'),
 				eventJson: req.body.eventJson,
