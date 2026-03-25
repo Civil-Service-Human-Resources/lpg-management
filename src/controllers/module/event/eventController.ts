@@ -295,7 +295,6 @@ export class EventController implements FormController {
 
 	public getLocation() {
 		return async (req: Request, res: Response) => {
-			console.log("LOCATION")
 			res.render('page/course/module/events/event-location', {
 				event: JSON.parse(req.body.eventJson || '{}'),
 				eventJson: req.body.eventJson,
