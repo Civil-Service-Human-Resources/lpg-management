@@ -1,7 +1,9 @@
-import {NextFunction, Request, Response} from 'express'
-import {LearningCatalogue} from '../learning-catalogue'
+import { NextFunction, Request, Response } from 'express'
+import { LearningCatalogue } from '../learning-catalogue'
 
-import {Pagination} from 'lib/pagination'
+import { Pagination } from 'lib/pagination'
+import { Course } from 'src/learning-catalogue/model/course'
+import { DefaultPageResults } from 'src/learning-catalogue/model/defaultPageResults'
 
 export class HomeController {
 	learningCatalogue: LearningCatalogue
@@ -14,22 +16,26 @@ export class HomeController {
 
 	public index() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			let {page, size} = this.pagination.getPageAndSizeFromRequest(request)
+			let { page, size } = this.pagination.getPageAndSizeFromRequest(request)
 
-			await this.learningCatalogue
-				.listCourses(page, size)
-				.then(pageResults => {
-					response.render('page/index', {
-						pageResults,
-					})
+			try{
+				const pageResults: DefaultPageResults<Course> = await this.learningCatalogue.listCourses(page, size)
+				
+				const paginationUrlBase: string = `/content-management/?s=${size}&p=`
+				const pagePagination = this.pagination.getPagination(Number(page) + 1, pageResults.getPageCount(), paginationUrlBase)
+
+				response.render('page/index', {
+					pageResults,
+					pagePagination: pagePagination
 				})
-				.catch(error => {
-					if (error.response && error.response.status == 403) {
-						response.render('page/index')
-					} else {
-						next(error)
-					}
-				})
+			}
+			catch(error) {
+				if (error.response && error.response.status == 403) {
+					response.render('page/index', {})
+				} else {
+					next(error)
+				}
+			}
 		}
 	}
 }

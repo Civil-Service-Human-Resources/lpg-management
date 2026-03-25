@@ -1,7 +1,7 @@
 {% from "../component/list/macro.njk" import list with context %}
 {% from "../component/menu/macro.njk" import menu %}
 {% from "../component/search/macro.njk" import search with context %}
-{% from "../component/pagination/macro.njk" import pagination with context %}
+{% from "../component/pagination.v2/macro.njk" import pagination with context %}
 
 {% extends "../component/Page.njk" %}
 
@@ -24,47 +24,54 @@
 
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-            {% if pageResults and pageResults.totalResults !== 0 %}
-                {% block list %}
-                {{ list("Courses", pageResults) }}
-                {% endblock %}
-            {% else %}
-                <p class="govuk-body">There are currently no courses available</p>
-            {% endif %}
-        {% set paginationBaseUrl = '/content-management/' %}
-        {{ pagination(paginationBaseUrl) }}
+        {% if pageResults and pageResults.totalResults !== 0 %}
+        {% block list %}
+        {{ list("Courses", pageResults) }}
+        {% endblock %}
+        {% else %}
+        <p class="govuk-body">There are currently no courses available</p>
+        {% endif %}
+
     </div>
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
             {% block menu %}
             {% set actions = [] %}
             {% if identity.hasLearningCreate() %}
-                {% set action = actions.push({
-                    link: '/content-management/courses/visibility',
-                    text: 'Add a new course'
-                }) %}
+            {% set action = actions.push({
+            link: '/content-management/courses/visibility',
+            text: 'Add a new course'
+            }) %}
             {% endif %}
             {% if identity.isLearningProviderManager() %}
-                {% set action = actions.push({
-                    link: '/content-management/learning-providers',
-                    text: 'Manage learning providers'
-                }) %}
+            {% set action = actions.push({
+            link: '/content-management/learning-providers',
+            text: 'Manage learning providers'
+            }) %}
             {% endif %}
             {% if identity.isOrganisationManagerOrSuperUser() %}
-                {% set action = actions.push({
-                    link: '/content-management/organisations/manage',
-                    text: 'Manage organisations'
-                }) %}
+            {% set action = actions.push({
+            link: '/content-management/organisations/manage',
+            text: 'Manage organisations'
+            }) %}
             {% endif %}
             {% if identity.isSkillsManagerOrSuperUser() %}
-                {% set action = actions.push({
-                    link: '/content-management/skills',
-                    text: 'Manage quiz'
-                }) %}
+            {% set action = actions.push({
+            link: '/content-management/skills',
+            text: 'Manage quiz'
+            }) %}
             {% endif %}
             {{ menu("Actions", actions) }}
             {% endblock %}
         </div>
+    </div>
+</div>
+<div class="govuk-grid-row">    
+    <div class="govuk-grid-column-one-third pagination-summary">
+        <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+        {{ pagination(pagePagination) }}
     </div>
 </div>
 {% endblock %}
