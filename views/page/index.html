@@ -74,4 +74,12 @@
         {{ pagination(pagePagination) }}
     </div>
 </div>
+<div class="govuk-grid-row">    
+    <div class="govuk-grid-column-one-third pagination-summary">
+        <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+        {{ pagination(pagePagination) }}
+    </div>
+</div>
 {% endblock %}
