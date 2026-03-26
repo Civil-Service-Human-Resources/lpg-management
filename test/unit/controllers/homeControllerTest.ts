@@ -42,15 +42,17 @@ describe('Home Controller Tests', function() {
 			size: 10,
 			totalResults: 21,
 			results: [course],
+			getPageCount: function() {
+				return 3
+			}
 		} as PageResults<Course>
 
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
 		learningCatalogue.listCourses = listAll
 
 		await homeController.index()(request, response, next)
-
 		expect(learningCatalogue.listCourses).to.have.been.calledWith(0, 10)
-
+		
 		expect(response.render).to.have.been.calledOnceWith('page/index')
 	})
 
@@ -64,7 +66,20 @@ describe('Home Controller Tests', function() {
 			size: 10,
 			totalResults: 21,
 			results: [course],
+			getPageCount: function() {
+				return 4
+			}
 		} as PageResults<Course>
+
+		const pagePagination ={
+			items: [
+				{ number: 1, url: "/content-management/?s=5&p=0" }, 
+				{ ellipsis: true }, 
+				{ number: 3, url: "/content-management/?s=5&p=2" }, 
+				{ current: true, number: 4, url: "/content-management/?s=5&p=3" }],
+			next: null,
+			previous: { href: "/content-management/?s=5&p=2" }
+		}
 
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
 		learningCatalogue.listCourses = listAll
@@ -80,6 +95,7 @@ describe('Home Controller Tests', function() {
 
 		expect(response.render).to.have.been.calledOnceWith('page/index', {
 			pageResults,
+			pagePagination
 		})
 	})
 
