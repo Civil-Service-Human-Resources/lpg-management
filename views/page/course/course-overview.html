@@ -40,7 +40,7 @@
                                 text: "Type"
                             },
                             value: {
-                                text: i18n[course.getType()]  | default("Course", true)
+                                text: i18n[course.getType()] | default("Course", true)
                             }
                         },
                         {
@@ -48,7 +48,7 @@
                                 text: "Cost"
                             },
                             value: {
-                                text: "£" + course.getCost() | default("Free", true)
+                                text: "£" + course.getCost() if course.getCost() else "Free"
                             }
                         },
                         {
