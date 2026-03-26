@@ -2,9 +2,9 @@
 {% from "../../component/menu/macro.njk" import menu %}
 {% from "../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
 {% from "../../component/changeStatus/macro.njk" import changeStatus with context %}
-{% from "../../component/courseDetails/macro.njk" import courseDetails with context %}
 {% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
 {% from "../../component/audiences/macro.njk" import audiences with context %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "button/macro.njk" import govukButton %}
 
@@ -33,7 +33,42 @@
         <div class="course-container">
             <h2 class="govuk-heading-m">Course overview</h2>
             {% block courseDetails %}
-                {{ courseDetails(course) }}
+                {{ govukSummaryList({
+                    rows: [
+                        {
+                            key: {
+                                text: "Type"
+                            },
+                            value: {
+                                text: i18n[course.getType()]  | default("Course", true)
+                            }
+                        },
+                        {
+                            key: {
+                                text: "Cost"
+                            },
+                            value: {
+                                text: "£" + course.getCost() | default("Free", true)
+                            }
+                        },
+                        {
+                            key: {
+                                text: "Grades"
+                            },
+                            value: {
+                                text: grades | join(", ") if grades.length > 0 else "Unspecified"
+                            }
+                        },
+                        {
+                            key: {
+                                text: "Course visibility"
+                            },
+                            value: {
+                                text: course.getVisibility() | capitalize | default("Unspecified", true)
+                            }
+                        }
+                    ]
+                }) }}
             {% endblock %}
         </div>
         <div class="section">
