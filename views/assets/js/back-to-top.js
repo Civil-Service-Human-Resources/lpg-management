@@ -1,5 +1,6 @@
-const construct = (elem, $topCutoffElem) => {
+const construct = (elem) => {
 	const $footer = document.querySelector('.govuk-footer')
+	const $topCutoffElem = document.querySelector('.right-menu')
 
 	// Check if we can use Intersection Observers
 	if (!('IntersectionObserver' in window)) {
@@ -16,7 +17,6 @@ const construct = (elem, $topCutoffElem) => {
 	let footerIsIntersecting = false
 	let topCutoffIsIntersecting = false
 	let topCutoffIntersectionRatio = 0
-	
 	const observer = new window.IntersectionObserver((entries) => {
 		// Find the elements we care about from the entries
 		const footerEntry = entries.find((entry) => entry.target === $footer)
@@ -51,10 +51,8 @@ const construct = (elem, $topCutoffElem) => {
 	observer.observe($topCutoffElem)
 }
 
-export const build = ($topCutoffElem) => {
-	const elem = document.querySelector('.app-back-to-top')
-	if (elem !== null) {
-		construct(elem, $topCutoffElem)
-	}
+const elem = document.querySelector('.app-back-to-top')
+if (elem !== null) {
+	construct(elem)
 }
 
