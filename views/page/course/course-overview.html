@@ -4,6 +4,7 @@
 {% from "../../component/changeStatus/macro.njk" import changeStatus with context %}
 {% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
 {% from "../../component/audiences/macro.njk" import audiences with context %}
+{% from "../../component/backToTop/macro.njk" import backToTop %}
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "button/macro.njk" import govukButton %}
@@ -89,53 +90,6 @@
             </div>
             {% block audiences %}
                 {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
-            {{ audiences(course, sortedAudiences, identity) }}
             {% endblock %}
         </div>
     </div>
@@ -193,18 +147,7 @@
 </div>
 <div class='govuk-grid-row'>
     <div class='govuk-grid-column-full'>
-        <div class='app-back-to-top__container'>
-            <div class='app-back-to-top app-back-to-top--hidden' data-module='app-back-to-top'
-                 data-app-back-to-top-init=''>
-                <a class='govuk-link govuk-link--no-visited-state app-back-to-top__link' href='#top'>
-                    <svg role='presentation' focusable='false' class='app-back-to-top__icon'
-                         xmlns='http://www.w3.org/2000/svg' width='13' height='17' viewBox='0 0 13 17'>
-                        <path fill='currentColor' d='M6.5 0L0 6.5 1.4 8l4-4v12.7h2V4l4.3 4L13 6.4z'></path>
-                    </svg>
-                    Back to top
-                </a>
-            </div>
-        </div>
+        {{ backToTop() }}
     </div>
 </div>
 {% endblock %}
