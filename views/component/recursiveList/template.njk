@@ -1,8 +1,24 @@
+{% from "details/macro.njk" import govukDetails %}
+
 {% if org.children.length %}
-        <ul class="list sub-list">
-            {% for org in org.children %}
-                <li class="list-item organisation-item"><p class="govuk-body flex-container no-margin u--border--bgrey"><span>{{ org.name }}</span><a href="/content-management/organisations/{{org.id}}/overview">View</a></p></li>
-                {{ recursiveList(org)}}
-            {% endfor %}
-        </ul>
+        {% set subListHtml %}
+            <ul class="list sub-list">
+                {% for org in org.children %}
+                    <li class="list-item organisation-item u--border--bgrey">
+                        <p class="govuk-body flex-container no-margin" style="padding-bottom: 0">
+                            <span>{{ org.name }}</span><a href="/content-management/organisations/{{org.id}}/overview">View</a>
+                        </p>
+                        {{ recursiveList(org)}}
+                    </li>
+                    
+                    
+                {% endfor %}
+            </ul>
+        {% endset %}
+
+        {{ govukDetails({
+            summaryText: 'View sub organisations',
+            html: subListHtml
+        }) }}
+        
 {% endif %}
