@@ -6,7 +6,7 @@ import {DateStartEndCommand} from '../command/dateStartEndCommand'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {Report, ReportType} from './Report'
 import {Controller} from '../controller'
-import {CompoundRoleBase, reporterRole} from '../../identity/identity'
+import {IUserRole, reporterRole} from '../../identity/identity'
 import {REPORT_SERVICE} from '../../config'
 
 export class ReportingController extends Controller {
@@ -20,8 +20,8 @@ export class ReportingController extends Controller {
 		[Report.LEARNER_RECORD, new ReportType("Learner_record")]
 	])
 
-	protected getRequiredRoles(): CompoundRoleBase[] {
-		return reporterRole.compoundRoles
+	protected getRequiredRole(): IUserRole {
+		return reporterRole
 	}
 
 	private reportGeneratingPostRequest(url: string, reportType: Report) {

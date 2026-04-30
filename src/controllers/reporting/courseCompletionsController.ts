@@ -4,7 +4,7 @@ import {ChooseCoursesModel} from './model/chooseCoursesModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {Controller} from '../controller'
-import {CompoundRoleBase, mvpExportRole, mvpReportingRole} from '../../identity/identity'
+import {IUserRole, mvpExportRole, mvpReportingRole} from '../../identity/identity'
 import {fetchCourseCompletionSessionObject, saveCourseCompletionSessionObject} from './utils'
 import * as moment from 'moment'
 import {CourseCompletionsSession} from './model/courseCompletionsSession'
@@ -29,8 +29,8 @@ export class CourseCompletionsController extends Controller {
 		super("/reporting/course-completions", 'CourseCompletionsController')
 	}
 
-	protected getRequiredRoles(): CompoundRoleBase[] {
-		return mvpReportingRole.compoundRoles
+	protected getRequiredRole(): IUserRole {
+		return mvpReportingRole
 	}
 
 	private checkForOrgIdsInSessionMiddleware() {

@@ -7,6 +7,8 @@ import {YoutubeService} from '../../youtube/youtubeService'
 import * as asyncHandler from 'express-async-handler'
 import {CourseService} from 'lib/courseService'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
+import {learningEditRole} from '../../identity/identity'
 const { xss } = require('express-xss-sanitizer')
 
 export class YoutubeModuleController {
@@ -32,9 +34,9 @@ export class YoutubeModuleController {
 	/* istanbul ignore next */
 	private setRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: true}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/module-youtube/:moduleId?', xss(), asyncHandler(this.getModule()))
-		this.router.post('/content-management/courses/:courseId/module-youtube/', xss(), asyncHandler(this.setModule()))
-		this.router.post('/content-management/courses/:courseId/module-youtube/:moduleId', xss(), asyncHandler(this.updateModule()))
+		this.router.get('/content-management/courses/:courseId/module-youtube/:moduleId?', asyncRoleCheck(learningEditRole), xss(), asyncHandler(this.getModule()))
+		this.router.post('/content-management/courses/:courseId/module-youtube/', asyncRoleCheck(learningEditRole), xss(), asyncHandler(this.setModule()))
+		this.router.post('/content-management/courses/:courseId/module-youtube/:moduleId', asyncRoleCheck(learningEditRole), xss(), asyncHandler(this.updateModule()))
 	}
 
 	public getModule() {

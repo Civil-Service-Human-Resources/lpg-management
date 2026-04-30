@@ -1,5 +1,6 @@
 {% from "../../component/menu/macro.njk" import menu %}
 {% from "../../component/recursiveList/macro.njk" import recursiveList %}
+{% from "../../component/backToTop/macro.njk" import backToTop %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -31,7 +32,7 @@
         {% if organisationalUnits %}
             <ul class="list organisations-list">
                 {% for org in organisationalUnits %}
-                    <li class="list-item organisation-item"><p class="govuk-body flex-container no-margin u--border--bgrey"><span>{{ org.name }}</span><a href="/content-management/organisations/{{org.id}}/overview">View</a></p>
+                    <li class="list-item organisation-item u--border--bgrey"><p class="govuk-body flex-container no-margin"><span>{{ org.name }}</span><a href="/content-management/organisations/{{org.id}}/overview">View</a></p>
                     {% if org.children %} 
                         {{ recursiveList(org) }}
                     {% endif %}
@@ -55,4 +56,13 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+<div class='govuk-grid-row'>
+    <div class='govuk-grid-column-full'>
+        {{ backToTop() }}
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+<script src='/js/main-bundle.min.js'></script>
+{% endblock %}

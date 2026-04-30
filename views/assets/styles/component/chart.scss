@@ -2,7 +2,8 @@
     background: $white;
     &:focus {
         color: #0b0c0c;
-        outline: 3px solid #ffbf47;
+        outline: 3px solid #0b0c0c;
+        box-shadow: 0 0 0 5px #ffdd00;
         outline-offset: 0;
     }
 }

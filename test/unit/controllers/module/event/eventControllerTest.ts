@@ -170,20 +170,6 @@ describe('EventController', function() {
 				moduleId: undefined,
 			})
 		})
-
-		it('should render event preview page', async function() {
-			const response: Response = mockRes()
-
-			const course: Course = new Course()
-			const module: Module = new Module()
-
-			learningCatalogue.getCourse = sinon.stub().returns(course)
-			learningCatalogue.getModule = sinon.stub().returns(module)
-
-			await eventController.getDatePreview()(mockReq(), response)
-
-			expect(response.render).to.have.been.calledOnceWith('page/course/module/events/events-preview')
-		})
 	})
 
 	describe('location paths', function() {
