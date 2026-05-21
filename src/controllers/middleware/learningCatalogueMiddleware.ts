@@ -78,6 +78,8 @@ export function applyLearningCatalogueMiddleware(settings: LearningCatalogueMidd
 					res.locals.audienceDepartmentsAsNames = (audience.departments || [])
 						.map((d: string) => codeToNameMap[d])
 						.sort()
+						.filter((d: string) => d !== undefined)
+					
 					next()
 				}
 			}
