@@ -6,7 +6,7 @@ export class FormattedOrganisation {
         public abbreviation: string = '',
     ) {}
 
-    getName() {
+    getName() {        
         const parts = this.name.split("|")
         return parts[parts.length - 1].trim()
     }
