@@ -112,9 +112,15 @@ export class AudienceController {
 
 	getOrganisation() {
 		return async (req: Request, res: Response) => {
-			const selectedOrganisations = res.locals.audience.departments
-			let organisations: FormattedOrganisation[] = await this.csrsService.getAllOrganisations()
-			res.render('page/course/audience/add-organisation', {organisationalUnits: organisations, selectedOrganisations: selectedOrganisations})
+			const selectedOrganisationCodes: string[] = res.locals.audience.departments
+			const allOrganisations: FormattedOrganisation[] = await this.csrsService.getAllOrganisations()
+
+			const selectedOrganisations: (FormattedOrganisation | undefined)[] = selectedOrganisationCodes.map((code: string) => {
+				const org: FormattedOrganisation | undefined = allOrganisations.find((o: FormattedOrganisation) => o.code === code)
+				return org
+			}).filter((org: any) => org !== undefined)
+			
+			res.render('page/course/audience/add-organisation', {selectedOrganisations: selectedOrganisations, organisationalUnits: allOrganisations})
 		}
 	}
 
