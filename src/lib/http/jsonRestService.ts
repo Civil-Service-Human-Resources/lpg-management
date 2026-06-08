@@ -82,7 +82,6 @@ export class JsonRestService {
 	async makeRawAuthenticatedRequest<T>(req: AxiosRequestConfig): Promise<AxiosResponse<T>> {
 		const headers: any = this.getHeaders()
 		req.headers = {...req.headers, ...headers.headers}
-		console.log(req.headers)
 		return this.makeRawRequest(req)
 	}
 
