@@ -148,27 +148,31 @@
 
                     {% set rows = [] %}
                     {% for booking in pageModel.bookings %}
+                        {% set row = [] %}
+                        {% set payment = null %}
                         {% if booking.status === "Requested" %}
                             {% set payment = i18n.attendee.status.Requested %}
                         {% elif booking.status === "Confirmed" %}
                             {% set payment = i18n.attendee.status.Confirmed %}
                         {% endif %}
 
-                        {% set rows = (rows.push({text: booking.learnerEmail, classes: "no-wrap"}, {text: payment},
-                        {text: booking.reference}), rows) %}
+                        {% set row = (row.push({text: booking.learnerEmail, classes: "no-wrap"}), row) %}
+                        {% set row = (row.push({text: payment}), row) %}
+                        {% set row = (row.push({text: booking.reference}), row) %}
 
                         {% if identity.hasLearningEdit() %}
                             {% set bookingUrl %}
                                 <a class="govuk-link no-wrap" href="{{ pageModel.getBookingUrl(booking.id) }}">View <span class="govuk-visually-hidden">attendee {{booking.learnerEmail}}</span></a>
                             {% endset %}
-                            {% set rows = (rows.push({html: bookingUrl}), rows) %}
+                            {% set row = (row.push({html: bookingUrl}), row) %}
                         {% endif %}
+                        {% set rows = (rows.push(row), rows) %}
                     {% endfor %}
 
                     {{ govukTable(
                         {
                             head: head,
-                            rows: [rows]
+                            rows: rows
                         }
                     ) }}
                 {% else %}
