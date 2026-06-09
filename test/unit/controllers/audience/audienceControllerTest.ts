@@ -119,15 +119,19 @@ describe('AudienceController', () => {
 
 	describe('#getOrganisation', () => {
 		it('should render add-organisation page', async function() {
-			const departments = {departments: ['co', 'dh']}
+			const departments = ['co', 'dh']
 			res.locals.audience = {
-				departments: departments,
+				departments: departments
 			}
-			const organisations: FormattedOrganisation[] = []
+
+			const organisations: FormattedOrganisation[] = [new FormattedOrganisation(2, "Cabinet Office", "co"), new FormattedOrganisation(1, "Department of Health", "dh")]
 			csrsService.getAllOrganisations = sinon.stub().resolves(organisations)
+
+			const selectedOrganisations: (FormattedOrganisation | undefined)[] = [new FormattedOrganisation(2, "Cabinet Office", "co"), new FormattedOrganisation(1, "Department of Health", "dh")]
+			
 			await audienceController.getOrganisation()(req, res)
 
-			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {organisationalUnits: [], selectedOrganisations: departments})
+			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-organisation', {selectedOrganisations: selectedOrganisations, organisationalUnits: organisations})
 		})
 	})
 

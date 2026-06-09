@@ -6,7 +6,6 @@ import {ENV} from '../config'
 import {DateTime} from '../lib/dateTime'
 import {Duration} from 'moment'
 import * as nunjucks from 'nunjucks'
-import {OrganisationalUnit} from '../csrs/model/organisationalUnit'
 import moment = require('moment')
 import _ = require('lodash')
 
@@ -58,9 +57,6 @@ export class NunjucksMiddleware extends Middleware {
 				}
 
 				return years + months
-			})
-		env.addFilter('parseOrganisation', function(organisationalUnits: OrganisationalUnit[], code: string) {
-				return organisationalUnits.find(o => o.code === code)
 			})
 		env.addFilter('startsWith', (str: string, searchString: string) => {
 				return str.startsWith(searchString)

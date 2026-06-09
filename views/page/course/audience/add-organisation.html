@@ -29,24 +29,23 @@
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.audience.pageTitle.addOrganisation }}</h2>
             <div>
                 <h3 class="govuk-heading-m">Added organisations</h3>
-                {% if selectedOrganisations.length > 0%}
-                <ul class="list modules">
-                    <li class="module-headers">
-                        <p class="govuk-body header title"><strong>Organisation name</strong></p>
-                        <span class="spacer"></span>
-                    </li>
-                    {% for s in selectedOrganisations %}
-                    {% set org = organisationalUnits | parseOrganisation(s) %}
-                    <ul class="list modules" id="modules">
-                        <li class="list-details" id="1233" >
-                            <p class="govuk-body title">{{ org.getName() }}</p>
-                            <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete/{{org.code}}">Remove</a></p>
+                {% if selectedOrganisations.length > 0 %}
+                    <ul class="list modules">
+                        <li class="module-headers">
+                            <p class="govuk-body header title"><strong>Organisation name</strong></p>
+                            <span class="spacer"></span>
                         </li>
+                        {% for s in selectedOrganisations %}
+                            <ul class="list modules" id="modules">
+                                <li class="list-details" id="1233" >
+                                    <p class="govuk-body title">{{ s.getName() }}</p>
+                                    <p class="govuk-body buttons"><a class="govuk-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/organisation/delete/{{s.code}}">Remove</a></p>
+                                </li>
+                            </ul>
+                        {% endfor %}
                     </ul>
-                    {% endfor %}
-                </ul>
                 {% else %}
-                <p class="govuk-body">This audience does not have any organisations yet</p>
+                    <p class="govuk-body">This audience does not have any organisations yet</p>
                 {% endif %}
 
             <h3 class="govuk-heading-m">
