@@ -78,6 +78,10 @@ export const ORG_REDIS = set({
 	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
 })
 
+export const LEARNING_TAG_REDIS = set({
+	ttl_seconds: +(env.LEARNING_TAG_REDIS || '604800')
+})
+
 export const PROFILE_REDIS = set({
 	ttl_seconds: +(env.PROFILE_REDIS_TTL || '604800'),
 })

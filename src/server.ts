@@ -1,6 +1,21 @@
 /* tslint:disable:no-var-requires */
 import * as debug from 'debug'
 import * as config from './config'
+import {HEALTH_CHECK} from './config'
+import {getLogger} from './utils/logger'
+import * as express from 'express'
+
+import {Properties} from 'ts-json-properties'
+import {ApplicationContext} from './applicationContext'
+import * as asyncHandler from 'express-async-handler'
+import * as errorController from './lib/errorHandler'
+import * as middleware from './middleware/lpgManagementMiddleware'
+import {buildReportingControllers} from './report-service/builder'
+import {Controller} from './controllers/controller'
+import {createOAuthConfig} from './lib/http/restServiceConfigFactory'
+import {buildOrganisationalUnitControllers} from './controllers/organisationalUnit/builder'
+import {buildLearningTagController} from './learning-catalogue/service/learningTagBuilder'
+
 process.env.TZ = config.SERVER_DEFAULT_TZ
 export const appInsights = require('applicationinsights')
 appInsights.setup(config.APPLICATIONINSIGHTS_CONNECTION_STRING)
@@ -11,8 +26,6 @@ appInsights.start()
 
 
 /* tslint:enable */
-
-import { getLogger } from './utils/logger'
 const logger = getLogger('server')
 
 if (config.LOGGING_LEVEL === 'trace') {
@@ -29,25 +42,12 @@ if (config.LOGGING_LEVEL === 'trace') {
 	logger.info("TRACE LOGS ENABLED")
 }
 
-import * as express from 'express'
-
-import {Properties} from 'ts-json-properties'
-import {ApplicationContext} from './applicationContext'
-import * as asyncHandler from 'express-async-handler'
-import * as errorController from './lib/errorHandler'
-
 Properties.initialize()
 
 const {PORT = 3005} = process.env
 const app = express()
 const ctx = new ApplicationContext()
 const { xss } = require('express-xss-sanitizer')
-import * as middleware from './middleware/lpgManagementMiddleware'
-import {buildReportingControllers} from './report-service/builder'
-import {Controller} from './controllers/controller'
-import {createOAuthConfig} from './lib/http/restServiceConfigFactory'
-import {HEALTH_CHECK} from './config'
-import {buildOrganisationalUnitControllers} from './controllers/organisationalUnit/builder'
 
 if (HEALTH_CHECK.enabled && HEALTH_CHECK.endpoint !== undefined) {
 	logger.info(`Health check listening on GET /${HEALTH_CHECK.endpoint}`)
@@ -62,6 +62,8 @@ middleware.applyAll(app)
 
 ctx.auth.configure(app)
 
+const learningTagController: Controller = buildLearningTagController(ctx.cslServiceConfig)
+
 const reportingControllers: Controller[] = buildReportingControllers(createOAuthConfig({
 	url: config.REPORT_SERVICE.url,
 	timeout: config.REPORT_SERVICE.timeout,
@@ -72,7 +74,8 @@ const organisationalUnitControllers: Controller[] = buildOrganisationalUnitContr
 
 const controllers: Controller[] = [
 	...reportingControllers,
-	...organisationalUnitControllers
+	...organisationalUnitControllers,
+	learningTagController
 ]
 
 app.use(ctx.addToResponseLocals())
@@ -85,7 +88,6 @@ app.use(ctx.linkModuleController.router)
 app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
 app.use(ctx.searchController.router)
-app.use(ctx.skillsController.router)
 logger.debug(`Registering ${controllers.length} controllers`)
 controllers.forEach(c => {
 	app.use(c.path, c.buildRouter())

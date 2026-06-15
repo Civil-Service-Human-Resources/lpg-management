@@ -115,4 +115,5 @@ export class CslServiceClient {
 			url: this.REGISTERED_LEARNER_OVERVIEW
 		})).data
 	}
+
 }
