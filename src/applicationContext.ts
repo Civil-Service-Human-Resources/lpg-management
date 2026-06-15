@@ -38,33 +38,30 @@ import {SearchController} from './controllers/searchController'
 import {LearnerRecord} from './learner-record'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
 import {ReportService} from './report-service'
-import {SkillsController} from './controllers/skills/skillsController'
 import {AudienceService} from './lib/audienceService'
-import {QuestionFactory} from './controllers/skills/questionFactory'
-import {QuizFactory} from './controllers/skills/quizFactory'
-import {Question} from "./controllers/skills/question"
 import {AgencyTokenService} from './lib/agencyTokenService'
-import { OrganisationalUnitCache } from './csrs/organisationalUnitCache'
+import {OrganisationalUnitCache} from './csrs/organisationalUnitCache'
 import {CslServiceClient} from './csl-service/client'
 import {Controller} from './controllers/controller'
-import { CivilServantProfileService } from './csrs/service/civilServantProfileService'
+import {CivilServantProfileService} from './csrs/service/civilServantProfileService'
 import {CourseTypeAheadCache} from './learning-catalogue/courseTypeaheadCache'
 import {createConfig, createOAuthConfig} from './lib/http/restServiceConfigFactory'
 import {redisClient} from './lib/cache/redis'
 import {ProfileCache} from './csrs/profileCache'
-import { FormattedOrganisationListCache } from './csrs/formattedOrganisationListCache'
+import {FormattedOrganisationListCache} from './csrs/formattedOrganisationListCache'
 import {LearningPlanCache} from './csl-service/learningPlanCache'
-import { RequiredLearningCache } from './csl-service/requiredLearningCache'
+import {RequiredLearningCache} from './csl-service/requiredLearningCache'
 import {LearningRecordCache} from './csl-service/learningRecordCache'
-import { LearningCacheManager } from './lib/learningCacheManager'
+import {LearningCacheManager} from './lib/learningCacheManager'
 import {AgencyTokenController} from './controllers/organisationalUnit/agencyTokenController'
 import {OrganisationalUnitTreeCache} from './csrs/organisationalUnitTreeCache'
-import {OrganisationalUnitTree} from './csl-service/model/organisationalUnit/organisationalUnitTree'
+import {TaxonomyTree} from './lib/taxonomy/taxonomyTree'
 import {Cache} from './lib/cache/redisCache'
 import {OrganisationalUnitClient} from './csrs/client/organisationalUnitClient'
 import {EntityService} from './learning-catalogue/service/entityService'
 import {CourseTypeAhead} from './learning-catalogue/courseTypeAhead'
 import {OrganisationalUnitCacheManager} from './csrs/organisationalUnitCacheManager'
+
 export class ApplicationContext {
 
 	controllers: Controller[] = []
@@ -112,13 +109,9 @@ export class ApplicationContext {
 	searchController: SearchController
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
-	skillsController: SkillsController
 	audienceService: AudienceService
 	agencyTokenService: AgencyTokenService
 	agencyTokenController: AgencyTokenController
-	questionFactory: QuestionFactory
-	quizFactory: QuizFactory
-	questionValidator: Validator<Question>
 	civilServantProfileService: CivilServantProfileService
 	formattedOrganisationListCache: FormattedOrganisationListCache
 	requiredLearningCache: RequiredLearningCache
@@ -178,10 +171,6 @@ export class ApplicationContext {
 
 		this.courseFactory = new CourseFactory()
 
-		this.questionFactory = new QuestionFactory()
-
-		this.quizFactory = new QuizFactory()
-
 		this.pagination = new Pagination()
 
 		this.cacheService = new CacheService({
@@ -192,7 +181,7 @@ export class ApplicationContext {
 		this.organisationalUnitCache = new OrganisationalUnitCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.formattedOrganisationListCache = new FormattedOrganisationListCache(redisClient, config.ORG_REDIS.ttl_seconds)
 		this.organisationalUnitTreeCache = new OrganisationalUnitTreeCache(
-			new Cache<OrganisationalUnitTree>(redisClient, config.ORG_REDIS.ttl_seconds, "organisationalUnits", OrganisationalUnitTree),
+			new Cache<TaxonomyTree>(redisClient, config.ORG_REDIS.ttl_seconds, "organisationalUnits", TaxonomyTree),
 			this.organisationalUnitClient)
 
 		this.organisationalUnitService = new OrganisationalUnitService(new OrganisationalUnitCacheManager(this.organisationalUnitCache, this.formattedOrganisationListCache, this.organisationalUnitTreeCache), this.organisationalUnitClient)
@@ -257,8 +246,6 @@ export class ApplicationContext {
 		)
 
 		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
-		this.questionValidator = new Validator<Question>(this.questionFactory)
-		this.skillsController = new SkillsController(this.csrsService, this.questionFactory, this.quizFactory, this.questionValidator)
 
 	}
 

@@ -1,0 +1,21 @@
+.taxonomy-list {
+	@include govuk-responsive-margin(6, "top");
+	width: 100%;
+	margin-bottom: 30px;
+
+	.taxonomy-list__item {
+		@extend .u--border--bgrey;
+	}
+
+	.taxonomy-list__panel {
+		@extend .govuk-body;
+		@include govuk-responsive-margin(4, "top");
+		@include govuk-responsive-margin(4, "bottom");
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.sub-list {
+		margin-left: 30px;
+	}
+}

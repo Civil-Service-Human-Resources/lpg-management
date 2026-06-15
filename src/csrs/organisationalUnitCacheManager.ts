@@ -25,7 +25,7 @@ export class OrganisationalUnitCacheManager {
 
 	async getTree() {
 		const tree = await this.organisationalUnitTreeCache.get()
-		return tree.organisationalUnits
+		return tree.content
 	}
 
 	async clearTypeahead() {

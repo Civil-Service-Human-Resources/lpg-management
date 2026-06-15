@@ -4,14 +4,14 @@ import {DomainUpdateSuccessResponse} from '../model/page/domainUpdateSuccess'
 import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
 import {OrganisationalUnit} from '../model/organisationalUnit'
 import {AxiosResponse} from 'axios'
-import {OauthRestService} from 'lib/http/oauthRestService'
+import {OauthRestService} from '../../lib/http/oauthRestService'
 import {
-	GetOrganisationsFormattedParams
+	GetOrganisationsFormattedParams,
 } from '../../csl-service/model/organisationalUnit/getOrganisationsFormattedParams'
 import {
-	FormattedOrganisationListResponse
+	FormattedOrganisationListResponse,
 } from '../../csl-service/model/organisationalUnit/FormattedOrganisationListResponse'
-import {OrganisationalUnitTree} from '../../csl-service/model/organisationalUnit/organisationalUnitTree'
+import {TaxonomyTree} from '../../lib/taxonomy/taxonomyTree'
 import {EditAgencyToken} from '../../controllers/organisationalUnit/model/editAgencyToken'
 
 export class OrganisationalUnitClient {
@@ -102,7 +102,7 @@ export class OrganisationalUnitClient {
 	}
 
 	async getTree() {
-		return plainToInstance(OrganisationalUnitTree, (await this._http.getRequest<OrganisationalUnitTree>({
+		return plainToInstance(TaxonomyTree, (await this._http.getRequest<TaxonomyTree>({
 			url: this.TREE_URL
 		})).data)
 	}

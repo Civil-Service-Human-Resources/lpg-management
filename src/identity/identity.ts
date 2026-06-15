@@ -1,4 +1,4 @@
-import { OrganisationalUnit } from "src/csrs/model/organisationalUnit"
+import {OrganisationalUnit} from 'src/csrs/model/organisationalUnit'
 import {Profile} from '../csrs/model/profile'
 
 export enum Role {
@@ -24,6 +24,7 @@ export enum Role {
 	REGISTERED_LEARNER_REPORTER = 'REGISTERED_LEARNER_REPORTER',
 	LEARNING_UNARCHIVE = 'LEARNING_UNARCHIVE',
 	REGISTERED_LEARNER_ALL_ORGANISATIONS = 'REGISTERED_LEARNER_ALL_ORGANISATIONS',
+	LEARNING_TAG_MANAGER = 'LEARNING_TAG_MANAGER',
 }
 
 export enum CompoundRole {
@@ -156,6 +157,8 @@ export const learningDeleteRole = buildAuthorRole(Role.LEARNING_DELETE)
 // Organisation management
 export const organisationManagerRole = new UserRole(Any(Role.ORGANISATION_MANAGER, Role.LEARNING_MANAGER))
 
+export const learningTagManagerRole = new UserRole(Any(Role.LEARNING_TAG_MANAGER, Role.LEARNING_MANAGER))
+
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
 }
@@ -252,6 +255,10 @@ export class Identity {
 		return this.roleCheck(organisationManagerRole)
 	}
 
+	isLearningTagManager() {
+		return this.roleCheck(learningTagManagerRole)
+	}
+
 	isLearningManager() {
 		return this.hasRole(Role.LEARNING_MANAGER)
 	}
@@ -294,10 +301,6 @@ export class Identity {
 
 	isOrganisationReporter() {
 		return this.hasRole(Role.ORGANISATION_REPORTER)
-	}
-
-	isSkillsManagerOrSuperUser() {
-		return this.isSuperUser()
 	}
 
 	isUnrestrictedOrganisation() {
