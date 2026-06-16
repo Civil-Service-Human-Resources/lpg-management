@@ -1,32 +1,30 @@
 import {OauthRestService} from 'lib/http/oauthRestService'
-import {getLogger} from '../utils/logger'
 import {DateStartEnd} from '../controllers/command/dateStartEndCommand'
 
 export class ReportServiceClient {
-
-	private logger = getLogger('ReportServiceClient')
 
 	constructor(private readonly _http: OauthRestService) {}
 
 	private BOOKINGS_URL = "/bookings"
 	private MODULES_URL = "/modules"
 
-	private async getReport(url: string, dateRange: DateStartEnd) {
-		const params = {
+	private getToFromFromDateRange(dateRange: DateStartEnd) {
+		return {
 			from: dateRange.startDate,
 			to: dateRange.endDate
 		}
-		this.logger.info(`Generating report request for URL: ${url} and params: ${JSON.stringify(params)}`)
-		const response = await this._http.getRequest<string>({url, params})
+	}
+
+	async getReportBookingInformation(dateRange: DateStartEnd, organisationId: number): Promise<string> {
+		const params = this.getToFromFromDateRange(dateRange)
+		const response = await this._http.getRequest<string>({url: this.BOOKINGS_URL, params, headers: {organisationId}})
 		return response.data
 	}
 
-	async getReportBookingInformation(dateRange: DateStartEnd): Promise<string> {
-		return await this.getReport(this.BOOKINGS_URL, dateRange)
-	}
-
 	async getReportLearnerRecord(dateRange: DateStartEnd): Promise<string> {
-		return await this.getReport(this.MODULES_URL, dateRange)
+		const params = this.getToFromFromDateRange(dateRange)
+		const response = await this._http.getRequest<string>({url: this.MODULES_URL, params})
+		return response.data
 	}
 
 }

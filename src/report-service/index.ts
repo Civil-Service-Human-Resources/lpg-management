@@ -7,7 +7,7 @@ export class ReportService {
 	constructor(private client: ReportServiceClient) {
 	}
 
-	async getReport(reportType: Report, dateRange: DateStartEnd): Promise<Buffer> {
+	async getReport(reportType: Report, dateRange: DateStartEnd, organisationId: number): Promise<Buffer> {
 		let report = ""
 		switch (reportType) {
 			case Report.LEARNER_RECORD: {
@@ -15,7 +15,7 @@ export class ReportService {
 				break
 			}
 			case Report.BOOKING: {
-				report = await this.client.getReportBookingInformation(dateRange)
+				report = await this.client.getReportBookingInformation(dateRange, organisationId)
 				break
 			}
 		}

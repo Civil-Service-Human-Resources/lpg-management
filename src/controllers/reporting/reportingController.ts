@@ -59,7 +59,7 @@ export class ReportingController extends Controller {
 			const report = await this.reportService.getReport(reportType, {
 				startDate: dateRange.startDate!,
 				endDate: dateRange.endDate!
-			})
+			}, request.user!.organisationalUnit.id)
 			const metadata = this.reportMap.get(reportType)
 			if (metadata) {
 				const filename = metadata.fileName.concat(moment().toISOString())

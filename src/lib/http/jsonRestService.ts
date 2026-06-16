@@ -1,7 +1,7 @@
 import * as url from 'url'
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios'
 import {Auth} from '../../identity/auth'
-import { getLogger } from '../../utils/logger'
+import {getLogger} from '../../utils/logger'
 import {RestServiceConfig} from '../http/restServiceConfig'
 import {ReportResponse} from '../../csl-service/model/ReportResponse'
 import {DownloadableFile} from '../../csl-service/model/DownloadableFile'
@@ -81,7 +81,7 @@ export class JsonRestService {
 
 	async makeRawAuthenticatedRequest<T>(req: AxiosRequestConfig): Promise<AxiosResponse<T>> {
 		const headers: any = this.getHeaders()
-		req.headers = headers.headers
+		req.headers = {...req.headers, ...headers.headers}
 		return this.makeRawRequest(req)
 	}
 

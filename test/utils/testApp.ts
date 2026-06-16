@@ -1,4 +1,5 @@
 import * as express from 'express'
+import {Express} from 'express'
 import {Middleware} from '../../src/middleware/middleware'
 import {LocaleMiddleware} from '../../src/middleware/locale'
 import {AssetMiddleware} from '../../src/middleware/asset'
@@ -7,7 +8,7 @@ import {NunjucksMiddleware} from '../../src/middleware/nunjucks'
 import {Identity} from '../../src/identity/identity'
 import * as session from 'express-session'
 import * as cookieParser from 'cookie-parser'
-import {Express} from 'express'
+import {OrganisationalUnit} from '../../src/csrs/model/organisationalUnit'
 
 
 let app: express.Express = express()
@@ -18,6 +19,10 @@ app.use((req, res, next) => {
 		roles = roleHeader.split(",")
 	}
 	const identity = new Identity("testUid", 'user@domain.com', roles, "accessToken")
+	const org = new OrganisationalUnit()
+	org.id = 1
+	org.name = "Cabinet Office"
+	identity.organisationalUnit = org
 	req.user = identity
 	res.locals.identity = identity
 	next()
