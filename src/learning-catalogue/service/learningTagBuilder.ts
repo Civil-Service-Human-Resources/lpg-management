@@ -7,11 +7,13 @@ import {Cache} from '../../lib/cache/redisCache'
 import {TaxonomyTree} from '../../lib/taxonomy/taxonomyTree'
 import {redisClient} from '../../lib/cache/redis'
 import * as config from '../../config'
+import {LearningTagCache} from '../../csl-service/model/learning/learningTag/learningTagCache'
 
 export function buildLearningTagController(cslServiceClient: OauthRestService) {
 	const learningTagClient = new LearningTagClient(cslServiceClient)
-	const learningTagCache = new Cache<TaxonomyTree>(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds, "learningTag", TaxonomyTree)
-	const learningTagTreeCache = new LearningTagTreeCache(learningTagCache, learningTagClient)
-	const learningTagService = new LearningTagService(learningTagTreeCache)
+	const learningTagTreeRedisCache = new Cache<TaxonomyTree>(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds, "learningTag", TaxonomyTree)
+	const learningTagTreeCache = new LearningTagTreeCache(learningTagTreeRedisCache, learningTagClient)
+	const learningTagCache = new LearningTagCache(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds)
+	const learningTagService = new LearningTagService(learningTagTreeCache, learningTagCache, learningTagClient)
 	return new LearningTagController(learningTagService)
 }

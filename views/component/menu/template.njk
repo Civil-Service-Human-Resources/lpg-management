@@ -6,7 +6,7 @@
         {% for action in actions %}
             <li class="action-link">
                 <a 
-                    class="govuk-link" 
+                    class="govuk-link {{ action.classes }}"
                     href="{{ action.link }}"
                     {% if action.openInNewTab %}
                         target="_blank" 

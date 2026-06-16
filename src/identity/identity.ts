@@ -157,7 +157,8 @@ export const learningDeleteRole = buildAuthorRole(Role.LEARNING_DELETE)
 // Organisation management
 export const organisationManagerRole = new UserRole(Any(Role.ORGANISATION_MANAGER, Role.LEARNING_MANAGER))
 
-export const learningTagManagerRole = new UserRole(Any(Role.LEARNING_TAG_MANAGER, Role.LEARNING_MANAGER))
+// TODO: Add LEARNING_MANAGER when we go live
+export const learningTagManagerRole = new UserRole(Any(Role.LEARNING_TAG_MANAGER))
 
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
