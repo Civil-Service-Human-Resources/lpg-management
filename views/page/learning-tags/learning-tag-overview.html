@@ -1,0 +1,63 @@
+{% from "../../component/list/macro.njk" import list %}
+{% from "../../component/menu/macro.njk" import menu %}
+{% from "../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
+{% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
+{% from "../../component/audiences/macro.njk" import audiences with context %}
+{% from "back-link/macro.njk" import govukBackLink %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.learningTags.title.learningTagOverview }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/manage" %}
+
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-m govuk-!-font-size-36">{{ learningTag.name }}</h1>
+    </div>
+</div>
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+        <h2 class="govuk-heading-m no-margin">Tag details</h2>
+        <ul class="list module-list">
+            <li class="list-item module-item u--border--bgrey"><h3>Name</h3><p class="govuk-body no-margin">{{ learningTag.name }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><h3>Unique code</h3><p class="govuk-body no-margin">{{ learningTag.code }}</p></li>
+            <li class="list-item module-item u--border--bgrey">
+                <h3>Description</h3>
+                <p class="govuk-body no-margin">{{ learningTag.description | default("Unspecified", true) }}</p>
+            </li>
+            <li class="list-item module-item u--border--bgrey"><h3>Parent tag</h3><p class="govuk-body no-margin">{{ learningTag.parentName | default("Unspecified", true) }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><h3>Show on homepage?</h3><p class="govuk-body no-margin">{{ 'Yes' if learningTag.categoryTag else 'No' }}</p></li>
+        </ul>
+        {% if learningTag.categoryTag %}
+            <h3 class="govuk-heading-m no-margin">Homepage details</h3>
+            <ul class="list module-list">
+                <li class="list-item module-item u--border--bgrey"><h4>Unique tag link</h4><p class="govuk-body no-margin">{{ learningTag.urlSlug }}</p></li>
+                <li class="list-item module-item u--border--bgrey">
+                    <h4>Civil Service Learning link</h4>
+                    <p class='govuk-body'>{{ learningTag.lpgUiUrl }}</p>
+                    <p class='govuk-body'><a href='{{ learningTag.lpgUiUrl }}'>View this category on Civil Service Learning</a></p>
+                    <div id="course-copy" class="js-only copy-link">
+                        <input type='hidden' name='tag-link' class='copy-link__link' value='{{ learningTag.lpgUiUrl }}'>
+                        {{ govukButton({
+                            text: "Copy link to clipboard",
+                            "classes": "govuk-button--secondary copy-link__button govuk-!-margin-bottom-0"
+                        }) }}
+                        <div class="govuk-body govuk-!-margin-top-2 copy-link__notification" role="status"></div>
+                    </div>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block bodyEnd %}
+<script src='/js/main-bundle.min.js'></script>
+{% endblock %}

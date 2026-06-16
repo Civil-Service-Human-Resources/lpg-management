@@ -197,7 +197,8 @@
 			"learningTagName": "Tag name"
 		},
 		"title": {
-			"manageLearningTags": "Manage Tags"
+			"manageLearningTags": "Manage Tags",
+			"learningTagOverview":  "Tag overview"
 		}
 	},
 	"module": {
