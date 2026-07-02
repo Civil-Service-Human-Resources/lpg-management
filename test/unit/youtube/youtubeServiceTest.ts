@@ -1,11 +1,11 @@
 import sinonChai = require('sinon-chai')
 import * as chai from 'chai'
-import * as sinon from 'sinon'
 import {expect} from 'chai'
+import * as sinon from 'sinon'
 import {Auth} from '../../../src/identity/auth'
 import {YoutubeService} from '../../../src/youtube/youtubeService'
 import {YoutubeRestService} from '../../../src/youtube/youtubeRestService'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
+import {RestServiceConfig} from '../../../src/lib/http/restServiceConfig'
 
 chai.use(sinonChai)
 

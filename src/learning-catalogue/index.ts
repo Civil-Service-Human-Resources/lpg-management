@@ -14,7 +14,7 @@ import {CourseTypeAheadCache} from './courseTypeaheadCache'
 import {CourseTypeAhead} from './courseTypeAhead'
 import {HttpException} from '../lib/exception/HttpException'
 import {Status} from './model/status'
-import {LearningCacheManager} from 'lib/learningCacheManager'
+import {LearningCacheManager} from '../lib/learningCacheManager'
 
 export class LearningCatalogue {
 	private _eventService: EntityService<Event>

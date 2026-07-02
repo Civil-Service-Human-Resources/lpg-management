@@ -7,7 +7,7 @@ import * as chaiAsPromised from 'chai-as-promised'
 import {Factory} from '../../../../src/learning-catalogue/model/factory/factory'
 import {EntityService} from '../../../../src/learning-catalogue/service/entityService'
 import {LearningProvider} from '../../../../src/learning-catalogue/model/learningProvider'
-import {OauthRestService} from 'lib/http/oauthRestService'
+import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)

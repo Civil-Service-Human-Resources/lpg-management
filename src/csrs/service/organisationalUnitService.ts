@@ -42,10 +42,10 @@ export class OrganisationalUnitService {
 		let typeahead = await this.organisationalUnitCacheManager.getTypeahead(cacheKey)
 		if (typeahead === undefined) {
 			const formattedOrganisations = await this.organisationalUnitClient.getFormattedOrganisationList(params)
-			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.formattedOrganisationalUnitNames)
+			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.names)
 			await this.organisationalUnitCacheManager.setTypeahead(cacheKey, typeahead)
 		}
-		return typeahead.formattedOrganisations
+		return typeahead.names
 	}
 
 	async getOrganisation(organisationalUnitId: number): Promise<OrganisationalUnit> {

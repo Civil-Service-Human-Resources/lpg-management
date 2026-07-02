@@ -1,9 +1,9 @@
 import {AgencyToken} from './agencyToken'
 import {Domain} from './domain'
-import {CacheableObject} from 'lib/cache/cacheableObject'
 import {Type} from 'class-transformer'
+import {CachedTaxonomyItem} from '../../lib/taxonomy/cachedTaxonomyItem'
 
-export class OrganisationalUnit implements CacheableObject {
+export class OrganisationalUnit implements CachedTaxonomyItem {
     getId(): string {
         return this.id.toString()
     }

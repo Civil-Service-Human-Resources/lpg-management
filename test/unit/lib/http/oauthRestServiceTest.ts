@@ -3,13 +3,11 @@ import {beforeEach, describe, it} from 'mocha'
 import * as sinon from 'sinon'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
-
 import {expect} from 'chai'
 import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import * as sinonChai from 'sinon-chai'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)

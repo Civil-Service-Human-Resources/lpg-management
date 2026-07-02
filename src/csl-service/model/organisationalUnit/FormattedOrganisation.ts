@@ -1,14 +1,13 @@
-export class FormattedOrganisation {
-    constructor(
-        public id: number,
-        public name: string,
-        public code: string,
-        public abbreviation: string = '',
-    ) {}
+import {FormattedTaxonomyItem} from '../../../lib/taxonomy/formattedTaxonomyItem'
 
-    getName() {        
-        const parts = this.name.split("|")
-        return parts[parts.length - 1].trim()
+export class FormattedOrganisation extends FormattedTaxonomyItem {
+    public code: string
+    public abbreviation: string = ''
+
+    constructor(id: number, name: string, code: string, abbreviation: string) {
+        super(id, name)
+        this.code = code
+        this.abbreviation = abbreviation
     }
 
     getAbbreviationOrName() {

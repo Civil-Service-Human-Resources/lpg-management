@@ -6,8 +6,8 @@ import * as sinonChai from 'sinon-chai'
 import * as chai from 'chai'
 import {expect} from 'chai'
 import * as chaiAsPromised from 'chai-as-promised'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
 import {OauthRestService} from '../../../src/lib/http/oauthRestService'
+import {RestServiceConfig} from '../../../src/lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)

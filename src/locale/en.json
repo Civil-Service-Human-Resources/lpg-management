@@ -196,9 +196,33 @@
 		"headers": {
 			"learningTagName": "Tag name"
 		},
+		"text": {
+			"code": "Unique code",
+			"name": "Name",
+			"description": "Description (optional)",
+			"urlSlug": "Unique tag link",
+			"parent": "Parent tag (optional)",
+			"category": "Show on homepage?"
+		},
 		"title": {
-			"manageLearningTags": "Manage Tags",
-			"learningTagOverview":  "Tag overview"
+			"manage": "Manage Tags",
+			"overview":  "Tag overview",
+			"add": "Add a new tag",
+			"removeParent": "Remove parent tag",
+			"edit": "Edit a tag"
+		},
+		"validation": {
+			"name": {
+				"empty": "Tag name is required"
+			},
+			"code": {
+				"empty": "Tag code is required",
+				"length":  "Tag code too long"
+			},
+			"organisation": {
+				"alreadyExists": "An organisation with this name or code already exists",
+				"selfReference": "An organisation cannot be its own parent"
+			}
 		}
 	},
 	"module": {
