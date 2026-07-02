@@ -85,7 +85,6 @@ export class LearningTagController extends Controller {
 
 	private get() {
 		return function(request: Request, response: Response, next: NextFunction) {
-			console.log(response.locals.learningTag)
 			response.render('page/learning-tags/learning-tag-overview.njk')
 		}
 	}
