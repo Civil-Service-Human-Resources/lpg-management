@@ -1,4 +1,4 @@
-import {ApiParams} from 'lib/apiParams'
+import {ApiParams} from '../../lib/apiParams'
 
 export class CreateReportRequestParams implements ApiParams {
 

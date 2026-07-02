@@ -1,18 +1,13 @@
-import { CacheableObject } from "lib/cache/cacheableObject";
-import { FormattedOrganisation } from "./FormattedOrganisation";
+import {FormattedOrganisation} from './FormattedOrganisation'
 import {Type} from 'class-transformer'
+import {FormattedTaxonomyItemList} from '../../../lib/taxonomy/formattedTaxonomyItemList'
 
-export class FormattedOrganisationList implements CacheableObject {
-    private _id: string
+export class FormattedOrganisationList extends FormattedTaxonomyItemList<FormattedOrganisation> {
+
     @Type(() => FormattedOrganisation)
-    public formattedOrganisations: FormattedOrganisation[]
+    public names: FormattedOrganisation[]
 
-    constructor(id: string, formattedOrganisations: FormattedOrganisation[]) {
-        this._id = id
-        this.formattedOrganisations = formattedOrganisations
-    }
-
-    getId(): string {
-        return this._id
+    constructor(id: string, names: FormattedOrganisation[]) {
+        super(id, names)
     }
 }

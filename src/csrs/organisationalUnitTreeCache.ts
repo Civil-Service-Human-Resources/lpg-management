@@ -1,5 +1,5 @@
 import {Cache} from '../lib/cache/redisCache'
-import {TaxonomyTree} from 'lib/taxonomy/taxonomyTree'
+import {TaxonomyTree} from '../lib/taxonomy/taxonomyTree'
 import {FetchedRedisCache} from '../lib/cache/fetchedRedisCache'
 import {OrganisationalUnitClient} from './client/organisationalUnitClient'
 

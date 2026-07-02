@@ -23,6 +23,19 @@
 		{% endif %}
 		<a class="govuk-body govuk-link cancel" href="/content-management">&lt; Back to dashboard</a>
 	</div>
+	<div class="govuk-grid-column-one-third">
+		<div class="right-menu">
+			{% block menu %}
+				{% set actions = [
+					{
+						link: '/content-management/learning-tags',
+						text: 'Add a new tag'
+					}
+				] %}
+				{{ menu("Actions", actions) }}
+			{% endblock %}
+		</div>
+	</div>
 </div>
 <div class='govuk-grid-row'>
 	<div class='govuk-grid-column-full'>

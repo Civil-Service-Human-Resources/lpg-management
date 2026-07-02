@@ -24,6 +24,15 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
+        {% set learningTagAddedSuccessMessage = sessionFlash.learningTagAddedSuccessMessage%}
+        {% if learningTagAddedSuccessMessage %}
+            <div class="panel panel-blue" role="status">
+                <div class="govuk-panel__body custom-panel panel-blue" role="status">
+                    <p class="govuk-body">The tag <strong>{{ learningTag.name }}</strong> has been added</p>
+                </div>
+            </div>
+        {% endif %}
+
         <h2 class="govuk-heading-m no-margin">Tag details</h2>
         <ul class="list module-list">
             <li class="list-item module-item u--border--bgrey"><h3>Name</h3><p class="govuk-body no-margin">{{ learningTag.name }}</p></li>
@@ -33,9 +42,9 @@
                 <p class="govuk-body no-margin">{{ learningTag.description | default("Unspecified", true) }}</p>
             </li>
             <li class="list-item module-item u--border--bgrey"><h3>Parent tag</h3><p class="govuk-body no-margin">{{ learningTag.parentName | default("Unspecified", true) }}</p></li>
-            <li class="list-item module-item u--border--bgrey"><h3>Show on homepage?</h3><p class="govuk-body no-margin">{{ 'Yes' if learningTag.categoryTag else 'No' }}</p></li>
+            <li class="list-item module-item u--border--bgrey"><h3>Show on homepage?</h3><p class="govuk-body no-margin">{{ 'Yes' if learningTag.category else 'No' }}</p></li>
         </ul>
-        {% if learningTag.categoryTag %}
+        {% if learningTag.category %}
             <h3 class="govuk-heading-m no-margin">Homepage details</h3>
             <ul class="list module-list">
                 <li class="list-item module-item u--border--bgrey"><h4>Unique tag link</h4><p class="govuk-body no-margin">{{ learningTag.urlSlug }}</p></li>
@@ -54,6 +63,27 @@
                 </li>
             </ul>
         {% endif %}
+    </div>
+    <div class="govuk-grid-column-one-third">
+        <div class="right-menu">
+            {% block menu %}
+                {% set actions = [
+                    {
+                        link: "/content-management/learning-tags/" + learningTag.id,
+                        text: "Edit tag"
+                    }
+                ] %}
+                {% if learningTag.parentId !== null %}
+                    {% set unlinkParentAction = {
+                        link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
+                        text: "Unlink parent tag"
+                    } %}
+                    {% set actions = (actions.push(unlinkParentAction), actions) %}
+                {% endif %}
+
+                {{ menu("Actions", actions) }}
+            {% endblock %}
+        </div>
     </div>
 </div>
 {% endblock %}

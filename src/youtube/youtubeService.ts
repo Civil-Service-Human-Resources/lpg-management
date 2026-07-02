@@ -1,8 +1,8 @@
 import {Auth} from '../identity/auth'
 import {YoutubeRestService} from './youtubeRestService'
 import {DateTime} from '../lib/dateTime'
-import { getLogger } from '../utils/logger'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
+import {getLogger} from '../utils/logger'
+import {RestServiceConfig} from '../lib/http/restServiceConfig'
 
 export class YoutubeService {
 	logger = getLogger('YoutubeService')

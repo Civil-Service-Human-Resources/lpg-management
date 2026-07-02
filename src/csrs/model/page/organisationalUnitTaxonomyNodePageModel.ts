@@ -1,5 +1,5 @@
-import {TaxonomyTreePageModel} from 'lib/taxonomy/taxonomyTreePageModel'
 import {Expose, Transform, Type} from 'class-transformer'
+import {TaxonomyTreePageModel} from '../../../lib/taxonomy/taxonomyTreePageModel'
 
 export class OrganisationalUnitTaxonomyNodePageModel implements TaxonomyTreePageModel {
 

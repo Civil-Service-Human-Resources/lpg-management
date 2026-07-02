@@ -10,7 +10,7 @@ import {Validator} from '../../../../src/learning-catalogue/validator/validator'
 import {FaceToFaceModuleController} from '../../../../src/controllers/module/faceToFaceModuleController'
 import * as sinon from 'sinon'
 import {Course} from '../../../../src/learning-catalogue/model/course'
-import {CourseService} from 'lib/courseService'
+import {CourseService} from '../../../../src/lib/courseService'
 
 chai.use(sinonChai)
 

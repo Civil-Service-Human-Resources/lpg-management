@@ -1,4 +1,4 @@
-import {TaxonomyTreePageModel} from 'lib/taxonomy/taxonomyTreePageModel'
+import {TaxonomyTreePageModel} from '../../../lib/taxonomy/taxonomyTreePageModel'
 import {Expose, Transform, Type} from 'class-transformer'
 
 export class LearningTagTaxonomyNodePageModel implements TaxonomyTreePageModel {

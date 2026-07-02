@@ -1,7 +1,7 @@
-import {CourseService} from 'lib/courseService'
 import {
 	BasicCoursePageModel,
-	ChooseCoursesModel, LearningSelection,
+	ChooseCoursesModel,
+	LearningSelection,
 } from '../controllers/reporting/model/chooseCoursesModel'
 import {CourseCompletionsGraphModel} from '../controllers/reporting/model/courseCompletionsGraphModel'
 import {CslServiceClient} from '../csl-service/client'
@@ -12,6 +12,7 @@ import {Table} from './model/course-completions/table'
 import {ReportParameterFactory} from './model/reportParameterFactory'
 import {Request} from 'express'
 import {fetchCourseCompletionSessionObject} from '../controllers/reporting/utils'
+import {CourseService} from '../lib/courseService'
 
 export class CourseCompletionService {
 

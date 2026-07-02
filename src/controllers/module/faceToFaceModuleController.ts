@@ -4,10 +4,11 @@ import {ModuleFactory} from '../../learning-catalogue/model/factory/moduleFactor
 import {NextFunction, Request, Response, Router} from 'express'
 import {Module} from '../../learning-catalogue/model/module'
 import * as asyncHandler from 'express-async-handler'
-import {CourseService} from 'lib/courseService'
+import {CourseService} from '../../lib/courseService'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
 import {learningEditRole} from '../../identity/identity'
+
 const { xss } = require('express-xss-sanitizer')
 
 

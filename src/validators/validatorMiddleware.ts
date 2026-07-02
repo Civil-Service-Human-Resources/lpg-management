@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from 'express'
-import {plainToInstance, ClassConstructor} from 'class-transformer'
+import {ClassConstructor, plainToInstance} from 'class-transformer'
 import {getLogger} from '../utils/logger'
 import {validateAndMapErrors} from './util'
 import {SubmittableForm} from '../controllers/models/submittableForm'

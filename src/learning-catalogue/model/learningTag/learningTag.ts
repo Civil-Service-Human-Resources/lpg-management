@@ -1,8 +1,8 @@
 import * as config from '../../../config'
-import {CacheableObject} from 'lib/cache/cacheableObject'
 import {Expose, Transform} from 'class-transformer'
+import {CachedTaxonomyItem} from '../../../lib/taxonomy/cachedTaxonomyItem'
 
-export class LearningTag implements CacheableObject {
+export class LearningTag implements CachedTaxonomyItem {
 	getId(): string {
 		return this.id.toString()
 	}
@@ -20,7 +20,7 @@ export class LearningTag implements CacheableObject {
 	lpgUiUrl: string
 	parentId?: number
 	parentName?: string
-	categoryTag: boolean
+	category: boolean
 	archived: boolean
 
 }

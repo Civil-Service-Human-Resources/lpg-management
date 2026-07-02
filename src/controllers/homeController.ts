@@ -1,9 +1,9 @@
 import {NextFunction, Request, Response} from 'express'
 import {LearningCatalogue} from '../learning-catalogue'
 
-import {Pagination} from 'lib/pagination'
-import { DefaultPageResults } from 'src/learning-catalogue/model/defaultPageResults'
-import { Course } from 'src/learning-catalogue/model/course'
+import {Pagination} from '../lib/pagination'
+import {DefaultPageResults} from 'src/learning-catalogue/model/defaultPageResults'
+import {Course} from 'src/learning-catalogue/model/course'
 
 export class HomeController {
 	learningCatalogue: LearningCatalogue
