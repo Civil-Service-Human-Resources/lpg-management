@@ -1,0 +1,111 @@
+#global-header{
+    background-color: black;
+    padding: 15px 0;
+
+    .header-wrapper{
+        max-width: 960px;
+        margin: 0 auto;
+        
+        .header-global{
+            .header-logo{
+                a#logo{
+                    text-decoration: none;
+                    line-height: 1;
+                    .element-wrapper{
+                        color: white;
+                        margin-left: 15px;
+                        font-family: "GDS Transport", Arial, sans-serif;
+
+                        .logo-wrapper{
+                            display: flex;
+                            align-items: center;
+
+                            .gov-uk-name{
+                                font-size: 30px;
+                                font-weight: bold;
+                                margin-left: 10px;
+                            }
+                        }
+                        .service-name{
+                            font-size: 24px;
+                            font-weight: bold;
+                            margin-top: 15px;
+                        }
+                    }
+                }
+                
+            }
+            
+        }
+        
+    }
+
+    @media(min-width: 768px){
+        .header-wrapper{
+            .header-global{
+                .header-logo{
+                    a#logo{
+                        .element-wrapper{
+                            display: flex;
+                            align-items: center;
+                            margin-left: 0;
+                            .service-name{
+                                margin-top: 0;
+                                margin-left: 10px;
+                            }
+
+                            
+                        }
+                    }
+                }
+                
+            }
+        }
+    }
+}
+
+#global-header-bar{
+    height: 10px;
+    background-color: #af292e;
+}
+
+.govuk-width-container {
+    max-width: 100%;
+
+    #phase-banner-container{
+        background-color: #e7e7e7;
+
+        .govuk-phase-banner{
+            max-width: 960px;
+            margin: auto;
+            border-bottom: 0;
+        }
+    }
+
+    .nav-wrapper{
+        background-color: #f3f2f1;
+        .nav-container{
+            border-bottom: 0;
+            nav.nav{
+                max-width: 960px;
+                margin: auto;
+                
+            }
+        }
+
+        @media(min-width: 768px){
+            padding: 9px 0;
+        }
+    }
+
+    .app-main-class{
+        max-width: 960px;
+        margin: auto;
+    }
+
+    .govuk-back-link{
+        display: block;
+        max-width: 960px;
+        margin: 15px auto;
+    }
+}
