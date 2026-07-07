@@ -10,6 +10,7 @@
 	top: 10px;
 	right: 0;
 	font-weight: bold;
+	padding-right: 9px;
 
 	&.nav-button {
 		left: -9999px;
@@ -26,7 +27,7 @@
 
 .nav-container {
 	width: 100%;
-	padding: 0;
+	padding: 0 9px;
 	display: none;
 
 	.nav {
