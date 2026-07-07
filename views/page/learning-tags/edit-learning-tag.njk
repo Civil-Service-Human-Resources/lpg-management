@@ -14,7 +14,7 @@
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
 {% block content %}
-    {% set errors = sessionFlash.errors %}
+    {% set errors = pageModel.errors %}
     {{ errorSummary(errors.fields) }}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">

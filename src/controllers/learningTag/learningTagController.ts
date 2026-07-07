@@ -28,16 +28,16 @@ export class LearningTagController extends Controller {
 			postRequestWithBody('/', this.create(), {
 				dtoClass: LearningTagPageModel,
 				onError: {
-					behaviour: BehaviourOnError.REDIRECT,
-					path: '/content-management/learning-tags'
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getCreate()
 				}
 			}),
 			getRequest('/:learningTagId', this.getEdit()),
 			postRequestWithBody('/:learningTagId', this.edit(), {
 				dtoClass: LearningTagPageModel,
 				onError: {
-					behaviour: BehaviourOnError.REDIRECT,
-					path: '/content-management/learning-tags/:learningTagId'
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getEdit()
 				}
 			}),
 			getRequest('/:learningTagId/unlink-parent-confirm', this.getUnlinkParent()),
@@ -60,7 +60,7 @@ export class LearningTagController extends Controller {
 	}
 
 	private getPageModel = async (request: Request, response: Response) => {
-		let pageModel = request.session!.pageModel as LearningTagPageModel
+		let pageModel = response.locals.input as LearningTagPageModel
 		if (pageModel === undefined) {
 			pageModel = await this.learningTagService.getPageModel(response.locals.learningTag, true)
 		} else {

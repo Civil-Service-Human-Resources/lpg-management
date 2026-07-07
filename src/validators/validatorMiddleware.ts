@@ -12,14 +12,16 @@ export interface ValidationOptions<T extends SubmittableForm> {
 	onError: {
 		behaviour: BehaviourOnError,
 		path?: string,
-		pageModelKey?: string
+		pageModelKey?: string,
+		routerFunction?: (req: Request, res: Response, next: NextFunction) => void
 	}
 }
 
 export enum BehaviourOnError {
-	REDIRECT,
-	RENDER_TEMPLATE,
-	SET_LOCALS
+	REDIRECT, /* Redirect to a specific endpoint */
+	RENDER_TEMPLATE /* Render a template */,
+	SET_LOCALS /* Set the pageModel and errors on the res.locals object and continue */,
+	ROUTER_FUNCTION /* Set the pageModel and errors on the res.locals object and call a specific router function */
 }
 
 export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOptions<T>) => {
@@ -57,6 +59,12 @@ export const validateEndpoint = <T extends SubmittableForm> (opts: ValidationOpt
 				} else if (opts.onError.behaviour === BehaviourOnError.SET_LOCALS) {
 					res.locals.input = output;
 					next()
+				} else if (opts.onError.behaviour === BehaviourOnError.ROUTER_FUNCTION) {
+					res.locals.input = output;
+					if (!opts.onError.routerFunction) {
+						throw new Error(`Router function can't be blank when rendering after a validation error`)
+					}
+					opts.onError.routerFunction(req, res, next)
 				} else {
 					if (!opts.onError.path) {
 						throw new Error(`Template can't be blank when rendering after a validation error`)

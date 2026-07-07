@@ -8,6 +8,7 @@ import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
 import * as sinonChai from 'sinon-chai'
+import {RestServiceConfig} from '../../../../src/lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)

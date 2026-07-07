@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {OrganisationalUnit} from '../../csrs/model/organisationalUnit'
 import {OrganisationalUnitService} from '../../csrs/service/organisationalUnitService'
-import { OrganisationalUnitPageModel } from '../../csrs/model/organisationalUnitPageModel'
+import {OrganisationalUnitPageModel} from '../../csrs/model/organisationalUnitPageModel'
 import {OrganisationalUnitControllerBase} from './organisationalUnitControllerBase'
 import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
 import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
@@ -129,7 +129,7 @@ export class OrganisationController extends OrganisationalUnitControllerBase {
 			const data = new OrganisationalUnitPageModel(organisationalUnit.name,
 				organisationalUnit.code, organisationalUnit.abbreviation, null)
 			organisationalUnit  = await this.organisationalUnitService.updateOrganisationalUnit(organisationalUnit, data)
-			response.render(`/content-management/organisations/${organisationalUnit.id}/overview`, {pageModel: organisationalUnit})
+			response.redirect(`/content-management/organisations/${organisationalUnit.id}/overview`)
 		}
 	}
 

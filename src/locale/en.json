@@ -219,6 +219,10 @@
 				"empty": "Tag code is required",
 				"length":  "Tag code too long"
 			},
+			"urlSlug": {
+				"valid": "Unique URL is not in the correct format",
+				"length": "Unique URL is too long"
+			},
 			"organisation": {
 				"alreadyExists": "An organisation with this name or code already exists",
 				"selfReference": "An organisation cannot be its own parent"
