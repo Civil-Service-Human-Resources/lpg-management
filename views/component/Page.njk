@@ -5,6 +5,7 @@
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "../../views/component/errorSummary/macro.njk" import errorSummary with context %}
 {% from "./nav/macro.njk" import nav with context %}
+{% from "../../views/component/mojHeader/macro.njk" import mojHeader %}
 
 {% extends "../../node_modules/govuk-frontend/govuk/template.njk" %}
 
@@ -50,19 +51,26 @@
 {% endblock %}
 
 {% block header %}
-  {{ govukHeader({
-        homepageUrl: lpgUiUrl + "/",
-        containerClasses: "govuk-width-container",
-        serviceName: "Civil Service Learning",
-        serviceUrl: lpgUiUrl + "/",
-        useTudorCrown: true
-    }) }}
+{{ mojHeader({
+    organisationLabel: {
+        text: "GOV.UK",
+        href: "https://gov.uk"
+    },
+    serviceLabel: {
+        text: "Civil Service Learning",
+        href: lpgUiUrl + "/"
+    },
+    logotype: "crown"
+}) }}
+
+<div id="global-header-bar"></div>
 {% endblock %}
 
 {% set mainClasses = "app-main-class" %}
 
 {% block beforeContent %}
   {% if banner === true %}
+  <div id="phase-banner-container">
     {% block govukPhaseBanner %}
       {{ govukPhaseBanner({
                              tag: {
@@ -70,6 +78,7 @@
                              },
                              html: 'Your <a href=' + feedbackUrl + ' target="_blank" rel="noopener noreferrer" title="The Civil Service Learning feedback survey will open in another window">feedback</a> will help us to improve.'
                          }) }}
+  </div>
     {% endblock%}
   {% endif %}
   {% block nav %}
