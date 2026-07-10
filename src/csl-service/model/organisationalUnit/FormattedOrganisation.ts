@@ -1,12 +1,10 @@
 import {FormattedTaxonomyItem} from '../../../lib/taxonomy/formattedTaxonomyItem'
 
 export class FormattedOrganisation extends FormattedTaxonomyItem {
-    public code: string
     public abbreviation: string = ''
 
     constructor(id: number, name: string, code: string, abbreviation: string) {
-        super(id, name)
-        this.code = code
+        super(id, name, code)
         this.abbreviation = abbreviation
     }
 
