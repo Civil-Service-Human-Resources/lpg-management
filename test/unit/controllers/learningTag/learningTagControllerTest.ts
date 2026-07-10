@@ -80,7 +80,7 @@ describe('LearningTag', () => {
 					.post('/content-management/learning-tags/')
 					.set({"roles": 'LEARNING_TAG_MANAGER'})
 				const res = await request.send(body)
-				expect(res.status).to.eql(200)
+				expect(res.status).to.eql(302)
 				expect(learningTagService.create).to.be.calledOnce
 			})
 			describe('basic validation', () => {

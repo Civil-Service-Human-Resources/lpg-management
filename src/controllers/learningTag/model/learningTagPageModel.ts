@@ -76,8 +76,10 @@ export class LearningTagPageModel extends SubmittableForm {
 		if (otherTags.map(f => f.code).includes(this.code)) {
 			this.addError({code: ['learningTags.validation.code.alreadyExists']})
 		}
-		if (this.parentId === this.id) {
-			this.addError({parentId: ['learningTags.validation.learningTag.selfReference']})
+		if (this.id !== undefined) {
+			if (this.parentId === this.id) {
+				this.addError({parentId: ['learningTags.validation.learningTag.selfReference']})
+			}
 		}
 	}
 }
