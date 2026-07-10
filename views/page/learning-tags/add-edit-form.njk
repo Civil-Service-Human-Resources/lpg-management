@@ -63,12 +63,6 @@
                 text: i18n[errors.fields.urlSlug]
             } if errors.fields.urlSlug else null
         }) }}
-        <div class='govuk-form-group'>
-            <p class='govuk-body'>
-                The unique link for this category is <br>
-                <span></span>
-            </p>
-        </div>
     {% endif %}
 {% endset %}
 {{ govukCheckboxes({
