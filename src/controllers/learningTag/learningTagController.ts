@@ -7,7 +7,6 @@ import * as asyncHandler from 'express-async-handler'
 import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTag'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
-import {plainToInstance} from 'class-transformer'
 
 export class LearningTagController extends Controller {
 
@@ -61,12 +60,20 @@ export class LearningTagController extends Controller {
 
 	private getPageModel = async (request: Request, response: Response) => {
 		let pageModel = response.locals.input as LearningTagPageModel
+		const learningTag = response.locals.learningTag
 		if (pageModel === undefined) {
 			pageModel = await this.learningTagService.getPageModel(response.locals.learningTag, true)
 		} else {
+			pageModel.id = learningTag === undefined ? undefined : learningTag.id
 			pageModel.parentTags = await this.learningTagService.getTypeahead()
 			request.session!.pageModel = undefined
 		}
+		return pageModel
+	}
+
+	private validatePageModel = async (request: Request, response: Response) => {
+		const pageModel = await this.getPageModel(request, response)
+		pageModel.validate()
 		return pageModel
 	}
 
@@ -98,7 +105,10 @@ export class LearningTagController extends Controller {
 
 	private create() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			const pageModel = plainToInstance(LearningTagPageModel, response.locals.input as LearningTagPageModel)
+			const pageModel = await this.validatePageModel(request, response)
+			if (pageModel.hasErrors()) {
+				return response.render('page/learning-tags/edit-learning-tag.njk', {pageModel})
+			}
 			const newLearningTag = await this.learningTagService.create(pageModel)
 			request.session!.sessionFlash = {learningTagAddedSuccessMessage: 'learningTagAddedSuccessMessage'}
 			response.redirect(`/content-management/learning-tags/${newLearningTag.id}/overview`)
@@ -114,17 +124,12 @@ export class LearningTagController extends Controller {
 
 	public edit() {
 		return async (request: Request, response: Response) => {
-			let learningTag = response.locals.learningTag
-			const pageModel = response.locals.input
-			this.logger.debug(`Updating learning tag: ${learningTag.id}`)
-
-			if (pageModel.parentId != undefined && pageModel.parentId === learningTag.id) {
-				request.session!.sessionFlash = {errors: {fields: {parentId: ['learningTags.validation.organisation.selfReference'], size: 1}}}
-
-				return request.session!.save(() => {
-					response.redirect(`/content-management/learning-tags/${learningTag.id}`)
-				})
+			const pageModel = await this.validatePageModel(request, response)
+			if (pageModel.hasErrors()) {
+				return response.render('page/learning-tags/edit-learning-tag.njk', {pageModel})
 			}
+			let learningTag = response.locals.learningTag
+			this.logger.debug(`Updating learning tag: ${learningTag.id}`)
 
 			await this.learningTagService.update(learningTag, pageModel)
 

@@ -17,7 +17,7 @@ export class LearningTagPageModel extends SubmittableForm {
 	@MaxLength(50, {
 		message: 'learningTags.validation.name.length',
 	})
-	name: string
+	name: string = ''
 
 	@IsNotEmpty({
 		message: 'learningTags.validation.code.empty',
@@ -25,7 +25,7 @@ export class LearningTagPageModel extends SubmittableForm {
 	@MaxLength(10, {
 		message: 'learningTags.validation.code.length',
 	})
-	code: string
+	code: string = ''
 
 	@MaxLength(255, {
 		message: 'learningTags.validation.description.length',
@@ -33,7 +33,7 @@ export class LearningTagPageModel extends SubmittableForm {
 	@Transform(({value}) => {
 		return value.replaceAll("&amp;", "&").trim()
 	})
-	description?: string
+	description?: string = ''
 
 	/**
 	 * Undefined if no parent set. null if unlinking current parent
@@ -66,5 +66,18 @@ export class LearningTagPageModel extends SubmittableForm {
 	constructor(parentTags: FormattedTaxonomyItem[]) {
 		super()
 		this.parentTags = parentTags
+	}
+
+	validate() {
+		const otherTags = this.parentTags.filter(f => f.id !== this.id)
+		if (otherTags.map(f => f.name).includes(this.name)) {
+			this.addError({name: ['learningTags.validation.name.alreadyExists']})
+		}
+		if (otherTags.map(f => f.code).includes(this.code)) {
+			this.addError({code: ['learningTags.validation.code.alreadyExists']})
+		}
+		if (this.parentId === this.id) {
+			this.addError({parentId: ['learningTags.validation.learningTag.selfReference']})
+		}
 	}
 }
