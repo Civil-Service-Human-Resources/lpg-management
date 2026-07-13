@@ -265,6 +265,7 @@ export class Identity {
 
 
 	isLearningTagUrlEditor() {
+		console.log(this.roles)
 		return this.roleCheck(learningTagUrlEditorRole)
 	}
 

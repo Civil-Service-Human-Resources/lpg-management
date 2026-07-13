@@ -128,6 +128,7 @@ describe('LearningTag', () => {
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('A tag with this name already exists')
 					expect(res.text).to.contain('A tag with this code already exists')
+					expect(res.text).to.contain('Add a new tag')
 				})
 			})
 		})

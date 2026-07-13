@@ -51,19 +51,17 @@
     } if errors.fields.description else null
 }) }}
 {% set urlSlugHtml %}
-    {% if identity.isLearningTagUrlEditor %}
-        {{ govukInput({
-            label: {
-                text: i18n.learningTags.text.urlSlug
-            },
-            id: "urlSlug",
-            name: "urlSlug",
-            value: pageModel.urlSlug|default(pageModel.urlSlug),
-            errorMessage: {
-                text: i18n[errors.fields.urlSlug]
-            } if errors.fields.urlSlug else null
-        }) }}
-    {% endif %}
+    {{ govukInput({
+        label: {
+            text: i18n.learningTags.text.urlSlug
+        },
+        id: "urlSlug",
+        name: "urlSlug",
+        value: pageModel.urlSlug|default(pageModel.urlSlug),
+        errorMessage: {
+            text: i18n[errors.fields.urlSlug]
+        } if errors.fields.urlSlug else null
+    }) }}
 {% endset %}
 {{ govukCheckboxes({
     name: "category",
@@ -79,7 +77,7 @@
             text: "Yes",
             checked: true if pageModel.category,
             conditional: {
-                html: urlSlugHtml
+                html: urlSlugHtml if identity.isLearningTagUrlEditor() else null
             }
         }
     ]

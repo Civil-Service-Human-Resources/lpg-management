@@ -107,7 +107,7 @@ export class LearningTagController extends Controller {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			const pageModel = await this.validatePageModel(request, response)
 			if (pageModel.hasErrors()) {
-				return response.render('page/learning-tags/edit-learning-tag.njk', {pageModel})
+				return response.render('page/learning-tags/add-learning-tag.njk', {pageModel})
 			}
 			const newLearningTag = await this.learningTagService.create(pageModel)
 			request.session!.sessionFlash = {learningTagAddedSuccessMessage: 'learningTagAddedSuccessMessage'}
