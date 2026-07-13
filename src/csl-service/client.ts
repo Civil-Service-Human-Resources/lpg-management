@@ -1,4 +1,3 @@
-import {OauthRestService} from 'lib/http/oauthRestService'
 import {CancelBookingDto} from './model/CancelBookingDto'
 import {plainToInstance} from 'class-transformer'
 import {Chart} from '../report-service/model/chart'
@@ -6,12 +5,13 @@ import {GetCourseCompletionParameters} from '../report-service/model/course-comp
 import {ReportExportRequestResponse} from '../report-service/model/reportExportRequestResponse'
 import {ReportResponse} from './model/ReportResponse'
 import {OrgRequiredLearningMap} from './model/orgRequiredLearningMap'
-import {ApiParams} from 'lib/apiParams'
+import {ApiParams} from '../lib/apiParams'
 import {Report} from '../controllers/reporting/Report'
 import {LearningPlanCache} from './learningPlanCache'
 import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
 import {EventOverview} from './model/management/EventOverview'
+import {OauthRestService} from '../lib/http/oauthRestService'
 
 export class CslServiceClient {
 
@@ -115,4 +115,5 @@ export class CslServiceClient {
 			url: this.REGISTERED_LEARNER_OVERVIEW
 		})).data
 	}
+
 }

@@ -1,6 +1,5 @@
 import {beforeEach, describe} from 'mocha'
 import {CslServiceClient} from '../../../src/csl-service/client'
-import {OauthRestService} from 'lib/http/oauthRestService'
 import * as sinon from 'sinon'
 import {CancelBookingDto} from '../../../src/csl-service/model/CancelBookingDto'
 import * as chai from 'chai'
@@ -16,6 +15,7 @@ import {
 import {Report} from '../../../src/controllers/reporting/Report'
 
 import {LearningPlanCache} from '../../../src/csl-service/learningPlanCache'
+
 var dayjs = require('dayjs')
 var utc = require('dayjs/plugin/utc')
 var timezone = require('dayjs/plugin/timezone')

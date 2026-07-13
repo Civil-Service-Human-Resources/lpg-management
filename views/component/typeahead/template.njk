@@ -1,0 +1,24 @@
+<div class="govuk-form-group">
+    <label class="govuk-label">{{ params.label }}</label>
+    {% if params.lede %}
+        <p class="govuk-body custom-margin">{{ params.lede.text }}</p>
+    {% endif %}
+    {% if params.hint %}
+        <p class="govuk-body hint custom-margin">{{ params.hint.text }}</p>
+    {% endif %}
+    <div class="autocomplete-wrapper">
+        <select name="parentId" id="parent">
+            <option value=""></option>
+            {% for key in params.autocomplete.items %}
+                {% if not params.autocomplete.exclude.includes(key.id) %}
+                    {% if params.autocomplete.selectedId == key.id %}
+                        {% set selected='selected' %}
+                    {% else %}
+                        {% set selected='' %}
+                    {% endif %}
+                    <option value={{ key.id }} {{ selected }}>{{ key.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+</div>

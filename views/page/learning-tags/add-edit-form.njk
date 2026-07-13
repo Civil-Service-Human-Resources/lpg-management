@@ -1,0 +1,84 @@
+{% from "../../component/typeahead/macro.njk" import typeahead %}
+
+<input type="hidden" name="_csrf" value="{{ _csrf }}">
+{{ typeahead({
+    label: i18n.learningTags.text.parent,
+    lede: {
+        text: "If your tag has an existing parent, find them in the list below."
+    },
+    hint: {
+        text: "Start typing to find your tag name"
+    },
+    autocomplete: {
+        items: pageModel.parentTags,
+        exclude: [ pageModel.id ],
+        selectedId: pageModel.parentId
+    }
+}) }}
+{{ govukInput({
+    label: {
+        text: i18n.learningTags.text.name
+    },
+    id: "name",
+    name: "name",
+    value: pageModel.name|default(pageModel.name),
+    errorMessage: {
+        text: i18n[errors.fields.name]
+    } if errors.fields.name else null
+}) }}
+{{ govukInput({
+    label: {
+        text: i18n.learningTags.text.code
+    },
+    classes: "govuk-input--width-10",
+    id: "code",
+    name: "code",
+    value: pageModel.code|default(pageModel.code),
+    errorMessage: {
+        text: i18n[errors.fields.code]
+    } if errors.fields.code else null
+}) }}
+{{ govukCharacterCount({
+    name: "description",
+    id: "description",
+    maxlength: 250,
+    value: pageModel.description|default(pageModel.description),
+    label: {
+        text: i18n.learningTags.text.description
+    },
+    errorMessage: {
+        text: i18n[errors.fields.description]
+    } if errors.fields.description else null
+}) }}
+{% set urlSlugHtml %}
+    {{ govukInput({
+        label: {
+            text: i18n.learningTags.text.urlSlug
+        },
+        id: "urlSlug",
+        name: "urlSlug",
+        value: pageModel.urlSlug|default(pageModel.urlSlug),
+        errorMessage: {
+            text: i18n[errors.fields.urlSlug]
+        } if errors.fields.urlSlug else null
+    }) }}
+{% endset %}
+{{ govukCheckboxes({
+    name: "category",
+    fieldset: {
+        legend: {
+            text: i18n.learningTags.text.category,
+            classes: "govuk-label"
+        }
+    },
+    items: [
+        {
+            value: "true",
+            text: "Yes",
+            checked: true if pageModel.category,
+            conditional: {
+                html: urlSlugHtml if identity.isLearningTagUrlEditor() else null
+            }
+        }
+    ]
+}) }}

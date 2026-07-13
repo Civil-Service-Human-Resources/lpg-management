@@ -11,7 +11,7 @@ import {NextFunction, Request, Response} from 'express'
 import {Module} from '../../../../src/learning-catalogue/model/module'
 import {Validator} from '../../../../src/learning-catalogue/validator/validator'
 import {YoutubeService} from '../../../../src/youtube/youtubeService'
-import {CourseService} from 'lib/courseService'
+import {CourseService} from '../../../../src/lib/courseService'
 
 chai.use(sinonChai)
 

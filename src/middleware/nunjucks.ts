@@ -1,11 +1,12 @@
 import {Middleware} from './middleware'
 import {Express} from 'express'
-const appRoot = require('app-root-path')
-const jsonpath = require('jsonpath')
 import {ENV} from '../config'
 import {DateTime} from '../lib/dateTime'
 import {Duration} from 'moment'
 import * as nunjucks from 'nunjucks'
+
+const appRoot = require('app-root-path')
+const jsonpath = require('jsonpath')
 import moment = require('moment')
 import _ = require('lodash')
 
@@ -64,7 +65,8 @@ export class NunjucksMiddleware extends Middleware {
 
 		// Globals
 		env.addGlobal("datePlaceHolder", moment().format("DD MM YYYY"))
-
+		app.engine('html', nunjucks.render);
+		app.engine('njk', nunjucks.render);
 		app.set('view engine', 'html')
     }
     getName(): string {

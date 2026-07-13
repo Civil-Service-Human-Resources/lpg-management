@@ -4,12 +4,13 @@ import {OrganisationalUnitPageModel} from '../model/organisationalUnitPageModel'
 import {DomainUpdate, DomainUpdateSuccess} from '../model/page/domainUpdateSuccess'
 import {OrganisationalUnitClient} from '../client/organisationalUnitClient'
 import {
-	GetOrganisationsFormattedParams
+	GetOrganisationsFormattedParams,
 } from '../../csl-service/model/organisationalUnit/getOrganisationsFormattedParams'
 import {FormattedOrganisationList} from '../../csl-service/model/organisationalUnit/FormattedOrganisationList'
 import {EditAgencyToken} from '../../controllers/organisationalUnit/model/editAgencyToken'
-import {OrganisationalUnitNode} from '../../csl-service/model/organisationalUnit/organisationalUnitNode'
 import {OrganisationalUnitCacheManager} from '../organisationalUnitCacheManager'
+import {OrganisationalUnitTaxonomyNodePageModel} from '../model/page/organisationalUnitTaxonomyNodePageModel'
+import {plainToInstance} from 'class-transformer'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
@@ -17,8 +18,9 @@ export class OrganisationalUnitService {
 	constructor(private readonly organisationalUnitCacheManager: OrganisationalUnitCacheManager,
 		private organisationalUnitClient: OrganisationalUnitClient) { }
 
-	async getOrgTree(): Promise<OrganisationalUnitNode[]> {
-		return await this.organisationalUnitCacheManager.getTree()
+	async getOrgTree(): Promise<OrganisationalUnitTaxonomyNodePageModel[]> {
+		const tree = await this.organisationalUnitCacheManager.getTree()
+		return plainToInstance(OrganisationalUnitTaxonomyNodePageModel, tree)
 	}
 
 	async getAllOrganisationsTypeahead() {
@@ -40,10 +42,10 @@ export class OrganisationalUnitService {
 		let typeahead = await this.organisationalUnitCacheManager.getTypeahead(cacheKey)
 		if (typeahead === undefined) {
 			const formattedOrganisations = await this.organisationalUnitClient.getFormattedOrganisationList(params)
-			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.formattedOrganisationalUnitNames)
+			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.names)
 			await this.organisationalUnitCacheManager.setTypeahead(cacheKey, typeahead)
 		}
-		return typeahead.formattedOrganisations
+		return typeahead.names
 	}
 
 	async getOrganisation(organisationalUnitId: number): Promise<OrganisationalUnit> {

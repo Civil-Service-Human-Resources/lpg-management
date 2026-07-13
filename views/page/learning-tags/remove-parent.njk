@@ -1,0 +1,28 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.learningTags.title.removeParent }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/organisations/" + learningTag.id + "/overview" %}
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.learningTags.title.removeParent }}</h1>
+        <p class="govuk-body">Are you sure you want to remove the parent tag of {{ learningTag.name }}?</p>
+        <p class="govuk-body">This action is irreversible.</p>
+        <form action="/content-management/learning-tags/{{ learningTag.id }}/unlink-parent" method="post">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
+            <fieldset class="govuk-fieldset">
+                {{ govukButton({
+                    text: "Remove parent tag",
+                    classes: "button-red"
+                }) }}
+            </fieldset>
+        </form>
+        <a class="cancel-button govuk-link" href="/content-management/organisations/{{ learningTag.id }}/overview">Cancel</a>
+    </div>
+</div>
+{% endblock %}

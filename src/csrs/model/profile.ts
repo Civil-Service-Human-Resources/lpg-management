@@ -1,7 +1,7 @@
-import {CacheableObject} from 'lib/cache/cacheableObject'
 import {Type} from 'class-transformer'
 import {OrganisationalUnit} from './organisationalUnit'
-import {KeyValue} from 'lib/keyValue'
+import {KeyValue} from '../../lib/keyValue'
+import {CacheableObject} from '../../lib/cache/cacheableObject'
 
 export class Grade implements KeyValue {
 	constructor(public id: number, public code: string, public name: string) { }

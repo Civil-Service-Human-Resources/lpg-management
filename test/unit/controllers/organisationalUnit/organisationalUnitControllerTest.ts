@@ -1,13 +1,14 @@
 import * as sinon from 'sinon'
-const session = require('supertest-session')
-import sinonChai = require('sinon-chai')
 import * as chai from 'chai'
 import {expect} from 'chai'
 import {OrganisationalUnit} from '../../../../src/csrs/model/organisationalUnit'
 import {OrganisationalUnitService} from '../../../../src/csrs/service/organisationalUnitService'
 import {getApp} from '../../../utils/testApp'
 import {OrganisationController} from '../../../../src/controllers/organisationalUnit/organisationController'
-import {OrganisationalUnitNode} from '../../../../src/csl-service/model/organisationalUnit/organisationalUnitNode'
+import {TaxonomyTreeNode} from '../../../../src/lib/taxonomy/taxonomyTreeNode'
+
+const session = require('supertest-session')
+import sinonChai = require('sinon-chai')
 
 chai.use(sinonChai)
 
@@ -25,10 +26,10 @@ describe('OrganisationalUnit', () => {
 
 	organisationalUnitService.getOrgTree.resolves(
 		[
-			new OrganisationalUnitNode("org 1", 1, [
-				new OrganisationalUnitNode("org 2", 2, [])
+			new TaxonomyTreeNode("org 1", 1, [
+				new TaxonomyTreeNode("org 2", 2, [])
 			]),
-			new OrganisationalUnitNode("org 3", 3, [])])
+			new TaxonomyTreeNode("org 3", 3, [])])
 
 	describe('Manage', () => {
 		it('should render the organisational unit tree', async () => {
