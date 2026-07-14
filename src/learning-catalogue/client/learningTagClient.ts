@@ -7,6 +7,7 @@ import {
 } from '../../csl-service/model/learning/learningTag/formattedTaxonomyItemListResponse'
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
 
 export class LearningTagClient {
 
@@ -53,4 +54,14 @@ export class LearningTagClient {
 			data
 		}));
 	}
+
+	async updateState(id: number, state: LearningTagStateUpdate) {
+		return await this.buildLearningTagResponse(this._http.putRequest<LearningTag>({
+			url: `${this.LEARNING_TAGS_URL}/${id}/state`,
+			data: {
+				state
+			}
+		}));
+	}
+
 }

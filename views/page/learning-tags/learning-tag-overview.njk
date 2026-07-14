@@ -67,21 +67,40 @@
     <div class="govuk-grid-column-one-third">
         <div class="right-menu">
             {% block menu %}
-                {% set actions = [
-                    {
+                {% set actions = [ ] %}
+                {% if not learningTag.archived %}
+                    {% set editAction = {
                         link: "/content-management/learning-tags/" + learningTag.id,
                         text: "Edit tag"
-                    }
-                ] %}
-                {% if learningTag.parentId !== null %}
-                    {% set unlinkParentAction = {
-                        link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
-                        text: "Unlink parent tag"
                     } %}
-                    {% set actions = (actions.push(unlinkParentAction), actions) %}
+                    {% set actions = (actions.push(editAction), actions) %}
+                    {% if learningTag.parentId !== null %}
+                        {% set unlinkParentAction = {
+                            link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
+                            text: "Unlink parent tag"
+                        } %}
+                        {% set actions = (actions.push(unlinkParentAction), actions) %}
+                    {% endif %}
                 {% endif %}
 
-                {{ menu("Actions", actions) }}
+                {% if identity.isLearningTagArchiver() %}
+                    {% if learningTag.archived %}
+                        {% set archiveAction = {
+                            link: "/content-management/learning-tags/" + learningTag.id + "/unarchive-confirm",
+                            text: "Unarchive tag"
+                        } %}
+                    {% else %}
+                        {% set archiveAction = {
+                            link: "/content-management/learning-tags/" + learningTag.id + "/archive-confirm",
+                            text: "Archive tag"
+                        } %}
+                    {% endif %}
+                    {% set actions = (actions.push(archiveAction), actions) %}
+                {% endif %}
+
+                {% if actions | length > 0 %}
+                    {{ menu("Actions", actions) }}
+                {% endif %}
             {% endblock %}
         </div>
     </div>

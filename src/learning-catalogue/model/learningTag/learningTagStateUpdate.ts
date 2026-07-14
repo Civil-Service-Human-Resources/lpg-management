@@ -1,0 +1,1 @@
+export type LearningTagStateUpdate = 'ARCHIVE' | 'UNARCHIVE'
