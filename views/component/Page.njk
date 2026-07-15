@@ -86,10 +86,12 @@
   {% endblock %}
   {% if backButton %}
     {% block govukBackLink %}
+    <div class="back-link-container">
       {{ govukBackLink({
-                         text: "Back",
-                         href: backButton
-                       }) }}
+        text: "Back",
+        href: backButton
+      }) }}
+    </div>
     {% endblock%}
   {% endif %}
 {% endblock %}
