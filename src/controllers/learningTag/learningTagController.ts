@@ -8,10 +8,14 @@ import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTa
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
 import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
+import {PaginationService} from '../../lib/paginationService'
+import {plainToInstance} from 'class-transformer'
+import {LearningTagCourseSearchParams} from './model/learningTagCourseSearchParams'
 
 export class LearningTagController extends Controller {
 
-	constructor(private learningTagService: LearningTagService) {
+	constructor(private learningTagService: LearningTagService,
+				private pagination: PaginationService) {
 		super('/content-management/learning-tags', 'LearningTagController')
 		this.getLearningTagFromRouterParamAndSetOnLocals()
 	}
@@ -47,6 +51,8 @@ export class LearningTagController extends Controller {
 			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 
+			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
+			getRequest('/:learningTagId/courses', this.getCourses()),
 		]
 	}
 
@@ -151,6 +157,17 @@ export class LearningTagController extends Controller {
 	public getUnlinkParent(){
 		return async (request: Request, response: Response) => {
 			response.render('page/learning-tags/remove-parent.njk')
+		}
+	}
+
+	private getCourses() {
+		return async(request: Request, response: Response) => {
+			const params = plainToInstance(LearningTagCourseSearchParams, request.query)
+			params.learningTagId = response.locals.learningTag.id
+			const results = await this.learningTagService.getCoursesPage(response.locals.learningTag.id, params)
+			const pagePagination = this.pagination.getPagination(params, results)
+			console.log(pagePagination)
+			response.render('page/learning-tags/view-courses.njk', {results, pagePagination})
 		}
 	}
 

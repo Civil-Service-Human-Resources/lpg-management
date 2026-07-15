@@ -79,6 +79,13 @@
                             } %}
                             {% set actions = (actions.push(unlinkParentAction), actions) %}
                         {% endif %}
+                        {% if identity.isLearningTagCourseManager() %}
+                            {% set viewCoursesAction = {
+                                link: "/content-management/learning-tags/" + learningTag.id + "/courses",
+                                text: "View courses"
+                            } %}
+                            {% set actions = (actions.push(viewCoursesAction), actions) %}
+                        {% endif %}
                     {% endif %}
 
                     {% if identity.isLearningTagArchiver() %}

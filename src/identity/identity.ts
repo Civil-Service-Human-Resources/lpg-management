@@ -26,6 +26,7 @@ export enum Role {
 	REGISTERED_LEARNER_ALL_ORGANISATIONS = 'REGISTERED_LEARNER_ALL_ORGANISATIONS',
 	LEARNING_TAG_MANAGER = 'LEARNING_TAG_MANAGER',
 	LEARNING_TAG_URL_EDITOR = 'LEARNING_TAG_URL_EDITOR',
+	LEARNING_TAG_COURSE_MANAGER = 'LEARNING_TAG_COURSE_MANAGER',
 	LEARNING_TAG_ARCHIVE = 'LEARNING_TAG_ARCHIVE',
 }
 
@@ -166,6 +167,8 @@ export const learningTagArchiveRole = new UserRole(All(Role.LEARNING_TAG_MANAGER
 
 export const learningTagUrlEditorRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_URL_EDITOR))
 
+export const learningTagCourseManagerRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_COURSE_MANAGER))
+
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
 }
@@ -274,6 +277,9 @@ export class Identity {
 		return this.roleCheck(learningTagUrlEditorRole)
 	}
 
+	isLearningTagCourseManager() {
+		return this.roleCheck(learningTagCourseManagerRole)
+	}
 
 	isLearningManager() {
 		return this.hasRole(Role.LEARNING_MANAGER)

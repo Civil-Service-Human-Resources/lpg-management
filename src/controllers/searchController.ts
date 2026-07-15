@@ -2,9 +2,9 @@ import {Request, Response, Router} from 'express'
 import {LearningCatalogue} from '../learning-catalogue'
 import {Course} from '../learning-catalogue/model/course'
 import {DefaultPageResults} from '../learning-catalogue/model/defaultPageResults'
-
-import * as striptags from 'striptags'
-import {Pagination} from '../lib/pagination'
+import {PaginationService} from '../lib/paginationService'
+import {plainToInstance} from 'class-transformer'
+import {SearchQuery} from './models/searchQuery'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -12,9 +12,9 @@ const { xss } = require('express-xss-sanitizer')
 export class SearchController {
 	router: Router
 	learningCatalogue: LearningCatalogue
-	pagination: Pagination
+	pagination: PaginationService
 
-	constructor(learningCatalogue: LearningCatalogue, pagination: Pagination) {
+	constructor(learningCatalogue: LearningCatalogue, pagination: PaginationService) {
 		this.learningCatalogue = learningCatalogue
 		this.pagination = pagination
 		this.router = Router()
@@ -29,18 +29,14 @@ export class SearchController {
 		const self = this
 
 		return async (request: Request, response: Response) => {
-			let {page, size} = this.pagination.getPageAndSizeFromRequest(request)
-			let query = ''
-			if (request.query.q) {
-				// @ts-ignore
-				query = striptags(request.query.q)
-			}
-			// prettier-ignore
-			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.searchCourses(query, page, size)
+			const params = plainToInstance(SearchQuery, request.query)
+			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.searchCourses(params.q, params.p, params.s)
+			const pagePagination = this.pagination.getPagination(params, pageResults)
 
-			response.render('page/search-results', {
+			response.render('page/search-results.njk', {
 				pageResults: pageResults,
-				query: query,
+				query: params.q,
+				pagePagination
 			})
 		}
 	}
