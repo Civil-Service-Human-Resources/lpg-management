@@ -40,12 +40,23 @@
     .app-main-class{
         max-width: 960px;
         margin: auto;
+
+        padding: 40px 15px;
+
+        @media(min-width: 768px){
+            padding-left: 0;
+            padding-right: 0;
+        }
     }
 
-    .govuk-back-link{
-        display: block;
+    .back-link-container{
         max-width: 960px;
         margin: 15px auto;
+        padding: 0 9px;
+
+        @media(min-width: 768px){
+            padding: 0;
+        }
     }
 }
 
