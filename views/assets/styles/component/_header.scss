@@ -7,18 +7,25 @@
     }
 
     #phase-banner-container{
-        background-color: #e7e7e7;
+        background-color: $phase-banner-background;
         padding: 0 9px;
 
         .govuk-phase-banner{
             max-width: 960px;
             margin: auto;
             border-bottom: 0;
+
+            p{
+                color: $phase-banner-text-color;
+                a{
+                    color: $phase-banner-link-color;
+                }
+            }
         }
     }
 
     .nav-wrapper{
-        background-color: #f3f2f1;
+        background-color: $nav-background-color;
 
         .nav-container{
             border-bottom: 0;

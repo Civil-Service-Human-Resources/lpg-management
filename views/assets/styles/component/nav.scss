@@ -83,17 +83,19 @@
 		display: block;
 		border-bottom: 1px solid $border;
 		padding: 10px 0;
+		background-color: $nav-background-color;
 
 		.nav {
 			display: block;
 
 			.nav-item {
 				padding-bottom: 8px;
+				color: $nav-link-color;
 
 				&:hover,
 				&.active {
-					color: $link;
-					border-bottom: 3px solid $link;
+					color: $nav-active-link-color;
+					border-bottom: 3px solid $nav-active-link-underline-color;
 					border-left: none;
 					margin-left: 0;
 					padding-left: 0;

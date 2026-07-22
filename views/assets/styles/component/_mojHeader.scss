@@ -1,13 +1,18 @@
 .moj-header {
     padding-top: 15px;
-    border-bottom: 10px solid var(--govuk-brand-colour, #af292e);
-    background-color: #0b0c0c
+    @if variable-exists(moj-header-border-bottom){
+        border-bottom: $moj-header-border-bottom;
+    }
+    background-color: $moj-header-background;
 }
 
 .moj-header__container {
     position: relative;
     max-width: 960px;
-    margin: 0 15px
+    margin: 0 15px;
+    @if variable-exists(moj-header-padding-bottom){
+        padding-bottom: $moj-header-padding-bottom;
+    }
 }
 
 @media (min-width:40.0625em) {
@@ -29,7 +34,13 @@
 }
 
 .moj-header__logo {
-    padding-bottom: 5px
+    padding-bottom: 5px;
+    @if variable-exists(moj-header-logo-border-left){
+        border-left: $moj-header-logo-border-left;
+    }
+    @if variable-exists(moj-header-logo-padding-left){
+        padding-left: $moj-header-logo-padding-left;
+    }
 }
 
 @media (min-width:48.0625em) {
@@ -48,7 +59,10 @@
     position: relative;
     top: -8px;
     margin-right: 5px;
-    vertical-align: top
+    vertical-align: top;
+    @if variable-exists(moj-header-logotype-crest-display){
+        display: $moj-header-logotype-crest-display;
+    }
 }
 
 .moj-header__content {
@@ -104,7 +118,7 @@
     outline: 3px solid transparent;
     background-color: var(--govuk-focus-colour, #fd0);
     box-shadow: 0 -2px var(--govuk-focus-colour, #fd0), 0 4px var(--govuk-focus-text-colour, #0b0c0c);
-    text-decoration: none
+    text-decoration: none;
 }
 
 @supports not (text-wrap:balance) {
@@ -169,7 +183,11 @@
     vertical-align: middle;
     font-family: GDS Transport, arial, sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale
+    -moz-osx-font-smoothing: grayscale;
+
+    @if variable-exists(moj-header-organisation-name-width){
+        width: $moj-header-organisation-name-width;
+    }
 }
 
 @media print {
@@ -183,7 +201,7 @@
 .moj-header__link--organisation-name,
 .moj-header__link>a--organisation-name {
     font-weight: 700;
-    font-size: 30px;
+    font-size: $moj-header-organisation-name-text-size;
     line-height: 1.1904761905
 }
 
@@ -191,7 +209,7 @@
 
     .moj-header__link--organisation-name,
     .moj-header__link>a--organisation-name {
-        font-size: 30px;
+        font-size: $moj-header-organisation-name-text-size;
         line-height: 1.25
     }
 }
@@ -225,6 +243,24 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-weight: bold;
+
+    @if variable-exists(moj-header-service-name-margin-top){
+        margin-top: $moj-header-service-name-margin-top;
+    }
+
+    @media(min-width: 768px){
+        @if variable-exists(moj-header-service-name-border-left){
+        border-left: $moj-header-service-name-border-left;
+        }
+
+        @if variable-exists(moj-header-service-name-padding-left){
+            padding-left: $moj-header-service-name-padding-left;
+        }
+    }
+
+    
+
+    
 }
 
 @media print {
@@ -237,7 +273,7 @@
 
 .moj-header__link--service-name,
 .moj-header__link>a--service-name {
-    font-size: 24px;
+    font-size: $moj-header-service-name-text-size;
     line-height: 1.1904761905
 }
 
@@ -270,7 +306,7 @@
 
     .moj-header__link--service-name,
     .moj-header__link>a--service-name {
-        margin-left: 5px
+        margin-left: 5px;
     }
 }
 
