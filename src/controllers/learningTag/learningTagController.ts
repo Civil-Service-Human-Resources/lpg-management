@@ -86,7 +86,7 @@ export class LearningTagController extends Controller {
 	public getList() {
 		return async (request: Request, response: Response, next: NextFunction) => {
 			await this.learningTagService
-				.getTree(request.user!.isLearningTagArchiver())
+				.getTree()
 				.then(learningTags => {
 					response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
 				})
@@ -116,7 +116,7 @@ export class LearningTagController extends Controller {
 				return response.render('page/learning-tags/add-learning-tag.njk', {pageModel})
 			}
 			const newLearningTag = await this.learningTagService.create(pageModel)
-			request.session!.sessionFlash = {learningTagAddedSuccessMessage: 'learningTagAddedSuccessMessage'}
+			request.session!.sessionFlash = {learningTagNotification: 'learningTags.notification.created'}
 			response.redirect(`/content-management/learning-tags/${newLearningTag.id}/overview`)
 		}
 	}
@@ -164,6 +164,7 @@ export class LearningTagController extends Controller {
 		return async(request: Request, response: Response) => {
 			let learningTag = response.locals.learningTag
 			await this.learningTagService.archive(learningTag.id)
+			request.session!.sessionFlash = {learningTagNotification: 'learningTags.notification.archived'}
 			response.redirect(`/content-management/learning-tags/${learningTag.id}/overview`)
 		}
 	}
@@ -178,6 +179,7 @@ export class LearningTagController extends Controller {
 		return async(request: Request, response: Response) => {
 			let learningTag = response.locals.learningTag
 			await this.learningTagService.unarchive(learningTag.id)
+			request.session!.sessionFlash = {learningTagNotification: 'learningTags.notification.unarchived'}
 			response.redirect(`/content-management/learning-tags/${learningTag.id}/overview`)
 		}
 	}
