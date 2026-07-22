@@ -26,6 +26,7 @@ export enum Role {
 	REGISTERED_LEARNER_ALL_ORGANISATIONS = 'REGISTERED_LEARNER_ALL_ORGANISATIONS',
 	LEARNING_TAG_MANAGER = 'LEARNING_TAG_MANAGER',
 	LEARNING_TAG_URL_EDITOR = 'LEARNING_TAG_URL_EDITOR',
+	LEARNING_TAG_ARCHIVE = 'LEARNING_TAG_ARCHIVE',
 }
 
 export enum CompoundRole {
@@ -161,6 +162,8 @@ export const organisationManagerRole = new UserRole(Any(Role.ORGANISATION_MANAGE
 // TODO: Add LEARNING_MANAGER when we go live
 export const learningTagManagerRole = new UserRole(Any(Role.LEARNING_TAG_MANAGER))
 
+export const learningTagArchiveRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_ARCHIVE))
+
 export const learningTagUrlEditorRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_URL_EDITOR))
 
 export class IdentityDetails {
@@ -263,6 +266,9 @@ export class Identity {
 		return this.roleCheck(learningTagManagerRole)
 	}
 
+	isLearningTagArchiver() {
+		return this.roleCheck(learningTagArchiveRole)
+	}
 
 	isLearningTagUrlEditor() {
 		return this.roleCheck(learningTagUrlEditorRole)

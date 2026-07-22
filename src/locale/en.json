@@ -204,12 +204,19 @@
 			"parent": "Parent tag (optional)",
 			"category": "Show on homepage?"
 		},
+		"notification": {
+			"created": "Learning tag has been created",
+			"archived": "This has been removed from the list of published tags and now archived.",
+			"unarchived": "This has been removed from the list of archived tags and now published."
+		},
 		"title": {
 			"manage": "Manage Tags",
 			"overview":  "Tag overview",
 			"add": "Add a new tag",
 			"removeParent": "Remove parent tag",
-			"edit": "Edit a tag"
+			"edit": "Edit a tag",
+			"archive": "Confirmation of archiving",
+			"unarchive": "Confirmation of unarchiving"
 		},
 		"validation": {
 			"name": {

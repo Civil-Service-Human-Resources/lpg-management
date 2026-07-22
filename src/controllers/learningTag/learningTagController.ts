@@ -2,11 +2,12 @@ import {NextFunction, Request, Response} from 'express'
 import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
 import {Controller} from '../controller'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
-import {IUserRole, learningTagManagerRole} from '../../identity/identity'
+import {IUserRole, learningTagArchiveRole, learningTagManagerRole} from '../../identity/identity'
 import * as asyncHandler from 'express-async-handler'
 import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTag'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
+import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 
 export class LearningTagController extends Controller {
 
@@ -40,7 +41,12 @@ export class LearningTagController extends Controller {
 				}
 			}),
 			getRequest('/:learningTagId/unlink-parent-confirm', this.getUnlinkParent()),
-			postRequest('/:learningTagId/unlink-parent', this.unlinkParent())
+			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
+			getRequest('/:learningTagId/archive-confirm', this.getArchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
+			postRequest('/:learningTagId/archive', this.archive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
+			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
+			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
+
 		]
 	}
 
@@ -79,14 +85,8 @@ export class LearningTagController extends Controller {
 
 	public getList() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			await this.learningTagService
-				.getTree()
-				.then(learningTags => {
-					response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
-				})
-				.catch(error => {
-					next(error)
-				})
+			const learningTags = await this.learningTagService.getTree()
+			response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
 		}
 	}
 
@@ -110,7 +110,7 @@ export class LearningTagController extends Controller {
 				return response.render('page/learning-tags/add-learning-tag.njk', {pageModel})
 			}
 			const newLearningTag = await this.learningTagService.create(pageModel)
-			request.session!.sessionFlash = {learningTagAddedSuccessMessage: 'learningTagAddedSuccessMessage'}
+			request.session!.sessionFlash = {learningTagNotification: 'learningTags.notification.created'}
 			response.redirect(`/content-management/learning-tags/${newLearningTag.id}/overview`)
 		}
 	}
@@ -151,6 +151,36 @@ export class LearningTagController extends Controller {
 	public getUnlinkParent(){
 		return async (request: Request, response: Response) => {
 			response.render('page/learning-tags/remove-parent.njk')
+		}
+	}
+
+	public archive() {
+		return async(request: Request, response: Response) => {
+			let learningTag = response.locals.learningTag
+			await this.learningTagService.archive(learningTag.id)
+			request.session!.sessionFlash = {learningTagNotification: 'learningTags.notification.archived'}
+			response.redirect(`/content-management/learning-tags/${learningTag.id}/overview`)
+		}
+	}
+
+	public getArchive() {
+		return async(request: Request, response: Response) => {
+			response.render('page/learning-tags/archive.njk')
+		}
+	}
+
+	public unarchive() {
+		return async(request: Request, response: Response) => {
+			let learningTag = response.locals.learningTag
+			await this.learningTagService.unarchive(learningTag.id)
+			request.session!.sessionFlash = {learningTagNotification: 'learningTags.notification.unarchived'}
+			response.redirect(`/content-management/learning-tags/${learningTag.id}/overview`)
+		}
+	}
+
+	public getUnarchive() {
+		return async(request: Request, response: Response) => {
+			response.render('page/learning-tags/unarchive.njk')
 		}
 	}
 }

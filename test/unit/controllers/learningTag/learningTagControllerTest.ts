@@ -25,12 +25,18 @@ describe('LearningTag', () => {
 	tag.id = 1
 	learningTagService.getLearningTag.withArgs("1").resolves(tag)
 
-	learningTagService.getTree.resolves(
+	learningTagService.getTree.withArgs(false).resolves(
 		[
 			new TaxonomyTreeNode("tag 1", 1, [
-				new TaxonomyTreeNode("tag 2", 2, [])
-			]),
-			new TaxonomyTreeNode("tag 3", 3, [])])
+				new TaxonomyTreeNode("tag 2", 2, [], false)
+			], false),
+			new TaxonomyTreeNode("tag 3", 3, [], false)])
+	learningTagService.getTree.withArgs(true).resolves(
+		[
+			new TaxonomyTreeNode("tag 1", 1, [
+				new TaxonomyTreeNode("tag 2", 2, [], true)
+			], true),
+			new TaxonomyTreeNode("tag 3", 3, [], false)])
 	const typeahead = [
 		new FormattedTaxonomyItem(1, "tag 1", "TAG1"),
 		new FormattedTaxonomyItem(2, "tag 2", "TAG2"),
@@ -165,6 +171,33 @@ describe('LearningTag', () => {
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('A learning tag cannot be its own parent')
 				})
+			})
+		})
+		describe('Archive/unarchive', () => {
+			it('should validate the correct role', async () => {
+				const request = session(app)
+					.get('/content-management/learning-tags/1/archive-confirm')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+				const res = await request.send()
+				expect(res.status).to.eql(401)
+			})
+			it('should archive', async () => {
+				learningTagService.archive.resolves({})
+				const request = session(app)
+					.post('/content-management/learning-tags/1/archive')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+				const res = await request.send()
+				expect(res.status).to.eql(302)
+				expect(learningTagService.archive).to.be.calledOnce
+			})
+			it('should unarchive', async () => {
+				learningTagService.unarchive.resolves({})
+				const request = session(app)
+					.post('/content-management/learning-tags/1/unarchive')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+				const res = await request.send()
+				expect(res.status).to.eql(302)
+				expect(learningTagService.unarchive).to.be.calledOnce
 			})
 		})
 	})

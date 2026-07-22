@@ -13,4 +13,6 @@ export class LearningTagTaxonomyNodePageModel implements TaxonomyTreePageModel {
 	@Expose()
 	public url: string
 
+	public archived: boolean
+
 }

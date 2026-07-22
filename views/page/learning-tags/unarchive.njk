@@ -1,0 +1,28 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.learningTags.title.unarchive }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.learningTags.title.unarchive }}</h1>
+            <p class="govuk-body">By unarchiving, you will now be able to view and edit this tag.</p>
+            <p class="govuk-body">This action can be reversed at any time.</p>
+            <form action="/content-management/learning-tags/{{ learningTag.id }}/unarchive" method="post">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
+                <fieldset class="govuk-fieldset">
+                    {{ govukButton({
+                        text: "Unarchive this tag",
+                        classes: "button-red"
+                    }) }}
+                </fieldset>
+            </form>
+            <a class="cancel-button govuk-link" href="/content-management/learning-tags/{{ learningTag.id }}/overview">Cancel</a>
+        </div>
+    </div>
+{% endblock %}
