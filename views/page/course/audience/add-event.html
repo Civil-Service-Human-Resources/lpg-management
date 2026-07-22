@@ -16,7 +16,9 @@
         }) }}
     {% endblock %}
     {% block govukBackLink %}
+        <div class="back-link-container">
         {{ govukBackLink("/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure") }}
+        </div>
     {% endblock %}
 {% endblock %}
 
