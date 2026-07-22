@@ -85,14 +85,8 @@ export class LearningTagController extends Controller {
 
 	public getList() {
 		return async (request: Request, response: Response, next: NextFunction) => {
-			await this.learningTagService
-				.getTree()
-				.then(learningTags => {
-					response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
-				})
-				.catch(error => {
-					next(error)
-				})
+			const learningTags = await this.learningTagService.getTree()
+			response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
 		}
 	}
 
