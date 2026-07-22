@@ -3,11 +3,13 @@
 {% macro taxonomyListitem(params) %}
     <li class="taxonomy-list__item">
         <p class="taxonomy-list__panel">
-                <span><a href="{{ params.item.url }}">{{ params.item.name }}</a></span>
+            <span>
+                {{ params.item.name }}
                 {% if params.item.archived %}
                     <span class="status Archived">Archived</span>
                 {% endif %}
-{#            <a href="{{ params.item.url }}">View</a>#}
+            </span>
+            <a href="{{ params.item.url }}">View</a>
         </p>
         {% if params.item.children.length > 0 %}
             {{ subList({

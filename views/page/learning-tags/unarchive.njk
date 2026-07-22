@@ -13,7 +13,7 @@
             <h1 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.learningTags.title.unarchive }}</h1>
             <p class="govuk-body">By unarchiving, you will now be able to view and edit this tag.</p>
             <p class="govuk-body">This action can be reversed at any time.</p>
-            <form action="/content-management/learning-tags/{{ learningTag.id }}/archive" method="post">
+            <form action="/content-management/learning-tags/{{ learningTag.id }}/unarchive" method="post">
                 <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 <fieldset class="govuk-fieldset">
                     {{ govukButton({

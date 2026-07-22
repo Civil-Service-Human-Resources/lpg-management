@@ -13,6 +13,10 @@
 		@include govuk-responsive-margin(4, "bottom");
 		display: flex;
 		justify-content: space-between;
+
+		.status {
+			@include govuk-responsive-margin(4, "left");
+		}
 	}
 
 	.sub-list {
