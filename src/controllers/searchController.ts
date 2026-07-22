@@ -30,7 +30,7 @@ export class SearchController {
 
 		return async (request: Request, response: Response) => {
 			const params = plainToInstance(SearchQuery, request.query)
-			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.searchCourses(params.q, params.p, params.s)
+			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.searchCourses(params.q, params.p)
 			const pagePagination = this.pagination.getPagination(params, pageResults)
 
 			response.render('page/search-results.njk', {
