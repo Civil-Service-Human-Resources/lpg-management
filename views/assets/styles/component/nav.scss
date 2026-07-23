@@ -11,6 +11,7 @@
 	right: 0;
 	font-weight: bold;
 	padding-right: 9px;
+	color: $nav-mobile-menu-link-color;
 
 	&.nav-button {
 		left: -9999px;
@@ -38,16 +39,15 @@
 		.nav-item {
 			margin-right: 15px;
 			font-weight: 700;
-			color: $font-color;
+			color: $nav-link-color;
 			text-decoration: none;
 			margin-bottom: 10px;
 
 			&:hover,
 			&.active {
-				color: $link;
+				color: $nav-active-link-color-mobile;
 				border-bottom: none;
-				border-left: 3px solid $link;
-				margin-left: -15px;
+				border-left: 3px solid $nav-active-link-color-mobile;
 				padding-left: 12px;
 			}
 
@@ -90,7 +90,7 @@
 
 			.nav-item {
 				padding-bottom: 8px;
-				color: $nav-link-color;
+				//color: $nav-link-color;
 
 				&:hover,
 				&.active {
