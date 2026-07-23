@@ -22,7 +22,11 @@
 {% block head %}
     <meta name="theme-color" content="0b0c0c" />
   <!--[if !IE 8]><!-->
-    <link href="/styles/main.css?v=" rel="stylesheet" />
+    {% if NSG_FLAG === true %}
+      <link href="/styles/main-nsg.css?v=" rel="stylesheet" />
+    {% else %}
+      <link href="/styles/main.css?v=" rel="stylesheet" />
+    {% endif %}
   <!--<![endif]-->
 
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
@@ -51,16 +55,20 @@
 {% endblock %}
 
 {% block header %}
+{% set organisationLabelText = "National School of Government and Public Services" if NSG_FLAG else "GOV.UK" %}
+{% set logotype = "crown" if not NSG_FLAG %}
+{% set nsgUrl = NSG_URL if NSG_FLAG else "https://gov.uk" %}
+
 {{ mojHeader({
     organisationLabel: {
-        text: "GOV.UK",
-        href: "https://gov.uk"
+        text: organisationLabelText,
+        href: nsgUrl
     },
     serviceLabel: {
         text: "Civil Service Learning",
         href: lpgUiUrl + "/"
     },
-    logotype: "crown"
+    logotype: logotype
 }) }}
 
 <div id="global-header-bar"></div>

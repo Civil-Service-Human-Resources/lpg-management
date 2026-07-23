@@ -1,6 +1,6 @@
 import {Middleware} from './middleware'
 import {Express} from 'express'
-import {ENV} from '../config'
+import {ENV, NSG_FLAG, NSG_URL} from '../config'
 import {DateTime} from '../lib/dateTime'
 import {Duration} from 'moment'
 import * as nunjucks from 'nunjucks'
@@ -68,6 +68,8 @@ export class NunjucksMiddleware extends Middleware {
 		app.engine('html', nunjucks.render);
 		app.engine('njk', nunjucks.render);
 		app.set('view engine', 'html')
+		env.addGlobal('NSG_FLAG', NSG_FLAG)
+		env.addGlobal('NSG_URL', NSG_URL)
     }
     getName(): string {
         return 'NunjucksMiddleware'
