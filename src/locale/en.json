@@ -214,8 +214,7 @@
 			"overview":  "Tag overview",
 			"add": "Add a new tag",
 			"removeParent": "Remove parent tag",
-			"edit": "Edit a tag",
-			"viewCourses": "Courses"
+			"viewCourses": "Courses",
 			"edit": "Edit a tag",
 			"archive": "Confirmation of archiving",
 			"unarchive": "Confirmation of unarchiving"

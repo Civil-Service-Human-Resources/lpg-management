@@ -64,7 +64,7 @@ export class LearningTagClient {
 				page: searchQuery.p
 			}
 		})
-		return plainToInstance(LearningTagCoursesResponse, resp)
+		return plainToInstance(LearningTagCoursesResponse, resp.data)
 	}
 
 	async updateState(id: number, state: LearningTagStateUpdate) {

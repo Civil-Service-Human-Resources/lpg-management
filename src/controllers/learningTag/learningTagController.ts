@@ -166,7 +166,6 @@ export class LearningTagController extends Controller {
 			params.learningTagId = response.locals.learningTag.id
 			const results = await this.learningTagService.getCoursesPage(response.locals.learningTag.id, params)
 			const pagePagination = this.pagination.getPagination(params, results)
-			console.log(pagePagination)
 			response.render('page/learning-tags/view-courses.njk', {results, pagePagination})
 		}
 	}

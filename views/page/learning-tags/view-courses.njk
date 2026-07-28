@@ -21,23 +21,25 @@
                     <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
                 </div>
             {% endset %}
-            {{ list({
-                "title": {
-                    "html": searchHeaderHtml
-                },
-                "courses": results.results,
-                "showModuleCounts": true,
-                "showShortDescription": true
-            }) }}
+            {% if results.results.length > 0 %}
+                {{ list({
+                    "title": {
+                        "html": searchHeaderHtml
+                    },
+                    "courses": results.results,
+                    "showModuleCounts": true,
+                    "showShortDescription": true,
+                    "showStatus": true
+                }) }}
+            {% else %}
+                {{ searchHeaderHtml | safe }}
+                <p class='govuk-body'>There are currently no courses assigned to this tag</p>
+            {% endif %}
         </div>
     </div>
+    {% if results.results.length > 0 %}
         <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end}} of {{ pagePagination.total }}</p>
         {{ pagination(pagePagination.pagination) }}
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-third pagination-summary">
-        </div>
-        <div class="govuk-grid-column-two-thirds">
-        </div>
-    </div>
+    {% endif %}
 {% endblock %}
 
