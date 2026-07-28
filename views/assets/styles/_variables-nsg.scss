@@ -1,3 +1,4 @@
+$nsg-dark-green: #002D24;
 $theme: #af292e;
 $white: #fff;
 $font-color: #0b0c0c;
@@ -17,7 +18,7 @@ $font-normal: 19px;
 
 $tablet-small: 641px;
 
-$moj-header-background: #002D24;
+$moj-header-background: $nsg-dark-green;
 $moj-header-padding-bottom: 15px;
 $moj-header-logo-border-left: 3px solid white;
 $moj-header-logo-padding-left: 10px;
@@ -33,9 +34,12 @@ $phase-banner-background: #004634;
 $phase-banner-text-color: #fff;
 $phase-banner-link-color: #AFFFA6;
 
-$nav-background-color: #002D24;
+$nav-background-color: $nsg-dark-green;
 $nav-link-color: #fff;
 $nav-active-link-color: #fff;
 $nav-active-link-underline-color: #fff;
 $nav-mobile-menu-link-color: #fff;
 $nav-active-link-color-mobile: #fff;
+
+$footer-border-top: 10px solid $nsg-dark-green;
+$right-menu-border-top-color: $nsg-dark-green;

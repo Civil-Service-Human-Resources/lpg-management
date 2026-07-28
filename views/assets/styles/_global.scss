@@ -45,7 +45,7 @@
 }
 
 .govuk-footer {
-	border-top: 10px solid $theme;
+	border-top: $footer-border-top;
 }
 
 .u--border--bgrey {
@@ -65,7 +65,7 @@ ul.bullet {
 
 .right-menu {
 	border: 1px solid $border;
-	border-top: 8px solid $theme;
+	border-top: 8px solid $right-menu-border-top-color;
 	margin-bottom: 50px;
 
 	.menu-header {
