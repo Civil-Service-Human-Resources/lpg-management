@@ -12,9 +12,8 @@ export class LearningTag implements CachedTaxonomyItem {
 	description?: string
 	code: string
 	urlSlug: string
-	fullUrl: string
 	@Transform(({obj}) => {
-		return `${config.FRONTEND.LPG_UI_URL}/categories/${obj.fullUrl}`
+		return `${config.FRONTEND.LPG_UI_URL}/categories/${obj.urlSlug}`
 	})
 	@Expose()
 	lpgUiUrl: string
