@@ -145,3 +145,4 @@ export const SERVER_DEFAULT_TZ = env.SERVER_DEFAULT_TZ || 'UTC'
 
 export const NSG_FLAG = env.NSG_FLAG !== undefined ? env.NSG_FLAG === 'true' : false
 export const NSG_URL = env.NSG_ORGANISATION_URL || '/'
+export const NSG_BASE_URL = '/nsg-homepage'
