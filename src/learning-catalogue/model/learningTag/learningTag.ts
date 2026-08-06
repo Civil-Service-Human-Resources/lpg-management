@@ -1,4 +1,5 @@
 import * as config from '../../../config'
+import {NSG_BASE_URL} from '../../../config'
 import {Expose, Transform} from 'class-transformer'
 import {CachedTaxonomyItem} from '../../../lib/taxonomy/cachedTaxonomyItem'
 
@@ -12,9 +13,8 @@ export class LearningTag implements CachedTaxonomyItem {
 	description?: string
 	code: string
 	urlSlug: string
-	fullUrl: string
 	@Transform(({obj}) => {
-		return `${config.FRONTEND.LPG_UI_URL}/categories/${obj.fullUrl}`
+		return `${config.FRONTEND.LPG_UI_URL}${NSG_BASE_URL}/categories/${obj.urlSlug}`
 	})
 	@Expose()
 	lpgUiUrl: string
