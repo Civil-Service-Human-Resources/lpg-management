@@ -80,16 +80,22 @@
 
   &.active {
     @include highlight;
+    .nav-item {
+      color: $nav-active-link-color;
+    }
   }
 
   &:hover {
     @include highlight;
+    .nav-item {
+      color: $nav-active-link-color;
+    }
   }
 
 }
 
 .nav-item {
-  color: $white;
+  color: $nav-link-color;
   text-decoration: none;
   font-weight: 700;
 
