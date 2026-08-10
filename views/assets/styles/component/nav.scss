@@ -1,106 +1,149 @@
-.nav-wrapper {
-	position: relative;
-	width: 100%;
-	padding: 20px 0;
-	border-bottom: 1px solid $border;
-}
+@mixin highlight {
+  &:before {
+    content: "";
+    width: 5px;
+    left: -15px;
+    position: absolute;
+    right: auto;
+    bottom: 0;
+    top: 0;
+    color: $nav-active-link-underline-color;
+    background: $nav-active-link-underline-color;
 
-.mobile-nav {
-	position: absolute;
-	top: 10px;
-	right: 0;
-	font-weight: bold;
-	padding-right: 9px;
-	color: $nav-mobile-menu-link-color;
+    @media (min-width: 640px) {
+      left: -30px;
+    }
 
-	&.nav-button {
-		left: -9999px;
-	}
-
-	&.nav-label {
-		&::after {
-			content: '\25BC';
-			display: inline-block;
-			font-size: 12px;
-		}
-	}
+    @include govuk-media-query($from: desktop) {
+      height: 5px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: auto;
+      width: auto;
+    }
+  }
 }
 
 .nav-container {
-	width: 100%;
-	padding: 0 9px;
-	display: none;
+  max-width: 960px;
+  margin: 0 15px;
 
-	.nav {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
+  @media (min-width: 640px) {
+  	margin: 0 30px;
+  }
 
-		.nav-item {
-			margin-right: 15px;
-			font-weight: 700;
-			color: $nav-link-color;
-			text-decoration: none;
-			margin-bottom: 10px;
-
-			&:hover,
-			&.active {
-				color: $nav-active-link-color-mobile;
-				border-bottom: none;
-				border-left: 3px solid $nav-active-link-color-mobile;
-				padding-left: 12px;
-			}
-
-			&:last-of-type {
-				margin-bottom: 0;
-			}
-		}
-	}
+  @media (min-width: 1020px) {
+    margin: auto;
+  }
 }
 
-.nav-button {
-	&:checked ~ .nav-container {
-		display: block;
-	}
-	&:checked + .nav-label {
-		&:after {
-			transform: rotate(180deg);
-			padding-top: 1px;
-		}
-	}
+.nav {
+  &.hidden {
+    display: none;
+  }
+  @include govuk-media-query($from: desktop) {
+    display: unset;
+    &.hidden {
+      display: unset;
+    }
+  }
 }
 
-@media screen and (min-width: $tablet-small) {
-	.nav-wrapper {
-		border-bottom: none;
-		padding: 0;
-	}
-	.mobile-nav {
-		display: none;
-	}
+.nav-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-start;
 
-	.nav-container {
-		display: block;
-		border-bottom: 1px solid $border;
-		padding: 10px 0;
-		background-color: $nav-background-color;
+  @include govuk-media-query($from: desktop) {
+    flex-direction: row;
+  }
+}
 
-		.nav {
-			display: block;
+.nav-list-item {
+  margin-bottom: 10px;
+  position: relative;
+  margin-right: 15px;
 
-			.nav-item {
-				padding-bottom: 8px;
-				//color: $nav-link-color;
+  &:last-child {
+    margin-bottom: 20px;
+    @include govuk-media-query($from: desktop) {
+      margin-bottom: 0;
+    }
+  }
 
-				&:hover,
-				&.active {
-					color: $nav-active-link-color;
-					border-bottom: 3px solid $nav-active-link-underline-color;
-					border-left: none;
-					margin-left: 0;
-					padding-left: 0;
-				}
-			}
-		}
-	}
+  @include govuk-media-query($from: desktop) {
+    margin-bottom: 0;
+    padding: 20px 0 20px 0;
+  }
+
+  &.active {
+    @include highlight;
+    .nav-item {
+      color: $nav-active-link-color;
+    }
+  }
+
+  &:hover {
+    @include highlight;
+    .nav-item {
+      color: $nav-active-link-color;
+    }
+  }
+
+}
+
+.nav-item {
+  color: $nav-link-color;
+  text-decoration: none;
+  font-weight: 700;
+
+  &:focus {
+    outline: none;
+    text-decoration: none;
+    @include govuk-focused-text;
+  }
+}
+
+.nav-mobile-toggle {
+  display: flex;
+  justify-content: end;
+}
+
+.nav-mobile-toggle-button {
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  margin: 10px 0;
+  padding: 0;
+  border: 0;
+  color: $nav-mobile-menu-link-color;
+  background: none;
+  word-break: break-all;
+  cursor: pointer;
+
+  &:focus {
+    @include govuk-focused-text;
+  }
+
+  &.hidden {
+    display: none;
+  }
+
+  &:after {
+    content: '\25BC';
+    display: inline-block;
+    font-size: 12px;
+    margin-left: 5px;
+  }
+  &.active {
+    &:after {
+      content: '\25B2';
+    }
+  }
+
+  @include govuk-media-query($from: desktop) {
+    display: none;
+  }
 }

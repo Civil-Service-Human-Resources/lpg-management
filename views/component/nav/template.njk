@@ -1,19 +1,25 @@
 <div class="nav-wrapper">
-    <input class="mobile-nav nav-button" type="checkbox" id="mobileNav" />
-    <label class="mobile-nav nav-label" for="mobileNav">Menu</label>
     <div class="nav-container">
-        <nav class="nav">
-            <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/">Home</a>
-            <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/course-catalogue">Course catalogue</a>
-            <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/learning-record">Learning record</a>
-            <a class="nav-item govuk-link" href="{{ lpgUiUrl }}/profile">Profile</a>
-            {% if identity.hasAnyAdminRole() %}
-                <a class="nav-item govuk-link {% if originalUrl === '/content-management' %}active{% endif %}" href="/content-management">Admin</a>
-            {% endif %}
-            {% if identity.isReporter() %}
-                <a class="nav-item govuk-link {% if originalUrl and originalUrl | startsWith('/reporting') %}active{% endif %}" href="/reporting">Reporting</a>
-            {% endif %}
-            <a class="nav-item govuk-link" href="/sign-out">Sign out</a>
+        <div class='nav-mobile-toggle'>
+            <button class="nav-mobile-toggle-button hidden" id="mobileNav">Menu</button>
+        </div>
+        <nav class="nav" id='navBar'>
+            <ul class='nav-list'>
+                <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/">Home</a></li>
+                {% if NSG_FLAG === true %}
+                    <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/your-learning">Your learning</a></li>
+                {% endif %}
+                <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/course-catalogue">Course catalogue</a></li>
+                <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/learning-record">Learning record</a></li>
+                <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/profile">Profile</a></li>
+                {% if identity.hasAnyAdminRole() %}
+                    <li class='nav-list-item {% if originalUrl === '/content-management' %}active{% endif %}'><a class="nav-item" href="/content-management">Admin</a></li>
+                {% endif %}
+                {% if identity.isReporter() %}
+                    <li class='nav-list-item {% if originalUrl and originalUrl | startsWith('/reporting') %}active{% endif %}'><a class="nav-item" href="/reporting">Reporting</a></li>
+                {% endif %}
+                <li class='nav-list-item'><a class="nav-item" href="/sign-out">Sign out</a></li>
+            </ul>
         </nav>
     </div>
 </div>
