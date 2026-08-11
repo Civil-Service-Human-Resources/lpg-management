@@ -1,16 +1,17 @@
 {% from "../status/macro.njk" import status with context %}
-<form action='{{ params.submitAction }}'>
+<form method='post' action='{{ params.submitAction }}'>
+    <input type="hidden" name="_csrf" value="{{ _csrf }}">
     <fieldset class="govuk-fieldset" aria-describedby="nationality-hint nationality-error">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             {{ params.legend.html | safe }}
         </legend>
         <div class='content-manager'>
             <ul class='content-manager__list'>
-                <li class='content-manager__item content-manager__item--header'>
+                <li class='content-manager__item content-manager__item--header '>
                     <div class='content-manager__title-row'>
                         <div class="content-manager__title">
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="all" name="all" type="checkbox" value="all" aria-describedby="nationality-item-hint" data-behaviour="exclusive">
+                                <input class="govuk-checkboxes__input" id="all" name="{{ params.name }}" type="checkbox" value="all" aria-describedby="nationality-item-hint" data-behaviour="exclusive">
                                 <label class="govuk-label govuk-checkboxes__label content-manager__select-all-label" for="all">
                                     {{ params.selectAll.text }}
                                 </label>
@@ -22,13 +23,13 @@
                     </div>
                 </li>
                 {% for item in params.items %}
-                    <li class='content-manager__item'>
+                    <li class='content-manager__item  '>
                         <div class='content-manager__title-row'>
                             <div class="content-manager__title">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" id="{{ item.id }}" name="{{ item.name }}" type="checkbox" value="{{ item.value }}" aria-describedby="nationality-item-hint">
+                                    <input class="govuk-checkboxes__input" {% if item.checked %}checked{% endif %}  id="{{ item.id }}" name="{{ params.name }}" type="checkbox" value="{{ item.value }}" aria-describedby="nationality-item-hint">
                                     <label class="govuk-label govuk-checkboxes__label" for="{{ item.name }}">
-                                        {{ item.view.text }}
+                                        {{ item.text }}
                                     </label>
                                 </div>
                             </div>
@@ -40,11 +41,11 @@
                         </div>
                         <div class='content-manager__actions'>
                             <div class='content-manager__primary-actions'>
-                                <a class='content-manager__link' href="{{ item.view.href }}" target='_blank'>{{ item.view.text }} (opens in a new tab)</a>
+{#                                <a class='content-manager__link' href="{{ item.view.href }}" target='_blank'>{{ item.view.text }} (opens in a new tab)</a>#}
                             </div>
                             <div class='content-manager__secondary-actions'>
                                 <div class='content-manager__remove-action'>
-                                    <button class='content-manager__button-link'>{{ item.remove.text }}</button>
+                                    <button class='content-manager__button-link' formaction='{{ item.remove.formaction }}'>{{ item.remove.text }}</button>
                                 </div>
                             </div>
                         </div>

@@ -8,6 +8,9 @@ import {FormattedTaxonomyItem} from '../../lib/taxonomy/formattedTaxonomyItem'
 import {FormattedTaxonomyItemList} from '../../lib/taxonomy/formattedTaxonomyItemList'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
 import {SearchQuery} from '../../controllers/models/searchQuery'
+import {
+	RemoveCoursesFromLearningTagPageModel,
+} from '../../controllers/learningTag/model/removeCoursesFromLearningTagPageModel'
 
 export class LearningTagService {
 	logger = getLogger('LearningTagService')
@@ -87,5 +90,9 @@ export class LearningTagService {
 
 	async getCoursesPage(id: number, params: SearchQuery) {
 		return await this.learningTagClient.getTaggedCourses(id, params)
+	}
+
+	async removeCourses(id: number, model: RemoveCoursesFromLearningTagPageModel) {
+		return await this.learningTagClient.removeCourses(id, model.courseIds)
 	}
 }

@@ -1,6 +1,6 @@
 {% from "../../component/search/macro.njk" import search with context %}
 {% from "../../component/pagination/macro.njk" import pagination with context %}
-{% from "../../component/contentManager/macro.njk" import contentManager with context %}
+{% from "../../component/courseManager/macro.njk" import courseManager with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% extends "../../component/Page.njk" %}
@@ -22,61 +22,12 @@
                 </div>
             {% endset %}
             {% if results.results.length > 0 %}
-                {{ contentManager({
-                        "submitAction": "/manage-links/bulk-action",
+                {{ courseManager({
+                        "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
                         "legend": {
                             "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h1>"
                         },
-                        "selectAll": {
-                            "text": "Select all courses",
-                            "removeText": "Remove course"
-                        },
-                        "items": [
-                            {
-                                "id": "link-101",
-                                "name": "link-101",
-                                "value": "101",
-                                "view": {
-                                    "text": "testing101.uk",
-                                    "href": "https://testing101.uk"
-                                },
-                                "showStatus": true,
-                                "status": "Published",
-                                "remove": {
-                                    "text": "Remove course",
-                                    "href": "/manage-links/remove/101"
-                                }
-                            },
-                            {
-                                "id": "link-102",
-                                "name": "link-102",
-                                "value": "102",
-                                "view": {
-                                    "text": "testing102.uk",
-                                    "href": "https://testing102.uk"
-                                },
-                                "showStatus": true,
-                                "status": "Published",
-                                "remove": {
-                                    "text": "Remove course",
-                                    "href": "/manage-links/remove/102"
-                                }
-                            },
-                            {
-                                "id": "link-103",
-                                "name": "link-103",
-                                "value": "103",
-                                "view": {
-                                    "text": "testing103.uk"
-                                },
-                                "showStatus": false,
-                                "status": null,
-                                "remove": {
-                                    "text": "Remove course",
-                                    "href": "/manage-links/remove/103"
-                                }
-                            }
-                        ]
+                        "courses": results.results
                     }) }}
             {% else %}
                 {{ searchHeaderHtml | safe }}
@@ -90,3 +41,8 @@
     {% endif %}
 {% endblock %}
 
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+{% endblock %}

@@ -11,6 +11,7 @@ import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {PaginationService} from '../../lib/paginationService'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagCourseSearchParams} from './model/learningTagCourseSearchParams'
+import {RemoveCoursesFromLearningTagPageModel} from './model/removeCoursesFromLearningTagPageModel'
 
 export class LearningTagController extends Controller {
 
@@ -53,6 +54,14 @@ export class LearningTagController extends Controller {
 
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
 			getRequest('/:learningTagId/courses', this.getCourses()),
+			postRequest('/:learningTagId/courses/remove/:courseId', this.removeCourse()),
+			postRequestWithBody('/:learningTagId/courses/remove', this.bulkRemoveCourses(), {
+				dtoClass: RemoveCoursesFromLearningTagPageModel,
+				onError: {
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getCourses()
+				}
+			})
 		]
 	}
 
@@ -167,6 +176,29 @@ export class LearningTagController extends Controller {
 			const results = await this.learningTagService.getCoursesPage(response.locals.learningTag.id, params)
 			const pagePagination = this.pagination.getPagination(params, results)
 			response.render('page/learning-tags/view-courses.njk', {results, pagePagination})
+		}
+	}
+
+	private removeCourses = async (request: Request, response: Response, model: RemoveCoursesFromLearningTagPageModel) => {
+		const learningTagId = response.locals.learningTag.id as number
+		const removeCourseResults = await this.learningTagService.removeCourses(learningTagId, model)
+		request.session!.sessionFlash = { removeCourseResults }
+		return request.session!.save(() => {
+			response.redirect(`/content-management/learning-tags/${response.locals.learningTag.id}/courses`)
+		})
+	}
+
+	private removeCourse() {
+		return async(request: Request, response: Response) => {
+			const model = new RemoveCoursesFromLearningTagPageModel([request.params.courseId])
+			return this.removeCourses(request, response, model)
+		}
+	}
+
+	private bulkRemoveCourses() {
+		return async(request: Request, response: Response) => {
+			const model = plainToInstance(RemoveCoursesFromLearningTagPageModel, request.query)
+			return this.removeCourses(request, response, model)
 		}
 	}
 

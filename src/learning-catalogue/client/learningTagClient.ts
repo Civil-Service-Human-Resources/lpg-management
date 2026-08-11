@@ -76,4 +76,12 @@ export class LearningTagClient {
 		}));
 	}
 
+	async removeCourses(id: number, courseIds: string[]) {
+		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/${id}/courses`,
+			data: {
+				ids: courseIds
+			}
+		})).data
+	}
 }

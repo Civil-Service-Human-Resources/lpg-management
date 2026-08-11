@@ -10,14 +10,17 @@
 
 .content-manager__item {
   border-bottom: 1px solid $border;
-  @include govuk-responsive-padding(2, "top");
+  @include govuk-responsive-padding(3, "top");
   @include govuk-responsive-padding(4, "bottom");
   @include govuk-responsive-padding(4, "left");
   @include govuk-responsive-padding(4, "right");
-
   &:last-child {
     border-bottom: none;
   }
+}
+
+.content-manager__status {
+  text-wrap: nowrap;
 }
 
 .content-manager__item--header {
@@ -26,6 +29,7 @@
 
   .content-manager__title-row {
     margin: 0;
+    align-items: center;
   }
 }
 
@@ -37,21 +41,31 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: start;
 
   @include govuk-responsive-margin(2, "bottom");
 }
 
 .content-manager__actions {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   flex-wrap: wrap;
+  @include govuk-media-query($from: desktop) {
+    flex-direction: row;
+    @include govuk-responsive-padding(6, "left", false, 7);
+  }
+}
+
+.content-manager__primary-actions {
+  @include govuk-responsive-margin(2, "bottom");
+  @include govuk-media-query($from: desktop) {
+    margin: 0;
+  }
 }
 
 .content-manager__link {
   @extend .govuk-link;
-  @include govuk-responsive-padding(8, "left", false, 6);
   font-size: $font-mobile;
 }
 
