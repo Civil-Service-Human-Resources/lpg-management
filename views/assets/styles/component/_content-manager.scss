@@ -1,0 +1,66 @@
+.content-manager {
+  border: 1px solid $border;
+  box-sizing: border-box;
+  @include govuk-responsive-margin(5, "bottom");
+}
+
+.content-manager__list {
+  list-style: none;
+}
+
+.content-manager__item {
+  border-bottom: 1px solid $border;
+  @include govuk-responsive-padding(2, "top");
+  @include govuk-responsive-padding(4, "bottom");
+  @include govuk-responsive-padding(4, "left");
+  @include govuk-responsive-padding(4, "right");
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.content-manager__item--header {
+  @include govuk-responsive-padding(2, "bottom");
+  background-color: govuk-colour("light-grey");
+
+  .content-manager__title-row {
+    margin: 0;
+  }
+}
+
+.content-manager__select-all-label {
+  font-weight: 700;
+}
+
+.content-manager__title-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  @include govuk-responsive-margin(2, "bottom");
+}
+
+.content-manager__actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.content-manager__link {
+  @extend .govuk-link;
+  @include govuk-responsive-padding(8, "left", false, 6);
+  font-size: $font-mobile;
+}
+
+.content-manager__button-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: $link;
+  font-size: $font-mobile;
+  @extend .govuk-link;
+}

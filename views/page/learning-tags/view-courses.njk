@@ -1,6 +1,7 @@
 {% from "../../component/search/macro.njk" import search with context %}
 {% from "../../component/pagination/macro.njk" import pagination with context %}
-{% from "../../component/list/macro.njk" import list with context %}
+{% from "../../component/contentManager/macro.njk" import contentManager with context %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -14,23 +15,69 @@
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <span class="govuk-body form-header govuk-!-font-size-24">{{learningTag.name}}</span>
-            <h1 class="page-title govuk-heading-l">{{ i18n.learningTags.title.viewCourses }}</h1>
+            <h1 class="page-title govuk-heading-l">{{learningTag.name}}</h1>
             {% set searchHeaderHtml %}
                 <div class="header-search">
                     <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
                 </div>
             {% endset %}
             {% if results.results.length > 0 %}
-                {{ list({
-                    "title": {
-                        "html": searchHeaderHtml
-                    },
-                    "courses": results.results,
-                    "showModuleCounts": true,
-                    "showShortDescription": true,
-                    "showStatus": true
-                }) }}
+                {{ contentManager({
+                        "submitAction": "/manage-links/bulk-action",
+                        "legend": {
+                            "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h1>"
+                        },
+                        "selectAll": {
+                            "text": "Select all courses",
+                            "removeText": "Remove course"
+                        },
+                        "items": [
+                            {
+                                "id": "link-101",
+                                "name": "link-101",
+                                "value": "101",
+                                "view": {
+                                    "text": "testing101.uk",
+                                    "href": "https://testing101.uk"
+                                },
+                                "showStatus": true,
+                                "status": "Published",
+                                "remove": {
+                                    "text": "Remove course",
+                                    "href": "/manage-links/remove/101"
+                                }
+                            },
+                            {
+                                "id": "link-102",
+                                "name": "link-102",
+                                "value": "102",
+                                "view": {
+                                    "text": "testing102.uk",
+                                    "href": "https://testing102.uk"
+                                },
+                                "showStatus": true,
+                                "status": "Published",
+                                "remove": {
+                                    "text": "Remove course",
+                                    "href": "/manage-links/remove/102"
+                                }
+                            },
+                            {
+                                "id": "link-103",
+                                "name": "link-103",
+                                "value": "103",
+                                "view": {
+                                    "text": "testing103.uk"
+                                },
+                                "showStatus": false,
+                                "status": null,
+                                "remove": {
+                                    "text": "Remove course",
+                                    "href": "/manage-links/remove/103"
+                                }
+                            }
+                        ]
+                    }) }}
             {% else %}
                 {{ searchHeaderHtml | safe }}
                 <p class='govuk-body'>There are currently no courses assigned to this tag</p>
