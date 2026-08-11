@@ -28,7 +28,7 @@
                             <div class="content-manager__title">
                                 <div class="govuk-checkboxes__item">
                                     <input class="govuk-checkboxes__input" {% if item.checked %}checked{% endif %}  id="{{ item.id }}" name="{{ params.name }}" type="checkbox" value="{{ item.value }}" aria-describedby="nationality-item-hint">
-                                    <label class="govuk-label govuk-checkboxes__label" for="{{ item.name }}">
+                                    <label class="govuk-label govuk-checkboxes__label" for="{{ item.id }}">
                                         {{ item.text }}
                                     </label>
                                 </div>
