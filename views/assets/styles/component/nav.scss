@@ -10,6 +10,8 @@
 	top: 10px;
 	right: 0;
 	font-weight: bold;
+	padding-right: 9px;
+	color: $nav-mobile-menu-link-color;
 
 	&.nav-button {
 		left: -9999px;
@@ -26,7 +28,7 @@
 
 .nav-container {
 	width: 100%;
-	padding: 0;
+	padding: 0 9px;
 	display: none;
 
 	.nav {
@@ -37,16 +39,15 @@
 		.nav-item {
 			margin-right: 15px;
 			font-weight: 700;
-			color: $font-color;
+			color: $nav-link-color;
 			text-decoration: none;
 			margin-bottom: 10px;
 
 			&:hover,
 			&.active {
-				color: $link;
+				color: $nav-active-link-color-mobile;
 				border-bottom: none;
-				border-left: 3px solid $link;
-				margin-left: -15px;
+				border-left: 3px solid $nav-active-link-color-mobile;
 				padding-left: 12px;
 			}
 
@@ -82,17 +83,19 @@
 		display: block;
 		border-bottom: 1px solid $border;
 		padding: 10px 0;
+		background-color: $nav-background-color;
 
 		.nav {
 			display: block;
 
 			.nav-item {
 				padding-bottom: 8px;
+				//color: $nav-link-color;
 
 				&:hover,
 				&.active {
-					color: $link;
-					border-bottom: 3px solid $link;
+					color: $nav-active-link-color;
+					border-bottom: 3px solid $nav-active-link-underline-color;
 					border-left: none;
 					margin-left: 0;
 					padding-left: 0;

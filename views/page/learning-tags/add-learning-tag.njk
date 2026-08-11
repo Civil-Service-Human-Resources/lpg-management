@@ -1,0 +1,48 @@
+{% from "input/macro.njk" import govukInput with context %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "../../component/textarea/macro.njk" import textarea with context %}
+{% from "button/macro.njk" import govukButton %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.add }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/manage" %}
+{% block content %}
+    {% set errors = pageModel.errors %}
+    {{ errorSummary(errors.fields) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">
+                {% block h1 %}
+                    {{ i18n.learningTags.title.add }}</h1>
+                {% endblock %}
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <form action="/content-management/learning-tags" method="post">
+                {% include "./add-edit-form.njk" %}
+                {{ govukButton({
+                    text: "Add a new tag"
+                }) }}
+            </form>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <a href="/content-management/learning-tags/manage" class="govuk-link">Cancel</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+{% endblock %}

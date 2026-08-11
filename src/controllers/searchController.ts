@@ -4,7 +4,8 @@ import {Course} from '../learning-catalogue/model/course'
 import {DefaultPageResults} from '../learning-catalogue/model/defaultPageResults'
 
 import * as striptags from 'striptags'
-import {Pagination} from 'lib/pagination'
+import {Pagination} from '../lib/pagination'
+
 const { xss } = require('express-xss-sanitizer')
 
 

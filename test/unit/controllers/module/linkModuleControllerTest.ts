@@ -4,12 +4,12 @@ import {Validator} from '../../../../src/learning-catalogue/validator/validator'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import * as sinonChai from 'sinon-chai'
 import * as chai from 'chai'
-import {LinkModuleController} from '../../../../src/controllers/module/linkModuleController'
 import {expect} from 'chai'
-import sinon = require('sinon')
-import {CourseService} from 'lib/courseService'
+import {LinkModuleController} from '../../../../src/controllers/module/linkModuleController'
 import {LinkModule} from '../../../../src/learning-catalogue/model/linkModule'
 import {NextFunction} from 'express'
+import {CourseService} from '../../../../src/lib/courseService'
+import sinon = require('sinon')
 
 chai.use(sinonChai)
 

@@ -192,7 +192,54 @@
 			}
 		}
 	},
-
+	"learningTags": {
+		"headers": {
+			"learningTagName": "Tag name"
+		},
+		"text": {
+			"code": "Unique code",
+			"name": "Name",
+			"description": "Description (optional)",
+			"urlSlug": "Unique tag link",
+			"parent": "Parent tag (optional)",
+			"category": "Show on homepage?"
+		},
+		"notification": {
+			"created": "Learning tag has been created",
+			"archived": "This has been removed from the list of published tags and now archived.",
+			"unarchived": "This has been removed from the list of archived tags and now published."
+		},
+		"title": {
+			"manage": "Manage Tags",
+			"overview":  "Tag overview",
+			"add": "Add a new tag",
+			"removeParent": "Remove parent tag",
+			"edit": "Edit a tag",
+			"archive": "Confirmation of archiving",
+			"unarchive": "Confirmation of unarchiving"
+		},
+		"validation": {
+			"name": {
+				"empty": "Tag name is required",
+				"alreadyExists": "A tag with this name already exists"
+			},
+			"description": {
+				"length": "Description too long"
+			},
+			"code": {
+				"empty": "Tag code is required",
+				"length":  "Tag code too long",
+				"alreadyExists": "A tag with this code already exists"
+			},
+			"urlSlug": {
+				"valid": "Unique URL is not in the correct format",
+				"length": "Unique URL is too long"
+			},
+			"learningTag": {
+				"selfReference": "A learning tag cannot be its own parent"
+			}
+		}
+	},
 	"module": {
 		"validation": {
 			"cost": {
@@ -243,38 +290,6 @@
 			},
 			"content": {
 				"empty": "Content is required"
-			}
-		}
-	},
-	"skills": {
-		"title": "Add a new skills quiz",
-		"validation": {
-			"question": {
-				"max": "A question must be less than 500 characters.",
-				"min": "A question must be more than 10 characters."
-			},
-			"why": {
-				"max": "Text given after answer must be less than 500 characters."
-			},
-			"theme": {
-				"max": "Theme must be less than 200 characters.",
-				"min": "Theme is a required field. A theme must be at least 3 characters."
-			},
-			"answers": {
-				"empty": "You must provide at least 2 answers.",
-				"wrongCheck": "A correct answer cannot be blank. Add a value to this answer or deselect it as correct."
-			},
-			"correctAnswers": {
-				"empty": "You must provide at least one correct answer."
-			},
-			"alternativeText": {
-				"empty": "Alternative text is required for uploaded images."
-			},
-			"learningName": {
-				"max": "Learning name must be less than 500 characters"
-			},
-			"learningReference": {
-				"max": "Learning reference must be less than 500 characters"
 			}
 		}
 	},

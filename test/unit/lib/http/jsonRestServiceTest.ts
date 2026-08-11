@@ -3,15 +3,14 @@ import {beforeEach, describe, it} from 'mocha'
 import * as sinon from 'sinon'
 import * as chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
-import * as url from 'url'
-
 import {expect} from 'chai'
+import * as url from 'url'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 import {Auth} from 'src/identity/auth'
 import {Identity} from '../../../../src/identity/identity'
 import {JsonRestService} from '../../../../src/lib/http/jsonRestService'
 import * as sinonChai from 'sinon-chai'
-import {RestServiceConfig} from 'lib/http/restServiceConfig'
+import {RestServiceConfig} from '../../../../src/lib/http/restServiceConfig'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)

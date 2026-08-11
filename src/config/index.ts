@@ -78,6 +78,10 @@ export const ORG_REDIS = set({
 	ttl_seconds: +(env.ORG_REDIS_TTL_SECONDS || '604800')
 })
 
+export const LEARNING_TAG_REDIS = set({
+	ttl_seconds: +(env.LEARNING_TAG_REDIS || '604800')
+})
+
 export const PROFILE_REDIS = set({
 	ttl_seconds: +(env.PROFILE_REDIS_TTL || '604800'),
 })
@@ -138,3 +142,6 @@ export const REPORTING = {
 export const SERVER_TIMEOUT_MS = Number(env.SERVER_TIMEOUT_MS) || 240000
 // Azure's servers are all in UTC, so to ensure parity between dev environment and cloud, set the server TZ to UTC
 export const SERVER_DEFAULT_TZ = env.SERVER_DEFAULT_TZ || 'UTC'
+
+export const NSG_FLAG = env.NSG_FLAG !== undefined ? env.NSG_FLAG === 'true' : false
+export const NSG_URL = env.NSG_ORGANISATION_URL || '/'

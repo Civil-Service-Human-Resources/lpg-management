@@ -1,4 +1,5 @@
 import * as chai from 'chai'
+import {expect} from 'chai'
 import * as sinonChai from 'sinon-chai'
 import {FileController} from '../../../../src/controllers/module/fileController'
 import {LearningCatalogue} from '../../../../src/learning-catalogue'
@@ -8,12 +9,11 @@ import {ModuleFactory} from '../../../../src/learning-catalogue/model/factory/mo
 import {mockReq, mockRes} from 'sinon-express-mock'
 import {NextFunction, Request, Response} from 'express'
 import * as sinon from 'sinon'
-import {expect} from 'chai'
 import {Course} from '../../../../src/learning-catalogue/model/course'
-import {OauthRestService} from 'lib/http/oauthRestService'
-import {CourseService} from 'lib/courseService'
 import {VideoModule} from '../../../../src/learning-catalogue/model/videoModule'
 import * as config from '../../../../src/config'
+import {OauthRestService} from '../../../../src/lib/http/oauthRestService'
+import {CourseService} from '../../../../src/lib/courseService'
 
 chai.use(sinonChai)
 

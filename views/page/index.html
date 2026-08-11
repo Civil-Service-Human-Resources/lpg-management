@@ -46,10 +46,10 @@
                 text: 'Manage organisations'
             }) %}
         {% endif %}
-        {% if identity.isSkillsManagerOrSuperUser() %}
+        {% if identity.isLearningTagManager() %}
             {% set action = actions.push({
-                link: '/content-management/skills',
-                text: 'Manage quiz'
+                link: '/content-management/learning-tags/manage',
+                text: 'Manage tags'
             }) %}
         {% endif %}
         {% if actions | length > 0 %}

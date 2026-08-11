@@ -1,0 +1,48 @@
+{% from "details/macro.njk" import govukDetails %}
+
+{% macro taxonomyListitem(params) %}
+    <li class="taxonomy-list__item">
+        <p class="taxonomy-list__panel">
+            <span>
+                {{ params.item.name }}
+                {% if params.item.archived %}
+                    <span class="status Archived">Archived</span>
+                {% endif %}
+            </span>
+            <a href="{{ params.item.url }}">View</a>
+        </p>
+        {% if params.item.children.length > 0 %}
+            {{ subList({
+                "items": params.item.children,
+                "subListLabel": params.subListLabel
+            })}}
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% macro subList(params) %}
+    {% set subListHtml %}
+        <ul class="list sub-list">
+            {% for item in params.items %}
+                {{ taxonomyListitem({
+                    "item": item,
+                    "subListLabel": params.subListLabel
+                }) }}
+            {% endfor %}
+        </ul>
+    {% endset %}
+
+    {{ govukDetails({
+        summaryText: params.subListLabel,
+        html: subListHtml
+    }) }}
+{% endmacro %}
+
+<ul class='list taxonomy-list'>
+    {% for item in params.items %}
+        {{ taxonomyListitem({
+            "item": item,
+            "subListLabel": params.subListLabel
+        }) }}
+    {% endfor %}
+</ul>

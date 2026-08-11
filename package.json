@@ -5,7 +5,7 @@
 	"main": "server",
 	"scripts": {
 		"clean": "gulp setupDist",
-		"sass": "sass views/assets/styles/main.scss views/assets/styles/main.css --style compressed",
+		"sass": "sass views/assets/styles/main.scss:views/assets/styles/main.css views/assets/styles/main-nsg.scss:views/assets/styles/main-nsg.css --style compressed",
 		"test": "npm run test:ts",
 		"test:ts": "nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
 		"compile": "gulp typescript",

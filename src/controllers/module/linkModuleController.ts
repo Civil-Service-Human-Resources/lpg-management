@@ -3,15 +3,16 @@ import {LearningCatalogue} from '../../learning-catalogue'
 import {LinkFactory} from '../../learning-catalogue/model/factory/linkFactory'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {Module} from '../../learning-catalogue/model/module'
-import moment = require('moment')
-import {CourseService} from 'lib/courseService'
 import {LinkModule} from '../../learning-catalogue/model/linkModule'
 import * as asyncHandler from 'express-async-handler'
-import { getLogger } from '../../utils/logger'
-const xss = require('xss')
+import {getLogger} from '../../utils/logger'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
 import {learningEditRole} from '../../identity/identity'
+import {CourseService} from '../../lib/courseService'
+import moment = require('moment')
+
+const xss = require('xss')
 
 
 export class LinkModuleController {

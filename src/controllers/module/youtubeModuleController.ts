@@ -5,10 +5,11 @@ import {Module} from '../../learning-catalogue/model/module'
 import {Validator} from '../../learning-catalogue/validator/validator'
 import {YoutubeService} from '../../youtube/youtubeService'
 import * as asyncHandler from 'express-async-handler'
-import {CourseService} from 'lib/courseService'
 import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
 import {asyncRoleCheck} from '../middleware/roleCheckMiddleware'
 import {learningEditRole} from '../../identity/identity'
+import {CourseService} from '../../lib/courseService'
+
 const { xss } = require('express-xss-sanitizer')
 
 export class YoutubeModuleController {
