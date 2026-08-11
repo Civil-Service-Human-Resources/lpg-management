@@ -7,6 +7,8 @@ import {
 } from '../../csl-service/model/learning/learningTag/formattedTaxonomyItemListResponse'
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {SearchQuery} from '../../controllers/models/searchQuery'
+import {LearningTagCoursesResponse} from '../model/learningTag/learningTagCoursesResponse'
 import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
 
 export class LearningTagClient {
@@ -53,6 +55,16 @@ export class LearningTagClient {
 			url: `${this.LEARNING_TAGS_URL}/${id}`,
 			data
 		}));
+	}
+
+	async getTaggedCourses(id: number, searchQuery: SearchQuery): Promise<LearningTagCoursesResponse> {
+		const resp = await this._http.getRequest({
+			url: `${this.LEARNING_TAGS_URL}/${id}/courses`,
+			params: {
+				page: searchQuery.p
+			}
+		})
+		return plainToInstance(LearningTagCoursesResponse, resp.data)
 	}
 
 	async updateState(id: number, state: LearningTagStateUpdate) {

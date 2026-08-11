@@ -10,6 +10,7 @@ import * as config from '../../config'
 import {LearningTagCache} from '../../csl-service/model/learning/learningTag/learningTagCache'
 import {LearningTagCacheManager} from '../../csl-service/model/learning/learningTag/learningTagCacheManager'
 import {FormattedLearningTagListCache} from '../../csl-service/model/learning/learningTag/formattedLearningTagListCache'
+import {PaginationService} from '../../lib/paginationService'
 
 export function buildLearningTagController(cslServiceClient: OauthRestService) {
 	const learningTagClient = new LearningTagClient(cslServiceClient)
@@ -19,5 +20,6 @@ export function buildLearningTagController(cslServiceClient: OauthRestService) {
 	const learningTagFormattedNameCache = new FormattedLearningTagListCache(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds)
 	const learningTagCacheManager = new LearningTagCacheManager(learningTagCache, learningTagFormattedNameCache, learningTagTreeCache)
 	const learningTagService = new LearningTagService(learningTagCacheManager, learningTagClient)
-	return new LearningTagController(learningTagService)
+	const pagination = new PaginationService()
+	return new LearningTagController(learningTagService, pagination)
 }

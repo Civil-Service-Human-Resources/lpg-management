@@ -8,7 +8,7 @@ import {LearningCatalogue} from './learning-catalogue'
 import {CourseController} from './controllers/courseController'
 import {CourseFactory} from './learning-catalogue/model/factory/courseFactory'
 import {NextFunction, Request, Response} from 'express'
-import {Pagination} from './lib/pagination'
+import {PaginationService} from './lib/paginationService'
 import {YoutubeModuleController} from './controllers/module/youtubeModuleController'
 import {Validator} from './learning-catalogue/validator/validator'
 import {Course} from './learning-catalogue/model/course'
@@ -90,7 +90,7 @@ export class ApplicationContext {
 	audienceFactory: AudienceFactory
 	eventFactory: EventFactory
 	fileController: FileController
-	pagination: Pagination
+	pagination: PaginationService
 	youtubeService: YoutubeService
 	faceToFaceController: FaceToFaceModuleController
 	eventController: EventController
@@ -171,7 +171,7 @@ export class ApplicationContext {
 
 		this.courseFactory = new CourseFactory()
 
-		this.pagination = new Pagination()
+		this.pagination = new PaginationService()
 
 		this.cacheService = new CacheService({
 			stdTTL: config.CACHE.TTL_SECONDS,

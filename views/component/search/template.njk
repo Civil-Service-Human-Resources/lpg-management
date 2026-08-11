@@ -1,7 +1,7 @@
 <div class="search-container">
-	<form action="/content-management/search/" method="get">
-	    <label for="q">
-		<input class="govuk-input search" id="q" type="text" name="q" value="{{query}}" placeholder="Search" />
+	<form action="{{ params.formaction }}" method="get">
+		<label class='govuk-visually-hidden' for="q">{{ params.label }}</label>
+		<input class="govuk-input search" id="q" type="text" name="q" value="{{params.query}}" placeholder="Search" />
 		<button class="search-button">Search</button>
 	</form>
 </div>

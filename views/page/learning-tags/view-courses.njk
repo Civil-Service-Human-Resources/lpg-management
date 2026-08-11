@@ -1,0 +1,45 @@
+{% from "../../component/search/macro.njk" import search with context %}
+{% from "../../component/pagination/macro.njk" import pagination with context %}
+{% from "../../component/list/macro.njk" import list with context %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.viewCourses }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <span class="govuk-body form-header govuk-!-font-size-24">{{learningTag.name}}</span>
+            <h1 class="page-title govuk-heading-l">{{ i18n.learningTags.title.viewCourses }}</h1>
+            {% set searchHeaderHtml %}
+                <div class="header-search">
+                    <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
+                </div>
+            {% endset %}
+            {% if results.results.length > 0 %}
+                {{ list({
+                    "title": {
+                        "html": searchHeaderHtml
+                    },
+                    "courses": results.results,
+                    "showModuleCounts": true,
+                    "showShortDescription": true,
+                    "showStatus": true
+                }) }}
+            {% else %}
+                {{ searchHeaderHtml | safe }}
+                <p class='govuk-body'>There are currently no courses assigned to this tag</p>
+            {% endif %}
+        </div>
+    </div>
+    {% if results.results.length > 0 %}
+        <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end}} of {{ pagePagination.total }}</p>
+        {{ pagination(pagePagination.pagination) }}
+    {% endif %}
+{% endblock %}
+

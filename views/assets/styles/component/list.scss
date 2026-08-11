@@ -1,5 +1,6 @@
 .list {
 	color: $font-color;
+	@include govuk-responsive-margin(4, 'bottom');
 
 	.list-details {
 		padding: 15px 0;
@@ -69,4 +70,8 @@
 			}
 		}
 	}
+}
+
+.list__link {
+	@include govuk-link-style-default
 }

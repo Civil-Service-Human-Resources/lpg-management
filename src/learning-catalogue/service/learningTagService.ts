@@ -7,6 +7,7 @@ import {LearningTagClient} from '../client/learningTagClient'
 import {FormattedTaxonomyItem} from '../../lib/taxonomy/formattedTaxonomyItem'
 import {FormattedTaxonomyItemList} from '../../lib/taxonomy/formattedTaxonomyItemList'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {SearchQuery} from '../../controllers/models/searchQuery'
 
 export class LearningTagService {
 	logger = getLogger('LearningTagService')
@@ -82,5 +83,9 @@ export class LearningTagService {
 		const learningTag = await this.learningTagClient.updateState(id, 'UNARCHIVE')
 		await this.learningTagCacheManager.updateAndRefresh(learningTag)
 		return learningTag
+	}
+
+	async getCoursesPage(id: number, params: SearchQuery) {
+		return await this.learningTagClient.getTaggedCourses(id, params)
 	}
 }

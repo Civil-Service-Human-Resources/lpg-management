@@ -1,7 +1,7 @@
 {% from "../component/list/macro.njk" import list with context %}
 {% from "../component/menu/macro.njk" import menu %}
 {% from "../component/search/macro.njk" import search with context %}
-{% from "../component/pagination.v2/macro.njk" import pagination with context %}
+{% from "../component/pagination/macro.njk" import pagination with context %}
 
 {% extends "../component/Page.njk" %}
 
@@ -17,7 +17,10 @@
     <div class="govuk-grid-column-full">
         <div class="header-search">
             <h1 class="govuk-heading-l">Content management</h1>
-            {{ search() }}
+            {{ search({
+                "formaction": "/content-management/search/",
+                "label": "Search CSL"
+            }) }}
         </div>
     </div>
 </div>
@@ -25,9 +28,16 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
             {% if pageResults and pageResults.totalResults !== 0 %}
-                {% block list %}
-                {{ list("Courses", pageResults) }}
-                {% endblock %}
+                {{ list({
+                    "title": {
+                        "text": "Courses"
+                    },
+                    "courses": pageResults.results,
+                    "showModuleCounts": true,
+                    "showShortDescription": true,
+                    "showEdit": true,
+                    "showStatus": true
+                }) }}
             {% else %}
                 <p class="govuk-body">There are currently no courses available</p>
             {% endif %}
@@ -61,13 +71,10 @@
         {% endif %}
     </div>
 </div>
-
-<div class="govuk-grid-row">    
-    <div class="govuk-grid-column-one-third pagination-summary">
-        <p class="govuk-body">Showing {{ pageResults.getRangeStart() }} - {{ pageResults.getRangeEnd() }} of {{ pageResults.totalResults }}</p>
-    </div>
+<div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-        {{ pagination(pagePagination) }}
+        <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end }} of {{ pagePagination.total }}</p>
+        {{ pagination(pagePagination.pagination) }}
     </div>
 </div>
 {% endblock %}
