@@ -11,11 +11,25 @@
 
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
+{% set removeCourseResults = sessionFlash.removeCourseResults if sessionFlash.removeCourseResults else removeCourseResults %}
 
 {% block content %}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
             <h1 class="page-title govuk-heading-l">{{learningTag.name}}</h1>
+            {% if removeCourseResults %}
+                <div class="panel panel-blue">
+                    <div class="govuk-panel__body custom-panel panel-blue">
+                        <p class="govuk-body">
+                            {{ removeCourseResults.successfulIds.length }} courses were removed from this tag.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
             {% set searchHeaderHtml %}
                 <div class="header-search">
                     <h2 class="govuk-heading-m">Courses assigned to this tag</h2>

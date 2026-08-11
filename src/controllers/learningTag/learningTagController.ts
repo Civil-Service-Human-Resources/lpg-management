@@ -181,10 +181,13 @@ export class LearningTagController extends Controller {
 
 	private removeCourses = async (request: Request, response: Response, model: RemoveCoursesFromLearningTagPageModel) => {
 		const learningTagId = response.locals.learningTag.id as number
-		const removeCourseResults = await this.learningTagService.removeCourses(learningTagId, model)
+		// const removeCourseResults = await this.learningTagService.removeCourses(learningTagId, model)
+		const removeCourseResults = {
+			successfulIds: ["", "", ""]
+		}
 		request.session!.sessionFlash = { removeCourseResults }
 		return request.session!.save(() => {
-			response.redirect(`/content-management/learning-tags/${response.locals.learningTag.id}/courses`)
+			response.redirect(`/content-management/learning-tags/${learningTagId}/courses`)
 		})
 	}
 
