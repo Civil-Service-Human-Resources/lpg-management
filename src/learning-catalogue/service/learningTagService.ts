@@ -75,13 +75,13 @@ export class LearningTagService {
 
 	async archive(id: number) {
 		const learningTag = await this.learningTagClient.updateState(id, 'ARCHIVE')
-		await this.learningTagCacheManager.updateAndRefresh(learningTag)
+		await this.learningTagCacheManager.clearAllAndRefresh()
 		return learningTag
 	}
 
 	async unarchive(id: number) {
 		const learningTag = await this.learningTagClient.updateState(id, 'UNARCHIVE')
-		await this.learningTagCacheManager.updateAndRefresh(learningTag)
+		await this.learningTagCacheManager.clearAllAndRefresh()
 		return learningTag
 	}
 

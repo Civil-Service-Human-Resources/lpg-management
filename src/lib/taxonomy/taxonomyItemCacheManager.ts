@@ -61,6 +61,12 @@ export class TaxonomyItemCacheManager<Object extends CachedTaxonomyItem, Formatt
 		await this.clearTypeahead()
 	}
 
+	async clearAllAndRefresh() {
+		await this.cacheableObjectCache.deleteAllIds()
+		await this.treeCache.delete()
+		await this.clearTypeahead()
+	}
+
 	async delete(ids: number[]) {
 		await Promise.all(ids.map(id => this.cacheableObjectCache.delete(id)))
 	}
