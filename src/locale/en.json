@@ -223,11 +223,14 @@
 			"searchForCourses":  "Search for courses"
 		},
 		"validation": {
+			"courses": {
+				"emptySelection": "Select at least one course"
+			},
 			"assign": {
 				"tagSearchSelection": "Please select which tags you want to assign",
 				"maximumTags": "Please select a valid number of tags",
 				"courseSearchSelection": "Please select which courses you want to assign",
-				"maximumCourses":  "Please select a valid number of courses"
+				"maximumCourses": "Please select a valid number of courses"
 			},
 			"name": {
 				"empty": "Tag name is required",

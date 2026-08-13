@@ -9,7 +9,7 @@
 
 {% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.learningTags.title.learningTagOverview }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ learningTag.name }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/manage" %}

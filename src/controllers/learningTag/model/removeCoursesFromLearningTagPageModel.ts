@@ -27,4 +27,9 @@ export class RemoveCoursesFromLearningTagPageModel extends SubmittableForm {
 	getCourseIds() {
 		return (this.courseIds.length === 1 && this.courseIds[0] === 'all') ? this.allIds.split(",") : this.courseIds
 	}
+
+	setResults(results: BasicCourse[]) {
+		this.results = results
+		this.allIds = (results || []).map(c => c.id).join(",")
+	}
 }

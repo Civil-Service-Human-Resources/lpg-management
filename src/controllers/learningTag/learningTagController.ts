@@ -155,11 +155,17 @@ export class LearningTagController extends LearningTagControllerBase {
 
 	private getCourses() {
 		return async(request: Request, response: Response) => {
+			let pageModel = plainToInstance(RemoveCoursesFromLearningTagPageModel, response.locals.input as RemoveCoursesFromLearningTagPageModel)
 			const params = plainToInstance(LearningTagCourseSearchParams, request.query)
 			params.learningTagId = response.locals.learningTag.id
 			const results = await this.learningTagService.getCoursesPage(response.locals.learningTag.id, params)
 			const pagePagination = this.pagination.getPagination(params, results)
-			const pageModel = new RemoveCoursesFromLearningTagPageModel(results.results, pagePagination)
+			if (pageModel === undefined) {
+				pageModel = new RemoveCoursesFromLearningTagPageModel(results.results, pagePagination)
+			} else {
+				pageModel.setResults(results.results)
+				pageModel.pagePagination = pagePagination
+			}
 			response.render('page/learning-tags/view-courses.njk', {pageModel})
 		}
 	}
