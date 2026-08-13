@@ -139,6 +139,12 @@ export const REPORTING = {
 	COURSE_COMPLETIONS_MAX_COURSES: Number(env.REPORTING_COURSE_COMPLETIONS_MAX_COURSES || 10)
 }
 
+export const LEARNING_TAGS = {
+	ASSIGN_TAGS_MAX_TAGS: Number(env.LEARNING_TAGS_ASSIGN_TAGS_MAX_TAGS || 10),
+	ASSIGN_COURSES_MAX_COURSES: Number(env.LEARNING_TAGS_ASSIGN_COURSES_MAX_COURSES || 15),
+
+}
+
 export const SERVER_TIMEOUT_MS = Number(env.SERVER_TIMEOUT_MS) || 240000
 // Azure's servers are all in UTC, so to ensure parity between dev environment and cloud, set the server TZ to UTC
 export const SERVER_DEFAULT_TZ = env.SERVER_DEFAULT_TZ || 'UTC'

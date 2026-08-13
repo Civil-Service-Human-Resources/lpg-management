@@ -12,11 +12,20 @@
 {% block content %}
 <div class="govuk-grid-row">
 	<div class="govuk-grid-column-full">
-		<h1 class="govuk-heading-l">{{ i18n.learningTags.title.manageLearningTags }}</h1>
+		<h1 class="govuk-heading-l">{{ i18n.learningTags.title.manage }}</h1>
 	</div>
 </div>
 <div class="govuk-grid-row">
 	<div class="govuk-grid-column-two-thirds">
+		{% if sessionFlash.coursesAssignedMessage %}
+			<div class="panel panel-blue">
+				<div class="govuk-panel__body custom-panel panel-blue">
+					<p class="govuk-body">
+						{{ sessionFlash.coursesAssignedMessage.successfulIds }} courses have been assigned to multiple tags
+					</p>
+				</div>
+			</div>
+		{% endif %}
 		<h2 class="govuk-heading-m">{{ i18n.learningTags.headers.learningTagName }}</h2>
 		{% if learningTags.length > 0 %}
 			{{ taxonomy({"items": learningTags, "subListLabel": "View sub tags"}) }}
@@ -32,6 +41,12 @@
 						text: 'Add a new tag'
 					}
 				] %}
+				{% if identity.isLearningTagCourseManager() %}
+					{% set actions = (actions.push({
+						link: '/content-management/learning-tags/assign-courses/select-learning-tags',
+						text: 'Assign course to tag'
+					}), actions) %}
+				{% endif %}
 				{{ menu("Actions", actions) }}
 			{% endblock %}
 		</div>

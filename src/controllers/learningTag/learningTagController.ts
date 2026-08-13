@@ -1,10 +1,7 @@
 import {NextFunction, Request, Response} from 'express'
 import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
-import {Controller} from '../controller'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
-import {IUserRole, learningTagArchiveRole, learningTagManagerRole} from '../../identity/identity'
-import * as asyncHandler from 'express-async-handler'
-import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTag'
+import {learningTagArchiveRole, learningTagCourseManagerRole} from '../../identity/identity'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
 import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
@@ -12,17 +9,17 @@ import {PaginationService} from '../../lib/paginationService'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagCourseSearchParams} from './model/learningTagCourseSearchParams'
 import {RemoveCoursesFromLearningTagPageModel} from './model/removeCoursesFromLearningTagPageModel'
+import {SessionableObjectService} from '../reporting/utils'
+import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
+import {LearningTagControllerBase} from './learningTagControllerBase'
 
-export class LearningTagController extends Controller {
+export class LearningTagController extends LearningTagControllerBase {
 
-	constructor(private learningTagService: LearningTagService,
+	protected assignCoursesToTagsModelSession = new SessionableObjectService("assignCoursesToTagsModel", AssignCoursesToTagsModel)
+
+	constructor(protected learningTagService: LearningTagService,
 				private pagination: PaginationService) {
-		super('/content-management/learning-tags', 'LearningTagController')
-		this.getLearningTagFromRouterParamAndSetOnLocals()
-	}
-
-	protected getRequiredRole(): IUserRole | undefined {
-		return learningTagManagerRole
+		super('LearningTagController', learningTagService)
 	}
 
 	protected getRoutes(): Route[] {
@@ -53,30 +50,16 @@ export class LearningTagController extends Controller {
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/courses', this.getCourses()),
-			postRequest('/:learningTagId/courses/remove/:courseId', this.removeCourse()),
+			getRequest('/:learningTagId/courses', this.getCourses(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequest('/:learningTagId/courses/remove/:courseId', this.removeCourse(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequestWithBody('/:learningTagId/courses/remove', this.bulkRemoveCourses(), {
 				dtoClass: RemoveCoursesFromLearningTagPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getCourses()
 				}
-			})
+			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)])
 		]
-	}
-
-	private getLearningTagFromRouterParamAndSetOnLocals() {
-		this.router.param('learningTagId', asyncHandler(async (req: Request, res: Response, next: NextFunction, learningTagId: number) => {
-				const learningTag: LearningTag = await this.learningTagService.getLearningTag(learningTagId)
-				if (learningTag) {
-					res.locals.learningTag = learningTag
-					next()
-				} else {
-					res.status(404)
-					return res.render("page/not-found")
-				}
-			})
-		)
 	}
 
 	private getPageModel = async (request: Request, response: Response) => {
@@ -100,6 +83,7 @@ export class LearningTagController extends Controller {
 
 	public getList() {
 		return async (request: Request, response: Response, next: NextFunction) => {
+			this.assignCoursesToTagsModelSession.deleteObjectFromSession(request)
 			const learningTags = await this.learningTagService.getTree()
 			response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
 		}
@@ -175,16 +159,14 @@ export class LearningTagController extends Controller {
 			params.learningTagId = response.locals.learningTag.id
 			const results = await this.learningTagService.getCoursesPage(response.locals.learningTag.id, params)
 			const pagePagination = this.pagination.getPagination(params, results)
-			response.render('page/learning-tags/view-courses.njk', {results, pagePagination})
+			const pageModel = new RemoveCoursesFromLearningTagPageModel(results.results, pagePagination)
+			response.render('page/learning-tags/view-courses.njk', {pageModel})
 		}
 	}
 
 	private removeCourses = async (request: Request, response: Response, model: RemoveCoursesFromLearningTagPageModel) => {
 		const learningTagId = response.locals.learningTag.id as number
-		// const removeCourseResults = await this.learningTagService.removeCourses(learningTagId, model)
-		const removeCourseResults = {
-			successfulIds: ["", "", ""]
-		}
+		const removeCourseResults = await this.learningTagService.removeCourses(learningTagId, model.getCourseIds())
 		request.session!.sessionFlash = { removeCourseResults }
 		return request.session!.save(() => {
 			response.redirect(`/content-management/learning-tags/${learningTagId}/courses`)
@@ -193,15 +175,16 @@ export class LearningTagController extends Controller {
 
 	private removeCourse() {
 		return async(request: Request, response: Response) => {
-			const model = new RemoveCoursesFromLearningTagPageModel([request.params.courseId])
-			return this.removeCourses(request, response, model)
+			const model = new RemoveCoursesFromLearningTagPageModel()
+			model.courseIds = [request.params.courseId]
+			return await this.removeCourses(request, response, model)
 		}
 	}
 
 	private bulkRemoveCourses() {
 		return async(request: Request, response: Response) => {
-			const model = plainToInstance(RemoveCoursesFromLearningTagPageModel, request.query)
-			return this.removeCourses(request, response, model)
+			const model = plainToInstance(RemoveCoursesFromLearningTagPageModel, response.locals.input as RemoveCoursesFromLearningTagPageModel)
+			return await this.removeCourses(request, response, model)
 		}
 	}
 

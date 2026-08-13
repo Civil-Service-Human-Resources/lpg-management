@@ -1,11 +1,12 @@
 {% from "../status/macro.njk" import status with context %}
 <form method='post' action='{{ params.submitAction }}'>
     <input type="hidden" name="_csrf" value="{{ _csrf }}">
+    <input type='hidden' name='allIds' value='{{ params.allIds }}'>
     <fieldset class="govuk-fieldset" aria-describedby="nationality-hint nationality-error">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             {{ params.legend.html | safe }}
         </legend>
-        <div class='content-manager'>
+        <div class='content-manager' data-module='govuk-checkboxes'>
             <ul class='content-manager__list'>
                 <li class='content-manager__item content-manager__item--header '>
                     <div class='content-manager__title-row'>

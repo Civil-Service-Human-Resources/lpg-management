@@ -89,6 +89,9 @@
     @include highlight;
     .nav-item {
       color: $nav-active-link-color;
+      &:focus {
+        @include govuk-focused-text;
+      }
     }
   }
 

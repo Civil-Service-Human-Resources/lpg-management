@@ -31,13 +31,14 @@
                     <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
                 </div>
             {% endset %}
-            {% if results.results.length > 0 %}
+            {% if pageModel.results.length > 0 %}
                 {{ courseManager({
                         "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
                         "legend": {
                             "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h1>"
                         },
-                        "courses": results.results
+                        "courses": pageModel.results,
+                        allIds: pageModel.allIds
                     }) }}
             {% else %}
                 {{ searchHeaderHtml | safe }}
@@ -45,9 +46,9 @@
             {% endif %}
         </div>
     </div>
-    {% if results.results.length > 0 %}
-        <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end}} of {{ pagePagination.total }}</p>
-        {{ pagination(pagePagination.pagination) }}
+    {% if pageModel.results.length > 0 %}
+        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
+        {{ pagination(pageModel.pagePagination.pagination) }}
     {% endif %}
 {% endblock %}
 

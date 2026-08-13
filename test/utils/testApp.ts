@@ -11,32 +11,6 @@ import * as cookieParser from 'cookie-parser'
 import {OrganisationalUnit} from '../../src/csrs/model/organisationalUnit'
 
 
-let app: express.Express = express()
-app.use((req, res, next) => {
-	let roles: string[] = []
-	const roleHeader = req.header("roles")
-	if(roleHeader !== undefined) {
-		roles = roleHeader.split(",")
-	}
-	const identity = new Identity("testUid", 'user@domain.com', roles, "accessToken")
-	const org = new OrganisationalUnit()
-	org.id = 1
-	org.name = "Cabinet Office"
-	identity.organisationalUnit = org
-	req.user = identity
-	res.locals.identity = identity
-	next()
-})
-const middleware: Middleware[] = [
-	new LocaleMiddleware(),
-	new NunjucksMiddleware(),
-	new AssetMiddleware(),
-	new RequestMiddleware()
-]
-middleware.forEach(m => {
-	m.applyMiddleware(app)
-})
-
 const applySessionToApp = (sessionableApp: Express) => {
 	sessionableApp.use(session({
 		secret: 'secret',
@@ -47,7 +21,37 @@ const applySessionToApp = (sessionableApp: Express) => {
 	return sessionableApp
 }
 
-app = applySessionToApp(app)
+export const createApp = () => {
+	let newApp: express.Express = express()
+	newApp.use((req, res, next) => {
+		let roles: string[] = []
+		const roleHeader = req.header("roles")
+		if(roleHeader !== undefined) {
+			roles = roleHeader.split(",")
+		}
+		const identity = new Identity("testUid", 'user@domain.com', roles, "accessToken")
+		const org = new OrganisationalUnit()
+		org.id = 1
+		org.name = "Cabinet Office"
+		identity.organisationalUnit = org
+		req.user = identity
+		res.locals.identity = identity
+		next()
+	})
+	const middleware: Middleware[] = [
+		new LocaleMiddleware(),
+		new NunjucksMiddleware(),
+		new AssetMiddleware(),
+		new RequestMiddleware()
+	]
+	middleware.forEach(m => {
+		m.applyMiddleware(newApp)
+	})
+	newApp = applySessionToApp(newApp)
+	return newApp
+}
+
+let app: express.Express = createApp()
 
 export const getApp = () => {
 	return app

@@ -79,7 +79,6 @@ describe('Pagination tests', function() {
             ]
 
             const paginationResult = pagination.getPagination(q, result)
-            paginationResult.pagination.items.forEach(console.log)
             expect(paginationResult.pagination.items).to.deep.equal(paginationItems)
         })
 
