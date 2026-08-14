@@ -87,9 +87,9 @@ export class LearningTagAssignCoursesController extends LearningTagControllerBas
 		return async(request: Request, response: Response) => {
 			let session = this.assignCoursesToTagsModelSession.fetchObjectFromSession(request)!
 			const pageModel = plainToInstance(SearchForCoursesModel, response.locals.input as SearchForCoursesModel)
-			const coursesAssignedMessage = await this.learningTagService.assignCoursesToLearningTags(session.tagSearch, pageModel.courseSearch)
+			await this.learningTagService.assignCoursesToLearningTags(session.tagSearch, pageModel.courseSearch)
 			this.assignCoursesToTagsModelSession.deleteObjectFromSession(request)
-			request.session!.sessionFlash = { coursesAssignedMessage }
+			request.session!.sessionFlash = { coursesAssignedMessage: {courseIds: pageModel.courseSearch.length, learningTagIds: session.tagSearch.length} }
 			return request.session!.save(() => {
 				return response.redirect('/content-management/learning-tags/manage')
 			})

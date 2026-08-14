@@ -21,7 +21,17 @@
 			<div class="panel panel-blue">
 				<div class="govuk-panel__body custom-panel panel-blue">
 					<p class="govuk-body">
-						{{ sessionFlash.coursesAssignedMessage.successfulIds }} courses have been assigned to multiple tags
+						{% if sessionFlash.coursesAssignedMessage.courseIds === 1 %}
+							1 course has
+						{% else %}
+							{{ sessionFlash.coursesAssignedMessage.courseIds }} courses have
+						{% endif %}
+						been assigned to
+						{% if sessionFlash.coursesAssignedMessage.learningTagIds === 1 %}
+							1 tag
+						{% else %}
+							{{ sessionFlash.coursesAssignedMessage.learningTagIds }} tags
+						{% endif %}
 					</p>
 				</div>
 			</div>
