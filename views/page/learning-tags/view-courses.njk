@@ -23,7 +23,11 @@
                 <div class="panel panel-blue">
                     <div class="govuk-panel__body custom-panel panel-blue">
                         <p class="govuk-body">
-                            {{ removeCourseResults.successfulIds.length }} courses were removed from this tag.
+                            {% if removeCourseResults.successfulIds.length === 1 %}
+                                1 course was removed from this tag.
+                            {% else %}
+                                {{ removeCourseResults.successfulIds.length }} courses were removed from this tag.
+                            {% endif %}
                         </p>
                     </div>
                 </div>
