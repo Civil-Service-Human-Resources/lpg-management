@@ -1,6 +1,7 @@
 {% from "../../component/search/macro.njk" import search with context %}
 {% from "../../component/pagination/macro.njk" import pagination with context %}
-{% from "../../component/list/macro.njk" import list with context %}
+{% from "../../component/courseManager/macro.njk" import courseManager with context %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -10,36 +11,55 @@
 
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
+{% set removeCourseResults = sessionFlash.removeCourseResults if sessionFlash.removeCourseResults else removeCourseResults %}
 
 {% block content %}
+    {% set errors = pageModel.errors %}
+    {{ errorSummary(errors.fields) }}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <span class="govuk-body form-header govuk-!-font-size-24">{{learningTag.name}}</span>
-            <h1 class="page-title govuk-heading-l">{{ i18n.learningTags.title.viewCourses }}</h1>
+            <h1 class="page-title govuk-heading-l">{{learningTag.name}}</h1>
+            {% if removeCourseResults %}
+                <div class="panel panel-blue">
+                    <div class="govuk-panel__body custom-panel panel-blue">
+                        <p class="govuk-body">
+                            {% if removeCourseResults.successfulIds.length === 1 %}
+                                1 course was removed from this tag.
+                            {% else %}
+                                {{ removeCourseResults.successfulIds.length }} courses were removed from this tag.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
             {% set searchHeaderHtml %}
                 <div class="header-search">
                     <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
                 </div>
             {% endset %}
-            {% if results.results.length > 0 %}
-                {{ list({
-                    "title": {
-                        "html": searchHeaderHtml
-                    },
-                    "courses": results.results,
-                    "showModuleCounts": true,
-                    "showShortDescription": true,
-                    "showStatus": true
-                }) }}
+            {% if pageModel.results.length > 0 %}
+                {{ courseManager({
+                        "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
+                        "legend": {
+                            "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h1>"
+                        },
+                        "courses": pageModel.results,
+                        allIds: pageModel.allIds
+                    }) }}
             {% else %}
                 {{ searchHeaderHtml | safe }}
                 <p class='govuk-body'>There are currently no courses assigned to this tag</p>
             {% endif %}
         </div>
     </div>
-    {% if results.results.length > 0 %}
-        <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end}} of {{ pagePagination.total }}</p>
-        {{ pagination(pagePagination.pagination) }}
+    {% if pageModel.results.length > 0 %}
+        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
+        {{ pagination(pageModel.pagePagination.pagination) }}
     {% endif %}
 {% endblock %}
 
+{% block bodyEnd %}
+    <script src="/govuk-frontend/all.js"></script>
+    <script>window.GOVUKFrontend.initAll()</script>
+    <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+{% endblock %}

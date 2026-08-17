@@ -1,0 +1,58 @@
+{% from "../status/macro.njk" import status with context %}
+<form method='post' action='{{ params.submitAction }}'>
+    <input type="hidden" name="_csrf" value="{{ _csrf }}">
+    <input type='hidden' name='allIds' value='{{ params.allIds }}'>
+    <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            {{ params.legend.html | safe }}
+        </legend>
+        <div class='content-manager' data-module='govuk-checkboxes'>
+            <ul class='content-manager__list'>
+                <li class='content-manager__item content-manager__item--header '>
+                    <div class='content-manager__title-row'>
+                        <div class="content-manager__title">
+                            <div class="govuk-checkboxes__item">
+                                <input class="govuk-checkboxes__input" id="all" name="{{ params.name }}" type="checkbox" value="all" data-behaviour="exclusive">
+                                <label class="govuk-label govuk-checkboxes__label content-manager__select-all-label" for="all">
+                                    {{ params.selectAll.text }}
+                                </label>
+                            </div>
+                        </div>
+                        <div class='content-manager__remove-action'>
+                            <button class='content-manager__button-link'>{{ params.selectAll.removeText }}</button>
+                        </div>
+                    </div>
+                </li>
+                {% for item in params.items %}
+                    <li class='content-manager__item  '>
+                        <div class='content-manager__title-row'>
+                            <div class="content-manager__title">
+                                <div class="govuk-checkboxes__item">
+                                    <input class="govuk-checkboxes__input" {% if item.checked %}checked{% endif %}  id="{{ item.id }}" name="{{ params.name }}" type="checkbox" value="{{ item.value }}">
+                                    <label class="govuk-label govuk-checkboxes__label" for="{{ item.id }}">
+                                        {{ item.text }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% if item.status and item.showStatus %}
+                                <div class="content-manager__status">
+                                    {{ status(item.status) }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class='content-manager__actions'>
+                            <div class='content-manager__primary-actions'>
+{#                                <a class='content-manager__link' href="{{ item.view.href }}" target='_blank'>{{ item.view.text }} (opens in a new tab)</a>#}
+                            </div>
+                            <div class='content-manager__secondary-actions'>
+                                <div class='content-manager__remove-action'>
+                                    <button class='content-manager__button-link' formaction='{{ item.remove.formaction }}'>{{ item.remove.text }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </fieldset>
+</form>

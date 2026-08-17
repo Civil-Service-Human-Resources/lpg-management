@@ -88,4 +88,12 @@ export class LearningTagService {
 	async getCoursesPage(id: number, params: SearchQuery) {
 		return await this.learningTagClient.getTaggedCourses(id, params)
 	}
+
+	async removeCourses(id: number, courseIds: string[]) {
+		return await this.learningTagClient.removeCourses(id, courseIds)
+	}
+
+	async assignCoursesToLearningTags(tagIds: string[], courseIds: string[]) {
+		return await this.learningTagClient.assignCourses(tagIds, courseIds)
+	}
 }

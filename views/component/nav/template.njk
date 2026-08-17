@@ -13,10 +13,10 @@
                 <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/learning-record">Learning record</a></li>
                 <li class='nav-list-item'><a class="nav-item" href="{{ lpgUiUrl }}/profile">Profile</a></li>
                 {% if identity.hasAnyAdminRole() %}
-                    <li class='nav-list-item {% if originalUrl === '/content-management' %}active{% endif %}'><a class="nav-item" href="/content-management">Admin</a></li>
+                    <li class='nav-list-item {% if currentTab === 'admin' %}active{% endif %}'><a class="nav-item" href="/content-management">Admin</a></li>
                 {% endif %}
                 {% if identity.isReporter() %}
-                    <li class='nav-list-item {% if originalUrl and originalUrl | startsWith('/reporting') %}active{% endif %}'><a class="nav-item" href="/reporting">Reporting</a></li>
+                    <li class='nav-list-item {% if currentTab === 'reporting' %}active{% endif %}'><a class="nav-item" href="/reporting">Reporting</a></li>
                 {% endif %}
                 <li class='nav-list-item'><a class="nav-item" href="/sign-out">Sign out</a></li>
             </ul>

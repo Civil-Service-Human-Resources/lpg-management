@@ -8,6 +8,7 @@
 {% block pageTitle %}{{ i18n['content_management_title'] }} - {{ i18n['proposition_name'] }}{% endblock %}
 
 {% set banner = true %}
+{% set currentTab = 'admin' %}
 
 {% macro searchResults(pageResults) %}
     {% if pageResults.totalResults > 2 %}
