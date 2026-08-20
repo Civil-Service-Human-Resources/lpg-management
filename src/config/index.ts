@@ -50,6 +50,7 @@ export type validLogLevel = 'trace' | 'debug' | 'info'
 export const LOGGING_LEVEL: validLogLevel = env.LOGGING_LEVEL as validLogLevel
 
 export const FRONTEND = set({
+	FEEDBACK_URL: env.FEEDBACK_URL || '',
 	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001',
 	MANAGEMENT_UI_URL: env.MANAGEMENT_UI_URL || 'http://localhost:3005',
 })
