@@ -210,7 +210,7 @@ describe('LearningTag', () => {
 				const res = await request.send()
 				expect(res.status).to.eql(401)
 			})
-			it('should render the view courses page with courses and links tabs', async () => {
+			it('should render the view courses page with courses and links tabs and pagination links with anchors', async () => {
 				const coursesResponse: any = {
 					results: [
 						{
@@ -220,8 +220,8 @@ describe('LearningTag', () => {
 						}
 					],
 					page: 0,
-					size: 10,
-					totalResults: 1
+					size: 1,
+					totalResults: 2
 				}
 				const hyperlinksResponse: any = {
 					results: [
@@ -233,8 +233,8 @@ describe('LearningTag', () => {
 						}
 					],
 					page: 0,
-					size: 20,
-					totalResults: 1
+					size: 1,
+					totalResults: 2
 				}
 				learningTagService.getCoursesPage.resolves(coursesResponse)
 				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
@@ -250,6 +250,8 @@ describe('LearningTag', () => {
 				expect(res.text).to.contain('Course 1')
 				expect(res.text).to.contain('BBC News')
 				expect(res.text).to.contain('https://bbc.co.uk')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?p=2#courses')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?p=2#links')
 			})
 			it('should remove multiple courses from the tag', async () => {
 				learningTagService.removeCourses.resolves({successfulIds: ["course1", "course2"]})

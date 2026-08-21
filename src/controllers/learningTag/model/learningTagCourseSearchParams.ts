@@ -11,4 +11,8 @@ export class LearningTagCourseSearchParams extends SearchQuery implements Search
 		return `/content-management/learning-tags/${this.learningTagId}/courses`
 	}
 
+	getAsUrlParams(page?: number): string {
+		return `${super.getAsUrlParams(page)}#courses`
+	}
+
 }
