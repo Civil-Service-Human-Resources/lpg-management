@@ -89,6 +89,10 @@ export class LearningTagService {
 		return await this.learningTagClient.getTaggedCourses(id, params)
 	}
 
+	async getHyperlinksPage(id: number, params: SearchQuery) {
+		return await this.learningTagClient.getTaggedHyperlinks(id, params)
+	}
+
 	async removeCourses(id: number, courseIds: string[]) {
 		return await this.learningTagClient.removeCourses(id, courseIds)
 	}

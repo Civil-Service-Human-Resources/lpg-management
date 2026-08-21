@@ -166,7 +166,9 @@ export class LearningTagController extends LearningTagControllerBase {
 				pageModel.setResults(results.results)
 				pageModel.pagePagination = pagePagination
 			}
-			response.render('page/learning-tags/view-courses.njk', {pageModel})
+			const hyperlinks = await this.learningTagService.getHyperlinksPage(response.locals.learningTag.id, params)
+			const hyperlinksPagination = this.pagination.getPagination(params, hyperlinks)
+			response.render('page/learning-tags/view-courses.njk', {pageModel, hyperlinks, hyperlinksPagination})
 		}
 	}
 

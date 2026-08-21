@@ -2,6 +2,7 @@
 {% from "../../component/pagination/macro.njk" import pagination with context %}
 {% from "../../component/courseManager/macro.njk" import courseManager with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
+{% from "tabs/macro.njk" import govukTabs %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -32,30 +33,73 @@
                     </div>
                 </div>
             {% endif %}
-            {% set searchHeaderHtml %}
-                <div class="header-search">
-                    <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
-                </div>
+            {% set coursesHtml %}
+                {% set searchHeaderHtml %}
+                    <div class="header-search">
+                        <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
+                    </div>
+                {% endset %}
+                {% if pageModel.results.length > 0 %}
+                    {{ courseManager({
+                            "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
+                            "legend": {
+                                "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h2>"
+                            },
+                            "courses": pageModel.results,
+                            allIds: pageModel.allIds
+                        }) }}
+                    <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
+                    {{ pagination(pageModel.pagePagination.pagination) }}
+                {% else %}
+                    {{ searchHeaderHtml | safe }}
+                    <p class='govuk-body'>There are currently no courses assigned to this tag</p>
+                {% endif %}
             {% endset %}
-            {% if pageModel.results.length > 0 %}
-                {{ courseManager({
-                        "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
-                        "legend": {
-                            "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h1>"
-                        },
-                        "courses": pageModel.results,
-                        allIds: pageModel.allIds
-                    }) }}
-            {% else %}
-                {{ searchHeaderHtml | safe }}
-                <p class='govuk-body'>There are currently no courses assigned to this tag</p>
-            {% endif %}
+            {% set hyperlinksHtml %}
+                <div class="header-search">
+                    <h2 class="govuk-heading-m">Links assigned to this tag</h2>
+                </div>
+                {% if hyperlinks and hyperlinks.results and hyperlinks.results.length > 0 %}
+                    <ul class="list">
+                        {% for link in hyperlinks.results %}
+                            <li class="list-details u--border--bgrey">
+                                <p class="govuk-body">{{ link.title }}</p>
+                                {% if link.description %}
+                                    <a class="govuk-link" href="{{ link.href }}" target="_blank">Go to {{ link.description }} (opens in a new tab)</a>
+                                {% else %}
+                                    <a class="govuk-link" href="{{ link.href }}" target="_blank">Go to {{ link.title }} (opens in a new tab)</a>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {% if hyperlinksPagination and hyperlinksPagination.total > 0 %}
+                        <p class="govuk-body">Showing {{ hyperlinksPagination.start }} - {{ hyperlinksPagination.end}} of {{ hyperlinksPagination.total }}</p>
+                        {{ pagination(hyperlinksPagination.pagination) }}
+                    {% endif %}
+                {% else %}
+                    <p class='govuk-body'>There are currently no links assigned to this tag</p>
+                {% endif %}
+            {% endset %}
+            {{ govukTabs({
+                items: [
+                    {
+                        label: "Courses assigned to this tag",
+                        id: "courses",
+                        panel: {
+                            html: coursesHtml
+                        }
+                    },
+                    {
+                        label: "Links assigned to this tag",
+                        id: "links",
+                        panel: {
+                            html: hyperlinksHtml
+                        }
+                    }
+                ]
+            }) }}
         </div>
     </div>
-    {% if pageModel.results.length > 0 %}
-        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
-        {{ pagination(pageModel.pagePagination.pagination) }}
-    {% endif %}
 {% endblock %}
 
 {% block bodyEnd %}
