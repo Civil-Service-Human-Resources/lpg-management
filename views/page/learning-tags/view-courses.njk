@@ -64,15 +64,9 @@
                         {% for link in hyperlinks.results %}
                             <li class="list-details u--border--bgrey">
                                 <p class="govuk-body">{{ link.title }}</p>
-                                {% if link.description %}
-                                    <a class="govuk-link" href="{{ link.href }}" target="_blank" rel="noreferrer noopener">
-                                        Go to {{ link.description }} (opens in a new tab)
-                                    </a>
-                                {% else %}
-                                    <a class="govuk-link" href="{{ link.href }}" target="_blank" rel="noreferrer noopener">
-                                        Go to {{ link.title }} (opens in a new tab)
-                                    </a>
-                                {% endif %}
+                                <a class="govuk-link" href="{{ link.href }}" target="_blank" rel="noreferrer noopener">
+                                    Go to {{ link.href }} (opens in a new tab)
+                                </a>
                             </li>
                         {% endfor %}
                     </ul>
