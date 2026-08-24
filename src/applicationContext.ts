@@ -120,6 +120,7 @@ export class ApplicationContext {
 	organisationalUnitTreeCache: OrganisationalUnitTreeCache
 
 	public lpgUiUrl: string = config.FRONTEND.LPG_UI_URL
+	public feedbackUrl: string = config.FRONTEND.FEEDBACK_URL
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -253,6 +254,7 @@ export class ApplicationContext {
 		return (req: Request, res: Response, next: NextFunction) => {
 			res.locals.originalUrl = req.originalUrl
 			res.locals.lpgUiUrl = this.lpgUiUrl
+			res.locals.feedbackUrl = this.feedbackUrl
 			res.locals.sessionFlash = req.session!.sessionFlash
 
 			delete req.session!.sessionFlash
