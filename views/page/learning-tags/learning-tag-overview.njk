@@ -82,7 +82,7 @@
                         {% if identity.isLearningTagCourseManager() %}
                             {% set viewCoursesAction = {
                                 link: "/content-management/learning-tags/" + learningTag.id + "/courses",
-                                text: "View courses"
+                                text: "View courses and links"
                             } %}
                             {% set actions = (actions.push(viewCoursesAction), actions) %}
                         {% endif %}
