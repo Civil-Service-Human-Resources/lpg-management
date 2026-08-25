@@ -14,15 +14,6 @@ export class LearningTagCourseSearchParams extends SearchQuery implements Search
 	})
 	coursePage: number = 0
 
-	@Transform(({value}) => {
-		if (value === undefined || value === null || value === '') {
-			return 0
-		}
-		const num = +value
-		return isNaN(num) || num === 0 ? 0 : num - 1
-	})
-	linkPage: number = 0
-
 	constructor(public learningTagId: number) {
 		super()
 	}
@@ -44,9 +35,6 @@ export class LearningTagCourseSearchParams extends SearchQuery implements Search
 		const coursePageToUse = page !== undefined ? page : (this.coursePage > 0 ? this.coursePage + 1 : 1)
 		if (coursePageToUse) {
 			urlParts.push(`coursePage=${coursePageToUse}`)
-		}
-		if (this.linkPage > 0) {
-			urlParts.push(`linkPage=${this.linkPage + 1}`)
 		}
 		return urlParts
 	}
