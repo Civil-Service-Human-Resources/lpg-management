@@ -1,0 +1,21 @@
+<div class="header-search">
+    <h2 class="govuk-heading-m">Links assigned to this tag</h2>
+</div>
+{% if hyperlinks and hyperlinks.results and hyperlinks.results.length > 0 %}
+    <ul class="list">
+        {% for link in hyperlinks.results %}
+            <li class="list-details u--border--bgrey">
+                <p class="govuk-body">{{ link.title }}</p>
+                <a class="govuk-link" href="{{ link.href }}" target="_blank" rel="noreferrer noopener">
+                    Go to {{ link.title }} (opens in a new tab)
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% if hyperlinksPagination and hyperlinksPagination.total > 0 %}
+        <p class="govuk-body">Showing {{ hyperlinksPagination.start }} - {{ hyperlinksPagination.end}} of {{ hyperlinksPagination.total }}</p>
+        {{ pagination(hyperlinksPagination.pagination) }}
+    {% endif %}
+{% else %}
+    <p class='govuk-body'>There are currently no links assigned to this tag</p>
+{% endif %}

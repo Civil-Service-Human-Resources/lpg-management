@@ -2,7 +2,6 @@
 {% from "../../component/pagination/macro.njk" import pagination with context %}
 {% from "../../component/courseManager/macro.njk" import courseManager with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
-{% from "tabs/macro.njk" import govukTabs %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -13,6 +12,7 @@
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
 {% set removeCourseResults = sessionFlash.removeCourseResults if sessionFlash.removeCourseResults else removeCourseResults %}
+{% set isLinksTab = originalUrl and originalUrl.indexOf("linkPage=") > -1 %}
 
 {% block content %}
     {% set errors = pageModel.errors %}
@@ -33,75 +33,34 @@
                     </div>
                 </div>
             {% endif %}
-            {% set coursesHtml %}
-                {% set searchHeaderHtml %}
-                    <div class="header-search">
-                        <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
+            <div class="govuk-tabs">
+                <h2 class="govuk-tabs__title">Contents</h2>
+                <ul class="govuk-tabs__list">
+                    <li class="govuk-tabs__list-item{% if not isLinksTab %} govuk-tabs__list-item--selected{% endif %}">
+                        <a class="govuk-tabs__tab" href="/content-management/learning-tags/{{ learningTag.id }}/courses#courses">
+                            Courses assigned to this tag
+                        </a>
+                    </li>
+                    <li class="govuk-tabs__list-item{% if isLinksTab %} govuk-tabs__list-item--selected{% endif %}">
+                        <a class="govuk-tabs__tab" href="/content-management/learning-tags/{{ learningTag.id }}/courses?linkPage=1#links">
+                            Links assigned to this tag
+                        </a>
+                    </li>
+                </ul>
+                {% if isLinksTab %}
+                    <div class="govuk-tabs__panel" id="links">
+                        {% include "./view-links-assigned.njk" %}
                     </div>
-                {% endset %}
-                {% if pageModel.results.length > 0 %}
-                    {{ courseManager({
-                            "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
-                            "legend": {
-                                "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h2>"
-                            },
-                            "courses": pageModel.results,
-                            allIds: pageModel.allIds
-                        }) }}
-                    <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
-                    {{ pagination(pageModel.pagePagination.pagination) }}
                 {% else %}
-                    {{ searchHeaderHtml | safe }}
-                    <p class='govuk-body'>There are currently no courses assigned to this tag</p>
+                    <div class="govuk-tabs__panel" id="courses">
+                        {% include "./view-courses-assigned.njk" %}
+                    </div>
                 {% endif %}
-            {% endset %}
-            {% set hyperlinksHtml %}
-                <div class="header-search">
-                    <h2 class="govuk-heading-m">Links assigned to this tag</h2>
-                </div>
-                {% if hyperlinks and hyperlinks.results and hyperlinks.results.length > 0 %}
-                    <ul class="list">
-                        {% for link in hyperlinks.results %}
-                            <li class="list-details u--border--bgrey">
-                                <p class="govuk-body">{{ link.title }}</p>
-                                <a class="govuk-link" href="{{ link.href }}" target="_blank" rel="noreferrer noopener">
-                                    Go to {{ link.title }} (opens in a new tab)
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    {% if hyperlinksPagination and hyperlinksPagination.total > 0 %}
-                        <p class="govuk-body">Showing {{ hyperlinksPagination.start }} - {{ hyperlinksPagination.end}} of {{ hyperlinksPagination.total }}</p>
-                        {{ pagination(hyperlinksPagination.pagination) }}
-                    {% endif %}
-                {% else %}
-                    <p class='govuk-body'>There are currently no links assigned to this tag</p>
-                {% endif %}
-            {% endset %}
-            {{ govukTabs({
-                items: [
-                    {
-                        label: "Courses assigned to this tag",
-                        id: "courses",
-                        panel: {
-                            html: coursesHtml
-                        }
-                    },
-                    {
-                        label: "Links assigned to this tag",
-                        id: "links",
-                        panel: {
-                            html: hyperlinksHtml
-                        }
-                    }
-                ]
-            }) }}
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block bodyEnd %}
-    <script src="/govuk-frontend/all.js"></script>
-    <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/main-bundle.min.js"></script>
 {% endblock %}
