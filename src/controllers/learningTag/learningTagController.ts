@@ -8,6 +8,7 @@ import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {PaginationService} from '../../lib/paginationService'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagCourseSearchParams} from './model/learningTagCourseSearchParams'
+import {LearningTagHyperlinksSearchParams} from './model/learningTagHyperlinksSearchParams'
 import {RemoveCoursesFromLearningTagPageModel} from './model/removeCoursesFromLearningTagPageModel'
 import {SessionableObjectService} from '../reporting/utils'
 import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
@@ -166,7 +167,11 @@ export class LearningTagController extends LearningTagControllerBase {
 				pageModel.setResults(results.results)
 				pageModel.pagePagination = pagePagination
 			}
-			response.render('page/learning-tags/view-courses.njk', {pageModel})
+			const hyperlinkParams = plainToInstance(LearningTagHyperlinksSearchParams, request.query)
+			hyperlinkParams.learningTagId = response.locals.learningTag.id
+			const hyperlinks = await this.learningTagService.getHyperlinksPage(response.locals.learningTag.id, hyperlinkParams)
+			const hyperlinksPagination = this.pagination.getPagination(hyperlinkParams, hyperlinks)
+			response.render('page/learning-tags/view-courses.njk', {pageModel, hyperlinks, hyperlinksPagination})
 		}
 	}
 

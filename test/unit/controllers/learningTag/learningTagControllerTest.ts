@@ -210,6 +210,94 @@ describe('LearningTag', () => {
 				const res = await request.send()
 				expect(res.status).to.eql(401)
 			})
+			it('should render the view courses page with courses and links tabs and pagination links with anchors', async () => {
+				const coursesResponse: any = {
+					results: [
+						{
+							id: "course-1",
+							title: "Course 1",
+							status: "Published"
+						}
+					],
+					page: 0,
+					size: 1,
+					totalResults: 2
+				}
+				const hyperlinksResponse: any = {
+					results: [
+						{
+							id: 1,
+							title: "BBC News",
+							description: "News site",
+							href: "https://bbc.co.uk"
+						}
+					],
+					page: 0,
+					size: 1,
+					totalResults: 2
+				}
+				learningTagService.getCoursesPage.resolves(coursesResponse)
+				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+
+				const res = await session(app)
+					.get('/content-management/learning-tags/1/courses')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('Courses assigned to this tag')
+				expect(res.text).to.contain('Links assigned to this tag')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses#courses')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?linkPage=1#links')
+				expect(res.text).to.contain('Course 1')
+				expect(res.text).to.not.contain('BBC News')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?coursePage=2#courses')
+			})
+			it('should render the links page when navigating to page 2 of links', async () => {
+				const coursesResponse: any = {
+					results: [
+						{
+							id: "course-1",
+							title: "Course 1",
+							status: "Published"
+						}
+					],
+					page: 0,
+					size: 10,
+					totalResults: 1
+				}
+				const hyperlinksResponse: any = {
+					results: [
+						{
+							id: 2,
+							title: "BBC News Page 2",
+							description: "News site",
+							href: "https://bbc.co.uk"
+						}
+					],
+					page: 1,
+					size: 1,
+					totalResults: 2
+				}
+				learningTagService.getCoursesPage.resolves(coursesResponse)
+				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+
+				const res = await session(app)
+					.get('/content-management/learning-tags/1/courses?linkPage=2')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+
+				expect(res.status).to.eql(200)
+				expect(learningTagService.getCoursesPage).to.be.calledWith(1, sinon.match({p: 0, coursePage: 0}))
+				expect(learningTagService.getHyperlinksPage).to.be.calledWith(1, sinon.match({p: 1, linkPage: 1}))
+				expect(res.text).to.contain('Courses assigned to this tag')
+				expect(res.text).to.contain('Links assigned to this tag')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses#courses')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?linkPage=1#links')
+				expect(res.text).to.contain('BBC News Page 2')
+				expect(res.text).to.contain('https://bbc.co.uk')
+				expect(res.text).to.not.contain('Course 1')
+			})
 			it('should remove multiple courses from the tag', async () => {
 				learningTagService.removeCourses.resolves({successfulIds: ["course1", "course2"]})
 				const res = await session(app)

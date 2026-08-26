@@ -36,6 +36,7 @@ export const createApp = () => {
 		identity.organisationalUnit = org
 		req.user = identity
 		res.locals.identity = identity
+		res.locals.originalUrl = req.originalUrl
 		next()
 	})
 	const middleware: Middleware[] = [

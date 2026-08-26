@@ -9,6 +9,7 @@ import {OauthRestService} from '../../lib/http/oauthRestService'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
 import {SearchQuery} from '../../controllers/models/searchQuery'
 import {LearningTagCoursesResponse} from '../model/learningTag/learningTagCoursesResponse'
+import {LearningTagHyperlinksResponse} from '../model/learningTag/learningTagHyperlinksResponse'
 import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
 
 export class LearningTagClient {
@@ -65,6 +66,16 @@ export class LearningTagClient {
 			}
 		})
 		return plainToInstance(LearningTagCoursesResponse, resp.data)
+	}
+
+	async getTaggedHyperlinks(id: number, searchQuery: SearchQuery): Promise<LearningTagHyperlinksResponse> {
+		const resp = await this._http.getRequest({
+			url: `${this.LEARNING_TAGS_URL}/${id}/hyperlinks`,
+			params: {
+				page: searchQuery.p
+			}
+		})
+		return plainToInstance(LearningTagHyperlinksResponse, resp.data)
 	}
 
 	async updateState(id: number, state: LearningTagStateUpdate) {
