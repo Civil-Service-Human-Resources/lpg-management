@@ -192,7 +192,7 @@ export class LearningTagController extends LearningTagControllerBase {
 				hyperlinksPageModel.setResults(hyperlinks.results)
 				hyperlinksPageModel.pagePagination = hyperlinksPagination
 			}
-			response.render('page/learning-tags/view-courses.njk', {pageModel, hyperlinksPageModel, hyperlinks, hyperlinksPagination})
+			response.render('page/learning-tags/view-courses.njk', {pageModel, hyperlinksPageModel})
 		}
 	}
 
