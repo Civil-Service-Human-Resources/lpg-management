@@ -52,13 +52,13 @@ export class LearningTagController extends LearningTagControllerBase {
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/courses', this.getCourses(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/courses', this.getCoursesAndHyperlinks(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequest('/:learningTagId/courses/remove/:courseId', this.removeCourse(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequestWithBody('/:learningTagId/courses/remove', this.bulkRemoveCourses(), {
 				dtoClass: RemoveCoursesFromLearningTagPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
-					routerFunction: this.getCourses()
+					routerFunction: this.getCoursesAndHyperlinks()
 				}
 			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequest('/:learningTagId/hyperlinks/remove/:hyperlinkId', this.removeHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
@@ -66,7 +66,7 @@ export class LearningTagController extends LearningTagControllerBase {
 				dtoClass: RemoveHyperlinksFromLearningTagPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
-					routerFunction: this.getCourses()
+					routerFunction: this.getCoursesAndHyperlinks()
 				}
 			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)])
 		]
@@ -163,7 +163,7 @@ export class LearningTagController extends LearningTagControllerBase {
 		}
 	}
 
-	private getCourses() {
+	private getCoursesAndHyperlinks() {
 		return async(request: Request, response: Response) => {
 			let pageModel: RemoveCoursesFromLearningTagPageModel | undefined
 			let hyperlinksPageModel: RemoveHyperlinksFromLearningTagPageModel | undefined
