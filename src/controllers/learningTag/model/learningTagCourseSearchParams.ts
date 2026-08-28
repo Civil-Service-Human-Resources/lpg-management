@@ -40,7 +40,7 @@ export class LearningTagCourseSearchParams extends SearchQuery implements Search
 	}
 
 	getAsUrlParams(page?: number): string {
-		return `${this.getBaseUrl()}?` + this.getUrlParts(page).join('&') + '#courses'
+		return `${this.getBaseUrl()}?` + this.getUrlParts(page).join('&')
 	}
 
 }

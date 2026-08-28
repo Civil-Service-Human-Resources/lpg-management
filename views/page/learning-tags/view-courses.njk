@@ -1,6 +1,7 @@
 {% from "../../component/search/macro.njk" import search with context %}
 {% from "../../component/pagination/macro.njk" import pagination with context %}
 {% from "../../component/courseManager/macro.njk" import courseManager with context %}
+{% from "../../component/hyperlinkManager/macro.njk" import hyperlinkManager with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 
 {% extends "../../component/Page.njk" %}
@@ -12,10 +13,16 @@
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
 {% set removeCourseResults = sessionFlash.removeCourseResults if sessionFlash.removeCourseResults else removeCourseResults %}
-{% set isLinksTab = originalUrl and originalUrl.indexOf("linkPage=") > -1 %}
+{% set removeHyperlinkResults = sessionFlash.removeHyperlinkResults if sessionFlash.removeHyperlinkResults else removeHyperlinkResults %}
+{% set isLinksTab = (originalUrl and originalUrl.indexOf("linkPage=") > -1) or (hyperlinksPageModel and hyperlinksPageModel.hasErrors()) or removeHyperlinkResults %}
 
 {% block content %}
-    {% set errors = pageModel.errors %}
+    {% if pageModel and pageModel.errors %}
+        {% set errors = pageModel.errors %}
+    {% endif %}
+    {% if hyperlinksPageModel and hyperlinksPageModel.errors %}
+        {% set errors = hyperlinksPageModel.errors %}
+    {% endif %}
     {{ errorSummary(errors.fields) }}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
@@ -33,16 +40,29 @@
                     </div>
                 </div>
             {% endif %}
+            {% if removeHyperlinkResults %}
+                <div class="panel panel-blue">
+                    <div class="govuk-panel__body custom-panel panel-blue">
+                        <p class="govuk-body">
+                            {% if removeHyperlinkResults.successfulIds.length === 1 %}
+                                1 link was removed from this tag.
+                            {% else %}
+                                {{ removeHyperlinkResults.successfulIds.length }} links were removed from this tag.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
             <div class="govuk-tabs">
                 <h2 class="govuk-tabs__title">Contents</h2>
                 <ul class="govuk-tabs__list">
                     <li class="govuk-tabs__list-item{% if not isLinksTab %} govuk-tabs__list-item--selected{% endif %}">
-                        <a class="govuk-tabs__tab" href="/content-management/learning-tags/{{ learningTag.id }}/courses#courses">
+                        <a class="govuk-tabs__tab" href="/content-management/learning-tags/{{ learningTag.id }}/courses">
                             Courses assigned to this tag
                         </a>
                     </li>
                     <li class="govuk-tabs__list-item{% if isLinksTab %} govuk-tabs__list-item--selected{% endif %}">
-                        <a class="govuk-tabs__tab" href="/content-management/learning-tags/{{ learningTag.id }}/courses?linkPage=1#links">
+                        <a class="govuk-tabs__tab" href="/content-management/learning-tags/{{ learningTag.id }}/courses?linkPage=1">
                             Links assigned to this tag
                         </a>
                     </li>

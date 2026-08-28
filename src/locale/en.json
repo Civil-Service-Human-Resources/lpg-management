@@ -226,6 +226,9 @@
 			"courses": {
 				"emptySelection": "Select at least one course"
 			},
+			"hyperlinks": {
+				"emptySelection": "Select at least one link"
+			},
 			"assign": {
 				"tagSearchSelection": "Please select which tags you want to assign",
 				"maximumTags": "Please select a valid number of tags",

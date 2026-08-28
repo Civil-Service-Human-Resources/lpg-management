@@ -97,6 +97,10 @@ export class LearningTagService {
 		return await this.learningTagClient.removeCourses(id, courseIds)
 	}
 
+	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
+		return await this.learningTagClient.removeHyperlinks(id, hyperlinkIds)
+	}
+
 	async assignCoursesToLearningTags(tagIds: string[], courseIds: string[]) {
 		return await this.learningTagClient.assignCourses(tagIds, courseIds)
 	}

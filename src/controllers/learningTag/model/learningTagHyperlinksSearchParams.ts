@@ -40,7 +40,7 @@ export class LearningTagHyperlinksSearchParams extends SearchQuery implements Se
 	}
 
 	getAsUrlParams(page?: number): string {
-		return `${this.getBaseUrl()}?` + this.getUrlParts(page).join('&') + '#links'
+		return `${this.getBaseUrl()}?` + this.getUrlParts(page).join('&')
 	}
 
 }

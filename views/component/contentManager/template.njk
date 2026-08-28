@@ -42,7 +42,9 @@
                         </div>
                         <div class='content-manager__actions'>
                             <div class='content-manager__primary-actions'>
-{#                                <a class='content-manager__link' href="{{ item.view.href }}" target='_blank'>{{ item.view.text }} (opens in a new tab)</a>#}
+                                {% if item.view %}
+                                    <a class='content-manager__link govuk-link' href="{{ item.view.href }}" target='_blank' rel="noreferrer noopener">{{ item.view.text }} (opens in a new tab)</a>
+                                {% endif %}
                             </div>
                             <div class='content-manager__secondary-actions'>
                                 <div class='content-manager__remove-action'>

@@ -6,10 +6,10 @@ import {LearningTagHyperlinksSearchParams} from '../../../../../src/controllers/
 
 describe('Learning tag search params tests', () => {
 	describe('LearningTagCourseSearchParams', () => {
-		it('should generate URL with #courses anchor and coursePage', () => {
+		it('should generate URL with coursePage', () => {
 			const params = new LearningTagCourseSearchParams(123)
 			const url = params.getAsUrlParams(2)
-			expect(url).to.eql('/content-management/learning-tags/123/courses?coursePage=2#courses')
+			expect(url).to.eql('/content-management/learning-tags/123/courses?coursePage=2')
 		})
 
 		it('should transform coursePage query parameter', () => {
@@ -37,10 +37,10 @@ describe('Learning tag search params tests', () => {
 	})
 
 	describe('LearningTagHyperlinksSearchParams', () => {
-		it('should generate URL with #links anchor and linkPage', () => {
+		it('should generate URL with linkPage', () => {
 			const params = new LearningTagHyperlinksSearchParams(123)
 			const url = params.getAsUrlParams(2)
-			expect(url).to.eql('/content-management/learning-tags/123/courses?linkPage=2#links')
+			expect(url).to.eql('/content-management/learning-tags/123/courses?linkPage=2')
 		})
 
 		it('should transform linkPage query parameter', () => {
