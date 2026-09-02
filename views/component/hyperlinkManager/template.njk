@@ -1,0 +1,32 @@
+{% from "../contentManager/macro.njk" import contentManager with context %}
+{% set items = [] %}
+{% for link in (params.links or params.hyperlinks) %}
+    {% set items = (items.push({
+        id: link.id,
+        name: link.id,
+        value: link.id,
+        text: link.title,
+        view: {
+            text: "Go to " + link.title,
+            href: link.href
+        },
+        remove: {
+            text: "Remove link",
+            formaction: params.submitAction + "/" + link.id
+        },
+        checked: (params.selectedIds or []).includes(link.id)
+    }), items) %}
+{% endfor %}
+{{ contentManager({
+    "name": "hyperlinkIds",
+    "submitAction": params.submitAction,
+    "allIds": params.allIds,
+    "legend": {
+        "html": params.legend.html
+    },
+    "selectAll": {
+        "text": "Select all links",
+        "removeText": "Remove links"
+    },
+    "items": items
+}) }}

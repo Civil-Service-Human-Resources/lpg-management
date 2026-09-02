@@ -10,6 +10,7 @@ import {plainToInstance} from 'class-transformer'
 import {LearningTagCourseSearchParams} from './model/learningTagCourseSearchParams'
 import {LearningTagHyperlinksSearchParams} from './model/learningTagHyperlinksSearchParams'
 import {RemoveCoursesFromLearningTagPageModel} from './model/removeCoursesFromLearningTagPageModel'
+import {RemoveHyperlinksFromLearningTagPageModel} from './model/removeHyperlinksFromLearningTagPageModel'
 import {SessionableObjectService} from '../reporting/utils'
 import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
 import {LearningTagControllerBase} from './learningTagControllerBase'
@@ -51,13 +52,21 @@ export class LearningTagController extends LearningTagControllerBase {
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/courses', this.getCourses(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/courses', this.getCoursesAndHyperlinks(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequest('/:learningTagId/courses/remove/:courseId', this.removeCourse(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequestWithBody('/:learningTagId/courses/remove', this.bulkRemoveCourses(), {
 				dtoClass: RemoveCoursesFromLearningTagPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
-					routerFunction: this.getCourses()
+					routerFunction: this.getCoursesAndHyperlinks()
+				}
+			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequest('/:learningTagId/hyperlinks/remove/:hyperlinkId', this.removeHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequestWithBody('/:learningTagId/hyperlinks/remove', this.bulkRemoveHyperlinks(), {
+				dtoClass: RemoveHyperlinksFromLearningTagPageModel,
+				onError: {
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getCoursesAndHyperlinks()
 				}
 			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)])
 		]
@@ -154,9 +163,15 @@ export class LearningTagController extends LearningTagControllerBase {
 		}
 	}
 
-	private getCourses() {
+	private getCoursesAndHyperlinks() {
 		return async(request: Request, response: Response) => {
-			let pageModel = plainToInstance(RemoveCoursesFromLearningTagPageModel, response.locals.input as RemoveCoursesFromLearningTagPageModel)
+			let pageModel: RemoveCoursesFromLearningTagPageModel | undefined
+			let hyperlinksPageModel: RemoveHyperlinksFromLearningTagPageModel | undefined
+			if (response.locals.input instanceof RemoveCoursesFromLearningTagPageModel) {
+				pageModel = response.locals.input
+			} else if (response.locals.input instanceof RemoveHyperlinksFromLearningTagPageModel) {
+				hyperlinksPageModel = response.locals.input
+			}
 			const params = plainToInstance(LearningTagCourseSearchParams, request.query)
 			params.learningTagId = response.locals.learningTag.id
 			const results = await this.learningTagService.getCoursesPage(response.locals.learningTag.id, params)
@@ -171,7 +186,13 @@ export class LearningTagController extends LearningTagControllerBase {
 			hyperlinkParams.learningTagId = response.locals.learningTag.id
 			const hyperlinks = await this.learningTagService.getHyperlinksPage(response.locals.learningTag.id, hyperlinkParams)
 			const hyperlinksPagination = this.pagination.getPagination(hyperlinkParams, hyperlinks)
-			response.render('page/learning-tags/view-courses.njk', {pageModel, hyperlinks, hyperlinksPagination})
+			if (hyperlinksPageModel === undefined) {
+				hyperlinksPageModel = new RemoveHyperlinksFromLearningTagPageModel(hyperlinks.results, hyperlinksPagination)
+			} else {
+				hyperlinksPageModel.setResults(hyperlinks.results)
+				hyperlinksPageModel.pagePagination = hyperlinksPagination
+			}
+			response.render('page/learning-tags/view-courses.njk', {pageModel, hyperlinksPageModel})
 		}
 	}
 
@@ -196,6 +217,30 @@ export class LearningTagController extends LearningTagControllerBase {
 		return async(request: Request, response: Response) => {
 			const model = plainToInstance(RemoveCoursesFromLearningTagPageModel, response.locals.input as RemoveCoursesFromLearningTagPageModel)
 			return await this.removeCourses(request, response, model)
+		}
+	}
+
+	private removeHyperlinks = async (request: Request, response: Response, model: RemoveHyperlinksFromLearningTagPageModel) => {
+		const learningTagId = response.locals.learningTag.id as number
+		const removeHyperlinkResults = await this.learningTagService.removeHyperlinks(learningTagId, model.getHyperlinkIds())
+		request.session!.sessionFlash = { removeHyperlinkResults }
+		return request.session!.save(() => {
+			response.redirect(`/content-management/learning-tags/${learningTagId}/courses?linkPage=1`)
+		})
+	}
+
+	private removeHyperlink() {
+		return async(request: Request, response: Response) => {
+			const model = new RemoveHyperlinksFromLearningTagPageModel()
+			model.hyperlinkIds = [request.params.hyperlinkId]
+			return await this.removeHyperlinks(request, response, model)
+		}
+	}
+
+	private bulkRemoveHyperlinks() {
+		return async(request: Request, response: Response) => {
+			const model = plainToInstance(RemoveHyperlinksFromLearningTagPageModel, response.locals.input as RemoveHyperlinksFromLearningTagPageModel)
+			return await this.removeHyperlinks(request, response, model)
 		}
 	}
 

@@ -61,4 +61,25 @@ describe('LearningTagClient tests', () => {
 		expect(result.results[0].href).to.eql('https://bbc.co.uk')
 		expect(result.totalResults).to.eql(7)
 	})
+
+	it('should call DELETE /learning-tags/:id/hyperlinks with ids body', async () => {
+		const responseData = {
+			successfulIds: ['1', '2'],
+			failedIds: []
+		}
+
+		restService.deleteRequest.resolves({
+			data: responseData
+		} as any)
+
+		const result = await client.removeHyperlinks(1, ['1', '2'])
+
+		expect(restService.deleteRequest).to.have.been.calledOnceWith({
+			url: '/learning-tags/1/hyperlinks',
+			data: {
+				ids: ['1', '2']
+			}
+		})
+		expect(result).to.eql(responseData)
+	})
 })

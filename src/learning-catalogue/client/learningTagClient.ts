@@ -96,6 +96,15 @@ export class LearningTagClient {
 		})).data
 	}
 
+	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
+		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/${id}/hyperlinks`,
+			data: {
+				ids: hyperlinkIds
+			}
+		})).data
+	}
+
 	async assignCourses(learningTagIds: string[], courseIds: string[]) {
 		return (await this._http.postRequest<{successfulIds: string[], failedIds: string[]}>({
 			url: `${this.LEARNING_TAGS_URL}/courses`,

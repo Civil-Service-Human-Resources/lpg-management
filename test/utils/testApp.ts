@@ -23,6 +23,7 @@ const applySessionToApp = (sessionableApp: Express) => {
 
 export const createApp = () => {
 	let newApp: express.Express = express()
+	newApp = applySessionToApp(newApp)
 	newApp.use((req, res, next) => {
 		let roles: string[] = []
 		const roleHeader = req.header("roles")
@@ -37,6 +38,10 @@ export const createApp = () => {
 		req.user = identity
 		res.locals.identity = identity
 		res.locals.originalUrl = req.originalUrl
+		if (req.session) {
+			res.locals.sessionFlash = req.session.sessionFlash
+			delete req.session.sessionFlash
+		}
 		next()
 	})
 	const middleware: Middleware[] = [
@@ -48,7 +53,6 @@ export const createApp = () => {
 	middleware.forEach(m => {
 		m.applyMiddleware(newApp)
 	})
-	newApp = applySessionToApp(newApp)
 	return newApp
 }
 

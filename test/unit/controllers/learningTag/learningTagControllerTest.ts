@@ -247,11 +247,14 @@ describe('LearningTag', () => {
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('Courses assigned to this tag')
 				expect(res.text).to.contain('Links assigned to this tag')
-				expect(res.text).to.contain('/content-management/learning-tags/1/courses#courses')
-				expect(res.text).to.contain('/content-management/learning-tags/1/courses?linkPage=1#links')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?linkPage=1')
 				expect(res.text).to.contain('Course 1')
 				expect(res.text).to.not.contain('BBC News')
-				expect(res.text).to.contain('/content-management/learning-tags/1/courses?coursePage=2#courses')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?coursePage=2')
+				expect(res.text).to.not.contain('#courses')
+				expect(res.text).to.contain('id="courses"')
+				expect(res.text).to.not.contain('id="links"')
 			})
 			it('should render the links page when navigating to page 2 of links', async () => {
 				const coursesResponse: any = {
@@ -292,11 +295,16 @@ describe('LearningTag', () => {
 				expect(learningTagService.getHyperlinksPage).to.be.calledWith(1, sinon.match({p: 1, linkPage: 1}))
 				expect(res.text).to.contain('Courses assigned to this tag')
 				expect(res.text).to.contain('Links assigned to this tag')
-				expect(res.text).to.contain('/content-management/learning-tags/1/courses#courses')
-				expect(res.text).to.contain('/content-management/learning-tags/1/courses?linkPage=1#links')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses')
+				expect(res.text).to.contain('/content-management/learning-tags/1/courses?linkPage=1')
 				expect(res.text).to.contain('BBC News Page 2')
 				expect(res.text).to.contain('https://bbc.co.uk')
+				expect(res.text).to.contain('Go to BBC News Page 2 (opens in a new tab)')
+				expect(res.text).to.contain('/content-management/learning-tags/1/hyperlinks/remove')
 				expect(res.text).to.not.contain('Course 1')
+				expect(res.text).to.not.contain('#links')
+				expect(res.text).to.contain('id="links"')
+				expect(res.text).to.not.contain('id="courses"')
 			})
 			it('should remove multiple courses from the tag', async () => {
 				learningTagService.removeCourses.resolves({successfulIds: ["course1", "course2"]})
@@ -316,6 +324,183 @@ describe('LearningTag', () => {
 					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				expect(learningTagService.removeCourses).to.have.been.calledWith(1, ["course1"])
 				expect(res.status).to.eql(302)
+			})
+			it('should remove multiple hyperlinks from the tag', async () => {
+				learningTagService.removeHyperlinks.resolves({successfulIds: ["1", "2"]})
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/remove')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						hyperlinkIds: ["1", "2"]
+					})
+				expect(learningTagService.removeHyperlinks).to.have.been.calledWith(1, ["1", "2"])
+				expect(res.status).to.eql(302)
+			})
+			it('should remove one hyperlink from the tag', async () => {
+				learningTagService.removeHyperlinks.resolves({successfulIds: ["1"]})
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/remove/1')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				expect(learningTagService.removeHyperlinks).to.have.been.calledWith(1, ["1"])
+				expect(res.status).to.eql(302)
+			})
+			it('should render error message and keep Courses tab selected when no courses are selected', async () => {
+				const coursesResponse: any = {
+					results: [
+						{
+							id: "course-1",
+							title: "Course 1",
+							status: "Published"
+						}
+					],
+					page: 0,
+					size: 10,
+					totalResults: 1
+				}
+				const hyperlinksResponse: any = {
+					results: [
+						{
+							id: 1,
+							title: "BBC News",
+							description: "News site",
+							href: "https://bbc.co.uk"
+						}
+					],
+					page: 0,
+					size: 1,
+					totalResults: 1
+				}
+				learningTagService.getCoursesPage.resolves(coursesResponse)
+				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/courses/remove')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({})
+
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('Select at least one course')
+				expect(res.text).to.contain('Courses assigned to this tag')
+				expect(res.text).to.contain('id="courses"')
+				expect(res.text).to.not.contain('id="links"')
+			})
+			it('should keep Courses tab selected and display result message when courses are removed', async () => {
+				const coursesResponse: any = {
+					results: [],
+					page: 0,
+					size: 10,
+					totalResults: 0
+				}
+				const hyperlinksResponse: any = {
+					results: [],
+					page: 0,
+					size: 10,
+					totalResults: 0
+				}
+				learningTagService.getCoursesPage.resolves(coursesResponse)
+				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+				learningTagService.removeCourses.resolves({successfulIds: ["course-1", "course-2"]})
+
+				const agent = session(app)
+				const postRes = await agent
+					.post('/content-management/learning-tags/1/courses/remove')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						courseIds: ["course-1", "course-2"]
+					})
+
+				expect(postRes.status).to.eql(302)
+				expect(postRes.header.location).to.eql('/content-management/learning-tags/1/courses')
+
+				const getRes = await agent
+					.get(postRes.header.location)
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+
+				expect(getRes.status).to.eql(200)
+				expect(getRes.text).to.contain('2 courses were removed from this tag.')
+				expect(getRes.text).to.contain('Courses assigned to this tag')
+				expect(getRes.text).to.contain('id="courses"')
+				expect(getRes.text).to.not.contain('id="links"')
+			})
+			it('should render error message and keep Links tab selected when no hyperlinks are selected', async () => {
+				const coursesResponse: any = {
+					results: [
+						{
+							id: "course-1",
+							title: "Course 1",
+							status: "Published"
+						}
+					],
+					page: 0,
+					size: 10,
+					totalResults: 1
+				}
+				const hyperlinksResponse: any = {
+					results: [
+						{
+							id: 1,
+							title: "BBC News",
+							description: "News site",
+							href: "https://bbc.co.uk"
+						}
+					],
+					page: 0,
+					size: 1,
+					totalResults: 1
+				}
+				learningTagService.getCoursesPage.resolves(coursesResponse)
+				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/remove')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({})
+
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('Select at least one link')
+				expect(res.text).to.contain('Links assigned to this tag')
+				expect(res.text).to.contain('id="links"')
+				expect(res.text).to.not.contain('id="courses"')
+			})
+			it('should keep Links tab selected and display result message when links are removed', async () => {
+				const coursesResponse: any = {
+					results: [],
+					page: 0,
+					size: 10,
+					totalResults: 0
+				}
+				const hyperlinksResponse: any = {
+					results: [],
+					page: 0,
+					size: 10,
+					totalResults: 0
+				}
+				learningTagService.getCoursesPage.resolves(coursesResponse)
+				learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+				learningTagService.removeHyperlinks.resolves({successfulIds: ["1", "2"]})
+
+				const agent = session(app)
+				const postRes = await agent
+					.post('/content-management/learning-tags/1/hyperlinks/remove')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						hyperlinkIds: ["1", "2"]
+					})
+
+				expect(postRes.status).to.eql(302)
+				expect(postRes.header.location).to.eql('/content-management/learning-tags/1/courses?linkPage=1')
+
+				const getRes = await agent
+					.get(postRes.header.location)
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+
+				expect(getRes.status).to.eql(200)
+				expect(getRes.text).to.contain('2 links were removed from this tag.')
+				expect(getRes.text).to.contain('Links assigned to this tag')
+				expect(getRes.text).to.contain('id="links"')
+				expect(getRes.text).to.not.contain('id="courses"')
 			})
 		})
 	})

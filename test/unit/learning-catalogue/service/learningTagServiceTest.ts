@@ -34,4 +34,18 @@ describe('LearningTagService tests', () => {
 		expect(client.getTaggedHyperlinks).to.have.been.calledOnceWith(1, query)
 		expect(result).to.eql(expectedResponse)
 	})
+
+	it('should remove hyperlinks from client', async () => {
+		const expectedResponse = {
+			successfulIds: ['1', '2'],
+			failedIds: []
+		}
+
+		client.removeHyperlinks.withArgs(1, ['1', '2']).resolves(expectedResponse)
+
+		const result = await service.removeHyperlinks(1, ['1', '2'])
+
+		expect(client.removeHyperlinks).to.have.been.calledOnceWith(1, ['1', '2'])
+		expect(result).to.eql(expectedResponse)
+	})
 })
