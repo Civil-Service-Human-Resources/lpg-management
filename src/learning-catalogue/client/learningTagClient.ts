@@ -11,6 +11,7 @@ import {SearchQuery} from '../../controllers/models/searchQuery'
 import {LearningTagCoursesResponse} from '../model/learningTag/learningTagCoursesResponse'
 import {LearningTagHyperlinksResponse} from '../model/learningTag/learningTagHyperlinksResponse'
 import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
+import {CreateHyperlinkPageModel} from '../../controllers/learningTag/model/createHyperlinkPageModel'
 
 export class LearningTagClient {
 
@@ -113,5 +114,12 @@ export class LearningTagClient {
 				courseIds
 			}
 		})).data
+	}
+
+	async createHyperlink(learningTagId: number, data: CreateHyperlinkPageModel) {
+		await this._http.postRequest({
+			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlink`,
+			data
+		});
 	}
 }

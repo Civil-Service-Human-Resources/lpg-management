@@ -18,20 +18,30 @@
 <div class="govuk-grid-row">
 	<div class="govuk-grid-column-two-thirds">
 		{% if sessionFlash.coursesAssignedMessage %}
+			{% set panelContent %}
+				{% if sessionFlash.coursesAssignedMessage.courseIds === 1 %}
+					1 course has
+				{% else %}
+					{{ sessionFlash.coursesAssignedMessage.courseIds }} courses have
+				{% endif %}
+				been assigned to
+				{% if sessionFlash.coursesAssignedMessage.learningTagIds === 1 %}
+					1 tag
+				{% else %}
+					{{ sessionFlash.coursesAssignedMessage.learningTagIds }} tags
+				{% endif %}
+			{% endset %}
+		{% elif sessionFlash.linkAssignedMessage %}
+			{% set panelContent %}
+				{{ sessionFlash.linkAssignedMessage.linkTitle }} has been created and assigned to {{ sessionFlash.linkAssignedMessage.learningTagName }}
+			{% endset %}
+		{% endif %}
+
+		{% if panelContent %}
 			<div class="panel panel-blue">
 				<div class="govuk-panel__body custom-panel panel-blue">
 					<p class="govuk-body">
-						{% if sessionFlash.coursesAssignedMessage.courseIds === 1 %}
-							1 course has
-						{% else %}
-							{{ sessionFlash.coursesAssignedMessage.courseIds }} courses have
-						{% endif %}
-						been assigned to
-						{% if sessionFlash.coursesAssignedMessage.learningTagIds === 1 %}
-							1 tag
-						{% else %}
-							{{ sessionFlash.coursesAssignedMessage.learningTagIds }} tags
-						{% endif %}
+						{{ panelContent }}
 					</p>
 				</div>
 			</div>
@@ -55,6 +65,10 @@
 					{% set actions = (actions.push({
 						link: '/content-management/learning-tags/assign-courses/select-learning-tags',
 						text: 'Assign course to tag'
+					}), actions) %}
+					{% set actions = (actions.push({
+						link: '/content-management/learning-tags/assign-hyperlinks/select-learning-tag',
+						text: 'Assign link to tag'
 					}), actions) %}
 				{% endif %}
 				{{ menu("Actions", actions) }}

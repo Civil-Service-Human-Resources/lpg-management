@@ -13,6 +13,9 @@ import {FormattedLearningTagListCache} from '../../csl-service/model/learning/le
 import {PaginationService} from '../../lib/paginationService'
 import {CourseService} from '../../lib/courseService'
 import {LearningTagAssignCoursesController} from '../../controllers/learningTag/learningTagAssignCoursesController'
+import {
+	LearningTagAssignHyperlinksController,
+} from '../../controllers/learningTag/learningTagAssignHyperlinksController'
 
 export function buildLearningTagControllers(cslServiceClient: OauthRestService, courseService: CourseService) {
 	const learningTagClient = new LearningTagClient(cslServiceClient)
@@ -25,5 +28,6 @@ export function buildLearningTagControllers(cslServiceClient: OauthRestService, 
 	const pagination = new PaginationService()
 	const learningTagController = new LearningTagController(learningTagService, pagination)
 	const learningTagAssignCourseController = new LearningTagAssignCoursesController(learningTagService, courseService)
-	return [learningTagController, learningTagAssignCourseController]
+	const learningTagAssignHyperlinksController = new LearningTagAssignHyperlinksController(learningTagService)
+	return [learningTagController, learningTagAssignCourseController, learningTagAssignHyperlinksController]
 }

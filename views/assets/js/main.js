@@ -1,6 +1,6 @@
 require('./js-only')
 require('./course-dropdown')
-require('./manage-orgs.js')
+require('./autocompletes')
 require('./chart/main')
 require('./expander/main')
 require('./filter-summary')

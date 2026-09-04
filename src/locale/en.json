@@ -202,7 +202,12 @@
 			"description": "Description (optional)",
 			"urlSlug": "Unique tag link",
 			"parent": "Parent tag (optional)",
-			"category": "Show on homepage?"
+			"category": "Show on homepage?",
+			"hyperlinks": {
+				"title": "Title of URL",
+				"description": "Description (optional)",
+				"url": "URL"
+			}
 		},
 		"notification": {
 			"created": "Learning tag has been created",
@@ -220,17 +225,24 @@
 			"unarchive": "Confirmation of unarchiving",
 			"assignCourseToTags": "Assign course to tags",
 			"searchForTags":  "Search for tags",
-			"searchForCourses":  "Search for courses"
+			"searchForCourses":  "Search for courses",
+			"assignLinkToTag": "Assign link to tag",
+			"createLink": "Create a new link"
 		},
 		"validation": {
 			"courses": {
 				"emptySelection": "Select at least one course"
 			},
 			"hyperlinks": {
-				"emptySelection": "Select at least one link"
+				"emptySelection": "Select at least one link",
+				"emptyTitle": "Enter a title",
+				"nameLength": "Title is too long",
+				"emptyUrl":  "Enter a URL",
+				"validUrl": "Enter a valid URL. URLs must start with https://"
 			},
 			"assign": {
 				"tagSearchSelection": "Please select which tags you want to assign",
+				"tagSelection": "Select a tag",
 				"maximumTags": "Please select a valid number of tags",
 				"courseSearchSelection": "Please select which courses you want to assign",
 				"maximumCourses": "Please select a valid number of courses"
