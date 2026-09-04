@@ -2,25 +2,24 @@ import {beforeEach, describe, it} from 'mocha'
 import {SearchController} from '../../../src/controllers/searchController'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import * as chai from 'chai'
-import * as sinonChai from 'sinon-chai'
 import {expect} from 'chai'
+import * as sinonChai from 'sinon-chai'
 import {Request, Response} from 'express'
 import {LearningCatalogue} from '../../../src/learning-catalogue'
 import {Course} from '../../../src/learning-catalogue/model/course'
 import * as sinon from 'sinon'
-import {PageResults} from '../../../src/learning-catalogue/model/pageResults'
-import {Pagination} from '../../../src/lib/pagination'
+import {PaginationService, SearchResponse} from '../../../src/lib/paginationService'
 
 chai.use(sinonChai)
 
 describe('Search Controller Tests', function() {
 	let searchController: SearchController
 	let learningCatalogue: LearningCatalogue
-	let pagination: Pagination
+	let pagination: PaginationService
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
-		pagination = new Pagination()
+		pagination = new PaginationService()
 		searchController = new SearchController(learningCatalogue, pagination)
 	})
 
@@ -29,13 +28,13 @@ describe('Search Controller Tests', function() {
 		course.id = 'course-id'
 		course.title = 'course-title'
 
-		const pageResults: PageResults<Course> = {
+		const pageResults: SearchResponse<Course> = {
 			query: 'test',
 			page: 0,
 			size: 10,
 			totalResults: 21,
 			results: [course],
-		} as PageResults<Course>
+		} as SearchResponse<Course>
 
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
 
@@ -49,8 +48,25 @@ describe('Search Controller Tests', function() {
 
 		await index(request, response)
 
-		expect(learningCatalogue.searchCourses).to.have.been.calledWith('test', 0, 10)
+		expect(learningCatalogue.searchCourses).to.have.been.calledWith('test', 0)
 
-		expect(response.render).to.have.been.calledOnceWith('page/search-results', {pageResults: pageResults, query: 'test'})
+		const pagePagination = {
+			currentPage: 1,
+			end: 1,
+			pagination: {
+				items: [
+					{ current: true, number: 1, url: "/content-management/search?q=test&p=1" },
+					{ number: 2, url: "/content-management/search?q=test&p=2" },
+					{ number: 3, url: "/content-management/search?q=test&p=3" }
+				],
+				next: { href: "/content-management/search?q=test&p=2" },
+				previous: undefined
+			},
+			start: 1,
+			total: 21,
+			totalPages: 3
+		}
+
+		expect(response.render).to.have.been.calledOnceWith('page/search-results.njk', {pageResults, pagePagination, query: 'test'})
 	})
 })

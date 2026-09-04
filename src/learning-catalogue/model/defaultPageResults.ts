@@ -1,6 +1,6 @@
-import {PageResults} from './pageResults'
+import {SearchResponse} from '../../lib/paginationService'
 
-export class DefaultPageResults<T> implements PageResults<T> {
+export class DefaultPageResults<T> implements SearchResponse<T> {
 	private _page: number
 	private _results: T[]
 	private _size: number

@@ -50,6 +50,7 @@ export type validLogLevel = 'trace' | 'debug' | 'info'
 export const LOGGING_LEVEL: validLogLevel = env.LOGGING_LEVEL as validLogLevel
 
 export const FRONTEND = set({
+	FEEDBACK_URL: env.FEEDBACK_URL || '',
 	LPG_UI_URL: env.LPG_UI_URL || 'http://localhost:3001',
 	MANAGEMENT_UI_URL: env.MANAGEMENT_UI_URL || 'http://localhost:3005',
 })
@@ -139,9 +140,16 @@ export const REPORTING = {
 	COURSE_COMPLETIONS_MAX_COURSES: Number(env.REPORTING_COURSE_COMPLETIONS_MAX_COURSES || 10)
 }
 
+export const LEARNING_TAGS = {
+	ASSIGN_TAGS_MAX_TAGS: Number(env.LEARNING_TAGS_ASSIGN_TAGS_MAX_TAGS || 10),
+	ASSIGN_COURSES_MAX_COURSES: Number(env.LEARNING_TAGS_ASSIGN_COURSES_MAX_COURSES || 15),
+
+}
+
 export const SERVER_TIMEOUT_MS = Number(env.SERVER_TIMEOUT_MS) || 240000
 // Azure's servers are all in UTC, so to ensure parity between dev environment and cloud, set the server TZ to UTC
 export const SERVER_DEFAULT_TZ = env.SERVER_DEFAULT_TZ || 'UTC'
 
 export const NSG_FLAG = env.NSG_FLAG !== undefined ? env.NSG_FLAG === 'true' : false
 export const NSG_URL = env.NSG_ORGANISATION_URL || '/'
+export const NSG_BASE_URL = '/nsg-homepage'

@@ -7,6 +7,7 @@ import {LearningTagClient} from '../client/learningTagClient'
 import {FormattedTaxonomyItem} from '../../lib/taxonomy/formattedTaxonomyItem'
 import {FormattedTaxonomyItemList} from '../../lib/taxonomy/formattedTaxonomyItemList'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {SearchQuery} from '../../controllers/models/searchQuery'
 
 export class LearningTagService {
 	logger = getLogger('LearningTagService')
@@ -82,5 +83,25 @@ export class LearningTagService {
 		const learningTag = await this.learningTagClient.updateState(id, 'UNARCHIVE')
 		await this.learningTagCacheManager.clearAllAndRefresh()
 		return learningTag
+	}
+
+	async getCoursesPage(id: number, params: SearchQuery) {
+		return await this.learningTagClient.getTaggedCourses(id, params)
+	}
+
+	async getHyperlinksPage(id: number, params: SearchQuery) {
+		return await this.learningTagClient.getTaggedHyperlinks(id, params)
+	}
+
+	async removeCourses(id: number, courseIds: string[]) {
+		return await this.learningTagClient.removeCourses(id, courseIds)
+	}
+
+	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
+		return await this.learningTagClient.removeHyperlinks(id, hyperlinkIds)
+	}
+
+	async assignCoursesToLearningTags(tagIds: string[], courseIds: string[]) {
+		return await this.learningTagClient.assignCourses(tagIds, courseIds)
 	}
 }

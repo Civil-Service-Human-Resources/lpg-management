@@ -7,7 +7,7 @@
         <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
             <label class="govuk-label" for="organisationSearch">All organisations</label>
             <div id="subject-hint" class="govuk-hint">
-                <span id="course-completions-js-hint" class='hidden'>Start typing to filter available organisations.</span> You can select up to {{params.maxAllowedOrganisations}} organisations.
+                <span id="autocomplete-js-hint" class='hidden'>Start typing to filter available organisations.</span> You can select up to {{params.maxAllowedOrganisations}} organisations.
             </div>
             <select id="organisationSearch" name="organisationSearch" class="govuk-input" aria-labelledby="organisationSearch" multiple>
                 {% for organisation in params.multipleOrganisationsOptions %}

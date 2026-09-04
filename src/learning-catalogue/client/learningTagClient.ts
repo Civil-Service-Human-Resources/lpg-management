@@ -7,6 +7,9 @@ import {
 } from '../../csl-service/model/learning/learningTag/formattedTaxonomyItemListResponse'
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {SearchQuery} from '../../controllers/models/searchQuery'
+import {LearningTagCoursesResponse} from '../model/learningTag/learningTagCoursesResponse'
+import {LearningTagHyperlinksResponse} from '../model/learningTag/learningTagHyperlinksResponse'
 import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
 
 export class LearningTagClient {
@@ -55,6 +58,26 @@ export class LearningTagClient {
 		}));
 	}
 
+	async getTaggedCourses(id: number, searchQuery: SearchQuery): Promise<LearningTagCoursesResponse> {
+		const resp = await this._http.getRequest({
+			url: `${this.LEARNING_TAGS_URL}/${id}/courses`,
+			params: {
+				page: searchQuery.p
+			}
+		})
+		return plainToInstance(LearningTagCoursesResponse, resp.data)
+	}
+
+	async getTaggedHyperlinks(id: number, searchQuery: SearchQuery): Promise<LearningTagHyperlinksResponse> {
+		const resp = await this._http.getRequest({
+			url: `${this.LEARNING_TAGS_URL}/${id}/hyperlinks`,
+			params: {
+				page: searchQuery.p
+			}
+		})
+		return plainToInstance(LearningTagHyperlinksResponse, resp.data)
+	}
+
 	async updateState(id: number, state: LearningTagStateUpdate) {
 		return await this.buildLearningTagResponse(this._http.putRequest<LearningTag>({
 			url: `${this.LEARNING_TAGS_URL}/${id}/state`,
@@ -64,4 +87,31 @@ export class LearningTagClient {
 		}));
 	}
 
+	async removeCourses(id: number, courseIds: string[]) {
+		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/${id}/courses`,
+			data: {
+				ids: courseIds
+			}
+		})).data
+	}
+
+	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
+		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/${id}/hyperlinks`,
+			data: {
+				ids: hyperlinkIds
+			}
+		})).data
+	}
+
+	async assignCourses(learningTagIds: string[], courseIds: string[]) {
+		return (await this._http.postRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/courses`,
+			data: {
+				learningTagIds,
+				courseIds
+			}
+		})).data
+	}
 }

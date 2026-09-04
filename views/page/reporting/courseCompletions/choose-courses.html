@@ -6,7 +6,7 @@
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../../component/Page.njk" %}
+{% extends "../root.njk" %}
 
 {% set backButton = "/reporting/course-completions/choose-organisation" %}
 
@@ -49,7 +49,7 @@
         <div id="course-completions-autocomplete" class="autocomplete-wrapper--courses">
           <label class="govuk-label" for="courseSearch">All courses</label>
           <div id="subject-hint" class="govuk-hint">
-              <span id="course-completions-js-hint" class='hidden'>Start typing to filter available courses.</span> You can select up to {{ pageModel.maxCoursesSelection}} courses.
+              <span id="autocomplete-js-hint" class='hidden'>Start typing to filter available courses.</span> You can select up to {{ pageModel.maxCoursesSelection}} courses.
           </div>
           <select id="courseSearch" name="courseSearch" class="govuk-input" aria-labelledby="courseSearch" multiple>
               {% for course in pageModel.courseSearchList %}
@@ -113,9 +113,6 @@
 {% endblock %}
 
 {% block bodyEnd %}
-    <script>
-		document.getElementById("course-completions-js-hint").className = ""
-    </script>
     <script src="/govuk-frontend/all.js"></script>
     <script>window.GOVUKFrontend.initAll()</script>
     <script type="text/javascript" src="/js/main-bundle.min.js"></script>

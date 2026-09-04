@@ -1,0 +1,34 @@
+{% from "../contentManager/macro.njk" import contentManager with context %}
+{% set items = [] %}
+{% for course in params.courses %}
+    {% set items = (items.push({
+        id: course.id,
+        name: course.id,
+        value: course.id,
+        text: course.title,
+        view: {
+            text: "View " + course.title,
+            href: "/content-management/courses/" + course.id + "/overview"
+        },
+        showStatus: true,
+        status: course.status,
+        remove: {
+            text: "Remove course",
+            formaction: params.submitAction + "/" + course.id
+        },
+        checked: (params.selectedIds or []).includes(items.id)
+    }), items) %}
+{% endfor %}
+{{ contentManager({
+    "name": "courseIds",
+    "submitAction": params.submitAction,
+    "allIds": params.allIds,
+    "legend": {
+        "html": params.legend.html
+    },
+    "selectAll": {
+        "text": "Select all courses",
+        "removeText": "Remove courses"
+    },
+    "items": items
+}) }}

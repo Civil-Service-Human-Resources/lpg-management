@@ -1,0 +1,20 @@
+{% extends "../../../../component/Page.njk" %}
+{% from "error-summary/macro.njk" import govukErrorSummary %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.viewCourses }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set banner = true %}
+
+{% block content %}
+    {% set errors = pageModel.errors %}
+    {{ errorSummary(errors.fields, true) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{ i18n.learningTags.title.assignCourseToTags }}</h1>
+            <h2 class="govuk-heading-m govuk-!-font-size-36">{% block h2 %}{% endblock %}</h2>
+            {% block assignContent %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
