@@ -8,7 +8,8 @@ import {FormattedTaxonomyItem} from '../../lib/taxonomy/formattedTaxonomyItem'
 import {FormattedTaxonomyItemList} from '../../lib/taxonomy/formattedTaxonomyItemList'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
 import {SearchQuery} from '../../controllers/models/searchQuery'
-import {CreateHyperlinkPageModel} from '../../controllers/learningTag/model/createHyperlinkPageModel'
+import {HyperlinkPageModel} from '../../controllers/learningTag/model/hyperlinkPageModel'
+import {Hyperlink} from '../model/learningTag/hyperlink'
 
 export class LearningTagService {
 	logger = getLogger('LearningTagService')
@@ -106,7 +107,15 @@ export class LearningTagService {
 		return await this.learningTagClient.assignCourses(tagIds, courseIds)
 	}
 
-	async createHyperlink(learningTagId: number, pageModel: CreateHyperlinkPageModel) {
+	async createHyperlink(learningTagId: number, pageModel: HyperlinkPageModel) {
 		await this.learningTagClient.createHyperlink(learningTagId, pageModel)
+	}
+
+	async getHyperlink(learningTagId: number, hyperlinkId: number): Promise<Hyperlink> {
+		return await this.learningTagClient.getHyperlink(learningTagId, hyperlinkId)
+	}
+
+	async editHyperlink(learningTagId: number, hyperlinkId: number, pageModel: HyperlinkPageModel) {
+		await this.learningTagClient.editHyperlink(learningTagId, hyperlinkId, pageModel)
 	}
 }

@@ -1,0 +1,87 @@
+{% from "../../component/search/macro.njk" import search with context %}
+{% from "../../component/pagination/macro.njk" import pagination with context %}
+{% from "../../component/courseManager/macro.njk" import courseManager with context %}
+{% from "../../component/hyperlinkManager/macro.njk" import hyperlinkManager with context %}
+{% from "checkboxes/macro.njk" import govukCheckboxes %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.viewCourses }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
+{% set removeResultsBanner = sessionFlash.removeResultsBanner if sessionFlash.removeResultsBanner else removeResultsBanner %}
+
+{% block content %}
+    {% if pageModel and pageModel.errors %}
+        {% set errors = pageModel.errors %}
+    {% endif %}
+    {{ errorSummary(errors.fields) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="page-title govuk-heading-l">{{learningTag.name}}</h1>
+            {% if removeResults %}
+                <div class="panel panel-blue">
+                    <div class="govuk-panel__body custom-panel panel-blue">
+                        <p class="govuk-body">
+                            {{ removeResults }}
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="govuk-tabs">
+                <h2 class="govuk-tabs__title">Contents</h2>
+                <ul class="govuk-tabs__list">
+                    {% for tab in [
+                        {
+                            href: "/content-management/learning-tags/" + learningTag.id + "/courses",
+                            text: "Courses assigned to this tag",
+                            selected: selectedTab === "courses"
+                        },
+                        {
+                            href: "/content-management/learning-tags/" + learningTag.id + "/links",
+                            text: "Links assigned to this tag",
+                            selected: selectedTab === "links"
+                        }
+                    ] %}
+                        <li class="govuk-tabs__list-item {% if selected %}govuk-tabs__list-item--selected{% endif %}">
+                            <a class="govuk-tabs__tab" href="{{ href }}">
+                                {{ text }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="govuk-tabs__panel" id="courses">
+                    {% block tabContent %}
+                    {% endblock %}
+                    {% set searchHeaderHtml %}
+                        <div class="header-search">
+                            <h2 class="govuk-heading-m">Courses assigned to this tag</h2>
+                        </div>
+                    {% endset %}
+                    {% if pageModel.results.length > 0 %}
+                        {{ courseManager({
+                            "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/courses/remove",
+                            "legend": {
+                                "html": "<h2 class=\"govuk-heading-m\">Courses assigned to this tag</h2>"
+                            },
+                            "courses": pageModel.results,
+                            allIds: pageModel.allIds
+                        }) }}
+                        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
+                        {{ pagination(pageModel.pagePagination.pagination) }}
+                    {% else %}
+                        {{ searchHeaderHtml | safe }}
+                        <p class='govuk-body'>There are currently no courses assigned to this tag</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+{% endblock %}

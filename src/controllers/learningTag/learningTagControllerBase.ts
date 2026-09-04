@@ -6,6 +6,7 @@ import {LearningTagService} from '../../learning-catalogue/service/learningTagSe
 import {NextFunction, Request, Response} from 'express'
 import * as asyncHandler from 'express-async-handler'
 import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTag'
+import {Hyperlink} from '../../learning-catalogue/model/learningTag/hyperlink'
 
 export abstract class LearningTagControllerBase extends Controller {
 	protected assignCoursesToTagsModelSession = new SessionableObjectService("assignCoursesToTagsModel", AssignCoursesToTagsModel)
@@ -22,15 +23,25 @@ export abstract class LearningTagControllerBase extends Controller {
 
 	private getLearningTagFromRouterParamAndSetOnLocals() {
 		this.router.param('learningTagId', asyncHandler(async (req: Request, res: Response, next: NextFunction, learningTagId: number) => {
-				const learningTag: LearningTag = await this.learningTagService.getLearningTag(learningTagId)
-				if (learningTag) {
-					res.locals.learningTag = learningTag
-					next()
+			if (req.params.hyperlinkId !== undefined) {
+				const hyperlink: Hyperlink = await this.learningTagService.getHyperlink(learningTagId, parseInt(req.params.hyperlinkId))
+				if (hyperlink) {
+					res.locals.hyperlink = hyperlink
+					return next()
 				} else {
 					res.status(404)
 					return res.render("page/not-found")
 				}
-			})
+			}
+			const learningTag: LearningTag = await this.learningTagService.getLearningTag(learningTagId)
+			if (learningTag) {
+				res.locals.learningTag = learningTag
+				return next()
+			} else {
+				res.status(404)
+				return res.render("page/not-found")
+			}
+		})
 		)
 	}
 }

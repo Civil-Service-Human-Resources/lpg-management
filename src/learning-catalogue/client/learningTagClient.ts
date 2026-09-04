@@ -11,7 +11,8 @@ import {SearchQuery} from '../../controllers/models/searchQuery'
 import {LearningTagCoursesResponse} from '../model/learningTag/learningTagCoursesResponse'
 import {LearningTagHyperlinksResponse} from '../model/learningTag/learningTagHyperlinksResponse'
 import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
-import {CreateHyperlinkPageModel} from '../../controllers/learningTag/model/createHyperlinkPageModel'
+import {HyperlinkPageModel} from '../../controllers/learningTag/model/hyperlinkPageModel'
+import {Hyperlink} from '../model/learningTag/hyperlink'
 
 export class LearningTagClient {
 
@@ -116,9 +117,23 @@ export class LearningTagClient {
 		})).data
 	}
 
-	async createHyperlink(learningTagId: number, data: CreateHyperlinkPageModel) {
+	async createHyperlink(learningTagId: number, data: HyperlinkPageModel) {
 		await this._http.postRequest({
 			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlink`,
+			data
+		});
+	}
+
+	async getHyperlink(learningTagId: number, hyperlinkId: number) {
+		const response = await this._http.getRequest({
+			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlinks/${hyperlinkId}`
+		});
+		return plainToInstance(Hyperlink, response.data as Hyperlink)
+	}
+
+	async editHyperlink(learningTagId: number, hyperlinkId: number, data: HyperlinkPageModel) {
+		await this._http.putRequest({
+			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlinks/${hyperlinkId}`,
 			data
 		});
 	}
