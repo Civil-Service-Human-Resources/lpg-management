@@ -8,7 +8,19 @@
 {% endblock %}
 
 {% set selectedTab = "links" %}
+{% set linkUpdatedMessage = sessionFlash.linkUpdatedMessage if sessionFlash.linkUpdatedMessage else linkUpdatedMessage %}
 
+{% block extraBanner %}
+    {% if linkUpdatedMessage %}
+        <div class="panel panel-blue">
+            <div class="govuk-panel__body custom-panel panel-blue">
+                <p class="govuk-body">
+                    {{ linkUpdatedMessage.linkTitle }} has been updated.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
 {% block tabContent %}
     {% set searchHeaderHtml %}
         <div class="header-search">

@@ -205,7 +205,7 @@ describe('LearningTag', () => {
 	describe('Create hyperlink', () => {
 		it('should render the create a new hyperlink screen', async () => {
 			const res = await session(app)
-				.get('/content-management/learning-tags/1/hyperlinks')
+				.get('/content-management/learning-tags/1/hyperlinks/create')
 				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send()
 			expect(res.status).to.eql(200)

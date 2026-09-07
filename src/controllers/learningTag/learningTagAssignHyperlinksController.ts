@@ -42,7 +42,7 @@ export class LearningTagAssignHyperlinksController extends LearningTagController
 	private searchForTag() {
 		return async(request: Request, response: Response) => {
 			const pageModel = plainToInstance(SearchForTagModel, response.locals.input as SearchForTagModel)
-			return response.redirect(`/content-management/learning-tags/${pageModel.tagSelect}/hyperlink`)
+			return response.redirect(`/content-management/learning-tags/${pageModel.tagSelect}/hyperlinks/create`)
 		}
 	}
 

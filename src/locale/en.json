@@ -228,7 +228,8 @@
 			"searchForTags":  "Search for tags",
 			"searchForCourses":  "Search for courses",
 			"assignLinkToTag": "Assign link to tag",
-			"createLink": "Create a new link"
+			"createLink": "Create a new link",
+			"editLink": "Edit link"
 		},
 		"validation": {
 			"courses": {

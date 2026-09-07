@@ -8,7 +8,6 @@ import {compoundRoleCheckMiddleware} from '../../middleware/roleCheckMiddleware'
 import {Request, Response} from 'express'
 import {ContentType, RemoveContentFromLearningTagPageModel} from '../model/removeContentFromLearningTagPageModel'
 import {ClassConstructor, plainToInstance} from 'class-transformer'
-import {LearningTagCourseSearchParams} from '../model/learningTagCourseSearchParams'
 import {ContentSearchParams} from '../model/contentSearchParams'
 import {DefaultPageResults} from '../../../learning-catalogue/model/defaultPageResults'
 import {PaginationService} from '../../../lib/paginationService'
@@ -17,6 +16,7 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 
 	constructor(protected learningTagService: LearningTagService, protected learningTagContentType: learningTagContentType,
 				protected removePageModelDto: ClassConstructor<RemoveContentFromLearningTagPageModel<T>>,
+				protected searchQueryDto: ClassConstructor<ContentSearchParams>,
 				private pagination: PaginationService) {
 		super('LearningTagController', learningTagService)
 	}
@@ -45,7 +45,7 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 	private getContent() {
 		return async(request: Request, response: Response) => {
 			let pageModel = plainToInstance(this.removePageModelDto, response.locals.input)
-			const params = plainToInstance(LearningTagCourseSearchParams, request.query)
+			const params = plainToInstance(this.searchQueryDto, request.query)
 			params.learningTagId = response.locals.learningTag.id
 			const results = await this.getResults(response.locals.learningTag.id, params)
 			const pagePagination = this.pagination.getPagination(params, results)

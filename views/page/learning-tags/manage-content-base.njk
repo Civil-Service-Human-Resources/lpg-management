@@ -21,7 +21,6 @@
     {{ errorSummary(errors.fields) }}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-            <h1 class="page-title govuk-heading-l">{{learningTag.name}}</h1>
             {% if removeResultsBanner %}
                 <div class="panel panel-blue">
                     <div class="govuk-panel__body custom-panel panel-blue">
@@ -31,6 +30,9 @@
                     </div>
                 </div>
             {% endif %}
+            {% block extraBanner %}
+            {% endblock %}
+            <h1 class="page-title govuk-heading-l">{{learningTag.name}}</h1>
             <div class="govuk-tabs">
                 <h2 class="govuk-tabs__title">Contents</h2>
                 <ul class="govuk-tabs__list">

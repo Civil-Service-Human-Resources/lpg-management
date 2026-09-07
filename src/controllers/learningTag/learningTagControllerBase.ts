@@ -23,19 +23,18 @@ export abstract class LearningTagControllerBase extends Controller {
 
 	private getLearningTagFromRouterParamAndSetOnLocals() {
 		this.router.param('learningTagId', asyncHandler(async (req: Request, res: Response, next: NextFunction, learningTagId: number) => {
-			if (req.params.hyperlinkId !== undefined) {
-				const hyperlink: Hyperlink = await this.learningTagService.getHyperlink(learningTagId, parseInt(req.params.hyperlinkId))
-				if (hyperlink) {
-					res.locals.hyperlink = hyperlink
-					return next()
-				} else {
-					res.status(404)
-					return res.render("page/not-found")
-				}
-			}
 			const learningTag: LearningTag = await this.learningTagService.getLearningTag(learningTagId)
 			if (learningTag) {
 				res.locals.learningTag = learningTag
+				if (req.params.hyperlinkId !== undefined) {
+					const hyperlink: Hyperlink = await this.learningTagService.getHyperlink(learningTagId, parseInt(req.params.hyperlinkId))
+					if (hyperlink) {
+						res.locals.hyperlink = hyperlink
+					} else {
+						res.status(404)
+						return res.render("page/not-found")
+					}
+				}
 				return next()
 			} else {
 				res.status(404)

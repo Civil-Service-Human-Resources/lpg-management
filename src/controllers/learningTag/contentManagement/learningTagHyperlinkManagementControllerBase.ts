@@ -7,11 +7,13 @@ import {
 	LearningTagHyperlinksResponse,
 } from '../../../learning-catalogue/model/learningTag/learningTagHyperlinksResponse'
 import {Hyperlink} from '../../../learning-catalogue/model/learningTag/hyperlink'
+import {LearningTagHyperlinksSearchParams} from '../model/learningTagHyperlinksSearchParams'
 
 export class LearningTagHyperlinksManagementController extends LearningTagContentManagementControllerBase<Hyperlink> {
 	
 	constructor(learningTagService: LearningTagService, pagination: PaginationService) {
-		super(learningTagService, 'hyperlinks', RemoveHyperlinksFromLearningTagPageModel, pagination)
+		super(learningTagService, 'hyperlinks', RemoveHyperlinksFromLearningTagPageModel,
+			LearningTagHyperlinksSearchParams, pagination)
 	}
 
 	remove = async (learningTagId: number, ids: string[]): Promise<string> => {

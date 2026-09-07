@@ -8,7 +8,6 @@ import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagControllerBase} from './learningTagControllerBase'
 import {HyperlinkPageModel} from './model/hyperlinkPageModel'
-import {Hyperlink} from '../../learning-catalogue/model/learningTag/hyperlink'
 
 export type learningTagContentType = 'courses' | 'hyperlinks'
 
@@ -45,7 +44,7 @@ export class LearningTagController extends LearningTagControllerBase {
 			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/hyperlinks', this.getCreateHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/hyperlinks/create', this.getCreateHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequestWithBody('/:learningTagId/hyperlinks', this.createHyperlink(), {
 				dtoClass: HyperlinkPageModel,
 				onError: {
@@ -188,7 +187,7 @@ export class LearningTagController extends LearningTagControllerBase {
 	private getCreateHyperlink() {
 		return async(request: Request, response: Response) => {
 			let pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel) || new HyperlinkPageModel('', '', '')
-			response.render('page/learning-tags/create-hyperlink.njk', {pageModel})
+			response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
 		}
 	}
 
@@ -206,10 +205,10 @@ export class LearningTagController extends LearningTagControllerBase {
 
 	private getEditHyperlink() {
 		return async(request: Request, response: Response) => {
-			const hyperlink: Hyperlink = response.locals.hyperlink
+			const hyperlink: HyperlinkPageModel = response.locals.hyperlink
 			let pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-				|| new HyperlinkPageModel(hyperlink.title, hyperlink.description, hyperlink.href)
-			response.render('page/learning-tags/edit-hyperlink.njk', {pageModel})
+				|| new HyperlinkPageModel(hyperlink.title, hyperlink.description, hyperlink.url)
+			response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
 		}
 	}
 
@@ -218,9 +217,9 @@ export class LearningTagController extends LearningTagControllerBase {
 			const learningTagId = parseInt(request.params.learningTagId)
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
 			await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
-			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
+			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
 			return request.session!.save(() => {
-				return response.redirect(`/content-management/learning-tags/${learningTagId}`)
+				return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
 			})
 		}
 	}

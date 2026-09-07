@@ -5,11 +5,13 @@ import {LearningTagContentManagementControllerBase} from './learningTagContentMa
 import {BasicCourse} from '../../../learning-catalogue/courseTypeAhead'
 import {LearningTagCoursesResponse} from '../../../learning-catalogue/model/learningTag/learningTagCoursesResponse'
 import {RemoveCoursesFromLearningTagPageModel} from '../model/removeCoursesFromLearningTagPageModel'
+import {LearningTagCourseSearchParams} from '../model/learningTagCourseSearchParams'
 
 export class LearningTagCourseManagementController extends LearningTagContentManagementControllerBase<BasicCourse> {
 
 	constructor(learningTagService: LearningTagService, pagination: PaginationService) {
-		super(learningTagService, 'courses', RemoveCoursesFromLearningTagPageModel, pagination)
+		super(learningTagService, 'courses', RemoveCoursesFromLearningTagPageModel,
+			LearningTagCourseSearchParams, pagination)
 	}
 
 	remove = async (learningTagId: number, ids: string[]): Promise<string> => {
