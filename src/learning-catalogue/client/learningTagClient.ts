@@ -20,6 +20,10 @@ export class LearningTagClient {
 	private TREE_URL = `${this.LEARNING_TAGS_URL}/overview-tree`
 	private FORMATTED_LIST_URL = `${this.LEARNING_TAGS_URL}/formatted_list`
 
+	private getHyperlinksUrl = (learningTagId: number, hyperlinkId?: number) => {
+		return `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlinks` + (hyperlinkId === undefined ? '' : `/${hyperlinkId}`)
+	}
+
 	constructor(private readonly _http: OauthRestService,) {
 	}
 
@@ -72,7 +76,7 @@ export class LearningTagClient {
 
 	async getTaggedHyperlinks(id: number, searchQuery: SearchQuery): Promise<LearningTagHyperlinksResponse> {
 		const resp = await this._http.getRequest({
-			url: `${this.LEARNING_TAGS_URL}/${id}/hyperlinks`,
+			url: this.getHyperlinksUrl(id),
 			params: {
 				page: searchQuery.p
 			}
@@ -100,7 +104,7 @@ export class LearningTagClient {
 
 	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
 		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
-			url: `${this.LEARNING_TAGS_URL}/${id}/hyperlinks`,
+			url: this.getHyperlinksUrl(id),
 			data: {
 				ids: hyperlinkIds
 			}
@@ -119,21 +123,21 @@ export class LearningTagClient {
 
 	async createHyperlink(learningTagId: number, data: HyperlinkPageModel) {
 		await this._http.postRequest({
-			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlink`,
+			url: this.getHyperlinksUrl(learningTagId),
 			data
 		});
 	}
 
 	async getHyperlink(learningTagId: number, hyperlinkId: number) {
 		const response = await this._http.getRequest({
-			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlinks/${hyperlinkId}`
+			url: this.getHyperlinksUrl(learningTagId, hyperlinkId)
 		});
 		return plainToInstance(Hyperlink, response.data as Hyperlink)
 	}
 
 	async editHyperlink(learningTagId: number, hyperlinkId: number, data: HyperlinkPageModel) {
 		await this._http.putRequest({
-			url: `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlinks/${hyperlinkId}`,
+			url: this.getHyperlinksUrl(learningTagId, hyperlinkId),
 			data
 		});
 	}

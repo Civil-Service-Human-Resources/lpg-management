@@ -7,7 +7,9 @@ import {LearningTagService} from '../../../../src/learning-catalogue/service/lea
 import {LearningTagClient} from '../../../../src/learning-catalogue/client/learningTagClient'
 import {LearningTagCacheManager} from '../../../../src/csl-service/model/learning/learningTag/learningTagCacheManager'
 import {SearchQuery} from '../../../../src/controllers/models/searchQuery'
-import {LearningTagHyperlinksResponse} from '../../../../src/learning-catalogue/model/learningTag/learningTagHyperlinksResponse'
+import {
+	LearningTagHyperlinksResponse,
+} from '../../../../src/learning-catalogue/model/learningTag/learningTagHyperlinksResponse'
 
 chai.use(sinonChai)
 
@@ -46,6 +48,6 @@ describe('LearningTagService tests', () => {
 		const result = await service.removeHyperlinks(1, ['1', '2'])
 
 		expect(client.removeHyperlinks).to.have.been.calledOnceWith(1, ['1', '2'])
-		expect(result).to.eql(expectedResponse)
+		expect(result).to.eql('2 links were removed from this tag.')
 	})
 })

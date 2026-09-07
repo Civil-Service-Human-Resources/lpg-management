@@ -10,5 +10,5 @@ export class RemoveHyperlinksFromLearningTagPageModel extends RemoveContentFromL
 		message: 'learningTags.validation.hyperlinks.emptySelection'
 	})
 	@Transform(transformStringArray)
-	public hyperlinkIds: string[]
+	public ids: string[]
 }

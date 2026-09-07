@@ -12,18 +12,18 @@ export abstract class ContentSearchParams extends SearchQuery implements SearchP
 		const num = +raw
 		return isNaN(num) || num === 0 ? 0 : num - 1
 	})
-	coursePage: number = 0
+	page: number = 0
 
 	constructor(public learningTagId: number) {
 		super()
 	}
 
 	get p(): number {
-		return this.coursePage
+		return this.page
 	}
 
 	set p(val: number) {
-		this.coursePage = val
+		this.page = val
 	}
 
 	abstract getContentType(): learningTagContentType
@@ -34,9 +34,9 @@ export abstract class ContentSearchParams extends SearchQuery implements SearchP
 
 	getUrlParts(page?: number): string[] {
 		const urlParts = []
-		const coursePageToUse = page !== undefined ? page : (this.coursePage > 0 ? this.coursePage + 1 : 1)
-		if (coursePageToUse) {
-			urlParts.push(`coursePage=${coursePageToUse}`)
+		const pageToUse = page !== undefined ? page : (this.page > 0 ? this.page + 1 : 1)
+		if (pageToUse) {
+			urlParts.push(`page=${pageToUse}`)
 		}
 		return urlParts
 	}
