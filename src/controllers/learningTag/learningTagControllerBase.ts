@@ -9,7 +9,6 @@ import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTa
 
 export abstract class LearningTagControllerBase extends Controller {
 	protected assignCoursesToTagsModelSession = new SessionableObjectService("assignCoursesToTagsModel", AssignCoursesToTagsModel)
-
 	protected constructor (
 		protected controllerName: string,
 		protected learningTagService: LearningTagService) {

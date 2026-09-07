@@ -1,0 +1,76 @@
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "input/macro.njk" import govukInput %}
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.createHyperlink }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/assign-hyperlinks/select-learning-tag" %}
+
+{% block content %}
+    {% set errors = pageModel.errors %}
+    {{ errorSummary(errors.fields, true) }}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <h1 class="page-title govuk-heading-l">{{ i18n.learningTags.title.assignLinkToTag }}</h1>
+            <h2 class="govuk-heading-m">{{ i18n.learningTags.title.createLink }}</h2>
+            <form method="post" action="/content-management/learning-tags/{{ learningTag.id }}/hyperlink">
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
+                {{ govukInput({
+                    label: {
+                        text: i18n.learningTags.text.hyperlinks.title
+                    },
+                    id: "title",
+                    name: "title",
+                    value: pageModel.title|default(pageModel.title),
+                    errorMessage: {
+                        text: i18n[errors.fields.title]
+                    } if errors.fields.title else null
+                }) }}
+                {{ govukInput({
+                    label: {
+                        text: i18n.learningTags.text.hyperlinks.url
+                    },
+                    id: "url",
+                    name: "url",
+                    pattern: "https://.*",
+                    hint: {
+                        text: "For example https://gov.uk. URLs must start with https://"
+                    },
+                    value: pageModel.url|default(pageModel.url),
+                    errorMessage: {
+                        text: i18n[errors.fields.url]
+                    } if errors.fields.url else null
+                }) }}
+                {{ govukCharacterCount({
+                    name: "description",
+                    id: "description",
+                    maxlength: 250,
+                    value: pageModel.description|default(pageModel.description),
+                    label: {
+                        text: i18n.learningTags.text.hyperlinks.description
+                    },
+                    errorMessage: {
+                        text: i18n[errors.fields.description]
+                    } if errors.fields.description else null
+                }) }}
+                {{ govukButton({
+                    text: "Continue"
+                }) }}
+            </form>
+        </div>
+    </div>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            <a href="/content-management/learning-tags/manage" class="govuk-link">Cancel</a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block bodyEnd %}
+    <script type="text/javascript" src="/js/main-bundle.min.js"></script>
+{% endblock %}

@@ -11,13 +11,10 @@ import {LearningTagCourseSearchParams} from './model/learningTagCourseSearchPara
 import {LearningTagHyperlinksSearchParams} from './model/learningTagHyperlinksSearchParams'
 import {RemoveCoursesFromLearningTagPageModel} from './model/removeCoursesFromLearningTagPageModel'
 import {RemoveHyperlinksFromLearningTagPageModel} from './model/removeHyperlinksFromLearningTagPageModel'
-import {SessionableObjectService} from '../reporting/utils'
-import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
 import {LearningTagControllerBase} from './learningTagControllerBase'
+import {CreateHyperlinkPageModel} from './model/createHyperlinkPageModel'
 
 export class LearningTagController extends LearningTagControllerBase {
-
-	protected assignCoursesToTagsModelSession = new SessionableObjectService("assignCoursesToTagsModel", AssignCoursesToTagsModel)
 
 	constructor(protected learningTagService: LearningTagService,
 				private pagination: PaginationService) {
@@ -50,7 +47,6 @@ export class LearningTagController extends LearningTagControllerBase {
 			postRequest('/:learningTagId/archive', this.archive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
 			getRequest('/:learningTagId/courses', this.getCoursesAndHyperlinks(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 			postRequest('/:learningTagId/courses/remove/:courseId', this.removeCourse(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
@@ -68,7 +64,15 @@ export class LearningTagController extends LearningTagControllerBase {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getCoursesAndHyperlinks()
 				}
-			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)])
+			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/hyperlink', this.getCreateHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequestWithBody('/:learningTagId/hyperlink', this.createHyperlink(), {
+				dtoClass: CreateHyperlinkPageModel,
+				onError: {
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getCreateHyperlink()
+				}
+			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
 		]
 	}
 
@@ -271,6 +275,25 @@ export class LearningTagController extends LearningTagControllerBase {
 	public getUnarchive() {
 		return async(request: Request, response: Response) => {
 			response.render('page/learning-tags/unarchive.njk')
+		}
+	}
+
+	private getCreateHyperlink() {
+		return async(request: Request, response: Response) => {
+			let pageModel = plainToInstance(CreateHyperlinkPageModel, response.locals.input as CreateHyperlinkPageModel) || new CreateHyperlinkPageModel()
+			response.render('page/learning-tags/create-hyperlink.njk', {pageModel})
+		}
+	}
+
+	private createHyperlink() {
+		return async(request: Request, response: Response) => {
+			const learningTagId = response.locals.learningTag.id as number
+			const pageModel = plainToInstance(CreateHyperlinkPageModel, response.locals.input as CreateHyperlinkPageModel)
+			await this.learningTagService.createHyperlink(learningTagId, pageModel)
+			request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
+			return request.session!.save(() => {
+				return response.redirect('/content-management/learning-tags/manage')
+			})
 		}
 	}
 }
