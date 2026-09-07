@@ -39,10 +39,6 @@ export class LearningTagService {
 		return data
 	}
 
-	async validatePageModel() {
-
-	}
-
 	async getLearningTag(learningTagId: number): Promise<LearningTag> {
 		let org = await this.learningTagCacheManager.get(learningTagId)
 		if (org === undefined) {
