@@ -96,11 +96,13 @@ export class LearningTagService {
 	}
 
 	async removeCourses(id: number, courseIds: string[]) {
-		return await this.learningTagClient.removeCourses(id, courseIds)
+		const result = await this.learningTagClient.removeCourses(id, courseIds)
+		return (result.successfulIds.length === 1 ? '1 course was' : `${result.successfulIds.length} courses were`) + ' removed from this tag.'
 	}
 
 	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
-		return await this.learningTagClient.removeHyperlinks(id, hyperlinkIds)
+		const result = await this.learningTagClient.removeHyperlinks(id, hyperlinkIds)
+		return (result.successfulIds.length === 1 ? '1 link was' : `${result.successfulIds.length} links were`) + ' removed from this tag.'
 	}
 
 	async assignCoursesToLearningTags(tagIds: string[], courseIds: string[]) {

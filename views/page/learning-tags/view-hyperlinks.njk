@@ -4,7 +4,7 @@
 {% extends "./manage-content-base.njk" %}
 
 {% block pageTitle %}
-    {{ i18n.learningTags.title.viewCourses }} - {{ i18n.proposition_name }}
+    {{ i18n.learningTags.title.viewLinks }} - {{ i18n.proposition_name }}
 {% endblock %}
 
 {% set selectedTab = "links" %}
@@ -22,16 +22,13 @@
                 "html": "<h2 class=\"govuk-heading-m\">Links assigned to this tag</h2>"
             },
             "links": pageModel.results,
-            allIds: pageModel.allIds
+            allIds: pageModel.allIds,
+            baseUrl: "/content-management/learning-tags/" + learningTag.id + "/hyperlinks"
         }) }}
-        <p class="govuk-body">Showing {{ hyperlinksPageModel.pagePagination.start }} - {{ hyperlinksPageModel.pagePagination.end}} of {{ hyperlinksPageModel.pagePagination.total }}</p>
-        {{ pagination(hyperlinksPageModel.pagePagination.pagination) }}
+        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
+        {{ pagination(pageModel.pagePagination.pagination) }}
     {% else %}
         {{ searchHeaderHtml | safe }}
         <p class='govuk-body'>There are currently no links assigned to this tag</p>
     {% endif %}
-{% endblock %}
-
-{% block bodyEnd %}
-    <script type="text/javascript" src="/js/main-bundle.min.js"></script>
 {% endblock %}

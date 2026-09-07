@@ -10,12 +10,16 @@
             text: "View " + course.title,
             href: "/content-management/courses/" + course.id + "/overview"
         },
+        secondaryActions: [
+            {
+                remove: {
+                    text: "Remove course",
+                    formaction: params.submitAction + "/" + course.id
+                }
+            }
+        ],
         showStatus: true,
         status: course.status,
-        remove: {
-            text: "Remove course",
-            formaction: params.submitAction + "/" + course.id
-        },
         checked: (params.selectedIds or []).includes(items.id)
     }), items) %}
 {% endfor %}

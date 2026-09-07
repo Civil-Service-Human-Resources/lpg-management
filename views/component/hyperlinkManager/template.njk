@@ -10,10 +10,18 @@
             text: "Go to " + link.title,
             href: link.href
         },
-        remove: {
-            text: "Remove link",
-            formaction: params.submitAction + "/" + link.id
-        },
+        secondaryActions: [
+            {
+                text: 'Edit link',
+                href: params.baseUrl + "/" + link.id
+            },
+            {
+                remove: {
+                    text: "Remove link",
+                    formaction: params.submitAction + "/" + link.id
+                }
+            }
+        ],
         checked: (params.selectedIds or []).includes(link.id)
     }), items) %}
 {% endfor %}

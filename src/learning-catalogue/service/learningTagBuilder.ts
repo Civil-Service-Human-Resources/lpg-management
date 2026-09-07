@@ -16,6 +16,12 @@ import {LearningTagAssignCoursesController} from '../../controllers/learningTag/
 import {
 	LearningTagAssignHyperlinksController,
 } from '../../controllers/learningTag/learningTagAssignHyperlinksController'
+import {
+	LearningTagHyperlinksManagementController,
+} from '../../controllers/learningTag/contentManagement/learningTagHyperlinkManagementControllerBase'
+import {
+	LearningTagCourseManagementController,
+} from '../../controllers/learningTag/contentManagement/learningTagCourseManagementController'
 
 export function buildLearningTagControllers(cslServiceClient: OauthRestService, courseService: CourseService) {
 	const learningTagClient = new LearningTagClient(cslServiceClient)
@@ -26,8 +32,10 @@ export function buildLearningTagControllers(cslServiceClient: OauthRestService, 
 	const learningTagCacheManager = new LearningTagCacheManager(learningTagCache, learningTagFormattedNameCache, learningTagTreeCache)
 	const learningTagService = new LearningTagService(learningTagCacheManager, learningTagClient)
 	const pagination = new PaginationService()
-	const learningTagController = new LearningTagController(learningTagService, pagination)
+	const hyperlinkManagementController = new LearningTagHyperlinksManagementController(learningTagService, pagination)
+	const coursesManagementController = new LearningTagCourseManagementController(learningTagService, pagination)
+	const learningTagController = new LearningTagController(learningTagService)
 	const learningTagAssignCourseController = new LearningTagAssignCoursesController(learningTagService, courseService)
 	const learningTagAssignHyperlinksController = new LearningTagAssignHyperlinksController(learningTagService)
-	return [learningTagController, learningTagAssignCourseController, learningTagAssignHyperlinksController]
+	return [hyperlinkManagementController, coursesManagementController, learningTagController, learningTagAssignCourseController, learningTagAssignHyperlinksController]
 }
