@@ -64,6 +64,14 @@
   }
 }
 
+.content-manager__secondary-actions {
+  display: flex;
+}
+
+.content-manager__secondary-action {
+  @include govuk-responsive-margin(3, "left");
+}
+
 .content-manager__link {
   @extend .govuk-link;
   font-size: $font-mobile;

@@ -2,7 +2,7 @@ import {SubmittableForm} from '../../models/submittableForm'
 import {IsNotEmpty, IsUrl, MaxLength} from 'class-validator'
 import {Transform} from 'class-transformer'
 
-export class CreateHyperlinkPageModel extends SubmittableForm{
+export class HyperlinkPageModel extends SubmittableForm{
 
 	@Transform(({value}) => {
 		return value.replaceAll("&amp;", "&").trim()
@@ -31,4 +31,11 @@ export class CreateHyperlinkPageModel extends SubmittableForm{
 	})
 	url: string
 
+
+	constructor(title: string, description: string, url: string) {
+		super()
+		this.title = title
+		this.description = description
+		this.url = url
+	}
 }

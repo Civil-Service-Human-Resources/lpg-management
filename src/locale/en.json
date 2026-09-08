@@ -220,6 +220,7 @@
 			"add": "Add a new tag",
 			"removeParent": "Remove parent tag",
 			"viewCourses": "Courses",
+			"viewLinks": "Links",
 			"edit": "Edit a tag",
 			"archive": "Confirmation of archiving",
 			"unarchive": "Confirmation of unarchiving",
@@ -227,7 +228,8 @@
 			"searchForTags":  "Search for tags",
 			"searchForCourses":  "Search for courses",
 			"assignLinkToTag": "Assign link to tag",
-			"createLink": "Create a new link"
+			"createLink": "Create a new link",
+			"editLink": "Edit link"
 		},
 		"validation": {
 			"courses": {
