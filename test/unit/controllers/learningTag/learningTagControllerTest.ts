@@ -40,7 +40,8 @@ describe('LearningTag', () => {
 	const typeahead = [
 		new FormattedTaxonomyItem(1, "tag 1", "TAG1"),
 		new FormattedTaxonomyItem(2, "tag 2", "TAG2"),
-		new FormattedTaxonomyItem(3, "tag 3", "TAG3")
+		new FormattedTaxonomyItem(3, "tag 3", "TAG3"),
+		new FormattedTaxonomyItem(4, "tag 3 | tag 4", "TAG4")
 	]
 	learningTagService.getTypeahead.resolves(typeahead)
 
@@ -120,13 +121,13 @@ describe('LearningTag', () => {
 			})
 			describe('advanced validation', () => {
 				const pageModel = new LearningTagPageModel(typeahead)
-				pageModel.name = "tag 1"
-				pageModel.name = "TAG1"
+				pageModel.name = "tag 4"
+				pageModel.name = "TAG4"
 				learningTagService.getPageModel.resolves(pageModel)
 				it('should validate name and code that already exist', async () => {
 					const body = {
-						"name": "tag 1",
-						"code": "TAG1"
+						"name": "tag 4",
+						"code": "TAG4"
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
