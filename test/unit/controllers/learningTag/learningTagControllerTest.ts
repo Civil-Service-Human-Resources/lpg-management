@@ -43,6 +43,12 @@ describe('LearningTag', () => {
 		new FormattedTaxonomyItem(3, "tag 3", "TAG3")
 	]
 	learningTagService.getTypeahead.resolves(typeahead)
+	learningTagService.getHyperlinksPage.resolves({
+		results: [],
+		page: 0,
+		size: 10,
+		totalResults: 0
+	} as any)
 
 	describe('Manage', () => {
 		it('should render the learning tag tree', async () => {
@@ -236,6 +242,84 @@ describe('LearningTag', () => {
 					})
 				expect(res.text).to.contain('Enter a title')
 				expect(res.text).to.contain('Enter a valid URL. URLs must start with https://')
+			})
+			it('should validate duplicate title and url that already exist', async () => {
+				learningTagService.getHyperlinksPage.resolves({
+					results: [
+						{
+							id: 1,
+							title: 'Existing Link',
+							description: 'Description',
+							href: 'https://existing-url.com'
+						}
+					],
+					page: 0,
+					size: 10,
+					totalResults: 1
+				} as any)
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: 'Existing Link',
+						url: 'https://existing-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A hyperlink with the same title already exists for the tag')
+				expect(res.text).to.contain('A hyperlink with the same url already exists for the tag')
+			})
+			it('should validate duplicate title only', async () => {
+				learningTagService.getHyperlinksPage.resolves({
+					results: [
+						{
+							id: 1,
+							title: 'Existing Link',
+							description: 'Description',
+							href: 'https://existing-url.com'
+						}
+					],
+					page: 0,
+					size: 10,
+					totalResults: 1
+				} as any)
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: 'Existing Link',
+						url: 'https://new-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A hyperlink with the same title already exists for the tag')
+				expect(res.text).to.not.contain('A hyperlink with the same url already exists for the tag')
+			})
+			it('should validate duplicate url only', async () => {
+				learningTagService.getHyperlinksPage.resolves({
+					results: [
+						{
+							id: 1,
+							title: 'Existing Link',
+							description: 'Description',
+							href: 'https://existing-url.com'
+						}
+					],
+					page: 0,
+					size: 10,
+					totalResults: 1
+				} as any)
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: 'New Link',
+						url: 'https://existing-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.not.contain('A hyperlink with the same title already exists for the tag')
+				expect(res.text).to.contain('A hyperlink with the same url already exists for the tag')
 			})
 		})
 	})

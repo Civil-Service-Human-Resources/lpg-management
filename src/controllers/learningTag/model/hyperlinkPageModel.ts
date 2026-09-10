@@ -1,6 +1,7 @@
 import {SubmittableForm} from '../../models/submittableForm'
 import {IsNotEmpty, IsUrl, MaxLength} from 'class-validator'
 import {Transform} from 'class-transformer'
+import {Hyperlink} from '../../../learning-catalogue/model/learningTag/hyperlink'
 
 export class HyperlinkPageModel extends SubmittableForm{
 
@@ -37,5 +38,15 @@ export class HyperlinkPageModel extends SubmittableForm{
 		this.title = title
 		this.description = description
 		this.url = url
+	}
+
+	validate(existingHyperlinks: Hyperlink[] = [], currentHyperlinkId?: number) {
+		const otherLinks = existingHyperlinks.filter(f => f.id !== currentHyperlinkId)
+		if (otherLinks.map(f => f.title).includes(this.title)) {
+			this.addError({title: ['learningTags.validation.hyperlinks.titleAlreadyExists']})
+		}
+		if (otherLinks.map(f => f.url || f.href).includes(this.url)) {
+			this.addError({url: ['learningTags.validation.hyperlinks.urlAlreadyExists']})
+		}
 	}
 }

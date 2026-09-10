@@ -240,7 +240,9 @@
 				"emptyTitle": "Enter a title",
 				"nameLength": "Title is too long",
 				"emptyUrl":  "Enter a URL",
-				"validUrl": "Enter a valid URL. URLs must start with https://"
+				"validUrl": "Enter a valid URL. URLs must start with https://",
+				"titleAlreadyExists": "A hyperlink with the same title already exists for the tag",
+				"urlAlreadyExists": "A hyperlink with the same url already exists for the tag"
 			},
 			"assign": {
 				"tagSearchSelection": "Please select which tags you want to assign",

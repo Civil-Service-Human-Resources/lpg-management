@@ -8,6 +8,7 @@ import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagControllerBase} from './learningTagControllerBase'
 import {HyperlinkPageModel} from './model/hyperlinkPageModel'
+import {SearchQuery} from '../models/searchQuery'
 
 export type learningTagContentType = 'courses' | 'hyperlinks'
 
@@ -195,6 +196,11 @@ export class LearningTagController extends LearningTagControllerBase {
 		return async(request: Request, response: Response) => {
 			const learningTagId = response.locals.learningTag.id as number
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
+			const existingHyperlinks = (await this.learningTagService.getHyperlinksPage(learningTagId, new SearchQuery())).results
+			pageModel.validate(existingHyperlinks)
+			if (pageModel.hasErrors()) {
+				return response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
+			}
 			await this.learningTagService.createHyperlink(learningTagId, pageModel)
 			request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
 			return request.session!.save(() => {
@@ -216,6 +222,11 @@ export class LearningTagController extends LearningTagControllerBase {
 		return async (request: Request, response: Response) => {
 			const learningTagId = parseInt(request.params.learningTagId)
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
+			const existingHyperlinks = (await this.learningTagService.getHyperlinksPage(learningTagId, new SearchQuery())).results
+			pageModel.validate(existingHyperlinks, response.locals.hyperlink.id)
+			if (pageModel.hasErrors()) {
+				return response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
+			}
 			await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
 			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
 			return request.session!.save(() => {
