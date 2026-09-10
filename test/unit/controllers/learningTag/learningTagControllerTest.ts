@@ -266,8 +266,8 @@ describe('LearningTag', () => {
 						description: 'New Description'
 					})
 				expect(res.status).to.eql(200)
-				expect(res.text).to.contain('A link with the same title already exists for the tag')
-				expect(res.text).to.contain('A link with the same url already exists for the tag')
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this url already exists for the tag')
 			})
 			it('should validate duplicate title only', async () => {
 				learningTagService.getHyperlinksPage.resolves({
@@ -292,8 +292,8 @@ describe('LearningTag', () => {
 						description: 'New Description'
 					})
 				expect(res.status).to.eql(200)
-				expect(res.text).to.contain('A link with the same title already exists for the tag')
-				expect(res.text).to.not.contain('A link with the same url already exists for the tag')
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.not.contain('A link with this url already exists for the tag')
 			})
 			it('should validate duplicate url only', async () => {
 				learningTagService.getHyperlinksPage.resolves({
@@ -318,8 +318,8 @@ describe('LearningTag', () => {
 						description: 'New Description'
 					})
 				expect(res.status).to.eql(200)
-				expect(res.text).to.not.contain('A link with the same title already exists for the tag')
-				expect(res.text).to.contain('A link with the same url already exists for the tag')
+				expect(res.text).to.not.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this url already exists for the tag')
 			})
 		})
 	})
