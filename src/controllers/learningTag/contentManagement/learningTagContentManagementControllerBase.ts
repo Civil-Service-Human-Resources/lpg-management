@@ -4,7 +4,6 @@ import {IUserRole, learningTagCourseManagerRole} from '../../../identity/identit
 import {getRequest, postRequest, postRequestWithBody, Route} from '../../route'
 import {BehaviourOnError} from '../../../validators/validatorMiddleware'
 import {learningTagContentType} from '../learningTagController'
-import {compoundRoleCheckMiddleware} from '../../middleware/roleCheckMiddleware'
 import {Request, Response} from 'express'
 import {ContentType, RemoveContentFromLearningTagPageModel} from '../model/removeContentFromLearningTagPageModel'
 import {ClassConstructor, plainToInstance} from 'class-transformer'
@@ -30,17 +29,17 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 
 	protected getRoutes(): Route[] {
 		return [
-			getRequest(`/:learningTagId/${this.learningTagContentType}`, this.getContent(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest(`/:learningTagId/${this.learningTagContentType}`, this.getContent()),
 			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id/confirm`, this.removeSingleContent()),
 			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/confirm`, this.bulkRemoveContent()),
-			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id`, this.removeSingleContentConfirm(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id`, this.removeSingleContentConfirm()),
 			postRequestWithBody(`/:learningTagId/${this.learningTagContentType}/remove`, this.bulkRemoveContentConfirm(), {
 				dtoClass: this.removePageModelDto,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getContent()
 				}
-			}, [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			}),
 		]
 	}
 
