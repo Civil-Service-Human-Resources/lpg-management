@@ -242,7 +242,7 @@
 				"emptyUrl":  "Enter a URL",
 				"validUrl": "Enter a valid URL. URLs must start with https://",
 				"titleAlreadyExists": "A link with this title already exists for the tag",
-				"urlAlreadyExists": "A link with this url already exists for the tag"
+				"urlAlreadyExists": "A link with this URL already exists for the tag"
 			},
 			"assign": {
 				"tagSearchSelection": "Please select which tags you want to assign",

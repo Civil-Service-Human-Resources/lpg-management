@@ -243,7 +243,7 @@ describe('LearningTag', () => {
 				expect(res.text).to.contain('Enter a title')
 				expect(res.text).to.contain('Enter a valid URL. URLs must start with https://')
 			})
-			it('should validate duplicate title and url that already exist', async () => {
+			it('should validate duplicate title and URL that already exist', async () => {
 				learningTagService.getHyperlinksPage.resolves({
 					results: [
 						{
@@ -267,7 +267,7 @@ describe('LearningTag', () => {
 					})
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('A link with this title already exists for the tag')
-				expect(res.text).to.contain('A link with this url already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
 			})
 			it('should validate duplicate title only', async () => {
 				learningTagService.getHyperlinksPage.resolves({
@@ -293,7 +293,7 @@ describe('LearningTag', () => {
 					})
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('A link with this title already exists for the tag')
-				expect(res.text).to.not.contain('A link with this url already exists for the tag')
+				expect(res.text).to.not.contain('A link with this URL already exists for the tag')
 			})
 			it('should validate duplicate url only', async () => {
 				learningTagService.getHyperlinksPage.resolves({
@@ -319,7 +319,7 @@ describe('LearningTag', () => {
 					})
 				expect(res.status).to.eql(200)
 				expect(res.text).to.not.contain('A link with this title already exists for the tag')
-				expect(res.text).to.contain('A link with this url already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
 			})
 		})
 	})
