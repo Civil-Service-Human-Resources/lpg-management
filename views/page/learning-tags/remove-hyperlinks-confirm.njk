@@ -1,0 +1,35 @@
+{% from "button/macro.njk" import govukButton %}
+
+{% extends "../../component/Page.njk" %}
+
+{% block pageTitle %}{{ i18n.learningTags.title.confirm }} - {{ i18n.proposition_name }}{% endblock %}
+
+{% set banner = true %}
+
+{% set backButton = "/content-management/learning-tags/" + learningTag.id + "/hyperlinks" %}
+
+{% block content %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-l">
+                Remove link
+            </h1>
+            <p class='govuk-body'>Are you sure you want to remove {% if items.length > 1 %}{{ items.length }} links selected{% else %}"{{ items[0] }}"{% endif%} from the tag {{ learningTag.name }}?</p>
+            {% set formaction %}
+                {% if items.length > 1 %}
+                    /content-management/learning-tags/{{ learningTag.id }}/hyperlinks/remove/confirm
+                {% else %}
+                    /content-management/learning-tags/{{ learningTag.id }}/hyperlinks/remove/{{ id }}/confirm
+                {% endif %}
+            {% endset %}
+            <form method='post' action='{{ formaction }}'>
+                <input type="hidden" name="_csrf" value="{{ _csrf }}">
+                {{ govukButton({
+                    text: "Remove link" + ("s" if items.length > 1 else ""),
+                    "classes": "govuk-button--delete"
+                }) }}
+            </form>
+            <a class="cancel-button govuk-body govuk-link" href="/content-management/learning-tags/{{ learningTag.id }}/hyperlinks">Cancel</a>
+        </div>
+    </div>
+{% endblock %}

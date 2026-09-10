@@ -93,42 +93,108 @@ describe('LearningTagContentManagement', () => {
 			expect(res.text).to.not.contain('id="links"')
 		})
 		it('should remove multiple courses from the tag', async () => {
-			learningTagService.removeCourses.resolves({successfulIds: ["course1", "course2"]})
-			const res = await session(app)
+			const coursesResponse: any = {
+				results: [],
+				page: 0,
+				size: 10,
+				totalResults: 0
+			}
+			learningTagService.getCoursesPage.resolves(coursesResponse)
+			learningTagService.removeCourses.resolves('2 courses were removed from this tag.')
+			const agent = session(app)
+			const res = await agent
 				.post('/content-management/learning-tags/1/courses/remove')
 				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send({
 					ids: ["course1", "course2"]
 				})
+			expect(res.text).to.include('Are you sure you want to remove 2 courses selected from the tag Learning Tag?')
+			const confirmRes = await agent
+				.post('/content-management/learning-tags/1/courses/remove/confirm')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+
 			expect(learningTagService.removeCourses).to.have.been.calledWith(1, ["course1", "course2"])
-			expect(res.status).to.eql(302)
+			expect(confirmRes.status).to.eql(302)
+
+			const getRes = await agent
+				.get(confirmRes.header.location)
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+
+			expect(getRes.status).to.eql(200)
+			expect(getRes.text).to.contain('2 courses were removed from this tag.')
+			expect(getRes.text).to.contain('Courses assigned to this tag')
+			expect(getRes.text).to.contain('id="courses"')
+			expect(getRes.text).to.not.contain('id="links"')
+
 		})
 		it('should remove one course from the tag', async () => {
+			const agent = session(app)
 			learningTagService.removeCourses.resolves({successfulIds: ["course1"]})
-			const res = await session(app)
+			const res = await agent
 				.post('/content-management/learning-tags/1/courses/remove/course1')
 				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send({'title[course1]': 'Course 1'})
+			expect(res.text).to.include('Are you sure you want to remove "Course 1" from the tag Learning Tag?')
+			const confirmRes = await agent
+				.post('/content-management/learning-tags/1/courses/remove/course1/confirm')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+
 			expect(learningTagService.removeCourses).to.have.been.calledWith(1, ["course1"])
-			expect(res.status).to.eql(302)
+			expect(confirmRes.status).to.eql(302)
 		})
 		it('should remove multiple hyperlinks from the tag', async () => {
-			learningTagService.removeHyperlinks.resolves({successfulIds: ["1", "2"]})
-			const res = await session(app)
+			const hyperlinksResponse: any = {
+				results: [],
+				page: 0,
+				size: 10,
+				totalResults: 0
+			}
+			learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
+			learningTagService.removeHyperlinks.resolves('2 links were removed from this tag.')
+			const agent = session(app)
+			const res = await agent
 				.post('/content-management/learning-tags/1/hyperlinks/remove')
 				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send({
 					ids: ["1", "2"]
 				})
+			expect(res.text).to.include('Are you sure you want to remove 2 links selected from the tag Learning Tag?')
+			const confirmRes = await agent
+				.post('/content-management/learning-tags/1/hyperlinks/remove/confirm')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+
 			expect(learningTagService.removeHyperlinks).to.have.been.calledWith(1, ["1", "2"])
-			expect(res.status).to.eql(302)
+			expect(confirmRes.status).to.eql(302)
+
+			const getRes = await agent
+				.get(confirmRes.header.location)
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+
+			expect(getRes.status).to.eql(200)
+			expect(getRes.text).to.contain('2 links were removed from this tag.')
+			expect(getRes.text).to.contain('Links assigned to this tag')
+
 		})
 		it('should remove one hyperlink from the tag', async () => {
+			const agent = session(app)
 			learningTagService.removeHyperlinks.resolves({successfulIds: ["1"]})
-			const res = await session(app)
+			const res = await agent
 				.post('/content-management/learning-tags/1/hyperlinks/remove/1')
 				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send({'title[1]': 'Link 1'})
+			expect(res.text).to.include('Are you sure you want to remove "Link 1" from the tag Learning Tag?')
+			const confirmRes = await agent
+				.post('/content-management/learning-tags/1/hyperlinks/remove/1/confirm')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+
 			expect(learningTagService.removeHyperlinks).to.have.been.calledWith(1, ["1"])
-			expect(res.status).to.eql(302)
+			expect(confirmRes.status).to.eql(302)
 		})
 		it('should render error message and keep Courses tab selected when no courses are selected', async () => {
 			const coursesResponse: any = {
@@ -170,44 +236,6 @@ describe('LearningTagContentManagement', () => {
 			expect(res.text).to.contain('id="courses"')
 			expect(res.text).to.not.contain('id="links"')
 		})
-		it('should keep Courses tab selected and display result message when courses are removed', async () => {
-			const coursesResponse: any = {
-				results: [],
-				page: 0,
-				size: 10,
-				totalResults: 0
-			}
-			const hyperlinksResponse: any = {
-				results: [],
-				page: 0,
-				size: 10,
-				totalResults: 0
-			}
-			learningTagService.getCoursesPage.resolves(coursesResponse)
-			learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
-			learningTagService.removeCourses.resolves('2 courses were removed from this tag.')
-
-			const agent = session(app)
-			const postRes = await agent
-				.post('/content-management/learning-tags/1/courses/remove')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
-				.send({
-					ids: ["course-1", "course-2"]
-				})
-
-			expect(postRes.status).to.eql(302)
-
-			const getRes = await agent
-				.get(postRes.header.location)
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
-				.send()
-
-			expect(getRes.status).to.eql(200)
-			expect(getRes.text).to.contain('2 courses were removed from this tag.')
-			expect(getRes.text).to.contain('Courses assigned to this tag')
-			expect(getRes.text).to.contain('id="courses"')
-			expect(getRes.text).to.not.contain('id="links"')
-		})
 		it('should render error message and keep Links tab selected when no hyperlinks are selected', async () => {
 			const coursesResponse: any = {
 				results: [
@@ -246,43 +274,6 @@ describe('LearningTagContentManagement', () => {
 			expect(res.text).to.contain('Select at least one link')
 			expect(res.text).to.contain('Links assigned to this tag')
 
-		})
-		it('should keep Links tab selected and display result message when links are removed', async () => {
-			const coursesResponse: any = {
-				results: [],
-				page: 0,
-				size: 10,
-				totalResults: 0
-			}
-			const hyperlinksResponse: any = {
-				results: [],
-				page: 0,
-				size: 10,
-				totalResults: 0
-			}
-			learningTagService.getCoursesPage.resolves(coursesResponse)
-			learningTagService.getHyperlinksPage.resolves(hyperlinksResponse)
-			learningTagService.removeHyperlinks.resolves('2 links were removed from this tag.')
-
-			const agent = session(app)
-			const postRes = await agent
-				.post('/content-management/learning-tags/1/hyperlinks/remove')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
-				.send({
-					ids: ["1", "2"]
-				})
-
-			expect(postRes.status).to.eql(302)
-			expect(postRes.header.location).to.eql('/content-management/learning-tags/1/hyperlinks')
-
-			const getRes = await agent
-				.get(postRes.header.location)
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
-				.send()
-
-			expect(getRes.status).to.eql(200)
-			expect(getRes.text).to.contain('2 links were removed from this tag.')
-			expect(getRes.text).to.contain('Links assigned to this tag')
 		})
 	})
 })

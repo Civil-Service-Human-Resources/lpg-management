@@ -52,6 +52,7 @@
                                         {% if action.href %}
                                             <a class='govuk-link' href='{{ action.href }}'>{{ action.text }}</a>
                                         {% elif action.remove %}
+                                            <input type='hidden' name='title[{{ item.id }}]' value='{{ item.title }}'>
                                             <button class='content-manager__button-link' formaction='{{ action.remove.formaction }}'>{{ action.remove.text }}</button>
                                         {% endif %}
                                     </div>
