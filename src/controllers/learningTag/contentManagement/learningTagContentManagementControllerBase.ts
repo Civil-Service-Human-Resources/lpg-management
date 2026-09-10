@@ -11,8 +11,11 @@ import {ClassConstructor, plainToInstance} from 'class-transformer'
 import {ContentSearchParams} from '../model/contentSearchParams'
 import {DefaultPageResults} from '../../../learning-catalogue/model/defaultPageResults'
 import {PaginationService} from '../../../lib/paginationService'
+import {SessionableObjectService} from '../../reporting/utils'
 
 export abstract class LearningTagContentManagementControllerBase<T extends ContentType> extends LearningTagControllerBase {
+
+	protected modelSession = new SessionableObjectService("removeModel", this.removePageModelDto)
 
 	constructor(protected learningTagService: LearningTagService, protected learningTagContentType: learningTagContentType,
 				protected removePageModelDto: ClassConstructor<RemoveContentFromLearningTagPageModel<T>>,
@@ -28,8 +31,10 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 	protected getRoutes(): Route[] {
 		return [
 			getRequest(`/:learningTagId/${this.learningTagContentType}`, this.getContent(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
-			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id`, this.removeSingleContent(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
-			postRequestWithBody(`/:learningTagId/${this.learningTagContentType}/remove`, this.bulkRemoveContent(), {
+			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id/confirm`, this.removeSingleContent()),
+			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/confirm`, this.bulkRemoveContent()),
+			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id`, this.removeSingleContentConfirm(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequestWithBody(`/:learningTagId/${this.learningTagContentType}/remove`, this.bulkRemoveContentConfirm(), {
 				dtoClass: this.removePageModelDto,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
@@ -44,6 +49,7 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 
 	private getContent() {
 		return async(request: Request, response: Response) => {
+			this.modelSession.deleteObjectFromSession(request)
 			let pageModel = plainToInstance(this.removePageModelDto, response.locals.input)
 			const params = plainToInstance(this.searchQueryDto, request.query)
 			params.learningTagId = response.locals.learningTag.id
@@ -76,8 +82,26 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 
 	private bulkRemoveContent() {
 		return async(request: Request, response: Response) => {
-			const model = plainToInstance(this.removePageModelDto, response.locals.input)
+			const model = this.modelSession.fetchObjectFromSession(request)
+			if (model === undefined || model.getIds().length === 0) {
+				return response.redirect(`/content-management/learning-tags/${response.locals.learningTag.id}/${this.learningTagContentType}`)
+			}
 			return await this.removeContent(request, response, model.getIds())
+		}
+	}
+
+	private removeSingleContentConfirm() {
+		return async (request: Request, response: Response) => {
+			response.locals.id = request.params.id
+			return response.render(`page/learning-tags/remove-${this.learningTagContentType}-confirm.njk`, {items: [request.body[`title[${request.params.id}]`]]})
+		}
+	}
+
+	private bulkRemoveContentConfirm() {
+		return async (request: Request, response: Response) => {
+			const model = plainToInstance(this.removePageModelDto, response.locals.input)
+			this.modelSession.saveObjectToSession(request, model)
+			return response.render(`page/learning-tags/remove-${this.learningTagContentType}-confirm.njk`, {items: model.getIds()})
 		}
 	}
 }
