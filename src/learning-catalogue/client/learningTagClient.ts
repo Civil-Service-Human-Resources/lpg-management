@@ -7,13 +7,22 @@ import {
 } from '../../csl-service/model/learning/learningTag/formattedTaxonomyItemListResponse'
 import {OauthRestService} from '../../lib/http/oauthRestService'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {SearchQuery} from '../../controllers/models/searchQuery'
+import {LearningTagCoursesResponse} from '../model/learningTag/learningTagCoursesResponse'
+import {LearningTagHyperlinksResponse} from '../model/learningTag/learningTagHyperlinksResponse'
 import {LearningTagStateUpdate} from '../model/learningTag/learningTagStateUpdate'
+import {HyperlinkPageModel} from '../../controllers/learningTag/model/hyperlinkPageModel'
+import {Hyperlink} from '../model/learningTag/hyperlink'
 
 export class LearningTagClient {
 
 	private LEARNING_TAGS_URL = "/learning-tags"
 	private TREE_URL = `${this.LEARNING_TAGS_URL}/overview-tree`
 	private FORMATTED_LIST_URL = `${this.LEARNING_TAGS_URL}/formatted_list`
+
+	private getHyperlinksUrl = (learningTagId: number, hyperlinkId?: number) => {
+		return `${this.LEARNING_TAGS_URL}/${learningTagId}/hyperlinks` + (hyperlinkId === undefined ? '' : `/${hyperlinkId}`)
+	}
 
 	constructor(private readonly _http: OauthRestService,) {
 	}
@@ -55,6 +64,26 @@ export class LearningTagClient {
 		}));
 	}
 
+	async getTaggedCourses(id: number, searchQuery: SearchQuery): Promise<LearningTagCoursesResponse> {
+		const resp = await this._http.getRequest({
+			url: `${this.LEARNING_TAGS_URL}/${id}/courses`,
+			params: {
+				page: searchQuery.p
+			}
+		})
+		return plainToInstance(LearningTagCoursesResponse, resp.data)
+	}
+
+	async getTaggedHyperlinks(id: number, searchQuery: SearchQuery): Promise<LearningTagHyperlinksResponse> {
+		const resp = await this._http.getRequest({
+			url: this.getHyperlinksUrl(id),
+			params: {
+				page: searchQuery.p
+			}
+		})
+		return plainToInstance(LearningTagHyperlinksResponse, resp.data)
+	}
+
 	async updateState(id: number, state: LearningTagStateUpdate) {
 		return await this.buildLearningTagResponse(this._http.putRequest<LearningTag>({
 			url: `${this.LEARNING_TAGS_URL}/${id}/state`,
@@ -64,4 +93,52 @@ export class LearningTagClient {
 		}));
 	}
 
+	async removeCourses(id: number, courseIds: string[]) {
+		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/${id}/courses`,
+			data: {
+				ids: courseIds
+			}
+		})).data
+	}
+
+	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
+		return (await this._http.deleteRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: this.getHyperlinksUrl(id),
+			data: {
+				ids: hyperlinkIds
+			}
+		})).data
+	}
+
+	async assignCourses(learningTagIds: string[], courseIds: string[]) {
+		return (await this._http.postRequest<{successfulIds: string[], failedIds: string[]}>({
+			url: `${this.LEARNING_TAGS_URL}/courses`,
+			data: {
+				learningTagIds,
+				courseIds
+			}
+		})).data
+	}
+
+	async createHyperlink(learningTagId: number, data: HyperlinkPageModel) {
+		await this._http.postRequest({
+			url: this.getHyperlinksUrl(learningTagId),
+			data
+		});
+	}
+
+	async getHyperlink(learningTagId: number, hyperlinkId: number) {
+		const response = await this._http.getRequest({
+			url: this.getHyperlinksUrl(learningTagId, hyperlinkId)
+		});
+		return plainToInstance(Hyperlink, response.data as Hyperlink)
+	}
+
+	async editHyperlink(learningTagId: number, hyperlinkId: number, data: HyperlinkPageModel) {
+		await this._http.putRequest({
+			url: this.getHyperlinksUrl(learningTagId, hyperlinkId),
+			data
+		});
+	}
 }

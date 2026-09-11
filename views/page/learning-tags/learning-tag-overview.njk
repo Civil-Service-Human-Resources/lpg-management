@@ -9,7 +9,7 @@
 
 {% extends "../../component/Page.njk" %}
 
-{% block pageTitle %}{{ i18n.learningTags.title.learningTagOverview }} - {{ i18n.proposition_name }}{% endblock %}
+{% block pageTitle %}{{ learningTag.name }} - {{ i18n.proposition_name }}{% endblock %}
 
 {% set banner = true %}
 {% set backButton = "/content-management/learning-tags/manage" %}
@@ -78,6 +78,13 @@
                                 text: "Unlink parent tag"
                             } %}
                             {% set actions = (actions.push(unlinkParentAction), actions) %}
+                        {% endif %}
+                        {% if identity.isLearningTagCourseManager() %}
+                            {% set viewCoursesAction = {
+                                link: "/content-management/learning-tags/" + learningTag.id + "/courses",
+                                text: "View courses and links"
+                            } %}
+                            {% set actions = (actions.push(viewCoursesAction), actions) %}
                         {% endif %}
                     {% endif %}
 

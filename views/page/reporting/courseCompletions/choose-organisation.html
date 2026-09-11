@@ -3,7 +3,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../../component/Page.njk" %}
+{% extends "../root.njk" %}
 
 {% block pageTitle %}Reporting - Choose organisation - {{i18n['proposition_name'] }}{% endblock %}
 
@@ -29,9 +29,6 @@
 {% endblock %}
 
 {% block bodyEnd %}
-<script>
-document.getElementById("course-completions-js-hint").className = ""
-</script>
 <script src="/govuk-frontend/all.js"></script>
 <script>window.GOVUKFrontend.initAll()</script>
 <script type="text/javascript" src="/js/main-bundle.min.js"></script>

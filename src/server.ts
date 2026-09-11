@@ -14,7 +14,7 @@ import {buildReportingControllers} from './report-service/builder'
 import {Controller} from './controllers/controller'
 import {createOAuthConfig} from './lib/http/restServiceConfigFactory'
 import {buildOrganisationalUnitControllers} from './controllers/organisationalUnit/builder'
-import {buildLearningTagController} from './learning-catalogue/service/learningTagBuilder'
+import {buildLearningTagControllers} from './learning-catalogue/service/learningTagBuilder'
 
 process.env.TZ = config.SERVER_DEFAULT_TZ
 export const appInsights = require('applicationinsights')
@@ -62,7 +62,7 @@ middleware.applyAll(app)
 
 ctx.auth.configure(app)
 
-const learningTagController: Controller = buildLearningTagController(ctx.cslServiceConfig)
+const learningTagControllers: Controller[] = buildLearningTagControllers(ctx.cslServiceConfig, ctx.courseService)
 
 const reportingControllers: Controller[] = buildReportingControllers(createOAuthConfig({
 	url: config.REPORT_SERVICE.url,
@@ -75,7 +75,7 @@ const organisationalUnitControllers: Controller[] = buildOrganisationalUnitContr
 const controllers: Controller[] = [
 	...reportingControllers,
 	...organisationalUnitControllers,
-	learningTagController
+	...learningTagControllers
 ]
 
 app.use(ctx.addToResponseLocals())

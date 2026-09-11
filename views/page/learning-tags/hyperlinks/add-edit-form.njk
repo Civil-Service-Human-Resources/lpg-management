@@ -1,0 +1,42 @@
+{% from "character-count/macro.njk" import govukCharacterCount %}
+{% from "input/macro.njk" import govukInput %}
+
+<input type="hidden" name="_csrf" value="{{ _csrf }}">
+{{ govukInput({
+    label: {
+        text: i18n.learningTags.text.hyperlinks.title
+    },
+    id: "title",
+    name: "title",
+    value: pageModel.title|default(pageModel.title),
+    errorMessage: {
+        text: i18n[errors.fields.title]
+    } if errors.fields.title else null
+}) }}
+{{ govukInput({
+    label: {
+        text: i18n.learningTags.text.hyperlinks.url
+    },
+    id: "url",
+    name: "url",
+    pattern: "https://.*",
+    hint: {
+        text: "For example https://gov.uk. URLs must start with https://"
+    },
+    value: pageModel.url|default(pageModel.url),
+    errorMessage: {
+        text: i18n[errors.fields.url]
+    } if errors.fields.url else null
+}) }}
+{{ govukCharacterCount({
+    name: "description",
+    id: "description",
+    maxlength: 250,
+    value: pageModel.description|default(pageModel.description),
+    label: {
+        text: i18n.learningTags.text.hyperlinks.description
+    },
+    errorMessage: {
+        text: i18n[errors.fields.description]
+    } if errors.fields.description else null
+}) }}

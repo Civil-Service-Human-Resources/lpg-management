@@ -426,6 +426,10 @@
 	}
 }
 
+.autocomplete-wrapper--single-page {
+	@include govuk-responsive-margin(4, "bottom");
+}
+
 .autocomplete-wrapper--full-width {
 	.autocomplete__wrapper {
 		display: inline-block;

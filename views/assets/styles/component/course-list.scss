@@ -1,0 +1,15 @@
+.course-list {
+  list-style: none;
+  padding: 0;
+  border-top: 1px solid #d3d3d3;
+  @include govuk-responsive-margin(5, "bottom")
+}
+
+.course-list__element {
+  @extend .govuk-body;
+  margin: 0;
+  border-bottom: 1px solid $border;
+  border-left: 1px solid $border;
+  border-right: 1px solid $border;
+  padding: 1rem 2rem;
+}

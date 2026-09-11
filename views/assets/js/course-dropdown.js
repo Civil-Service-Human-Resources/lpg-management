@@ -8,8 +8,13 @@ function enhanceElement(elementId) {
 			multiple: true,
 			showAllValues: true
 		})
+		const hint = document.getElementById("autocomplete-js-hint")
+		if (hint) {
+			hint.className = ""
+		}
 	}
 }
 
 enhanceElement('courseSearch')
 enhanceElement('organisationSearch')
+enhanceElement('tagSearch')

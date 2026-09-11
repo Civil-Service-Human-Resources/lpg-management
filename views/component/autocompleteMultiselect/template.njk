@@ -1,0 +1,19 @@
+<div id="autocomplete-multiselect" class="{{ params.classes }}">
+    <label class="govuk-label" for="{{ params.id }}">{{ params.label }}</label>
+    {% if params.hint %}
+        <div id="subject-hint" class="govuk-hint">
+            {% if params.hint.html %}
+                {{ params.hint.html | safe }}
+            {% else %}
+                <span id="autocomplete-js-hint" class='hidden'>
+                    {{ params.hint.text }}
+                </span>
+            {% endif %}
+        </div>
+    {% endif %}
+    <select id="{{ params.id }}" name="{{ params.id }}" class="govuk-input" aria-labelledby="{{ params.id }}" multiple>
+        {% for item in params.items %}
+            <option {% if  (params.selected or []).indexOf(item.id) > -1 %}selected{% endif %} value={{ item.id }}>{{ item.name }}</option>
+        {% endfor %}
+    </select>
+</div>

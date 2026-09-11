@@ -1,0 +1,36 @@
+{% extends "../../../../component/Page.njk" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "../../component/learningTagsAutocomplete.njk" import learningTagsAutocomplete %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.searchForTags }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set banner = true %}
+{% set backButton = "/content-management/learning-tags/manage" %}
+{% block content %}
+    {% set errors = pageModel.errors %}
+    {{ errorSummary(errors.fields, true) }}
+    <h1 class="govuk-heading-l govuk-!-font-size-36">{{ i18n.learningTags.title.assignLinkToTag }}</h1>
+    <h2 class="govuk-heading-m">
+        <label for="tagSelect" class="govuk-label govuk-label--m">{{ i18n.learningTags.title.searchForTags }}</label>
+    </h2>
+    <form method="post" action="/content-management/learning-tags/assign-hyperlinks/select-learning-tag">
+        {% set hintHtml %}
+            <span id="autocomplete-js-hint" class='hidden'>Start typing to filter available tags.</span> You can select up to {{ pageModel.maxTagsSelection}} tags.
+        {% endset %}
+        <div class="autocomplete-wrapper autocomplete-wrapper--single-page">
+            <input type="hidden" name="_csrf" value="{{ _csrf }}">
+            <select name="tagSelect" id="tagSelect">
+                <option value="" selected></option>
+                {% for key in pageModel.tagsList %}
+                    <option value={{ key.id }}>{{ key.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: true
+        }) }}
+    </form>
+{% endblock %}

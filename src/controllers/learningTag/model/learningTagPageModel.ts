@@ -1,11 +1,12 @@
 import {IsNotEmpty, Matches, MaxLength, ValidateIf} from 'class-validator'
 import {SubmittableForm} from '../../models/submittableForm'
-import {Transform} from 'class-transformer'
+import {Transform, Type} from 'class-transformer'
 import {FormattedTaxonomyItem} from '../../../lib/taxonomy/formattedTaxonomyItem'
 
 export class LearningTagPageModel extends SubmittableForm {
 
 	public id: number
+	@Type(() => FormattedTaxonomyItem)
 	public parentTags: FormattedTaxonomyItem[]
 
 	@IsNotEmpty({
@@ -70,7 +71,8 @@ export class LearningTagPageModel extends SubmittableForm {
 
 	validate() {
 		const otherTags = this.parentTags.filter(f => f.id !== this.id)
-		if (otherTags.map(f => f.name).includes(this.name)) {
+		const otherTagNames = otherTags.map(f => f.getName())
+		if (otherTagNames.includes(this.name)) {
 			this.addError({name: ['learningTags.validation.name.alreadyExists']})
 		}
 		if (otherTags.map(f => f.code).includes(this.code)) {
