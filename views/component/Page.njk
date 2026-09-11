@@ -62,8 +62,8 @@
     <a class="moj-header__link moj-header__link--organisation-name" href="{{ NSG_URL }}">National School<br> of Government<br> and Public Services</a>
   {% endset %}
 {% else %}
-  {% set organisationLabelText = "National School of Government and Public Services" if NSG_FLAG else "GOV.UK" %}
-  {% set nsgUrl = NSG_URL if NSG_FLAG else "https://gov.uk" %}
+  {% set organisationLabelText = "GOV.UK" %}
+  {% set nsgUrl = "https://gov.uk" %}
 {% endif %}
 
 {{ mojHeader({
