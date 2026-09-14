@@ -382,6 +382,56 @@ describe('LearningTag', () => {
 				expect(res.text).to.contain('A link with this title already exists for the tag')
 				expect(res.text).to.contain('A link with this URL already exists for the tag')
 			})
+			it('should validate duplicate title only on edit', async () => {
+				learningTagService.editHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks/10',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/10')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: 'Duplicate Title',
+						url: 'https://new-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.not.contain('A link with this URL already exists for the tag')
+			})
+			it('should validate duplicate url only on edit', async () => {
+				learningTagService.editHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks/10',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/10')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: 'New Title',
+						url: 'https://duplicate-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.not.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
+			})
 		})
 	})
 })
