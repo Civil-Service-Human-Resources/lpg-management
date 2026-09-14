@@ -1,6 +1,7 @@
 import {SubmittableForm} from '../../models/submittableForm'
 import {IsNotEmpty, IsUrl, MaxLength} from 'class-validator'
 import {Transform} from 'class-transformer'
+
 export class HyperlinkPageModel extends SubmittableForm{
 
 	@Transform(({value}) => {
