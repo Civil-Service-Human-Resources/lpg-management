@@ -194,25 +194,18 @@ export class LearningTagController extends LearningTagControllerBase {
 	private handleHyperlinkErrors(error: any, pageModel: HyperlinkPageModel) {
 		const apiErrors: string[] = error.response?.data?.errors || error.data?.errors || error.errors || (Array.isArray(error.response?.data) ? error.response.data : undefined) || (Array.isArray(error.data) ? error.data : undefined)
 		if (apiErrors && Array.isArray(apiErrors)) {
-			const errorKeyMap: Record<string, string> = {
-				'A link with this title already exists for the tag': 'learningTags.validation.hyperlinks.titleAlreadyExists',
-				'A link with this URL already exists for the tag': 'learningTags.validation.hyperlinks.urlAlreadyExists',
-			}
 			for (const err of apiErrors) {
 				if (typeof err === 'string') {
 					const match = err.match(/^Field\s+(\w+)\s+is invalid:\s*(.+)$/i)
 					if (match) {
 						const field = match[1]
 						const message = match[2].trim()
-						const errorKey = errorKeyMap[message] || (field === 'title' && message.includes('already exists') ? 'learningTags.validation.hyperlinks.titleAlreadyExists' : (field === 'url' && message.includes('already exists') ? 'learningTags.validation.hyperlinks.urlAlreadyExists' : message))
-						pageModel.addError({ [field]: [errorKey] })
+						pageModel.addError({ [field]: [message] })
 					} else {
 						if (err.toLowerCase().includes('title')) {
-							const errorKey = errorKeyMap[err] || (err.includes('already exists') ? 'learningTags.validation.hyperlinks.titleAlreadyExists' : err)
-							pageModel.addError({ title: [errorKey] })
+							pageModel.addError({ title: [err] })
 						} else if (err.toLowerCase().includes('url')) {
-							const errorKey = errorKeyMap[err] || (err.includes('already exists') ? 'learningTags.validation.hyperlinks.urlAlreadyExists' : err)
-							pageModel.addError({ url: [errorKey] })
+							pageModel.addError({ url: [err] })
 						}
 					}
 				}
