@@ -8,7 +8,6 @@ import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagControllerBase} from './learningTagControllerBase'
 import {HyperlinkPageModel} from './model/hyperlinkPageModel'
-import {SearchQuery} from '../models/searchQuery'
 
 export type learningTagContentType = 'courses' | 'hyperlinks'
 
@@ -192,20 +191,52 @@ export class LearningTagController extends LearningTagControllerBase {
 		}
 	}
 
+	private handleHyperlinkErrors(error: any, pageModel: HyperlinkPageModel) {
+		const apiErrors: string[] = error.response?.data?.errors || error.data?.errors || error.errors || (Array.isArray(error.response?.data) ? error.response.data : undefined) || (Array.isArray(error.data) ? error.data : undefined)
+		if (apiErrors && Array.isArray(apiErrors)) {
+			const errorKeyMap: Record<string, string> = {
+				'A link with this title already exists for the tag': 'learningTags.validation.hyperlinks.titleAlreadyExists',
+				'A link with this URL already exists for the tag': 'learningTags.validation.hyperlinks.urlAlreadyExists',
+			}
+			for (const err of apiErrors) {
+				if (typeof err === 'string') {
+					const match = err.match(/^Field\s+(\w+)\s+is invalid:\s*(.+)$/i)
+					if (match) {
+						const field = match[1]
+						const message = match[2].trim()
+						const errorKey = errorKeyMap[message] || (field === 'title' && message.includes('already exists') ? 'learningTags.validation.hyperlinks.titleAlreadyExists' : (field === 'url' && message.includes('already exists') ? 'learningTags.validation.hyperlinks.urlAlreadyExists' : message))
+						pageModel.addError({ [field]: [errorKey] })
+					} else {
+						if (err.toLowerCase().includes('title')) {
+							const errorKey = errorKeyMap[err] || (err.includes('already exists') ? 'learningTags.validation.hyperlinks.titleAlreadyExists' : err)
+							pageModel.addError({ title: [errorKey] })
+						} else if (err.toLowerCase().includes('url')) {
+							const errorKey = errorKeyMap[err] || (err.includes('already exists') ? 'learningTags.validation.hyperlinks.urlAlreadyExists' : err)
+							pageModel.addError({ url: [errorKey] })
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private createHyperlink() {
 		return async(request: Request, response: Response) => {
 			const learningTagId = response.locals.learningTag.id as number
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-			const existingHyperlinks = (await this.learningTagService.getHyperlinksPage(learningTagId, new SearchQuery())).results
-			pageModel.validate(existingHyperlinks)
-			if (pageModel.hasErrors()) {
-				return response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
+			try {
+				await this.learningTagService.createHyperlink(learningTagId, pageModel)
+				request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
+				return request.session!.save(() => {
+					return response.redirect('/content-management/learning-tags/manage')
+				})
+			} catch (error) {
+				this.handleHyperlinkErrors(error, pageModel)
+				if (pageModel.hasErrors()) {
+					return response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
+				}
+				throw error
 			}
-			await this.learningTagService.createHyperlink(learningTagId, pageModel)
-			request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
-			return request.session!.save(() => {
-				return response.redirect('/content-management/learning-tags/manage')
-			})
 		}
 	}
 
@@ -222,16 +253,19 @@ export class LearningTagController extends LearningTagControllerBase {
 		return async (request: Request, response: Response) => {
 			const learningTagId = parseInt(request.params.learningTagId)
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-			const existingHyperlinks = (await this.learningTagService.getHyperlinksPage(learningTagId, new SearchQuery())).results
-			pageModel.validate(existingHyperlinks, response.locals.hyperlink.id)
-			if (pageModel.hasErrors()) {
-				return response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
+			try {
+				await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
+				request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
+				return request.session!.save(() => {
+					return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
+				})
+			} catch (error) {
+				this.handleHyperlinkErrors(error, pageModel)
+				if (pageModel.hasErrors()) {
+					return response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
+				}
+				throw error
 			}
-			await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
-			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
-			return request.session!.save(() => {
-				return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
-			})
 		}
 	}
 }

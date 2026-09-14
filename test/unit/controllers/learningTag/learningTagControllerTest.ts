@@ -8,6 +8,7 @@ import {LearningTagController} from '../../../../src/controllers/learningTag/lea
 import {TaxonomyTreeNode} from '../../../../src/lib/taxonomy/taxonomyTreeNode'
 import {FormattedTaxonomyItem} from '../../../../src/lib/taxonomy/formattedTaxonomyItem'
 import {LearningTagPageModel} from '../../../../src/controllers/learningTag/model/learningTagPageModel'
+import {HttpException} from '../../../../src/lib/exception/HttpException'
 
 const session = require('supertest-session')
 import sinonChai = require('sinon-chai')
@@ -244,19 +245,19 @@ describe('LearningTag', () => {
 				expect(res.text).to.contain('Enter a valid URL. URLs must start with https://')
 			})
 			it('should validate duplicate title and URL that already exist', async () => {
-				learningTagService.getHyperlinksPage.resolves({
-					results: [
-						{
-							id: 1,
-							title: 'Existing Link',
-							description: 'Description',
-							href: 'https://existing-url.com'
-						}
-					],
-					page: 0,
-					size: 10,
-					totalResults: 1
-				} as any)
+				learningTagService.createHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag",
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
 					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
@@ -270,19 +271,18 @@ describe('LearningTag', () => {
 				expect(res.text).to.contain('A link with this URL already exists for the tag')
 			})
 			it('should validate duplicate title only', async () => {
-				learningTagService.getHyperlinksPage.resolves({
-					results: [
-						{
-							id: 1,
-							title: 'Existing Link',
-							description: 'Description',
-							href: 'https://existing-url.com'
-						}
-					],
-					page: 0,
-					size: 10,
-					totalResults: 1
-				} as any)
+				learningTagService.createHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
 					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
@@ -296,19 +296,18 @@ describe('LearningTag', () => {
 				expect(res.text).to.not.contain('A link with this URL already exists for the tag')
 			})
 			it('should validate duplicate url only', async () => {
-				learningTagService.getHyperlinksPage.resolves({
-					results: [
-						{
-							id: 1,
-							title: 'Existing Link',
-							description: 'Description',
-							href: 'https://existing-url.com'
-						}
-					],
-					page: 0,
-					size: 10,
-					totalResults: 1
-				} as any)
+				learningTagService.createHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
 					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
@@ -319,6 +318,68 @@ describe('LearningTag', () => {
 					})
 				expect(res.status).to.eql(200)
 				expect(res.text).to.not.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
+			})
+		})
+	})
+	describe('Edit hyperlink', () => {
+		const hyperlink = {
+			id: 10,
+			title: 'Existing Link',
+			url: 'https://existing-url.com',
+			description: 'Existing Description'
+		}
+		beforeEach(() => {
+			learningTagService.getHyperlink.withArgs(1, 10).resolves(hyperlink as any)
+		})
+		it('should render the edit hyperlink screen', async () => {
+			const res = await session(app)
+				.get('/content-management/learning-tags/1/hyperlinks/10')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+			expect(res.status).to.eql(200)
+			expect(res.text).to.contain('Assign link to tag')
+			expect(res.text).to.contain('Edit link')
+		})
+		it('should edit an existing hyperlink', async () => {
+			learningTagService.editHyperlink.resolves()
+			const res = await session(app)
+				.post('/content-management/learning-tags/1/hyperlinks/10')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send({
+					title: 'Updated Link title',
+					url: 'https://updated-url.com',
+					description: 'Updated Description'
+				})
+			expect(learningTagService.editHyperlink).to.be.calledOnce
+			expect(res.header.location).to.eql('/content-management/learning-tags/1/hyperlinks')
+			expect(res.status).to.eql(302)
+		})
+		describe('Validation', () => {
+			it('should validate duplicate title and URL that already exist on edit', async () => {
+				learningTagService.editHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks/10',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag",
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/10')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: 'Duplicate Title',
+						url: 'https://duplicate-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A link with this title already exists for the tag')
 				expect(res.text).to.contain('A link with this URL already exists for the tag')
 			})
 		})
