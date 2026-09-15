@@ -66,38 +66,35 @@ export class Cache<T> {
 	}
 
 	async deleteMultiple(ids: string[]){
-		this.logger.debug(`Unlinking in ${ids.length} ids`)
-		await promisify(this.redisClient.unlink).bind(this.redisClient)(ids)
-		this.logger.debug('Unlinked')
+		this.logger.debug(`Unlinking ${ids.length} ids`)
+		const unlinkedCount = await promisify(this.redisClient.unlink).bind(this.redisClient)(ids)
+		this.logger.debug(`Unlinked ${unlinkedCount.length}`)
 	}
 
 	async getAllIds(): Promise<string[]> {
+		this.logger.debug(`Fetching all ids in keyspace ${this.keySpace}`)
 		const keyPrefix: string = config.REDIS.keyPrefix
 		// redisClient.scan doesn't respect the configured keyPrefix
 		// so we need to add it to the MATCH pattern ourselves and then strip it from the results
 
 		const keyWithPrefix: string = `${keyPrefix}${this.keySpace}`
-		
+		this.logger.debug(`Searching for ${keyWithPrefix}:*`)
 		const keys: string[] = await this.scanInBatches(`${keyWithPrefix}:*`, 1000)
-
-		const ids: string[] = keys
-			.map((key: string) => key.replace(new RegExp(`^${keyWithPrefix}:`),  ''))		
-
-		return ids
+		return keys.map((key: string) => key.replace(new RegExp(`^${keyPrefix}`),  ''))
 	}
 
 	protected async scanInBatches(pattern: string, batchSize: number){
+		this.logger.debug(`Scanning for pattern ${pattern} in batches of ${batchSize}`)
 		const results = []
 		let cursor: string = '0'
 
 		do {
-			const [newCursor, resultsFromScan] = await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', batchSize)
+			const [newCursor, resultsFromScan] = await promisify(this.redisClient.scan).bind(this.redisClient)(cursor, 'MATCH', pattern, 'COUNT', batchSize)
 			cursor = newCursor
 			results.push(...resultsFromScan)
 		}
 		while (cursor != '0')
 		return results
-
 	}
 
 	async update(id: string | number, fn: (object: T) => void) {
