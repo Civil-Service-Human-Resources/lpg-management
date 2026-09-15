@@ -2,6 +2,7 @@ import {Exclude, Transform} from 'class-transformer'
 import {ArrayMaxSize, IsNotEmpty, ValidateIf} from 'class-validator'
 import {REPORTING} from '../../../config'
 import {SubmittableForm} from '../../models/submittableForm'
+import {transformStringArray} from '../../../utils/transformUtils'
 
 export enum LearningSelection {
 	requiredLearning = "requiredLearning",
@@ -32,13 +33,7 @@ export class ChooseCoursesModel extends SubmittableForm {
 	@ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_COURSES, {
 		message: 'reporting.course_completions.validation.maximumCourses',
 	})
-	@Transform(({value}) => {
-		if (typeof value === "string") {
-			return [value]
-		} else {
-			return [...value]
-		}
-	})
+	@Transform(transformStringArray)
 	public requiredLearning: string[]
 	public allRequiredLearning: string
 
@@ -49,13 +44,7 @@ export class ChooseCoursesModel extends SubmittableForm {
 	@ArrayMaxSize(REPORTING.COURSE_COMPLETIONS_MAX_COURSES, {
 		message: 'reporting.course_completions.validation.maximumCourses',
 	})
-	@Transform(({value}) => {
-		if (typeof value === "string") {
-			return [value]
-		} else {
-			return [...value]
-		}
-	})
+	@Transform(transformStringArray)
 	public courseSearch: string[]
 
 	constructor(userDepartment?: string, requiredLearningList: BasicCoursePageModel[] = [],

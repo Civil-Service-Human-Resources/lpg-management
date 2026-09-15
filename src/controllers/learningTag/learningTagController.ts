@@ -1,23 +1,20 @@
 import {NextFunction, Request, Response} from 'express'
 import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
-import {Controller} from '../controller'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
-import {IUserRole, learningTagArchiveRole, learningTagManagerRole} from '../../identity/identity'
-import * as asyncHandler from 'express-async-handler'
-import {LearningTag} from '../../learning-catalogue/model/learningTag/learningTag'
+import {learningTagArchiveRole, learningTagCourseManagerRole} from '../../identity/identity'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
 import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
+import {plainToInstance} from 'class-transformer'
+import {LearningTagControllerBase} from './learningTagControllerBase'
+import {HyperlinkPageModel} from './model/hyperlinkPageModel'
 
-export class LearningTagController extends Controller {
+export type learningTagContentType = 'courses' | 'hyperlinks'
 
-	constructor(private learningTagService: LearningTagService) {
-		super('/content-management/learning-tags', 'LearningTagController')
-		this.getLearningTagFromRouterParamAndSetOnLocals()
-	}
+export class LearningTagController extends LearningTagControllerBase {
 
-	protected getRequiredRole(): IUserRole | undefined {
-		return learningTagManagerRole
+	constructor(protected learningTagService: LearningTagService) {
+		super('LearningTagController', learningTagService)
 	}
 
 	protected getRoutes(): Route[] {
@@ -46,22 +43,24 @@ export class LearningTagController extends Controller {
 			postRequest('/:learningTagId/archive', this.archive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
 			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-
-		]
-	}
-
-	private getLearningTagFromRouterParamAndSetOnLocals() {
-		this.router.param('learningTagId', asyncHandler(async (req: Request, res: Response, next: NextFunction, learningTagId: number) => {
-				const learningTag: LearningTag = await this.learningTagService.getLearningTag(learningTagId)
-				if (learningTag) {
-					res.locals.learningTag = learningTag
-					next()
-				} else {
-					res.status(404)
-					return res.render("page/not-found")
+			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
+			getRequest('/:learningTagId/hyperlinks/create', this.getCreateHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequestWithBody('/:learningTagId/hyperlinks', this.createHyperlink(), {
+				dtoClass: HyperlinkPageModel,
+				onError: {
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getCreateHyperlink()
 				}
-			})
-		)
+			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/hyperlinks/:hyperlinkId', this.getEditHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			postRequestWithBody('/:learningTagId/hyperlinks/:hyperlinkId', this.editHyperlink(), {
+				dtoClass: HyperlinkPageModel,
+				onError: {
+					behaviour: BehaviourOnError.ROUTER_FUNCTION,
+					routerFunction: this.getEditHyperlink()
+				}
+			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+		]
 	}
 
 	private getPageModel = async (request: Request, response: Response) => {
@@ -85,6 +84,7 @@ export class LearningTagController extends Controller {
 
 	public getList() {
 		return async (request: Request, response: Response, next: NextFunction) => {
+			this.assignCoursesToTagsModelSession.deleteObjectFromSession(request)
 			const learningTags = await this.learningTagService.getTree()
 			response.render('page/learning-tags/manage-learning-tags.njk', {learningTags})
 		}
@@ -181,6 +181,46 @@ export class LearningTagController extends Controller {
 	public getUnarchive() {
 		return async(request: Request, response: Response) => {
 			response.render('page/learning-tags/unarchive.njk')
+		}
+	}
+
+	private getCreateHyperlink() {
+		return async(request: Request, response: Response) => {
+			let pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel) || new HyperlinkPageModel('', '', '')
+			response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
+		}
+	}
+
+	private createHyperlink() {
+		return async(request: Request, response: Response) => {
+			const learningTagId = response.locals.learningTag.id as number
+			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
+			await this.learningTagService.createHyperlink(learningTagId, pageModel)
+			request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
+			return request.session!.save(() => {
+				return response.redirect('/content-management/learning-tags/manage')
+			})
+		}
+	}
+
+	private getEditHyperlink() {
+		return async(request: Request, response: Response) => {
+			const hyperlink: HyperlinkPageModel = response.locals.hyperlink
+			let pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
+				|| new HyperlinkPageModel(hyperlink.title, hyperlink.description, hyperlink.url)
+			response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
+		}
+	}
+
+	private editHyperlink() {
+		return async (request: Request, response: Response) => {
+			const learningTagId = parseInt(request.params.learningTagId)
+			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
+			await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
+			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
+			return request.session!.save(() => {
+				return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
+			})
 		}
 	}
 }

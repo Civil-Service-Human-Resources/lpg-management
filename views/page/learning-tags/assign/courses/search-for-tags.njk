@@ -1,0 +1,26 @@
+{% extends "./base.njk" %}
+{% from "button/macro.njk" import govukButton %}
+{% from "../../component/learningTagsAutocomplete.njk" import learningTagsAutocomplete %}
+
+{% set backButton = "/content-management/learning-tags/manage" %}
+{% block h2 %}{{ i18n.learningTags.title.searchForTags }}{% endblock %}
+{% block assignContent %}
+    <form method="post" action="/content-management/learning-tags/assign-courses/select-learning-tags">
+        {% set hintHtml %}
+            <span id="autocomplete-js-hint" class='hidden'>Start typing to filter available tags.</span> You can select up to {{ pageModel.maxTagsSelection}} tags.
+        {% endset %}
+        {{ learningTagsAutocomplete({
+            classes: "autocomplete-wrapper--single-page",
+            tags: pageModel.tagsList,
+            selected: pageModel.tagSearch,
+            hint: {
+                html: hintHtml
+            }
+        }) }}
+        <input type="hidden" name="_csrf" value="{{ _csrf }}">
+        {{ govukButton({
+            text: "Continue",
+            preventDoubleClick: true
+        }) }}
+    </form>
+{% endblock %}

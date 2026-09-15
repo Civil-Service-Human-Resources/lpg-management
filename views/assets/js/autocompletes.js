@@ -15,3 +15,11 @@ if (previouslySubmitted && submittedEl !== null) {
 	var params = new URLSearchParams(document.location.search.split('?')[1])
 	document.querySelector('.submitted__parent').innerHTML = params.get('parent')
 }
+
+// learning tags
+var learningTagSelectEl = document.querySelector('#tagSelect')
+if (learningTagSelectEl !== null) {
+	accessibleAutocomplete.enhanceSelectElement({
+		selectElement: learningTagSelectEl,
+	})
+}

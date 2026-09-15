@@ -2,21 +2,20 @@ import {beforeEach, describe, it} from 'mocha'
 import {HomeController} from '../../../src/controllers/homeController'
 import {mockReq, mockRes} from 'sinon-express-mock'
 import * as chai from 'chai'
-import * as sinonChai from 'sinon-chai'
 import {expect} from 'chai'
+import * as sinonChai from 'sinon-chai'
 import {NextFunction, Request, Response} from 'express'
 import {LearningCatalogue} from '../../../src/learning-catalogue'
 import {Course} from '../../../src/learning-catalogue/model/course'
 import * as sinon from 'sinon'
-import {PageResults} from '../../../src/learning-catalogue/model/pageResults'
-import {Pagination} from '../../../src/lib/pagination'
+import {PaginationService, SearchResponse} from '../../../src/lib/paginationService'
 
 chai.use(sinonChai)
 
 describe('Home Controller Tests', function() {
 	let homeController: HomeController
 	let learningCatalogue: LearningCatalogue
-	let pagination: Pagination
+	let pagination: PaginationService
 
 	let request: Request
 	let response: Response
@@ -24,7 +23,7 @@ describe('Home Controller Tests', function() {
 
 	beforeEach(() => {
 		learningCatalogue = <LearningCatalogue>{}
-		pagination = new Pagination()
+		pagination = new PaginationService()
 		homeController = new HomeController(learningCatalogue, pagination)
 
 		request = mockReq()
@@ -37,7 +36,7 @@ describe('Home Controller Tests', function() {
 		course.id = 'course-id'
 		course.title = 'course-title'
 
-		const pageResults: PageResults<Course> = {
+		const pageResults: SearchResponse<Course> = {
 			page: 0,
 			size: 10,
 			totalResults: 21,
@@ -45,13 +44,13 @@ describe('Home Controller Tests', function() {
 			getPageCount: function() {
 				return 3
 			}
-		} as PageResults<Course>
+		} as SearchResponse<Course>
 
 		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
 		learningCatalogue.listCourses = listAll
 
 		await homeController.index()(request, response, next)
-		expect(learningCatalogue.listCourses).to.have.been.calledWith(0, 10)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(0)
 		
 		expect(response.render).to.have.been.calledOnceWith('page/index')
 	})
@@ -61,37 +60,46 @@ describe('Home Controller Tests', function() {
 		course.id = 'course-id'
 		course.title = 'course-title'
 
-		const pageResults: PageResults<Course> = {
-			page: 0,
+		const courseResults: SearchResponse<Course> = {
+			page: 3,
 			size: 10,
-			totalResults: 21,
-			results: [course],
-			getPageCount: function() {
-				return 4
-			}
-		} as PageResults<Course>
+			totalResults: 31,
+			results: [course]
+		} as SearchResponse<Course>
 
-		const pagePagination ={
-			items: [
-				{ number: 1, url: "/content-management/?s=5&p=0" }, 
-				{ ellipsis: true }, 
-				{ number: 3, url: "/content-management/?s=5&p=2" }, 
-				{ current: true, number: 4, url: "/content-management/?s=5&p=3" }],
-			next: null,
-			previous: { href: "/content-management/?s=5&p=2" }
+		const pagePagination = {
+			pagination: {
+				items: [
+					{ number: 1, url: "/content-management?p=1" },
+					{ ellipsis: true },
+					{ number: 3, url: "/content-management?p=3" },
+					{ current: true, number: 4, url: "/content-management?p=4" }],
+				next: undefined,
+				previous: { href: "/content-management?p=3" }
+			},
+			start: 31,
+			total: 31,
+			totalPages: 4,
+			currentPage: 4,
+			end: 31,
 		}
 
-		const listAll = sinon.stub().returns(Promise.resolve(pageResults))
+		const pageResults = {
+			page: 3,
+			results: [course],
+			size: 10,
+			totalResults: 31
+		}
+
+		const listAll = sinon.stub().returns(Promise.resolve(courseResults))
 		learningCatalogue.listCourses = listAll
 
 		// @ts-ignore
-		request.query.p = 3
-		// @ts-ignore
-		request.query.s = 5
+		request.query.p = 4
 
 		await homeController.index()(request, response, next)
 
-		expect(learningCatalogue.listCourses).to.have.been.calledWith(3, 5)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(3)
 
 		expect(response.render).to.have.been.calledOnceWith('page/index', {
 			pageResults,
@@ -106,24 +114,22 @@ describe('Home Controller Tests', function() {
 		course.id = 'course-id'
 		course.title = 'course-title'
 
-		const pageResults: PageResults<Course> = {
+		const pageResults: SearchResponse<Course> = {
 			page: 0,
 			size: 10,
 			totalResults: 21,
 			results: [course],
-		} as PageResults<Course>
+		} as SearchResponse<Course>
 
 		const listAll = sinon.stub().returns(Promise.reject(error))
 		learningCatalogue.listCourses = listAll
 
 		// @ts-ignore
 		request.query.p = 3
-		// @ts-ignore
-		request.query.s = 5
 
 		await homeController.index()(request, response, next)
 
-		expect(learningCatalogue.listCourses).to.have.been.calledWith(3, 5)
+		expect(learningCatalogue.listCourses).to.have.been.calledWith(2)
 		expect(response.render).to.not.have.been.calledOnceWith('page/index', {
 			pageResults,
 		})

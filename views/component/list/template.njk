@@ -1,21 +1,27 @@
 {% from "../status/macro.njk" import status with context %}
-<h2 class="govuk-heading-m">{{ listTitle }}</h2>
+{% if params.title.html %}
+    {{ params.title.html | safe }}
+{% else %}
+    <h2 class="govuk-heading-m">{{ params.title.text }}</h2>
+{% endif %}
 <ul class="list">
-    {% for Course in pageResults.results %}
+    {% for course in params.courses %}
         <li class="course list-details u--border--bgrey">
             <div class="course-details">
-                <h3 class="govuk-heading-s"><a class="govuk-link list-title" href="/content-management/courses/{{ Course.id }}/overview">{{ Course.title }}</a></h3>
-                {% if Course._modules.length > 1 %}
-                    <p class="govuk-body">This course comprises of {{ Course._modules.length }} modules</p>
+                <h3 class="govuk-heading-s"><a class='list__link' href="/content-management/courses/{{ course.id }}/overview">{{ course.title }}</a></h3>
+                {% if course.modules.length > 1 and params.showModuleCounts %}
+                    <p class="govuk-body">This course comprises of {{ course.modules.length }} modules</p>
                 {% endif %}
-                <p class="govuk-body no-margin">{{ Course.shortDescription }}</p>
+                {% if course.shortDescription and params.showShortDescription %}
+                    <p class="govuk-body no-margin">{{ course.shortDescription }}</p>
+                {% endif %}
             </div>
             <div class="course-status">
-                {% block status %}
-                    {{ status(Course.status) }}
-                {% endblock %}
-                {% if Course.status !== "Archived" and identity.hasLearningEdit() %}
-                    <a class="govuk-link list-link list-padding" href="/content-management/courses/{{ Course.id }}/preview">Edit</a>
+                {% if course.status and params.showStatus %}
+                    {{ status(course.status) }}
+                {% endif %}
+                {% if course.status !== "Archived" and identity.hasLearningEdit() and params.showEdit %}
+                    <a class="govuk-link list-link list-padding" href="/content-management/courses/{{ course.id }}/preview">Edit</a>
                 {% endif %}
             </div>
         </li>
