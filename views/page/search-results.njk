@@ -1,7 +1,8 @@
 {% from "../component/list/macro.njk" import list with context %}
 {% from "../component/menu/macro.njk" import menu %}
 {% from "../component/search/macro.njk" import search with context %}
-{% from "../component/pagination/macro.njk" import pagination with context %}
+{% from "pagination/macro.njk" import govukPagination %}
+{% from "../component/searchFilters/macro.njk" import searchFilters %}
 
 {% extends "../component/Page.njk" %}
 
@@ -10,18 +11,18 @@
 {% set banner = true %}
 {% set currentTab = 'admin' %}
 
-{% macro searchResults(pageResults) %}
-    {% if pageResults.totalResults > 2 %}
+{% macro searchResults(results, total) %}
+    {% if total > 2 %}
         {% set multiple = 's' %}
     {% else  %}
         {% set multiple = '' %}
     {% endif %}
-    {% set listTitle =  pageResults.totalResults + ' result' + multiple + ' found'  %}
+    {% set listTitle =  total + ' result' + multiple + ' found'  %}
     {{ list({
         "title": {
             "text": listTitle
         },
-        "courses": pageResults.results,
+        "courses": results,
         "showModuleCounts": true,
         "showShortDescription": true,
         "showEdit": true,
@@ -35,17 +36,55 @@
             <div class="header-search">
                 <h1 class="govuk-heading-l">Search results</h1>
                 {{ search({
-                    "query": query
+                    "query": pageModel.query
                 }) }}
             </div>
         </div>
     </div>
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-full search-results-row">
-        {% if pageResults %}
-            {% if pageResults.totalResults !== 0 %}
-                {{ searchResults(pageResults) }}
+        <div class='govuk-grid-column-one-third'>
+            {{ searchFilters({
+                "query": pageModel.query,
+                "filters": [
+                    {
+                        "id": "course-status",
+                        "name": "status",
+                        "heading": "Course status",
+                        "items": pageModel.filters.selectedStatuses
+                    },
+                    {
+                        "id": "course-visibility",
+                        "name": "visibility",
+                        "heading": "Course visibility",
+                        "items": pageModel.filters.selectedVisibility
+                    },
+                    {
+                        "id": "learning-type",
+                        "name": "courseType",
+                        "heading": "Learning type",
+                        "items": pageModel.filters.selectedLearningTypes
+                    },
+                    {
+                        "id": "cost",
+                        "name": "cost",
+                        "heading": "Cost",
+                        "items": [
+                        {
+                            "id": "cost",
+                            "value": "free",
+                            "label": "Show only free",
+                            "checked": pageModel.filters.showFree
+                        }
+                    ]
+                    }
+                ]
+            }) }}
+        </div>
+        <div class="govuk-grid-column-two-thirds search-results-row">
+        {% if pageModel.searchResults %}
+            {% if pageModel.pagination.total !== 0 %}
+                {{ searchResults(pageModel.searchResults, pageModel.pagination.total) }}
             {% else %}
                 <p class="govuk-body"><strong>0</strong> results found</p>
                 <h2 class="govuk-heading-m custom"><strong>Please try:</strong></h2>
@@ -57,11 +96,19 @@
         {% endif %}
         </div>
     </div>
-    {% if pageResults.totalResults !== 0 %}
+    {% if pageModel.pagination.total !== 0 %}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end }} of {{ pagePagination.total }}</p>
-                {{ pagination(pagePagination.pagination) }}
+                <p class="govuk-body">Showing {{ pageModel.pagination.start }} - {{ pageModel.pagination.end }} of {{ pageModel.pagination.total }}</p>
+                {{ govukPagination({
+                    previous: {
+                        href: pageModel.pagination.prevLink
+                    },
+                    next: {
+                        href: pageModel.pagination.nextLink
+                    },
+                    items: pageModel.pagination.numberedPages
+                }) }}
             </div>
         </div>
     {% endif %}

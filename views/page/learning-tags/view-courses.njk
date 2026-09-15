@@ -1,5 +1,5 @@
-{% from "../../component/pagination/macro.njk" import pagination with context %}
 {% from "../../component/courseManager/macro.njk" import courseManager with context %}
+{% from "pagination/macro.njk" import govukPagination %}
 
 {% extends "./manage-content-base.njk" %}
 
@@ -24,8 +24,16 @@
             "courses": pageModel.results,
             allIds: pageModel.allIds
         }) }}
-        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
-        {{ pagination(pageModel.pagePagination.pagination) }}
+        <p class="govuk-body">Showing {{ pageModel.pagination.start }} - {{ pageModel.pagination.end }} of {{ pageModel.pagination.total }}</p>
+        {{ govukPagination({
+            previous: {
+                href: pageModel.pagination.prevLink
+            },
+            next: {
+                href: pageModel.pagination.nextLink
+            },
+            items: pageModel.pagination.numberedPages
+        }) }}
     {% else %}
         {{ searchHeaderHtml | safe }}
         <p class='govuk-body'>There are currently no courses assigned to this tag</p>

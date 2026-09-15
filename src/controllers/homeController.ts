@@ -27,7 +27,7 @@ export class HomeController {
 
 				response.render('page/index', {
 					pageResults,
-					pagePagination: pagePagination
+					pagePagination
 				})
 			}
 			catch(error){

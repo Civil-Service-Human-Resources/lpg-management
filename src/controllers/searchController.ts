@@ -1,22 +1,17 @@
 import {Request, Response, Router} from 'express'
-import {LearningCatalogue} from '../learning-catalogue'
-import {Course} from '../learning-catalogue/model/course'
-import {DefaultPageResults} from '../learning-catalogue/model/defaultPageResults'
-import {PaginationService} from '../lib/paginationService'
 import {plainToInstance} from 'class-transformer'
-import {SearchQuery} from './models/searchQuery'
+import {SearchService} from '../learning-catalogue/service/searchService'
+import {SearchFilterQuery} from './models/searchFilterQuery'
 
 const { xss } = require('express-xss-sanitizer')
 
 
 export class SearchController {
 	router: Router
-	learningCatalogue: LearningCatalogue
-	pagination: PaginationService
+	service: SearchService
 
-	constructor(learningCatalogue: LearningCatalogue, pagination: PaginationService) {
-		this.learningCatalogue = learningCatalogue
-		this.pagination = pagination
+	constructor(service: SearchService) {
+		this.service = service
 		this.router = Router()
 		this.configureRouterPaths()
 	}
@@ -26,18 +21,10 @@ export class SearchController {
 	}
 
 	searchCourses() {
-		const self = this
-
 		return async (request: Request, response: Response) => {
-			const params = plainToInstance(SearchQuery, request.query)
-			const pageResults: DefaultPageResults<Course> = await self.learningCatalogue.searchCourses(params.q, params.p)
-			const pagePagination = this.pagination.getPagination(params, pageResults)
-
-			response.render('page/search-results.njk', {
-				pageResults: pageResults,
-				query: params.q,
-				pagePagination
-			})
+			const params = plainToInstance(SearchFilterQuery, request.query)
+			const pageModel = await this.service.searchForCourses(params, request)
+			response.render('page/search-results.njk', {pageModel})
 		}
 	}
 }

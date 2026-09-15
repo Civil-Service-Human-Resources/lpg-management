@@ -61,6 +61,7 @@ import {OrganisationalUnitClient} from './csrs/client/organisationalUnitClient'
 import {EntityService} from './learning-catalogue/service/entityService'
 import {CourseTypeAhead} from './learning-catalogue/courseTypeAhead'
 import {OrganisationalUnitCacheManager} from './csrs/organisationalUnitCacheManager'
+import {SearchService} from './learning-catalogue/service/searchService'
 
 export class ApplicationContext {
 
@@ -107,6 +108,7 @@ export class ApplicationContext {
 	organisationalUnitClient: OrganisationalUnitClient
 	organisationalUnitCache: OrganisationalUnitCache
 	searchController: SearchController
+	searchService: SearchService
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
 	audienceService: AudienceService
@@ -246,7 +248,8 @@ export class ApplicationContext {
 			this.audienceService
 		)
 
-		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
+		this.searchService = new SearchService(this.learningCatalogue, this.pagination)
+		this.searchController = new SearchController(this.searchService)
 
 	}
 
