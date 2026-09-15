@@ -1,9 +1,8 @@
-
-import { Multi, RedisClient } from 'redis'
-import { promisify } from 'util'
-import { Logger } from 'winston'
+import {RedisClient} from 'redis'
+import {promisify} from 'util'
+import {Logger} from 'winston'
 import * as config from '../../config'
-import { getLogger } from '../../utils/logger'
+import {getLogger} from '../../utils/logger'
 import {ClassConstructor, plainToClass} from 'class-transformer'
 
 export class Cache<T> {
@@ -59,17 +58,17 @@ export class Cache<T> {
 	}
 
 	async deleteAllIds(){
+		this.logger.debug(`Deleting all Ids in cache ${this.keySpace}`)
 		const ids = await this.getAllIds()
+		this.logger.debug(`${ids.length} ids foud for deletion`)
 		await this.deleteMultiple(ids)
+		this.logger.debug(`Deleted`)
 	}
 
-	async deleteMultiple(ids: string[]){		
-		const pipeline: Multi = this.redisClient.multi()
-
-		const pipelineExpirePromises = ids.map(id => promisify(pipeline.expire).bind(pipeline)(this.getFormattedKey(id), 0))
-		Promise.all(pipelineExpirePromises)
-
-		await promisify(pipeline.exec).bind(pipeline)()		
+	async deleteMultiple(ids: string[]){
+		this.logger.debug(`Unlinking in ${ids.length} ids`)
+		await promisify(this.redisClient.unlink).bind(this.redisClient)(ids)
+		this.logger.debug('Unlinked')
 	}
 
 	async getAllIds(): Promise<string[]> {
@@ -92,7 +91,7 @@ export class Cache<T> {
 		let cursor: string = '0'
 
 		do {
-			const [newCursor, resultsFromScan] = await await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', batchSize)
+			const [newCursor, resultsFromScan] = await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', batchSize)
 			cursor = newCursor
 			results.push(...resultsFromScan)
 		}
