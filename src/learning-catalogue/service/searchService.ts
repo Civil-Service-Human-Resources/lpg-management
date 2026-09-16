@@ -26,7 +26,7 @@ export class SearchService {
 		return new SearchPageModel(filters, params.q, searchResults.results, pagination)
 	}
 
-	getFilterFromI18n(req: Request, key: i18nFilters, selectedParams: string[], transformFn?: (val: string) => string) {
+	getFilterFromI18n(req: Request, key: i18nFilters, selectedParams: string[]) {
 		// @ts-ignore
 		return Object.entries(req.i18n_texts[key]).map((value: [string, string]) => {
 			return {
