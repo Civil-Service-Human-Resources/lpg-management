@@ -1,5 +1,5 @@
 import {Course} from '../../learning-catalogue/model/course'
-import {PaginationPage} from '../../lib/paginationService'
+import {Pagination} from '../../lib/paginationService'
 
 export interface SearchLabel {
 	id: string
@@ -23,6 +23,6 @@ export class SearchPageModel {
 		public filters: Filters,
 		public query: string,
 		public searchResults: Course[],
-		public pagination: PaginationPage
+		public pagination: Pagination
 	) {}
 }
