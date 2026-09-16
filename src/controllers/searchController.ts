@@ -1,23 +1,25 @@
-import {Request, Response, Router} from 'express'
+import {Request, Response} from 'express'
 import {plainToInstance} from 'class-transformer'
 import {SearchService} from '../learning-catalogue/service/searchService'
 import {SearchFilterQuery} from './models/searchFilterQuery'
+import {Controller} from './controller'
+import {IUserRole} from 'src/identity/identity'
+import {getRequest, Route} from './route'
 
-const { xss } = require('express-xss-sanitizer')
-
-
-export class SearchController {
-	router: Router
-	service: SearchService
-
-	constructor(service: SearchService) {
+export class SearchController extends Controller {
+	constructor(private service: SearchService) {
+		super('/content-management/search', 'searchController')
 		this.service = service
-		this.router = Router()
-		this.configureRouterPaths()
 	}
 
-	private configureRouterPaths() {
-		this.router.get('/content-management/search', xss(), this.searchCourses())
+    protected getRequiredRole(): IUserRole | undefined {
+        return undefined
+    }
+
+	protected getRoutes(): Route[] {
+		return [
+			getRequest('/', this.searchCourses())
+		]
 	}
 
 	searchCourses() {

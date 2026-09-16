@@ -9,6 +9,7 @@ import {PaginationService, SearchResponse} from '../../../src/lib/paginationServ
 import {SearchService} from '../../../src/learning-catalogue/service/searchService'
 import {getApp} from '../../utils/testApp'
 import {LearningCatalogue} from '../../../src/learning-catalogue'
+import {CourseSearchParams} from '../../../src/learning-catalogue/model/search/courseSearchParams'
 
 const session = require('supertest-session')
 
@@ -20,9 +21,29 @@ describe('Search Controller Tests', function() {
 	const pagination = new PaginationService()
 	const searchService = new SearchService(learningCatalogue as any, pagination)
 	const controller = new SearchController(searchService)
-	app.use(controller.router)
+	app.use(controller.path, controller.buildRouter())
+	const course: Course = new Course()
+	course.id = 'course-id'
+	course.title = 'course-title'
+	learningCatalogue.searchCourses.resolves({
+		query: 'test',
+		page: 0,
+		size: 10,
+		totalResults: 21,
+		results: [course],
+	} as SearchResponse<Course>)
 
 	it('should render search results template with default page, size and search query', async function() {
+		const res = await session(app)
+			.get('/content-management/search?q=test')
+			.send()
+		expect(res.status).to.eql(200)
+		const expectedParams = new CourseSearchParams(0, 10, [], [], 'test',
+			[], [], [], undefined, [])
+		expect(learningCatalogue.searchCourses).to.be.calledOnceWith(expectedParams)
+	})
+
+	it('should render search results template with filters', async function() {
 		const course: Course = new Course()
 		course.id = 'course-id'
 		course.title = 'course-title'
@@ -34,11 +55,11 @@ describe('Search Controller Tests', function() {
 			results: [course],
 		} as SearchResponse<Course>)
 		const res = await session(app)
-			.get('/content-management/search?q=test')
+			.get('/content-management/search?q=test&visibility=PUBLIC&status=DRAFT&status=ARCHIVED&courseType=face-to-face')
 			.send()
 		expect(res.status).to.eql(200)
-		expect(res.text).to.contain("/content-management/search?query=test&p=1")
-		expect(res.text).to.contain("/content-management/search?query=test&p=2")
-		expect(res.text).to.contain("/content-management/search?query=test&p=3")
+		const expectedParams = new CourseSearchParams(0, 10, ['DRAFT', 'ARCHIVED'], ['PUBLIC'], 'test',
+			[], [], [], undefined, ['face-to-face'])
+		expect(learningCatalogue.searchCourses).to.be.calledOnceWith(expectedParams)
 	})
 })

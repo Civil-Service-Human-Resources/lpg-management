@@ -27,10 +27,8 @@ export class SearchService {
 	}
 
 	getFilterFromI18n(req: Request, key: i18nFilters, selectedParams: string[], transformFn?: (val: string) => string) {
-		console.log(selectedParams)
 		// @ts-ignore
 		return Object.entries(req.i18n_texts[key]).map((value: [string, string]) => {
-			console.log(value)
 			return {
 				label: value[1],
 				value: value[0],
