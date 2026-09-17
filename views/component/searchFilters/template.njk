@@ -19,8 +19,8 @@
 {% endmacro %}
 
 <aside class='search-filters' role="complementary">
-    <button class="search-filters__toggle" type="button" aria-controls="expand-filters" aria-expanded="false" aria-label="Show search filters" tabindex="0">Show search filters</button>
-    <div class='search-filters__panel search-filters__panel--shut'>
+    <button class="search-filters__toggle" type="button" aria-controls="expand-filters" aria-expanded="false" aria-label="Hide search filters" tabindex="0">Hide search filters</button>
+    <div class='search-filters__panel'>
         <form autocomplete="off" name="searchLearning" method="get" action="/content-management/search">
             <input type="hidden" id="query" name="q" value="{{ params.query }}" />
             <button type="submit" class="govuk-button">Apply search filters</button>

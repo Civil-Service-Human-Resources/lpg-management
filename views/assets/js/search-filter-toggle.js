@@ -25,7 +25,6 @@ for (let i = 0; i < filterToggles.length; i++) {
 	if (filterToggleBtn) {
 		filterToggleBtn.addEventListener('click', function (e) {
 			e.preventDefault()
-			console.log("Toggle")
 			let closed =
 				filterTogglePanel.classList.contains(searchFilterPanelShutClass) &&
 				filterToggleBtn.getAttribute('aria-expanded') === 'false'
@@ -35,5 +34,6 @@ for (let i = 0; i < filterToggles.length; i++) {
 				close(filterTogglePanel, filterToggleBtn)
 			}
 		})
+		close(filterTogglePanel, filterToggleBtn)
 	}
 }
