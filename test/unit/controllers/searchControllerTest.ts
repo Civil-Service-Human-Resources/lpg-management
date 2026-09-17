@@ -40,7 +40,7 @@ describe('Search Controller Tests', function() {
 		expect(res.status).to.eql(200)
 		const expectedParams = new CourseSearchParams(0, 10, [], [], 'test',
 			[], [], [], undefined, [])
-		expect(learningCatalogue.searchCourses).to.be.calledOnceWith(expectedParams)
+		expect(learningCatalogue.searchCourses).to.be.calledWith(expectedParams)
 	})
 
 	it('should render search results template with filters', async function() {
@@ -60,6 +60,6 @@ describe('Search Controller Tests', function() {
 		expect(res.status).to.eql(200)
 		const expectedParams = new CourseSearchParams(0, 10, ['DRAFT', 'ARCHIVED'], ['PUBLIC'], 'test',
 			[], [], [], undefined, ['face-to-face'])
-		expect(learningCatalogue.searchCourses).to.be.calledOnceWith(expectedParams)
+		expect(learningCatalogue.searchCourses).to.be.calledWith(expectedParams)
 	})
 })

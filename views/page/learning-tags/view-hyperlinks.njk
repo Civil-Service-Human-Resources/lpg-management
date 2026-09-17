@@ -37,15 +37,15 @@
             allIds: pageModel.allIds,
             baseUrl: "/content-management/learning-tags/" + learningTag.id + "/hyperlinks"
         }) }}
-        <p class="govuk-body">Showing {{ pageModel.pagination.start }} - {{ pageModel.pagination.end }} of {{ pageModel.pagination.total }}</p>
+        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end }} of {{ pageModel.pagePagination.total }}</p>
         {{ govukPagination({
             previous: {
-                href: pageModel.pagination.prevLink
+                href: pageModel.pagePagination.prevLink
             },
             next: {
-                href: pageModel.pagination.nextLink
+                href: pageModel.pagePagination.nextLink
             },
-            items: pageModel.pagination.numberedPages
+            items: pageModel.pagePagination.numberedPages
         }) }}
     {% else %}
         {{ searchHeaderHtml | safe }}

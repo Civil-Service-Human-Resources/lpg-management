@@ -6,14 +6,26 @@ import {DefaultPageResults} from 'src/learning-catalogue/model/defaultPageResult
 import {Course} from 'src/learning-catalogue/model/course'
 import {plainToInstance} from 'class-transformer'
 import {HomepagePageParams} from './models/homepagePageParams'
+import {Controller} from './controller'
+import {IUserRole} from 'src/identity/identity'
+import {getRequest, Route} from './route'
 
-export class HomeController {
-	learningCatalogue: LearningCatalogue
-	pagination: PaginationService
+export class HomeController extends Controller {
 
-	constructor(learningCatalogue: LearningCatalogue, pagination: PaginationService) {
+	constructor(private learningCatalogue: LearningCatalogue, private pagination: PaginationService) {
+		super('/content-management', 'HomeController')
 		this.learningCatalogue = learningCatalogue
 		this.pagination = pagination
+	}
+
+	protected getRequiredRole(): IUserRole | undefined {
+		return undefined
+	}
+
+	protected getRoutes(): Route[] {
+		return [
+			getRequest('/', this.index())
+		]
 	}
 
 	public index() {
