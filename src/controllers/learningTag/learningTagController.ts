@@ -191,15 +191,45 @@ export class LearningTagController extends LearningTagControllerBase {
 		}
 	}
 
+	private handleHyperlinkErrors(error: any, pageModel: HyperlinkPageModel) {
+		const apiErrors: string[] = error.response?.data?.errors || error.data?.errors || error.errors || (Array.isArray(error.response?.data) ? error.response.data : undefined) || (Array.isArray(error.data) ? error.data : undefined)
+		if (apiErrors && Array.isArray(apiErrors)) {
+			for (const err of apiErrors) {
+				if (typeof err === 'string') {
+					const match = err.match(/^Field\s+(\w+)\s+is invalid:\s*(.+)$/i)
+					if (match) {
+						const field = match[1]
+						const message = match[2].trim()
+						pageModel.addError({ [field]: [message] })
+					} else {
+						if (err.toLowerCase().includes('title')) {
+							pageModel.addError({ title: [err] })
+						} else if (err.toLowerCase().includes('url')) {
+							pageModel.addError({ url: [err] })
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private createHyperlink() {
 		return async(request: Request, response: Response) => {
 			const learningTagId = response.locals.learningTag.id as number
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-			await this.learningTagService.createHyperlink(learningTagId, pageModel)
-			request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
-			return request.session!.save(() => {
-				return response.redirect('/content-management/learning-tags/manage')
-			})
+			try {
+				await this.learningTagService.createHyperlink(learningTagId, pageModel)
+				request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
+				return request.session!.save(() => {
+					return response.redirect('/content-management/learning-tags/manage')
+				})
+			} catch (error) {
+				this.handleHyperlinkErrors(error, pageModel)
+				if (pageModel.hasErrors()) {
+					return response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
+				}
+				throw error
+			}
 		}
 	}
 
@@ -216,11 +246,19 @@ export class LearningTagController extends LearningTagControllerBase {
 		return async (request: Request, response: Response) => {
 			const learningTagId = parseInt(request.params.learningTagId)
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-			await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
-			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
-			return request.session!.save(() => {
-				return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
-			})
+			try {
+				await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
+				request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
+				return request.session!.save(() => {
+					return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
+				})
+			} catch (error) {
+				this.handleHyperlinkErrors(error, pageModel)
+				if (pageModel.hasErrors()) {
+					return response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
+				}
+				throw error
+			}
 		}
 	}
 }
