@@ -34,18 +34,19 @@
             <div class="govuk-tabs">
                 <h2 class="govuk-tabs__title">Contents</h2>
                 <ul class="govuk-tabs__list">
-                    {% set tabs = [
-                        {
-                            href: "/content-management/learning-tags/" + learningTag.id + "/hyperlinks",
-                            text: "Links assigned to this tag",
-                            selected: selectedTab === "links"
-                        }
-                    ] %}
+                    {% set tabs = [] %}
                     {% if identity.isLearningTagCourseManager() %}
-                        {% set tabs = (tabs.unshift({
+                        {% set tabs = (tabs.push({
                             href: "/content-management/learning-tags/" + learningTag.id + "/courses",
                             text: "Courses assigned to this tag",
                             selected: selectedTab === "courses"
+                        }), tabs) %}
+                    {% endif %}
+                    {% if identity.isLearningTagAuthor() %}
+                        {% set tabs = (tabs.push(                        {
+                            href: "/content-management/learning-tags/" + learningTag.id + "/hyperlinks",
+                            text: "Links assigned to this tag",
+                            selected: selectedTab === "links"
                         }), tabs) %}
                     {% endif %}
                     {% for tab in tabs %}
