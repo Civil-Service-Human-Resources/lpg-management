@@ -1,10 +1,13 @@
-import { Request, Response, NextFunction } from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {validateEndpoint, ValidationOptions} from '../validators/validatorMiddleware'
-const { xss } = require('express-xss-sanitizer')
 import * as asyncHandler from 'express-async-handler'
 import {HTTP_SETTINGS} from '../config'
 import {getLogger} from '../utils/logger'
 import {SubmittableForm} from './models/submittableForm'
+import {IUserRole} from '../identity/identity'
+import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
+
+const { xss } = require('express-xss-sanitizer')
 
 const logger = getLogger('route')
 
@@ -20,6 +23,21 @@ export interface Route {
 	method: Method
 	handler: (req: Request, res: Response, next: NextFunction) => void | Promise<void>
 	localMiddleware: ((req: Request, res: Response, next: NextFunction) => void)[]
+}
+
+export interface RouteCollection {
+	routes: Route[]
+}
+
+export const createRouteCollection = (routes: Route[], middleware: ((req: Request, res: Response, next: NextFunction) => void)[],
+							   requiredRole: IUserRole): RouteCollection => {
+	routes.forEach(r => {
+		r.localMiddleware.push(...middleware)
+		r.localMiddleware.unshift(roleCheckMiddleware(requiredRole))
+	})
+	return {
+		routes
+	}
 }
 
 const requestLoggingMiddleware = () => {

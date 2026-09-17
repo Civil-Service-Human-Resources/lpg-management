@@ -1,6 +1,5 @@
 import {LearningTagControllerBase} from '../learningTagControllerBase'
 import {LearningTagService} from '../../../learning-catalogue/service/learningTagService'
-import {IUserRole, learningTagCourseManagerRole} from '../../../identity/identity'
 import {getRequest, postRequest, postRequestWithBody, Route} from '../../route'
 import {BehaviourOnError} from '../../../validators/validatorMiddleware'
 import {learningTagContentType} from '../learningTagController'
@@ -23,11 +22,7 @@ export abstract class LearningTagContentManagementControllerBase<T extends Conte
 		super('LearningTagController', learningTagService)
 	}
 
-	protected getRequiredRole(): IUserRole | undefined {
-		return learningTagCourseManagerRole
-	}
-
-	protected getRoutes(): Route[] {
+	protected getBaseRoutes(): Route[] {
 		return [
 			getRequest(`/:learningTagId/${this.learningTagContentType}`, this.getContent()),
 			postRequest(`/:learningTagId/${this.learningTagContentType}/remove/:id/confirm`, this.removeSingleContent()),

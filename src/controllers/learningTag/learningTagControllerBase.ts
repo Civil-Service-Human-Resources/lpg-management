@@ -1,7 +1,6 @@
 import {Controller} from '../controller'
 import {SessionableObjectService} from '../reporting/utils'
 import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
-import {IUserRole, learningTagManagerRole} from '../../identity/identity'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
 import {NextFunction, Request, Response} from 'express'
 import * as asyncHandler from 'express-async-handler'
@@ -15,10 +14,6 @@ export abstract class LearningTagControllerBase extends Controller {
 		protected learningTagService: LearningTagService) {
 		super("/content-management/learning-tags", controllerName)
 		this.getLearningTagFromRouterParamAndSetOnLocals()
-	}
-
-	protected getRequiredRole(): IUserRole | undefined {
-		return learningTagManagerRole
 	}
 
 	private getLearningTagFromRouterParamAndSetOnLocals() {

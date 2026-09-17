@@ -59,6 +59,51 @@ describe('LearningTag', () => {
 			const res = await request.send()
 			expect(res.status).to.eql(200)
 		})
+		describe('Actions', () => {
+			it('Should show or hide author links', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Add a new tag')
+				expect(authorised.text).to.contain('Assign link to tag')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('Add a new tag')
+				expect(unauthorised.text).to.not.contain('Assign link to tag')
+
+			})
+			it('Should show or hide the assign course link depending on course manager role', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Assign course to tag')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('Assign course to tag')
+			})
+			it('Should show all actions for the super user', async() => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_SUPER_ADMIN'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Assign course to tag')
+				expect(authorised.text).to.contain('Add a new tag')
+				expect(authorised.text).to.contain('Assign link to tag')
+			})
+		})
 	})
 	describe('Overview', () => {
 		it('should fetch the view learning tag overview page', async () => {
@@ -68,13 +113,57 @@ describe('LearningTag', () => {
 			const res = await request.send()
 			expect(res.status).to.eql(200)
 		})
+		describe('Actions', () => {
+			it('Should show or hide author links', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Edit tag')
+				expect(authorised.text).to.contain('View courses and links')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('Edit tag')
+				expect(unauthorised.text).to.not.contain('View courses and links')
+
+			})
+			it('Should show or hide the assign course link depending on course manager role', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('View courses and links')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('View courses and links')
+			})
+			it('Should show all actions for the super user', async() => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_SUPER_ADMIN'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Edit tag')
+				expect(authorised.text).to.contain('View courses and links')
+			})
+		})
 	})
 	describe('Add learning tag', () => {
 		describe('Get', () => {
 			it('should load the page correctly', async () => {
 				const res = await session(app)
 					.get('/content-management/learning-tags')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send()
 				expect(res.status).to.eql(200)
 			})
@@ -92,7 +181,7 @@ describe('LearningTag', () => {
 				}
 				const request = session(app)
 					.post('/content-management/learning-tags/')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				const res = await request.send(body)
 				expect(res.status).to.eql(302)
 				expect(learningTagService.create).to.be.calledOnce
@@ -105,7 +194,7 @@ describe('LearningTag', () => {
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
+						.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					const res = await request.send(body)
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('Tag name is required')
@@ -119,7 +208,7 @@ describe('LearningTag', () => {
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
+						.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					const res = await request.send(body)
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('Unique URL is not in the correct format')
@@ -137,7 +226,7 @@ describe('LearningTag', () => {
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
+						.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					const res = await request.send(body)
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('A tag with this name already exists')
@@ -160,7 +249,7 @@ describe('LearningTag', () => {
 				}
 				const request = session(app)
 					.post('/content-management/learning-tags/1')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				const res = await request.send(body)
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('A tag with this name already exists')
@@ -175,7 +264,7 @@ describe('LearningTag', () => {
 				}
 				const request = session(app)
 					.post('/content-management/learning-tags/1')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				const res = await request.send(body)
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('A learning tag cannot be its own parent')
@@ -194,7 +283,7 @@ describe('LearningTag', () => {
 			learningTagService.archive.resolves({})
 			const request = session(app)
 				.post('/content-management/learning-tags/1/archive')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_ARCHIVE'})
 			const res = await request.send()
 			expect(res.status).to.eql(302)
 			expect(learningTagService.archive).to.be.calledOnce
@@ -203,7 +292,7 @@ describe('LearningTag', () => {
 			learningTagService.unarchive.resolves({})
 			const request = session(app)
 				.post('/content-management/learning-tags/1/unarchive')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_ARCHIVE'})
 			const res = await request.send()
 			expect(res.status).to.eql(302)
 			expect(learningTagService.unarchive).to.be.calledOnce
@@ -213,7 +302,7 @@ describe('LearningTag', () => {
 		it('should render the create a new hyperlink screen', async () => {
 			const res = await session(app)
 				.get('/content-management/learning-tags/1/hyperlinks/create')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				.send()
 			expect(res.status).to.eql(200)
 			expect(res.text).to.contain('Assign link to tag')
@@ -222,7 +311,7 @@ describe('LearningTag', () => {
 		it('should create a new hyperlink', async () => {
 			const res = await session(app)
 				.post('/content-management/learning-tags/1/hyperlinks')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				.send({
 					title: 'Link title',
 					url: 'https://test-url.com',
@@ -236,7 +325,7 @@ describe('LearningTag', () => {
 			it('should validate fields', async () => {
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: '',
 						url: 'http://test-url.com'
