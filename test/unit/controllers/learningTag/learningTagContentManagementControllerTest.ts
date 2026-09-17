@@ -77,7 +77,7 @@ describe('LearningTagContentManagement', () => {
 
 			const res = await session(app)
 				.get('/content-management/learning-tags/1/courses')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send()
 
 			expect(res.status).to.eql(200)
@@ -104,7 +104,7 @@ describe('LearningTagContentManagement', () => {
 			const agent = session(app)
 			const res = await agent
 				.post('/content-management/learning-tags/1/courses/remove')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send({
 					ids: ["course1", "course2"]
 				})
@@ -112,7 +112,7 @@ describe('LearningTagContentManagement', () => {
 			expect(res.text).to.include('Are you sure you want to remove 2 courses selected from the tag Learning Tag?')
 			const confirmRes = await agent
 				.post('/content-management/learning-tags/1/courses/remove/confirm')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send()
 
 			expect(learningTagService.removeCourses).to.have.been.calledWith(1, ["course1", "course2"])
@@ -135,13 +135,13 @@ describe('LearningTagContentManagement', () => {
 			learningTagService.removeCourses.resolves({successfulIds: ["course1"]})
 			const res = await agent
 				.post('/content-management/learning-tags/1/courses/remove/course1')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send({'title[course1]': 'Course 1'})
 			expect(res.status).to.eql(200)
 			expect(res.text).to.include('Are you sure you want to remove "Course 1" from the tag Learning Tag?')
 			const confirmRes = await agent
 				.post('/content-management/learning-tags/1/courses/remove/course1/confirm')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
 				.send()
 
 			expect(learningTagService.removeCourses).to.have.been.calledWith(1, ["course1"])
