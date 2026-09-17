@@ -1,4 +1,19 @@
 {
+	"courseTypes": {
+		"face-to-face": "Face to face",
+		"link": "Link",
+		"elearning": "Online",
+		"video": "Video"
+	},
+	"courseStatuses": {
+		"PUBLISHED": "Published",
+		"DRAFT": "Draft",
+		"ARCHIVED": "Archived"
+	},
+	"courseVisibilities": {
+		"PUBLIC": "Public",
+		"PRIVATE": "Private"
+	},
 	"agencyToken": {
 		"title": {
 			"addAgencyToken": "Add token",

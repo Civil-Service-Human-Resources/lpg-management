@@ -1,0 +1,159 @@
+.leftSearchBox {
+	clear: left;
+
+	legend {
+		padding-right: 8px;
+		font-weight: bold;
+		width: 100%;
+	}
+
+	div.multiple-choice {
+		padding: 2px 0px 6px 0px;
+		margin-top: 8px;
+		margin-bottom: 0px;
+		width: 100%;
+
+		label {
+			margin-left: 45px;
+		}
+	}
+}
+
+@include govuk-media-query($from: desktop) {
+	.form-group {
+		margin-bottom: 20px;
+	}
+}
+
+.lpg-related-items {
+	margin-top: 20px !important;
+	border-bottom: 1px solid #b1b4b6;
+}
+
+.filters {
+	.heading-small {
+		margin-top: 6px;
+	}
+}
+
+.filter-headings__heading {
+	margin: 0;
+}
+
+.filter-headings {
+	margin: 8px 0 12px 0;
+	text-align: left;
+	width: 100%;
+	color: #1d70b8;
+	font-weight: 700;
+	font-size: 22px;
+	border: none;
+	padding: 0;
+	background: none;
+	position: relative;
+	cursor: pointer;
+}
+
+.filter-headings:focus {
+	text-decoration: none;
+	outline: 3px solid transparent!important;
+	color: #0b0c0c;
+	background-color: #fd0;
+	box-shadow: 0 -2px #fd0, 0 4px #0b0c0c;
+}
+
+.filter-headings:hover:focus {
+	text-decoration: none;
+}
+
+.filter-headings:hover {
+	text-decoration: underline;
+}
+
+.filter-toggle {
+	button {
+		position: relative;
+		cursor: pointer;
+
+		&::after {
+			position: absolute;
+			right: 0;
+			top: 10px;
+			width: 20px;
+			height: 20px;
+			content: ' ';
+			background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='16px' height='4px' viewBox='0 0 16 4' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg id='Plus-and-Minus-icons' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E%3Crect id='Minus' fill='%230B0C0C' fill-rule='nonzero' x='0' y='0' width='16' height='4'%3E%3C/rect%3E%3C/g%3E%3C/svg%3E");
+			background-size: contain;
+			background-repeat: no-repeat;
+			cursor: pointer;
+		}
+	}
+
+}
+
+.filter-toggle--shut {
+	.multiple-choice {
+		display: none;
+	}
+	button {
+		&::after {
+			position: absolute;
+			right: 0;
+			top: 2px;
+			content: ' ';
+			width: 20px;
+			height: 20px;
+			background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='16px' height='16px' viewBox='0 0 16 16' version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cg id='Plus-and-Minus-icons' stroke='none' stroke-width='1' fill='none' fill-rule='evenodd'%3E%3Cg id='Plus' fill='%230B0C0C' fill-rule='nonzero'%3E%3Crect id='Minus-Copy' x='0' y='6' width='16' height='4'%3E%3C/rect%3E%3Crect id='Minus-Copy-2' transform='translate(8.000000, 8.000000) rotate(90.000000) translate(-8.000000, -8.000000) ' x='0' y='6' width='16' height='4'%3E%3C/rect%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+			background-size: contain;
+			background-repeat: no-repeat;
+			cursor: pointer;
+		}
+	}
+}
+
+.clear-filters {
+	@extend .govuk-link;
+	float: left;
+	clear: left;
+	width: 100%;
+	margin: 20px 0px 30px 0px;
+}
+
+.hide-filters {
+	position: absolute;
+	left: -9999px;
+
+	@include govuk-media-query($from: desktop) {
+		display: none;
+	}
+}
+
+.search-filters__toggle {
+	text-align: center;
+	background-color: govuk-colour('light-grey');
+	width: 100%;
+	display: block;
+	padding: 10px 0;
+	font-weight: bold;
+	margin-bottom: 35px;
+	text-transform: none;
+	font-size: 16px;
+	line-height: 1.25;
+	border: 0;
+
+	@include govuk-media-query($from: desktop) {
+		display: none;
+	}
+}
+
+.search-filters__panel {
+	.govuk-button {
+		@include govuk-responsive-margin(0, 'bottom');
+	}
+}
+
+.search-filters__panel--shut {
+	@include govuk-media-query($until: desktop) {
+		display: none;
+	}
+}

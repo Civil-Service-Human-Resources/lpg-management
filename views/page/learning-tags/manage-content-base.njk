@@ -1,16 +1,14 @@
 {% from "../../component/search/macro.njk" import search with context %}
-{% from "../../component/pagination/macro.njk" import pagination with context %}
 {% from "../../component/courseManager/macro.njk" import courseManager with context %}
 {% from "../../component/hyperlinkManager/macro.njk" import hyperlinkManager with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "./base.njk" %}
 
 {% block pageTitle %}
     {{ i18n.learningTags.title.viewCourses }} - {{ i18n.proposition_name }}
 {% endblock %}
 
-{% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
 {% set removeResultsBanner = sessionFlash.removeResultsBanner if sessionFlash.removeResultsBanner else removeResultsBanner %}
 
