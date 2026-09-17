@@ -7,11 +7,10 @@
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "button/macro.njk" import govukButton %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "./base.njk" %}
 
 {% block pageTitle %}{{ learningTag.name }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% set banner = true %}
 {% set backButton = "/content-management/learning-tags/manage" %}
 
 
