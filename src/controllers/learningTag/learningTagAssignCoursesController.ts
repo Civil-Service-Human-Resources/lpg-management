@@ -1,6 +1,6 @@
 import {NextFunction, Request, Response} from 'express'
 import {LearningTagControllerBase} from './learningTagControllerBase'
-import {getRequest, postRequestWithBody, Route} from '../route'
+import {createRouteCollection, getRequest, postRequestWithBody, RouteCollection} from '../route'
 import {SearchForTagsModel} from './model/searchForTagsModel'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {SearchForCoursesModel} from './model/searchForCoursesModel'
@@ -8,7 +8,7 @@ import {plainToInstance} from 'class-transformer'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
 import {CourseService} from '../../lib/courseService'
 import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
-import {IUserRole, learningTagCourseManagerRole} from '../../identity/identity'
+import {learningTagCourseManagerRole} from '../../identity/identity'
 
 export class LearningTagAssignCoursesController extends LearningTagControllerBase {
 
@@ -17,28 +17,27 @@ export class LearningTagAssignCoursesController extends LearningTagControllerBas
 		super('LearningTagController', learningTagService)
 	}
 
-	protected getRequiredRole(): IUserRole | undefined {
-		return learningTagCourseManagerRole
-	}
 
-	protected getRoutes(): Route[] {
+	protected getRouteCollections(): RouteCollection[] {
 		return [
-			getRequest('/assign-courses/select-learning-tags', this.getAssignLearningTagsToCourses()),
-			postRequestWithBody('/assign-courses/select-learning-tags', this.assignLearningTagsToCourses(), {
-				dtoClass: SearchForTagsModel,
-				onError: {
-					behaviour: BehaviourOnError.ROUTER_FUNCTION,
-					routerFunction: this.getAssignLearningTagsToCourses()
-				}
-			}),
-			getRequest('/assign-courses/select-courses', this.getAssignCoursesToLearningTags(), [this.validateTagSelection()]),
-			postRequestWithBody('/assign-courses/select-courses', this.assignCoursesToLearningTags(), {
-				dtoClass: SearchForCoursesModel,
-				onError: {
-					behaviour: BehaviourOnError.ROUTER_FUNCTION,
-					routerFunction: this.getAssignCoursesToLearningTags()
-				}
-			}, [this.validateTagSelection()]),
+			createRouteCollection([
+				getRequest('/assign-courses/select-learning-tags', this.getAssignLearningTagsToCourses()),
+				postRequestWithBody('/assign-courses/select-learning-tags', this.assignLearningTagsToCourses(), {
+					dtoClass: SearchForTagsModel,
+					onError: {
+						behaviour: BehaviourOnError.ROUTER_FUNCTION,
+						routerFunction: this.getAssignLearningTagsToCourses()
+					}
+				}),
+				getRequest('/assign-courses/select-courses', this.getAssignCoursesToLearningTags(), [this.validateTagSelection()]),
+				postRequestWithBody('/assign-courses/select-courses', this.assignCoursesToLearningTags(), {
+					dtoClass: SearchForCoursesModel,
+					onError: {
+						behaviour: BehaviourOnError.ROUTER_FUNCTION,
+						routerFunction: this.getAssignCoursesToLearningTags()
+					}
+				}, [this.validateTagSelection()]),
+			], [], learningTagCourseManagerRole)
 		]
 	}
 

@@ -1,10 +1,9 @@
 import {NextFunction, Request, Response} from 'express'
-import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
+import {createRouteCollection, getRequest, postRequest, postRequestWithBody, RouteCollection} from '../route'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
-import {learningTagArchiveRole, learningTagCourseManagerRole} from '../../identity/identity'
+import {learningTagArchiveRole, learningTagAuthorRole, learningTagManagerRole} from '../../identity/identity'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
-import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagControllerBase} from './learningTagControllerBase'
 import {HyperlinkPageModel} from './model/hyperlinkPageModel'
@@ -17,10 +16,14 @@ export class LearningTagController extends LearningTagControllerBase {
 		super('LearningTagController', learningTagService)
 	}
 
-	protected getRoutes(): Route[] {
-		return [
+	protected getRouteCollections(): RouteCollection[] {
+
+		const basicRoutes = createRouteCollection([
 			getRequest('/manage', this.getList()),
 			getRequest('/:learningTagId/overview', this.get()),
+		], [], learningTagManagerRole)
+
+		const authorRoutes = createRouteCollection([
 			getRequest('/', this.getCreate()),
 			postRequestWithBody('/', this.create(), {
 				dtoClass: LearningTagPageModel,
@@ -39,28 +42,32 @@ export class LearningTagController extends LearningTagControllerBase {
 			}),
 			getRequest('/:learningTagId/unlink-parent-confirm', this.getUnlinkParent()),
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/archive-confirm', this.getArchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			postRequest('/:learningTagId/archive', this.archive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/hyperlinks/create', this.getCreateHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/hyperlinks/create', this.getCreateHyperlink()),
 			postRequestWithBody('/:learningTagId/hyperlinks', this.createHyperlink(), {
 				dtoClass: HyperlinkPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getCreateHyperlink()
 				}
-			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
-			getRequest('/:learningTagId/hyperlinks/:hyperlinkId', this.getEditHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			}),
+			getRequest('/:learningTagId/hyperlinks/:hyperlinkId', this.getEditHyperlink()),
 			postRequestWithBody('/:learningTagId/hyperlinks/:hyperlinkId', this.editHyperlink(), {
 				dtoClass: HyperlinkPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getEditHyperlink()
 				}
-			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
-		]
+			}),
+		], [], learningTagAuthorRole)
+
+		const archiveRoutes = createRouteCollection([
+			getRequest('/:learningTagId/archive-confirm', this.getArchive()),
+			postRequest('/:learningTagId/archive', this.archive()),
+			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive()),
+			postRequest('/:learningTagId/unarchive', this.unarchive()),
+		], [], learningTagArchiveRole)
+
+		return [basicRoutes, authorRoutes, archiveRoutes]
 	}
 
 	private getPageModel = async (request: Request, response: Response) => {
