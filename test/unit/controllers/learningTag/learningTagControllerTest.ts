@@ -349,7 +349,7 @@ describe('LearningTag', () => {
 				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: 'Existing Link',
 						url: 'https://existing-url.com',
@@ -374,7 +374,7 @@ describe('LearningTag', () => {
 				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: 'Existing Link',
 						url: 'https://new-url.com',
@@ -399,7 +399,7 @@ describe('LearningTag', () => {
 				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: 'New Link',
 						url: 'https://existing-url.com',
@@ -424,7 +424,7 @@ describe('LearningTag', () => {
 		it('should render the edit hyperlink screen', async () => {
 			const res = await session(app)
 				.get('/content-management/learning-tags/1/hyperlinks/10')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				.send()
 			expect(res.status).to.eql(200)
 			expect(res.text).to.contain('Assign link to tag')
@@ -434,7 +434,7 @@ describe('LearningTag', () => {
 			learningTagService.editHyperlink.resolves()
 			const res = await session(app)
 				.post('/content-management/learning-tags/1/hyperlinks/10')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				.send({
 					title: 'Updated Link title',
 					url: 'https://updated-url.com',
@@ -461,7 +461,7 @@ describe('LearningTag', () => {
 				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks/10')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: 'Duplicate Title',
 						url: 'https://duplicate-url.com',
@@ -486,7 +486,7 @@ describe('LearningTag', () => {
 				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks/10')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: 'Duplicate Title',
 						url: 'https://new-url.com',
@@ -511,7 +511,7 @@ describe('LearningTag', () => {
 				))
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks/10')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: 'New Title',
 						url: 'https://duplicate-url.com',
