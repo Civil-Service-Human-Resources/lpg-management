@@ -82,9 +82,9 @@ describe('LearningTagContentManagement', () => {
 
 			expect(res.status).to.eql(200)
 			expect(res.text).to.contain('Courses assigned to this tag')
-			expect(res.text).to.contain('Links assigned to this tag')
+			expect(res.text).to.not.contain('Links assigned to this tag')
 			expect(res.text).to.contain('/content-management/learning-tags/1/courses')
-			expect(res.text).to.contain('/content-management/learning-tags/1/hyperlinks')
+			expect(res.text).to.not.contain('/content-management/learning-tags/1/hyperlinks')
 			expect(res.text).to.contain('Course 1')
 			expect(res.text).to.not.contain('BBC News')
 			expect(res.text).to.contain('/content-management/learning-tags/1/courses?page=2')
