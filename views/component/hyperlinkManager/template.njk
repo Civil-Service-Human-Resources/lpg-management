@@ -27,15 +27,12 @@
     }), items) %}
 {% endfor %}
 {{ contentManager({
+    "type": "link",
     "name": "hyperlinkIds",
     "submitAction": params.submitAction,
     "allIds": params.allIds,
     "legend": {
         "html": params.legend.html
-    },
-    "selectAll": {
-        "text": "Select all links",
-        "removeText": "Remove links"
     },
     "items": items
 }) }}

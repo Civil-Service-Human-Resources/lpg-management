@@ -61,6 +61,7 @@
   @include govuk-responsive-margin(2, "bottom");
   @include govuk-media-query($from: desktop) {
     margin: 0;
+    @include govuk-responsive-margin(4, "left");
   }
 }
 
@@ -70,6 +71,9 @@
 
 .content-manager__secondary-action {
   @include govuk-responsive-margin(3, "left");
+  &:first-child {
+    margin: 0;
+  }
 }
 
 .content-manager__link {

@@ -25,15 +25,12 @@
     }), items) %}
 {% endfor %}
 {{ contentManager({
+    "type": "course",
     "name": "courseIds",
     "submitAction": params.submitAction,
     "allIds": params.allIds,
     "legend": {
         "html": params.legend.html
-    },
-    "selectAll": {
-        "text": "Select all courses",
-        "removeText": "Remove courses"
     },
     "items": items
 }) }}
