@@ -66,11 +66,13 @@
                     {{ statusWithLabel('Archived' if learningTag.archived else 'Published') }}
                     {% set actions = [ ] %}
                     {% if not learningTag.archived %}
-                        {% set editAction = {
-                            link: "/content-management/learning-tags/" + learningTag.id,
-                            text: "Edit tag"
-                        } %}
-                        {% set actions = (actions.push(editAction), actions) %}
+                        {% if identity.isLearningTagAuthor() %}
+                            {% set editAction = {
+                                link: "/content-management/learning-tags/" + learningTag.id,
+                                text: "Edit tag"
+                            } %}
+                            {% set actions = (actions.push(editAction), actions) %}
+                        {% endif %}
                         {% if learningTag.parentId !== null %}
                             {% set unlinkParentAction = {
                                 link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
@@ -78,9 +80,9 @@
                             } %}
                             {% set actions = (actions.push(unlinkParentAction), actions) %}
                         {% endif %}
-                        {% if identity.isLearningTagCourseManager() %}
+                        {% if identity.isLearningTagCourseManager() or identity.isLearningTagAuthor() %}
                             {% set viewCoursesAction = {
-                                link: "/content-management/learning-tags/" + learningTag.id + "/courses",
+                                link: "/content-management/learning-tags/" + learningTag.id + ("/courses" if identity.isLearningTagCourseManager() else "/hyperlinks"),
                                 text: "View courses and links"
                             } %}
                             {% set actions = (actions.push(viewCoursesAction), actions) %}
