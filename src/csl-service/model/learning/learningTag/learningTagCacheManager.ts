@@ -17,6 +17,10 @@ export class LearningTagCacheManager extends TaxonomyItemCacheManager<LearningTa
 
 	async update(updatedObject: LearningTag): Promise<void> {
 		await super.update(updatedObject);
+		await this.clearHomepageCache()
+	}
+
+	async clearHomepageCache() {
 		await this.learningCategoryCache.deleteAllIds()
 	}
 }
