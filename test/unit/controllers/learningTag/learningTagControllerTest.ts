@@ -3,7 +3,7 @@ import * as chai from 'chai'
 import {expect} from 'chai'
 import {LearningTag} from '../../../../src/learning-catalogue/model/learningTag/learningTag'
 import {LearningTagService} from '../../../../src/learning-catalogue/service/learningTagService'
-import {getApp} from '../../../utils/testApp'
+import {createApp} from '../../../utils/testApp'
 import {LearningTagController} from '../../../../src/controllers/learningTag/learningTagController'
 import {TaxonomyTreeNode} from '../../../../src/lib/taxonomy/taxonomyTreeNode'
 import {FormattedTaxonomyItem} from '../../../../src/lib/taxonomy/formattedTaxonomyItem'
@@ -17,7 +17,7 @@ chai.use(sinonChai)
 describe('LearningTag', () => {
 	let learningTagService: sinon.SinonStubbedInstance<LearningTagService> = sinon.createStubInstance(LearningTagService)
 	let controller: LearningTagController = new LearningTagController(learningTagService as any)
-	const app = getApp()
+	const app = createApp()
 	app.use(controller.path, controller.buildRouter())
 	const tag = new LearningTag()
 	tag.name = "Learning Tag"
@@ -40,9 +40,11 @@ describe('LearningTag', () => {
 	const typeahead = [
 		new FormattedTaxonomyItem(1, "tag 1", "TAG1"),
 		new FormattedTaxonomyItem(2, "tag 2", "TAG2"),
-		new FormattedTaxonomyItem(3, "tag 3", "TAG3")
+		new FormattedTaxonomyItem(3, "tag 3", "TAG3"),
+		new FormattedTaxonomyItem(4, "tag 3 | tag 4", "TAG4")
 	]
 	learningTagService.getTypeahead.resolves(typeahead)
+
 	describe('Manage', () => {
 		it('should render the learning tag tree', async () => {
 			const request = session(app)
@@ -119,13 +121,13 @@ describe('LearningTag', () => {
 			})
 			describe('advanced validation', () => {
 				const pageModel = new LearningTagPageModel(typeahead)
-				pageModel.name = "tag 1"
-				pageModel.name = "TAG1"
+				pageModel.name = "tag 4"
+				pageModel.name = "TAG4"
 				learningTagService.getPageModel.resolves(pageModel)
 				it('should validate name and code that already exist', async () => {
 					const body = {
-						"name": "tag 1",
-						"code": "TAG1"
+						"name": "tag 4",
+						"code": "TAG4"
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
@@ -138,66 +140,103 @@ describe('LearningTag', () => {
 				})
 			})
 		})
-		describe('Edit', () => {
-			describe('advanced validation', () => {
-				it('should validate name and code that already exist', async () => {
-					const pageModel = new LearningTagPageModel(typeahead)
-					pageModel.name = "tag 2"
-					pageModel.code = "TAG2"
-					learningTagService.getPageModel.resolves(pageModel)
-					const body = {
-						"name": "tag 2",
-						"code": "TAG2"
-					}
-					const request = session(app)
-						.post('/content-management/learning-tags/1')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
-					const res = await request.send(body)
-					expect(res.status).to.eql(200)
-					expect(res.text).to.contain('A tag with this name already exists')
-					expect(res.text).to.contain('A tag with this code already exists')
-				})
-				it('should validate no self-reference for parent', async () => {
-					learningTagService.getPageModel.resolves()
-					const body = {
-						"name": "tag 1",
-						"code": "TAG1",
-						"parentId": 1
-					}
-					const request = session(app)
-						.post('/content-management/learning-tags/1')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
-					const res = await request.send(body)
-					expect(res.status).to.eql(200)
-					expect(res.text).to.contain('A learning tag cannot be its own parent')
-				})
+	})
+	describe('Edit', () => {
+		describe('advanced validation', () => {
+			it('should validate name and code that already exist', async () => {
+				const pageModel = new LearningTagPageModel(typeahead)
+				pageModel.name = "tag 2"
+				pageModel.code = "TAG2"
+				learningTagService.getPageModel.resolves(pageModel)
+				const body = {
+					"name": "tag 2",
+					"code": "TAG2"
+				}
+				const request = session(app)
+					.post('/content-management/learning-tags/1')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+				const res = await request.send(body)
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A tag with this name already exists')
+				expect(res.text).to.contain('A tag with this code already exists')
+			})
+			it('should validate no self-reference for parent', async () => {
+				learningTagService.getPageModel.resolves()
+				const body = {
+					"name": "tag 1",
+					"code": "TAG1",
+					"parentId": 1
+				}
+				const request = session(app)
+					.post('/content-management/learning-tags/1')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+				const res = await request.send(body)
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A learning tag cannot be its own parent')
 			})
 		})
-		describe('Archive/unarchive', () => {
-			it('should validate the correct role', async () => {
-				const request = session(app)
-					.get('/content-management/learning-tags/1/archive-confirm')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
-				const res = await request.send()
-				expect(res.status).to.eql(401)
-			})
-			it('should archive', async () => {
-				learningTagService.archive.resolves({})
-				const request = session(app)
-					.post('/content-management/learning-tags/1/archive')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
-				const res = await request.send()
-				expect(res.status).to.eql(302)
-				expect(learningTagService.archive).to.be.calledOnce
-			})
-			it('should unarchive', async () => {
-				learningTagService.unarchive.resolves({})
-				const request = session(app)
-					.post('/content-management/learning-tags/1/unarchive')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
-				const res = await request.send()
-				expect(res.status).to.eql(302)
-				expect(learningTagService.unarchive).to.be.calledOnce
+	})
+	describe('Archive/unarchive', () => {
+		it('should validate the correct role', async () => {
+			const request = session(app)
+				.get('/content-management/learning-tags/1/archive-confirm')
+				.set({"roles": 'LEARNING_TAG_MANAGER'})
+			const res = await request.send()
+			expect(res.status).to.eql(401)
+		})
+		it('should archive', async () => {
+			learningTagService.archive.resolves({})
+			const request = session(app)
+				.post('/content-management/learning-tags/1/archive')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+			const res = await request.send()
+			expect(res.status).to.eql(302)
+			expect(learningTagService.archive).to.be.calledOnce
+		})
+		it('should unarchive', async () => {
+			learningTagService.unarchive.resolves({})
+			const request = session(app)
+				.post('/content-management/learning-tags/1/unarchive')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+			const res = await request.send()
+			expect(res.status).to.eql(302)
+			expect(learningTagService.unarchive).to.be.calledOnce
+		})
+	})
+	describe('Create hyperlink', () => {
+		it('should render the create a new hyperlink screen', async () => {
+			const res = await session(app)
+				.get('/content-management/learning-tags/1/hyperlinks/create')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send()
+			expect(res.status).to.eql(200)
+			expect(res.text).to.contain('Assign link to tag')
+			expect(res.text).to.contain('Create a new link')
+		})
+		it('should create a new hyperlink', async () => {
+			const res = await session(app)
+				.post('/content-management/learning-tags/1/hyperlinks')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.send({
+					title: 'Link title',
+					url: 'https://test-url.com',
+					description: 'Link description'
+				})
+			expect(learningTagService.createHyperlink).to.be.calledOnce
+			expect(res.header.location).to.eql('/content-management/learning-tags/manage')
+			expect(res.status).to.eql(302)
+		})
+		describe('Validation', () => {
+			it('should validate fields', async () => {
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send({
+						title: '',
+						url: 'http://test-url.com'
+					})
+				expect(res.text).to.contain('Enter a title')
+				expect(res.text).to.contain('Enter a valid URL. URLs must start with https://')
 			})
 		})
 	})

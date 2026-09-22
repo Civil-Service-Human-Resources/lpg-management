@@ -1,0 +1,46 @@
+{% from "../../component/pagination/macro.njk" import pagination with context %}
+{% from "../../component/hyperlinkManager/macro.njk" import hyperlinkManager with context %}
+
+{% extends "./manage-content-base.njk" %}
+
+{% block pageTitle %}
+    {{ i18n.learningTags.title.viewLinks }} - {{ i18n.proposition_name }}
+{% endblock %}
+
+{% set selectedTab = "links" %}
+{% set linkUpdatedMessage = sessionFlash.linkUpdatedMessage if sessionFlash.linkUpdatedMessage else linkUpdatedMessage %}
+
+{% block extraBanner %}
+    {% if linkUpdatedMessage %}
+        <div class="panel panel-blue">
+            <div class="govuk-panel__body custom-panel panel-blue">
+                <p class="govuk-body">
+                    {{ linkUpdatedMessage.linkTitle }} has been updated.
+                </p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block tabContent %}
+    {% set searchHeaderHtml %}
+        <div class="header-search">
+            <h2 class="govuk-heading-m">Links assigned to this tag</h2>
+        </div>
+    {% endset %}
+    {% if pageModel.results.length > 0 %}
+        {{ hyperlinkManager({
+            "submitAction": "/content-management/learning-tags/" + learningTag.id  + "/hyperlinks/remove",
+            "legend": {
+                "html": "<h2 class=\"govuk-heading-m\">Links assigned to this tag</h2>"
+            },
+            "links": pageModel.results,
+            allIds: pageModel.allIds,
+            baseUrl: "/content-management/learning-tags/" + learningTag.id + "/hyperlinks"
+        }) }}
+        <p class="govuk-body">Showing {{ pageModel.pagePagination.start }} - {{ pageModel.pagePagination.end}} of {{ pageModel.pagePagination.total }}</p>
+        {{ pagination(pageModel.pagePagination.pagination) }}
+    {% else %}
+        {{ searchHeaderHtml | safe }}
+        <p class='govuk-body'>There are currently no links assigned to this tag</p>
+    {% endif %}
+{% endblock %}

@@ -11,6 +11,8 @@ import {EditAgencyToken} from '../../controllers/organisationalUnit/model/editAg
 import {OrganisationalUnitCacheManager} from '../organisationalUnitCacheManager'
 import {OrganisationalUnitTaxonomyNodePageModel} from '../model/page/organisationalUnitTaxonomyNodePageModel'
 import {plainToInstance} from 'class-transformer'
+import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
+import {FormattedTaxonomyItemList} from '../../lib/taxonomy/formattedTaxonomyItemList'
 
 export class OrganisationalUnitService {
 	logger = getLogger('OrganisationalUnitService')
@@ -37,15 +39,15 @@ export class OrganisationalUnitService {
 		return this.getOrganisationTypeahead(params)
 	}
 
-	async getOrganisationTypeahead(params: GetOrganisationsFormattedParams) {
+	async getOrganisationTypeahead(params: GetOrganisationsFormattedParams): Promise<FormattedOrganisation[]> {
 		const cacheKey = params.getCacheKey()
-		let typeahead = await this.organisationalUnitCacheManager.getTypeahead(cacheKey)
+		let typeahead: FormattedTaxonomyItemList<FormattedOrganisation> | undefined = await this.organisationalUnitCacheManager.getTypeahead(cacheKey)
 		if (typeahead === undefined) {
 			const formattedOrganisations = await this.organisationalUnitClient.getFormattedOrganisationList(params)
 			typeahead = new FormattedOrganisationList(cacheKey, formattedOrganisations.names)
 			await this.organisationalUnitCacheManager.setTypeahead(cacheKey, typeahead)
 		}
-		return typeahead.names
+		return typeahead.names as FormattedOrganisation[]
 	}
 
 	async getOrganisation(organisationalUnitId: number): Promise<OrganisationalUnit> {

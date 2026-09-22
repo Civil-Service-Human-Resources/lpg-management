@@ -7,6 +7,9 @@ import {LearningTagClient} from '../client/learningTagClient'
 import {FormattedTaxonomyItem} from '../../lib/taxonomy/formattedTaxonomyItem'
 import {FormattedTaxonomyItemList} from '../../lib/taxonomy/formattedTaxonomyItemList'
 import {LearningTagPageModel} from '../../controllers/learningTag/model/learningTagPageModel'
+import {SearchQuery} from '../../controllers/models/searchQuery'
+import {HyperlinkPageModel} from '../../controllers/learningTag/model/hyperlinkPageModel'
+import {Hyperlink} from '../model/learningTag/hyperlink'
 
 export class LearningTagService {
 	logger = getLogger('LearningTagService')
@@ -34,10 +37,6 @@ export class LearningTagService {
 			data.urlSlug = learningTag.urlSlug
 		}
 		return data
-	}
-
-	async validatePageModel() {
-
 	}
 
 	async getLearningTag(learningTagId: number): Promise<LearningTag> {
@@ -82,5 +81,39 @@ export class LearningTagService {
 		const learningTag = await this.learningTagClient.updateState(id, 'UNARCHIVE')
 		await this.learningTagCacheManager.clearAllAndRefresh()
 		return learningTag
+	}
+
+	async getCoursesPage(id: number, params: SearchQuery) {
+		return await this.learningTagClient.getTaggedCourses(id, params)
+	}
+
+	async getHyperlinksPage(id: number, params: SearchQuery) {
+		return await this.learningTagClient.getTaggedHyperlinks(id, params)
+	}
+
+	async removeCourses(id: number, courseIds: string[]) {
+		const result = await this.learningTagClient.removeCourses(id, courseIds)
+		return (result.successfulIds.length === 1 ? '1 course was' : `${result.successfulIds.length} courses were`) + ' removed from this tag.'
+	}
+
+	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
+		const result = await this.learningTagClient.removeHyperlinks(id, hyperlinkIds)
+		return (result.successfulIds.length === 1 ? '1 link was' : `${result.successfulIds.length} links were`) + ' removed from this tag.'
+	}
+
+	async assignCoursesToLearningTags(tagIds: string[], courseIds: string[]) {
+		return await this.learningTagClient.assignCourses(tagIds, courseIds)
+	}
+
+	async createHyperlink(learningTagId: number, pageModel: HyperlinkPageModel) {
+		await this.learningTagClient.createHyperlink(learningTagId, pageModel)
+	}
+
+	async getHyperlink(learningTagId: number, hyperlinkId: number): Promise<Hyperlink> {
+		return await this.learningTagClient.getHyperlink(learningTagId, hyperlinkId)
+	}
+
+	async editHyperlink(learningTagId: number, hyperlinkId: number, pageModel: HyperlinkPageModel) {
+		await this.learningTagClient.editHyperlink(learningTagId, hyperlinkId, pageModel)
 	}
 }

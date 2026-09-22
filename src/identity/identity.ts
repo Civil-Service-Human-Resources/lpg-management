@@ -26,7 +26,10 @@ export enum Role {
 	REGISTERED_LEARNER_ALL_ORGANISATIONS = 'REGISTERED_LEARNER_ALL_ORGANISATIONS',
 	LEARNING_TAG_MANAGER = 'LEARNING_TAG_MANAGER',
 	LEARNING_TAG_URL_EDITOR = 'LEARNING_TAG_URL_EDITOR',
+	LEARNING_TAG_COURSE_MANAGER = 'LEARNING_TAG_COURSE_MANAGER',
 	LEARNING_TAG_ARCHIVE = 'LEARNING_TAG_ARCHIVE',
+	KNOWLEDGEPOOL_SUPPLIER_AUTHOR = 'KNOWLEDGEPOOL_SUPPLIER_AUTHOR',
+	KORNFERRY_SUPPLIER_AUTHOR = 'KORNFERRY_SUPPLIER_AUTHOR'
 }
 
 export enum CompoundRole {
@@ -166,6 +169,8 @@ export const learningTagArchiveRole = new UserRole(All(Role.LEARNING_TAG_MANAGER
 
 export const learningTagUrlEditorRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_URL_EDITOR))
 
+export const learningTagCourseManagerRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_COURSE_MANAGER))
+
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
 }
@@ -220,20 +225,13 @@ export class Identity {
 	}
 
 	hasAnyAdminRole() {
-		// i.e. isn't just a LEARNER who navigated to the admin app by modifying the URL
 		return this.hasAnyRole([
-			Role.CSHR_REPORTER,
-			Role.CSL_AUTHOR,
-			Role.LEARNING_ARCHIVE,
-			Role.LEARNING_CREATE,
-			Role.LEARNING_DELETE,
-			Role.LEARNING_EDIT,
 			Role.LEARNING_MANAGER,
-			Role.LEARNING_PUBLISH,
+			Role.CSL_AUTHOR,
 			Role.ORGANISATION_AUTHOR,
-			Role.ORGANISATION_MANAGER,
-			Role.ORGANISATION_REPORTER,
-			Role.REGISTERED_LEARNER_REPORTER
+			Role.KPMG_SUPPLIER_AUTHOR,
+			Role.KORNFERRY_SUPPLIER_AUTHOR,
+			Role.KNOWLEDGEPOOL_SUPPLIER_AUTHOR
 		])
 	}
 
@@ -274,6 +272,9 @@ export class Identity {
 		return this.roleCheck(learningTagUrlEditorRole)
 	}
 
+	isLearningTagCourseManager() {
+		return this.roleCheck(learningTagCourseManagerRole)
+	}
 
 	isLearningManager() {
 		return this.hasRole(Role.LEARNING_MANAGER)

@@ -1,0 +1,13 @@
+{% from "../../../component/autocompleteMultiselect/macro.njk" import autocompleteMultiselect %}
+
+{% macro learningTagsAutocomplete(params) %}
+    {{ autocompleteMultiselect({
+        classes: params.classes,
+        hint: params.hint if params.hint else {
+            text: "Start typing to filter available tags."
+        },
+        id: "tagSearch",
+        items: params.tags,
+        selected: params.tagSearch
+    }) }}
+{% endmacro %}
