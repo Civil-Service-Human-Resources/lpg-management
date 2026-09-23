@@ -93,20 +93,25 @@ export class LearningTagService {
 
 	async removeCourses(id: number, courseIds: string[]) {
 		const result = await this.learningTagClient.removeCourses(id, courseIds)
+		await this.learningTagCacheManager.clearHomepageCache()
 		return (result.successfulIds.length === 1 ? '1 course was' : `${result.successfulIds.length} courses were`) + ' removed from this tag.'
 	}
 
 	async removeHyperlinks(id: number, hyperlinkIds: string[]) {
 		const result = await this.learningTagClient.removeHyperlinks(id, hyperlinkIds)
+		await this.learningTagCacheManager.clearHomepageCache()
 		return (result.successfulIds.length === 1 ? '1 link was' : `${result.successfulIds.length} links were`) + ' removed from this tag.'
 	}
 
 	async assignCoursesToLearningTags(tagIds: string[], courseIds: string[]) {
-		return await this.learningTagClient.assignCourses(tagIds, courseIds)
+		const res = await this.learningTagClient.assignCourses(tagIds, courseIds)
+		await this.learningTagCacheManager.clearHomepageCache()
+		return res
 	}
 
 	async createHyperlink(learningTagId: number, pageModel: HyperlinkPageModel) {
 		await this.learningTagClient.createHyperlink(learningTagId, pageModel)
+		await this.learningTagCacheManager.clearHomepageCache()
 	}
 
 	async getHyperlink(learningTagId: number, hyperlinkId: number): Promise<Hyperlink> {
@@ -115,5 +120,6 @@ export class LearningTagService {
 
 	async editHyperlink(learningTagId: number, hyperlinkId: number, pageModel: HyperlinkPageModel) {
 		await this.learningTagClient.editHyperlink(learningTagId, hyperlinkId, pageModel)
+		await this.learningTagCacheManager.clearHomepageCache()
 	}
 }
