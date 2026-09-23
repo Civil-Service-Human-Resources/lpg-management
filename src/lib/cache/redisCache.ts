@@ -1,9 +1,8 @@
-
-import { Multi, RedisClient } from 'redis'
-import { promisify } from 'util'
-import { Logger } from 'winston'
+import {RedisClient} from 'redis'
+import {promisify} from 'util'
+import {Logger} from 'winston'
 import * as config from '../../config'
-import { getLogger } from '../../utils/logger'
+import {getLogger} from '../../utils/logger'
 import {ClassConstructor, plainToClass} from 'class-transformer'
 
 export class Cache<T> {
@@ -59,46 +58,43 @@ export class Cache<T> {
 	}
 
 	async deleteAllIds(){
+		this.logger.debug(`Deleting all Ids in cache ${this.keySpace}`)
 		const ids = await this.getAllIds()
+		this.logger.debug(`${ids.length} ids foud for deletion`)
 		await this.deleteMultiple(ids)
+		this.logger.debug(`Deleted`)
 	}
 
-	async deleteMultiple(ids: string[]){		
-		const pipeline: Multi = this.redisClient.multi()
-
-		const pipelineExpirePromises = ids.map(id => promisify(pipeline.expire).bind(pipeline)(this.getFormattedKey(id), 0))
-		Promise.all(pipelineExpirePromises)
-
-		await promisify(pipeline.exec).bind(pipeline)()		
+	async deleteMultiple(ids: string[]){
+		this.logger.debug(`Unlinking ${ids.length} ids`)
+		const unlinkedCount = await promisify(this.redisClient.unlink).bind(this.redisClient)(ids)
+		this.logger.debug(`Unlinked ${unlinkedCount.length}`)
 	}
 
 	async getAllIds(): Promise<string[]> {
+		this.logger.debug(`Fetching all ids in keyspace ${this.keySpace}`)
 		const keyPrefix: string = config.REDIS.keyPrefix
 		// redisClient.scan doesn't respect the configured keyPrefix
 		// so we need to add it to the MATCH pattern ourselves and then strip it from the results
 
 		const keyWithPrefix: string = `${keyPrefix}${this.keySpace}`
-		
+		this.logger.debug(`Searching for ${keyWithPrefix}:*`)
 		const keys: string[] = await this.scanInBatches(`${keyWithPrefix}:*`, 1000)
-
-		const ids: string[] = keys
-			.map((key: string) => key.replace(new RegExp(`^${keyWithPrefix}:`),  ''))		
-
-		return ids
+		return keys.map((key: string) => key.replace(new RegExp(`^${keyPrefix}`),  ''))
 	}
 
 	protected async scanInBatches(pattern: string, batchSize: number){
+		this.logger.debug(`Scanning for pattern ${pattern} in batches of ${batchSize}`)
 		const results = []
 		let cursor: string = '0'
 
 		do {
-			const [newCursor, resultsFromScan] = await await promisify(this.redisClient.scan).bind(this.redisClient)(0, 'MATCH', pattern, 'COUNT', batchSize)
+			const [newCursor, resultsFromScan] = await promisify(this.redisClient.scan).bind(this.redisClient)(cursor, 'MATCH', pattern, 'COUNT', batchSize)
 			cursor = newCursor
 			results.push(...resultsFromScan)
 		}
 		while (cursor != '0')
 		return results
-
 	}
 
 	async update(id: string | number, fn: (object: T) => void) {
