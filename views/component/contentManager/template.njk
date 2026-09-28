@@ -13,8 +13,9 @@
                         <div class="content-manager__title">
                             <div class="govuk-checkboxes__item">
                                 <input class="govuk-checkboxes__input content-manager__select-all" id="all" name="ids" type="checkbox" value="all" data-behaviour="exclusive">
-                                <label class="govuk-label govuk-checkboxes__label content-manager__select-all-label" for="all">
-                                    Select all {{ params.type }}s
+                                <label class="govuk-label govuk-checkboxes__label" for="all">
+                                    <span class='content-manager__select-all-label'>Select all {{ params.type }}s</span>
+                                    <span class='content-manager__selected-count' role='status'></span>
                                 </label>
                             </div>
                         </div>
