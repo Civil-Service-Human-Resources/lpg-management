@@ -60,17 +60,17 @@ export class Cache<T> {
 	async deleteAllIds(){
 		this.logger.debug(`Deleting all Ids in cache ${this.keySpace}`)
 		const ids = await this.getAllIds()
-		this.logger.debug(`${ids.length} ids foud for deletion`)
-		if (ids.length > 0) {
-			await this.deleteMultiple(ids)
-			this.logger.debug(`Deleted`)
-		}
+		this.logger.debug(`${ids.length} ids found for deletion`)
+		await this.deleteMultiple(ids)
+		this.logger.debug(`Deleted`)
 	}
 
 	async deleteMultiple(ids: string[]){
 		this.logger.debug(`Unlinking ${ids.length} ids`)
-		const unlinkedCount = await promisify(this.redisClient.unlink).bind(this.redisClient)(ids)
-		this.logger.debug(`Unlinked ${unlinkedCount.length}`)
+		if (ids.length > 0) {
+			const unlinkedCount = await promisify(this.redisClient.unlink).bind(this.redisClient)(ids)
+			this.logger.debug(`Unlinked ${unlinkedCount}`)
+		}
 	}
 
 	async getAllIds(): Promise<string[]> {
