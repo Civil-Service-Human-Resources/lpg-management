@@ -3,39 +3,50 @@ const selectAllCheckboxCssSelector = 'content-manager__select-all'
 const checkboxCssSelector = 'content-manager__checkbox'
 const removeTextCssSelector = 'content-manager__remove-text'
 
+const selectAllLabelCssSelector = 'content-manager__select-all-label'
+const selectedCountCssSelector = 'content-manager__selected-count'
+
 class ContentManager {
 	type
 	selectAllCheckbox
 	checkboxes
 	selectAllText
 
-	constructor(type, selectAllCheckbox, checkboxes, selectAllText) {
+	constructor(type, selectAllCheckbox, checkboxes, selectAllText, selectAllLabel, selectedCount) {
 		this.type = type
 		this.selectAllCheckbox = selectAllCheckbox
 		this.checkboxes = checkboxes
 		this.selectAllText = selectAllText
+		this.selectAllLabel = selectAllLabel
+		this.selectedCount = selectedCount
 
 		selectAllCheckbox.addEventListener('change', () => {
-			this.updateRemoveText()
+			this.updateText()
 		})
 
 		for (let checkbox of checkboxes) {
 			checkbox.addEventListener('change', () => {
-				this.updateRemoveText()
+				this.updateText()
 			})
 		}
-		this.updateRemoveText()
+		selectAllLabel.classList.add('govuk-visually-hidden')
+		this.updateText()
 	}
 
-	updateRemoveText = () => {
+	updateText = () => {
 		const boxesSelected = this.checkboxes.filter(c => c.checked).length
-		let text = `Remove ${this.type}`
+		let removeText = `Remove ${this.type}`
+		let selectAllText = `Select all ${this.type}s`
 		if (this.selectAllCheckbox.checked || boxesSelected > 1) {
-			text = `Remove selected ${this.type}s`
+			removeText = `Remove selected ${this.type}s`
+			const numberSelected = this.selectAllCheckbox.checked ? this.checkboxes.length : boxesSelected
+			selectAllText = `Selected ${numberSelected} of ${this.checkboxes.length} ${this.type}s`
 		} else if (boxesSelected === 1) {
-			text = `Remove selected ${this.type}`
+			removeText = `Remove selected ${this.type}`
+			selectAllText = `Selected 1 of ${this.checkboxes.length} ${this.type}s`
 		}
-		this.selectAllText.innerText = text
+		this.selectAllText.innerText = removeText
+		this.selectedCount.innerText = selectAllText
 	}
 }
 
@@ -44,8 +55,11 @@ for (let contentManagerElem of document.getElementsByClassName(cssSelector)) {
 	const selectAllCheckbox = document.getElementsByClassName(selectAllCheckboxCssSelector).item(0)
 	const checkboxes = document.getElementsByClassName(checkboxCssSelector)
 	const selectAllText = document.getElementsByClassName(removeTextCssSelector).item(0)
-	if (!type || ! selectAllCheckbox || checkboxes.length === 0 || !selectAllText) continue
+	const selectAllLabel = document.getElementsByClassName(selectAllLabelCssSelector).item(0)
+	const selectedCount = document.getElementsByClassName(selectedCountCssSelector).item(0)
+	if (!type || ! selectAllCheckbox || checkboxes.length === 0 || !selectAllText || !selectAllLabel || !selectedCount) continue
 
-	new ContentManager(type, selectAllCheckbox, Array.from(checkboxes), selectAllText)
+	new ContentManager(type, selectAllCheckbox, Array.from(checkboxes), selectAllText, selectAllLabel,
+		selectedCount)
 
 }
