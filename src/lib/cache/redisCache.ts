@@ -62,7 +62,6 @@ export class Cache<T> {
 		const ids = await this.getAllIds()
 		this.logger.debug(`${ids.length} ids found for deletion`)
 		await this.deleteMultiple(ids)
-		this.logger.debug(`Deleted`)
 	}
 
 	async deleteMultiple(ids: string[]){
