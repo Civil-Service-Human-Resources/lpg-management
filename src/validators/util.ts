@@ -1,5 +1,6 @@
 import {validate} from 'class-validator'
 import {ValidationErrorMapper} from '../learning-catalogue/validator/validationErrorMapper'
+import {SubmittableForm} from '../controllers/models/submittableForm'
 
 export async function validateAndMapErrors(object: any, groups?: string[]): Promise<{fields: {[name: string]: string[]}} | undefined> {
 	const validationErrors = await validate(object, { skipMissingProperties: false, groups })
@@ -13,4 +14,10 @@ export async function validateAndMapErrors(object: any, groups?: string[]): Prom
 		})
 		return errors
 	}
+}
+
+export async function validateSubmittableForm<T extends SubmittableForm>(model: T, groups?: string[]): Promise<T> {
+	const errors = await validateAndMapErrors(model, groups)
+	if (errors) model.errors = errors
+	return model
 }

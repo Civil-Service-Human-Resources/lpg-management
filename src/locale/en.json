@@ -85,6 +85,10 @@
 			"audienceName": "Audience name"
 		},
 		"validation": {
+			"grades": {
+				"empty": "Select at least one grade",
+				"invalid": "Invalid grade selection"
+			},
 			"name": {
 				"empty": "Audience name is required",
 				"maxLength": "Audience name must be 40 characters or less"

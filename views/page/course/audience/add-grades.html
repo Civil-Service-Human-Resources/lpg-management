@@ -17,27 +17,34 @@
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" method="post">
                 <input type="hidden" name="_csrf" value="{{ _csrf }}">
                 {% set gradeList = [] %}
-                {% for grade in grades._embedded.grades %}
+                {% for grade in grades %}
                     {% set list = gradeList.push({
                         "text": grade.name,
                         "value": grade.code
                     }) %}
                 {% endfor %}
+                {% set gradeList = gradeList.concat({
+                    "divider": "or"
+                }) %}
+                {% set gradeList = gradeList.concat({
+                    "value": "all",
+                    "text": "All grades",
+                    "behaviour": "exclusive"
+                }) %}
                 {{ govukCheckboxes({
-                idPrefix: "grades",
-                name: "grades",
-                hint:{
-                    text: "Check all the grades that are required for this audience"
-                },
-                fieldset: {
-                    legend: {
-                        text: "Which grade is this audience for?",
-                        isPageHeading: true,
-                        classes: "govuk-fieldset__legend--s"
-                    }
-                },
-                items: gradeList
-
+                    idPrefix: "grades",
+                    name: "grades",
+                    hint:{
+                        text: "Check all the grades that are required for this audience"
+                    },
+                    fieldset: {
+                        legend: {
+                            text: "Which grade is this audience for?",
+                            isPageHeading: true,
+                            classes: "govuk-fieldset__legend--s"
+                        }
+                    },
+                    items: gradeList
                 }) }}
                 <div class="button-container">
                     {{ govukButton({

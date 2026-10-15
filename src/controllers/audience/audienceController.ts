@@ -14,6 +14,10 @@ import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/
 import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {learningEditRole} from '../../identity/identity'
 import * as asyncHandler from 'express-async-handler'
+import {plainToInstance} from 'class-transformer'
+import {SelectGrades} from './models/selectGrades'
+import {validateSubmittableForm} from '../../validators/util'
+
 const { xss } = require('express-xss-sanitizer')
 
 
@@ -254,32 +258,41 @@ export class AudienceController {
 
 	getGrades() {
 		return async (req: Request, res: Response) => {
-			const grades = await this.csrsService.getGrades()
-			res.render('page/course/audience/add-grades', {grades})
+			const grades = await this.csrsService.getGradesAsObjects()
+			let pageModel = plainToInstance(SelectGrades, req.body as SelectGrades)
+			if (pageModel !== undefined) {
+				pageModel.grades = grades
+			} else {
+				pageModel = new SelectGrades(grades)
+			}
+			res.render('page/course/audience/add-grades', {...pageModel})
 		}
 	}
 
 	setGrades() {
 		return async (req: Request, res: Response, next: NextFunction) => {
-			const gradeCodes = Array.isArray(req.body.grades) ? req.body.grades : [req.body.grades]
-			if (gradeCodes && gradeCodes.length > 0) {
-				const allGradesValid = await gradeCodes.reduce(
-					async (allValid: boolean, gradeCode: string) => (allValid ? await this.csrsService.isGradeCodeValid(gradeCode) : false),
-					true
-				)
-				if (allGradesValid) {
-					res.locals.audience.grades = gradeCodes
-					res.locals.audience.name = await this.audienceService.getAudienceName(res.locals.audience)
-					await this.learningCatalogue
-						.updateAudience(res.locals.course.id, res.locals.audience)
-						.then(() => {
-							res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
-						})
-						.catch(error => next(error))
-				}
-			} else {
-				next(new Error('Grade not valid'))
+			let body = plainToInstance(SelectGrades, req.body as SelectGrades)
+			console.log(body)
+			body = await validateSubmittableForm(body)
+			if (body.errors) {
+				req.body = body
+				return await this.getGrades()(req, res)
 			}
+			const gradeCodes = body.getCodes()
+			const allGradesValid = await this.csrsService.areGradesValid(gradeCodes)
+			if (!allGradesValid) {
+				body.addError({'codes': ['audience.validation.grades.invalid']})
+				req.body = body
+				return await this.getGrades()(req, res)
+			}
+			res.locals.audience.grades = gradeCodes
+			res.locals.audience.name = await this.audienceService.getAudienceName(res.locals.audience)
+			await this.learningCatalogue
+				.updateAudience(res.locals.course.id, res.locals.audience)
+				.then(() => {
+					res.redirect(`/content-management/courses/${req.params.courseId}/audiences/${req.params.audienceId}/configure`)
+				})
+				.catch(error => next(error))
 		}
 	}
 
