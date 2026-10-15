@@ -32,7 +32,6 @@ export class CsrsService {
 
 	async getGradesAsObjects() {
 		const gradeJson = await this.getGrades() as {'_embedded': {grades: {id: number, code: string, name: string}[]}}
-		console.log(gradeJson)
 		return gradeJson._embedded.grades.map(em => {
 			return new Grade(em.id, em.code, em.name)
 		})

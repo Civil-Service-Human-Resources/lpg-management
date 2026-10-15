@@ -15,8 +15,7 @@ export class SelectGrades extends SubmittableForm {
 
 	public allGrades: string
 
-	constructor(grades?: Grade[]) {
-		super()
+	setGrades(grades: Grade[]) {
 		this.grades = grades
 		this.allGrades = (grades || []).map(h => h.code).join(",")
 	}

@@ -10,12 +10,15 @@
 {% set backButton = "/content-management/courses/" + course.id + "/audiences/" + audience.id + "/configure" %}
 
 {% block content %}
+    {% set errors = pageModel.errors %}
+    {{ errorSummary(errors.fields) }}
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
             <h1 class="govuk-body form-header govuk-!-font-size-24 no-margin">{{i18n.audience.pageText.addNew}}</h1>
             <h2 class="govuk-heading-m govuk-!-font-size-36">{{ i18n.audience.pageTitle.addGrades }}</h2>
             <form action="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/grades" method="post">
                 <input type="hidden" name="_csrf" value="{{ _csrf }}">
+                <input type='hidden' name='allGrades' value='{{ allGrades }}'>
                 {% set gradeList = [] %}
                 {% for grade in grades %}
                     {% set list = gradeList.push({
@@ -33,7 +36,7 @@
                 }) %}
                 {{ govukCheckboxes({
                     idPrefix: "grades",
-                    name: "grades",
+                    name: "codes",
                     hint:{
                         text: "Check all the grades that are required for this audience"
                     },

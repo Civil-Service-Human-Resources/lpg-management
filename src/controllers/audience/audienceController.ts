@@ -260,11 +260,7 @@ export class AudienceController {
 		return async (req: Request, res: Response) => {
 			const grades = await this.csrsService.getGradesAsObjects()
 			let pageModel = plainToInstance(SelectGrades, req.body as SelectGrades)
-			if (pageModel !== undefined) {
-				pageModel.grades = grades
-			} else {
-				pageModel = new SelectGrades(grades)
-			}
+			pageModel.setGrades(grades)
 			res.render('page/course/audience/add-grades', {...pageModel})
 		}
 	}
@@ -272,7 +268,6 @@ export class AudienceController {
 	setGrades() {
 		return async (req: Request, res: Response, next: NextFunction) => {
 			let body = plainToInstance(SelectGrades, req.body as SelectGrades)
-			console.log(body)
 			body = await validateSubmittableForm(body)
 			if (body.errors) {
 				req.body = body
