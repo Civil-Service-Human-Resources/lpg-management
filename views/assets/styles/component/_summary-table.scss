@@ -1,0 +1,17 @@
+.summary-table {
+  border: 1px solid $border;
+
+  .govuk-table__head {
+    border-bottom: 3px solid govuk-colour("black");
+  }
+
+  .govuk-table__body {
+    .govuk-table__row:last-child {
+      border-top: 3px solid govuk-colour("black");
+      background-color: govuk-colour("light-grey");
+    }
+  }
+  .govuk-table__header, .govuk-table__cell {
+    padding: govuk-spacing(3) govuk-spacing(5) govuk-spacing(3) govuk-spacing(5);
+  }
+}

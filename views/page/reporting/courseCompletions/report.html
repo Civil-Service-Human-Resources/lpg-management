@@ -129,6 +129,7 @@
           {% endif %}
         </h2>
         {{ govukTable({
+          classes: "summary-table",
           firstCellIsHeader: true,
           head: [{text: "Course Title"}, {text: "Completions", format: "numeric", classes: "no-wrap"}],
           rows: breakdown.rows
