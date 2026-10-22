@@ -2,7 +2,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "../../component/learningTagsAutocomplete.njk" import learningTagsAutocomplete %}
 
-{% set backButton = "/content-management/learning-tags/assign/select-learning-tags" %}
+{% set backButton = "/content-management/learning-tags/assign-courses/select-learning-tags" %}
 {% block h2 %}{{ i18n.learningTags.title.searchForCourses }}{% endblock %}
 {% block assignContent %}
     <form method="post" action="/content-management/learning-tags/assign-courses/select-courses">
