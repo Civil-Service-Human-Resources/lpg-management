@@ -28,11 +28,6 @@ steps:
       version: '22.23.4'
     displayName: 'Install Node.js'
 
-  - script: |
-      rm -rf node_modules
-      npm ci
-    displayName: 'Clean workspace and install fresh dependencies'
-
   - task: Npm@1
     displayName: 'Install'
     inputs:
