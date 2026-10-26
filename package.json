@@ -7,7 +7,7 @@
 		"clean": "gulp setupDist",
 		"sass": "sass views/assets/styles/main.scss:views/assets/styles/main.css views/assets/styles/main-nsg.scss:views/assets/styles/main-nsg.css --style compressed",
 		"test": "npm run test:ts",
-		"test:ts": "nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
+		"test:ts": "NODE_OPTIONS=\"--no-experimental-strip-types\" nyc ts-mocha --paths -p ./tsconfig.json \"./test/**/*.ts\" --timeout 10000 --exit",
 		"compile": "tsc -p ./tsconfig.json",
 		"build": "npm run clean && npm run js && npm run sass && npm run compile",
 		"dev": "nodemon src/server.ts",
