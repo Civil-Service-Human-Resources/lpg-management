@@ -417,7 +417,12 @@
 
 .autocomplete__wrapper {
 	display: inline-block;
-	width: 440px;
+	width: 100%;
+	@include govuk-media-query($from: desktop) {
+		width: 440px;
+	}
+
+
 }
 
 .autocomplete-wrapper--courses {
