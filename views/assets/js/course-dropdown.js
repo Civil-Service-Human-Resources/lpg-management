@@ -1,4 +1,4 @@
-const accessibleAutocomplete = require('accessible-autocomplete-multiselect')
+const accessibleAutocomplete = require('./accessible-autocomplete-multiselect/accessible-autocomplete.min.js')
 
 function enhanceElement(elementId) {
 	if (document.querySelector(`#${elementId}`) !== null) {
