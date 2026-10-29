@@ -316,7 +316,7 @@
 .autocomplete__list .autocomplete__selected-option:hover {
 	cursor: inherit;
 	color: #0b0c0c;
-	margin: 5px 0;
+	//margin: 5px 0;
 	border: 2px solid black;
 	padding: 0.5rem 0.5rem 0.5rem 1.9rem;
 	background-color: #f3f2f1;
@@ -326,6 +326,8 @@
 		position: relative;
 		z-index: 1;
 		pointer-events: none;
+		padding-left: 60px;
+		display: block;
 	}
 }
 
@@ -340,11 +342,13 @@
 	width: 100%;
 	height: 100%;
 	text-align: left;
-	padding-left: 0.5rem;
+	margin: 0;
+	padding: 0 10px;
 }
 
 .autocomplete__list .autocomplete__remove-option:hover{
 	background: #b1b4b6;
+	color: govuk-colour('black');
 }
 
 .autocomplete__list .autocomplete__remove-option:focus{
@@ -413,7 +417,12 @@
 
 .autocomplete__wrapper {
 	display: inline-block;
-	width: 440px;
+	width: 100%;
+	@include govuk-media-query($from: desktop) {
+		width: 440px;
+	}
+
+
 }
 
 .autocomplete-wrapper--courses {
