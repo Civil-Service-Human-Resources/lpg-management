@@ -1,0 +1,37 @@
+{% macro searchFilter(params) %}
+    <div class="lpg-related-items govuk-form-group govuk-related-items--search leftSearchBox filter-toggle">
+        <fieldset class='govuk-fieldset'>
+            <legend>
+                <h2 class="filter-headings__heading">
+                    <button class="filter-headings" type="button" aria-controls="accordion-{{ params.id }}" aria-expanded="true" aria-label="{{ params.heading }}" tabindex="0">{{ params.heading }}</button>
+                </h2>
+            </legend>
+            <div id="accordion-{{ params.id }}">
+                {% for item in params.items %}
+                    <div class="govuk-checkboxes__item multiple-choice">
+                        <input class='govuk-checkboxes__input' type="checkbox" value="{{ item.value }}" name="{{ params.name }}" id="{{ item.id }}"  {% if item.checked %}checked="checked"{% endif %} >
+                        <label class='govuk-label govuk-checkboxes__label' for="{{ item.id }}">{{ item.label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+        </fieldset>
+    </div>
+{% endmacro %}
+
+<aside class='search-filters' role="complementary">
+    <button class="search-filters__toggle" type="button" aria-controls="expand-filters" aria-expanded="false" aria-label="Hide search filters" tabindex="0">Hide search filters</button>
+    <div class='search-filters__panel'>
+        <form autocomplete="off" name="searchLearning" method="get" action="/content-management/search">
+            <input type="hidden" id="query" name="q" value="{{ params.query }}" />
+            <button type="submit" class="govuk-button">Apply search filters</button>
+            <a class="clear-filters" href="/content-management/search?q={{ params.query }}">Clear all filters</a>
+
+            {% for filter in params.filters %}
+                {{ searchFilter(filter) }}
+            {% endfor %}
+
+            <button type="submit" class="govuk-button">Apply search filters</button>
+            <a class="clear-filters" href="/content-management/search?q={{ params.query }}">Clear all filters</a>
+        </form>
+    </div>
+</aside>

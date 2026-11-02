@@ -73,7 +73,7 @@ export class JsonRestService {
 			}
 			this.logger.error(str)
 			if (respCode >= 400) {
-				throw new HttpException(fullUrl, respCode)
+				throw new HttpException(fullUrl, respCode, e.response ? e.response.data : undefined)
 			}
 			throw e
 		}

@@ -98,11 +98,11 @@ describe('CsrsService tests', () => {
 
 		describe('#isGradeCodeValid', () => {
 			it('should return true if grade code is found in grades list', async () => {
-				expect(await csrsService.isGradeCodeValid('AA')).to.be.true
+				expect(await csrsService.areGradesValid(['AA'])).to.be.true
 			})
 
 			it('should return false if grade code is not found in grades list', async () => {
-				expect(await csrsService.isGradeCodeValid('not a valid grade code')).to.be.false
+				expect(await csrsService.areGradesValid(['not a valid grade code'])).to.be.false
 			})
 		})
 	})

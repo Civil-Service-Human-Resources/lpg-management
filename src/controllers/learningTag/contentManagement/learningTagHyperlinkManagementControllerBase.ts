@@ -8,12 +8,20 @@ import {
 } from '../../../learning-catalogue/model/learningTag/learningTagHyperlinksResponse'
 import {Hyperlink} from '../../../learning-catalogue/model/learningTag/hyperlink'
 import {LearningTagHyperlinksSearchParams} from '../model/learningTagHyperlinksSearchParams'
+import {learningTagAuthorRole} from '../../../identity/identity'
+import {createRouteCollection, RouteCollection} from '../../route'
 
 export class LearningTagHyperlinksManagementController extends LearningTagContentManagementControllerBase<Hyperlink> {
 	
 	constructor(learningTagService: LearningTagService, pagination: PaginationService) {
 		super(learningTagService, 'hyperlinks', RemoveHyperlinksFromLearningTagPageModel,
 			LearningTagHyperlinksSearchParams, pagination)
+	}
+
+	protected getRouteCollections(): RouteCollection[] {
+		return [
+			createRouteCollection(this.getBaseRoutes(), [], learningTagAuthorRole)
+		]
 	}
 
 	remove = async (learningTagId: number, ids: string[]): Promise<string> => {

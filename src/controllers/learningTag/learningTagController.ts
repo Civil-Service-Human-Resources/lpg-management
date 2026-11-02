@@ -1,10 +1,9 @@
 import {NextFunction, Request, Response} from 'express'
-import {getRequest, postRequest, postRequestWithBody, Route} from '../route'
+import {createRouteCollection, getRequest, postRequest, postRequestWithBody, RouteCollection} from '../route'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
-import {learningTagArchiveRole, learningTagCourseManagerRole} from '../../identity/identity'
+import {learningTagArchiveRole, learningTagAuthorRole, learningTagManagerRole} from '../../identity/identity'
 import {BehaviourOnError} from '../../validators/validatorMiddleware'
 import {LearningTagPageModel} from './model/learningTagPageModel'
-import {compoundRoleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {plainToInstance} from 'class-transformer'
 import {LearningTagControllerBase} from './learningTagControllerBase'
 import {HyperlinkPageModel} from './model/hyperlinkPageModel'
@@ -17,10 +16,14 @@ export class LearningTagController extends LearningTagControllerBase {
 		super('LearningTagController', learningTagService)
 	}
 
-	protected getRoutes(): Route[] {
-		return [
+	protected getRouteCollections(): RouteCollection[] {
+
+		const basicRoutes = createRouteCollection([
 			getRequest('/manage', this.getList()),
 			getRequest('/:learningTagId/overview', this.get()),
+		], [], learningTagManagerRole)
+
+		const authorRoutes = createRouteCollection([
 			getRequest('/', this.getCreate()),
 			postRequestWithBody('/', this.create(), {
 				dtoClass: LearningTagPageModel,
@@ -39,28 +42,32 @@ export class LearningTagController extends LearningTagControllerBase {
 			}),
 			getRequest('/:learningTagId/unlink-parent-confirm', this.getUnlinkParent()),
 			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/archive-confirm', this.getArchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			postRequest('/:learningTagId/archive', this.archive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			postRequest('/:learningTagId/unarchive', this.unarchive(), [compoundRoleCheckMiddleware(learningTagArchiveRole)]),
-			postRequest('/:learningTagId/unlink-parent', this.unlinkParent()),
-			getRequest('/:learningTagId/hyperlinks/create', this.getCreateHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			getRequest('/:learningTagId/hyperlinks/create', this.getCreateHyperlink()),
 			postRequestWithBody('/:learningTagId/hyperlinks', this.createHyperlink(), {
 				dtoClass: HyperlinkPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getCreateHyperlink()
 				}
-			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
-			getRequest('/:learningTagId/hyperlinks/:hyperlinkId', this.getEditHyperlink(), [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
+			}),
+			getRequest('/:learningTagId/hyperlinks/:hyperlinkId', this.getEditHyperlink()),
 			postRequestWithBody('/:learningTagId/hyperlinks/:hyperlinkId', this.editHyperlink(), {
 				dtoClass: HyperlinkPageModel,
 				onError: {
 					behaviour: BehaviourOnError.ROUTER_FUNCTION,
 					routerFunction: this.getEditHyperlink()
 				}
-			},  [compoundRoleCheckMiddleware(learningTagCourseManagerRole)]),
-		]
+			}),
+		], [], learningTagAuthorRole)
+
+		const archiveRoutes = createRouteCollection([
+			getRequest('/:learningTagId/archive-confirm', this.getArchive()),
+			postRequest('/:learningTagId/archive', this.archive()),
+			getRequest('/:learningTagId/unarchive-confirm', this.getUnarchive()),
+			postRequest('/:learningTagId/unarchive', this.unarchive()),
+		], [], learningTagArchiveRole)
+
+		return [basicRoutes, authorRoutes, archiveRoutes]
 	}
 
 	private getPageModel = async (request: Request, response: Response) => {
@@ -191,15 +198,45 @@ export class LearningTagController extends LearningTagControllerBase {
 		}
 	}
 
+	private handleHyperlinkErrors(error: any, pageModel: HyperlinkPageModel) {
+		const apiErrors: string[] = error.response?.data?.errors || error.data?.errors || error.errors || (Array.isArray(error.response?.data) ? error.response.data : undefined) || (Array.isArray(error.data) ? error.data : undefined)
+		if (apiErrors && Array.isArray(apiErrors)) {
+			for (const err of apiErrors) {
+				if (typeof err === 'string') {
+					const match = err.match(/^Field\s+(\w+)\s+is invalid:\s*(.+)$/i)
+					if (match) {
+						const field = match[1]
+						const message = match[2].trim()
+						pageModel.addError({ [field]: [message] })
+					} else {
+						if (err.toLowerCase().includes('title')) {
+							pageModel.addError({ title: [err] })
+						} else if (err.toLowerCase().includes('url')) {
+							pageModel.addError({ url: [err] })
+						}
+					}
+				}
+			}
+		}
+	}
+
 	private createHyperlink() {
 		return async(request: Request, response: Response) => {
 			const learningTagId = response.locals.learningTag.id as number
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-			await this.learningTagService.createHyperlink(learningTagId, pageModel)
-			request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
-			return request.session!.save(() => {
-				return response.redirect('/content-management/learning-tags/manage')
-			})
+			try {
+				await this.learningTagService.createHyperlink(learningTagId, pageModel)
+				request.session!.sessionFlash = { linkAssignedMessage: {linkTitle: pageModel.title, learningTagName: response.locals.learningTag.name} }
+				return request.session!.save(() => {
+					return response.redirect('/content-management/learning-tags/manage')
+				})
+			} catch (error) {
+				this.handleHyperlinkErrors(error, pageModel)
+				if (pageModel.hasErrors()) {
+					return response.render('page/learning-tags/hyperlinks/create.njk', {pageModel})
+				}
+				throw error
+			}
 		}
 	}
 
@@ -216,11 +253,19 @@ export class LearningTagController extends LearningTagControllerBase {
 		return async (request: Request, response: Response) => {
 			const learningTagId = parseInt(request.params.learningTagId)
 			const pageModel = plainToInstance(HyperlinkPageModel, response.locals.input as HyperlinkPageModel)
-			await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
-			request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
-			return request.session!.save(() => {
-				return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
-			})
+			try {
+				await this.learningTagService.editHyperlink(learningTagId, response.locals.hyperlink.id, pageModel)
+				request.session!.sessionFlash = { linkUpdatedMessage: {linkTitle: pageModel.title }}
+				return request.session!.save(() => {
+					return response.redirect(`/content-management/learning-tags/${learningTagId}/hyperlinks`)
+				})
+			} catch (error) {
+				this.handleHyperlinkErrors(error, pageModel)
+				if (pageModel.hasErrors()) {
+					return response.render('page/learning-tags/hyperlinks/edit.njk', {pageModel})
+				}
+				throw error
+			}
 		}
 	}
 }

@@ -2,7 +2,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "./base.njk" %}
 
 {% block pageTitle %}
     {{ i18n.organisations.title.editAnOrganisation if organisationalUnit else i18n.organisations.title.addANewOrganisation }} - {{ i18n.proposition_name }}

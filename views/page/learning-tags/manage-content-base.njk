@@ -1,16 +1,14 @@
 {% from "../../component/search/macro.njk" import search with context %}
-{% from "../../component/pagination/macro.njk" import pagination with context %}
 {% from "../../component/courseManager/macro.njk" import courseManager with context %}
 {% from "../../component/hyperlinkManager/macro.njk" import hyperlinkManager with context %}
 {% from "checkboxes/macro.njk" import govukCheckboxes %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "./base.njk" %}
 
 {% block pageTitle %}
     {{ i18n.learningTags.title.viewCourses }} - {{ i18n.proposition_name }}
 {% endblock %}
 
-{% set banner = true %}
 {% set backButton = "/content-management/learning-tags/" + learningTag.id + "/overview" %}
 {% set removeResultsBanner = sessionFlash.removeResultsBanner if sessionFlash.removeResultsBanner else removeResultsBanner %}
 
@@ -36,18 +34,22 @@
             <div class="govuk-tabs">
                 <h2 class="govuk-tabs__title">Contents</h2>
                 <ul class="govuk-tabs__list">
-                    {% for tab in [
-                        {
+                    {% set tabs = [] %}
+                    {% if identity.isLearningTagCourseManager() %}
+                        {% set tabs = (tabs.push({
                             href: "/content-management/learning-tags/" + learningTag.id + "/courses",
                             text: "Courses assigned to this tag",
                             selected: selectedTab === "courses"
-                        },
-                        {
+                        }), tabs) %}
+                    {% endif %}
+                    {% if identity.isLearningTagAuthor() %}
+                        {% set tabs = (tabs.push(                        {
                             href: "/content-management/learning-tags/" + learningTag.id + "/hyperlinks",
                             text: "Links assigned to this tag",
                             selected: selectedTab === "links"
-                        }
-                    ] %}
+                        }), tabs) %}
+                    {% endif %}
+                    {% for tab in tabs %}
                         <li class="govuk-tabs__list-item {% if tab.selected %}govuk-tabs__list-item--selected{% endif %}">
                             <a class="govuk-tabs__tab" href="{{ tab.href }}">
                                 {{ tab.text }}

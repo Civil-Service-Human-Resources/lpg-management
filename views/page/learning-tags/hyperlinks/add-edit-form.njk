@@ -8,10 +8,11 @@
     },
     id: "title",
     name: "title",
-    value: pageModel.title|default(pageModel.title),
-    errorMessage: {
-        text: i18n[errors.fields.title]
-    } if errors.fields.title else null
+    formGroup: {
+        classes: "govuk-form-group--error" if errors.fields.title else null
+    },
+    classes: "govuk-input--error" if errors.fields.title else null,
+    value: pageModel.title|default(pageModel.title)
 }) }}
 {{ govukInput({
     label: {
@@ -19,24 +20,25 @@
     },
     id: "url",
     name: "url",
-    pattern: "https://.*",
     hint: {
         text: "For example https://gov.uk. URLs must start with https://"
     },
-    value: pageModel.url|default(pageModel.url),
-    errorMessage: {
-        text: i18n[errors.fields.url]
-    } if errors.fields.url else null
+    formGroup: {
+        classes: "govuk-form-group--error" if errors.fields.url else null
+    },
+    classes: "govuk-input--error" if errors.fields.url else null,
+    value: pageModel.url|default(pageModel.url)
 }) }}
 {{ govukCharacterCount({
     name: "description",
     id: "description",
     maxlength: 250,
+    formGroup: {
+        classes: "govuk-form-group--error" if errors.fields.description else null
+    },
+    classes: "govuk-textarea--error" if errors.fields.description else null,
     value: pageModel.description|default(pageModel.description),
     label: {
         text: i18n.learningTags.text.hyperlinks.description
-    },
-    errorMessage: {
-        text: i18n[errors.fields.description]
-    } if errors.fields.description else null
+    }
 }) }}

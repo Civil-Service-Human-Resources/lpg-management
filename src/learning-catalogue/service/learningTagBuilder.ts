@@ -22,6 +22,7 @@ import {
 import {
 	LearningTagCourseManagementController,
 } from '../../controllers/learningTag/contentManagement/learningTagCourseManagementController'
+import {LearningCategoryCache} from '../../csl-service/learningCategoryCache'
 
 export function buildLearningTagControllers(cslServiceClient: OauthRestService, courseService: CourseService) {
 	const learningTagClient = new LearningTagClient(cslServiceClient)
@@ -29,7 +30,9 @@ export function buildLearningTagControllers(cslServiceClient: OauthRestService, 
 	const learningTagTreeCache = new LearningTagTreeCache(learningTagTreeRedisCache, learningTagClient)
 	const learningTagCache = new LearningTagCache(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds)
 	const learningTagFormattedNameCache = new FormattedLearningTagListCache(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds)
-	const learningTagCacheManager = new LearningTagCacheManager(learningTagCache, learningTagFormattedNameCache, learningTagTreeCache)
+	const learningCategoryCache = new LearningCategoryCache(redisClient, config.LEARNING_TAG_REDIS.ttl_seconds)
+	const learningTagCacheManager = new LearningTagCacheManager(learningTagCache, learningTagFormattedNameCache, learningTagTreeCache,
+		learningCategoryCache)
 	const learningTagService = new LearningTagService(learningTagCacheManager, learningTagClient)
 	const pagination = new PaginationService()
 	const hyperlinkManagementController = new LearningTagHyperlinksManagementController(learningTagService, pagination)

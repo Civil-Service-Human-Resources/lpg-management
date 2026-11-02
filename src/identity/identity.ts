@@ -25,9 +25,11 @@ export enum Role {
 	LEARNING_UNARCHIVE = 'LEARNING_UNARCHIVE',
 	REGISTERED_LEARNER_ALL_ORGANISATIONS = 'REGISTERED_LEARNER_ALL_ORGANISATIONS',
 	LEARNING_TAG_MANAGER = 'LEARNING_TAG_MANAGER',
+	LEARNING_TAG_AUTHOR = 'LEARNING_TAG_AUTHOR',
 	LEARNING_TAG_URL_EDITOR = 'LEARNING_TAG_URL_EDITOR',
 	LEARNING_TAG_COURSE_MANAGER = 'LEARNING_TAG_COURSE_MANAGER',
 	LEARNING_TAG_ARCHIVE = 'LEARNING_TAG_ARCHIVE',
+	LEARNING_TAG_SUPER_ADMIN = 'LEARNING_TAG_SUPER_ADMIN',
 	KNOWLEDGEPOOL_SUPPLIER_AUTHOR = 'KNOWLEDGEPOOL_SUPPLIER_AUTHOR',
 	KORNFERRY_SUPPLIER_AUTHOR = 'KORNFERRY_SUPPLIER_AUTHOR'
 }
@@ -132,10 +134,18 @@ export class ORUserRole implements IUserRole {
 	}
 }
 
-export const superAdminRole = new UserRole(Any(Role.LEARNING_MANAGER))
+class RoleBuilder {
+	constructor(protected superAdminRole: UserRole,
+				protected baseRoles: CompoundRoleBase) {
+	}
 
-const buildSuperUserRole = (role: IUserRole): IUserRole => {
-	return new ORUserRole(role, superAdminRole)
+	buildRole = (...roles: Role[]) => {
+		return new ORUserRole(new UserRole(this.baseRoles, Any(...roles)), this.superAdminRole)
+	}
+
+	getBaseRole = () => {
+		return new ORUserRole(new UserRole(this.baseRoles), this.superAdminRole)
+	}
 }
 
 // Reporting
@@ -146,30 +156,41 @@ export const mvpReportingRole = new UserRole(All(Role.MVP_REPORTER), Any(Role.OR
 export const mvpExportRole = new UserRole(...mvpReportingRole.compoundRoles, All(Role.REPORT_EXPORT))
 
 // Course authoring
+export const learningSuperAdminRole = new UserRole(Any(Role.LEARNING_MANAGER))
 export const authorRoles = Any(Role.ORGANISATION_AUTHOR, Role.CSL_AUTHOR, Role.KPMG_SUPPLIER_AUTHOR)
-const buildAuthorRole = (...roles: Role[]): IUserRole => {
-	return buildSuperUserRole(new UserRole(authorRoles, Any(...roles)))
-}
+const courseRoleBuilder = new RoleBuilder(learningSuperAdminRole, authorRoles)
 
-export const learningViewingRole = buildSuperUserRole(new UserRole(authorRoles))
-export const learningCreateRole = buildAuthorRole(Role.LEARNING_CREATE)
-export const learningPublishRole = buildAuthorRole(Role.LEARNING_PUBLISH)
-export const learningArchiveRole = buildAuthorRole(Role.LEARNING_ARCHIVE)
-export const learningUnarchiveRole = buildAuthorRole(Role.LEARNING_UNARCHIVE)
-export const learningEditRole = buildAuthorRole(Role.LEARNING_EDIT)
-export const learningDeleteRole = buildAuthorRole(Role.LEARNING_DELETE)
+export const learningViewingRole = courseRoleBuilder.getBaseRole()
+export const learningCreateRole = courseRoleBuilder.buildRole(Role.LEARNING_CREATE)
+export const learningPublishRole = courseRoleBuilder.buildRole(Role.LEARNING_PUBLISH)
+export const learningArchiveRole = courseRoleBuilder.buildRole(Role.LEARNING_ARCHIVE)
+export const learningUnarchiveRole = courseRoleBuilder.buildRole(Role.LEARNING_UNARCHIVE)
+export const learningEditRole = courseRoleBuilder.buildRole(Role.LEARNING_EDIT)
+export const learningDeleteRole = courseRoleBuilder.buildRole(Role.LEARNING_DELETE)
 
 // Organisation management
 export const organisationManagerRole = new UserRole(Any(Role.ORGANISATION_MANAGER, Role.LEARNING_MANAGER))
 
-// TODO: Add LEARNING_MANAGER when we go live
-export const learningTagManagerRole = new UserRole(Any(Role.LEARNING_TAG_MANAGER))
+class LearningTagRoleBuilder extends RoleBuilder {
 
-export const learningTagArchiveRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_ARCHIVE))
+	constructor(superAdminRole: UserRole, baseRoles: CompoundRoleBase) {
+		super(superAdminRole, baseRoles)
+	}
 
-export const learningTagUrlEditorRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_URL_EDITOR))
+	buildAuthorRole = (...roles: Role[]) => {
+		return new ORUserRole(new UserRole(this.baseRoles, All(Role.LEARNING_TAG_AUTHOR, ...roles)), this.superAdminRole)
+	}
+}
 
-export const learningTagCourseManagerRole = new UserRole(All(Role.LEARNING_TAG_MANAGER, Role.LEARNING_TAG_COURSE_MANAGER))
+// Learning tag management
+export const learningTagSuperAdminRole = new UserRole(Any(Role.LEARNING_TAG_SUPER_ADMIN))
+const learningTagRoleBuilder = new LearningTagRoleBuilder(learningTagSuperAdminRole, Any(Role.LEARNING_TAG_MANAGER))
+
+export const learningTagManagerRole = learningTagRoleBuilder.getBaseRole()
+export const learningTagAuthorRole = learningTagRoleBuilder.buildAuthorRole()
+export const learningTagArchiveRole = learningTagRoleBuilder.buildAuthorRole(Role.LEARNING_TAG_ARCHIVE)
+export const learningTagUrlEditorRole = learningTagRoleBuilder.buildAuthorRole(Role.LEARNING_TAG_URL_EDITOR)
+export const learningTagCourseManagerRole = learningTagRoleBuilder.buildRole(Role.LEARNING_TAG_COURSE_MANAGER)
 
 export class IdentityDetails {
 	constructor(public uid: string, public username: string, public roles: string[], public accessToken: string) { }
@@ -258,6 +279,10 @@ export class Identity {
 
 	isOrganisationManager() {
 		return this.roleCheck(organisationManagerRole)
+	}
+
+	isLearningTagAuthor() {
+		return this.roleCheck(learningTagAuthorRole)
 	}
 
 	isLearningTagManager() {

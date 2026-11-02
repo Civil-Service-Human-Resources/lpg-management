@@ -28,7 +28,17 @@ export class NunjucksMiddleware extends Middleware {
 			return value
 		})
 		env.addFilter('jsonpath', function(path: string | string[], map: any) {
-				return Object.is(path, undefined) ? undefined : Array.isArray(path) ? path.map(pathElem => jsonpath.value(map, pathElem)) : jsonpath.value(map, path)
+				const resolve = (p: string) => {
+					if (!p || typeof p !== 'string') {
+						return p
+					}
+					try {
+						return jsonpath.value(map, p) || p
+					} catch (e) {
+						return p
+					}
+				}
+				return Object.is(path, undefined) ? undefined : Array.isArray(path) ? path.map(pathElem => resolve(pathElem)) : resolve(path)
 			})
 		env.addFilter('formatDate', function(date: Date) {
 				return date

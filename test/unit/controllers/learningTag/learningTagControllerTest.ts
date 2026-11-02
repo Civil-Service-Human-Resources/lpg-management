@@ -8,6 +8,7 @@ import {LearningTagController} from '../../../../src/controllers/learningTag/lea
 import {TaxonomyTreeNode} from '../../../../src/lib/taxonomy/taxonomyTreeNode'
 import {FormattedTaxonomyItem} from '../../../../src/lib/taxonomy/formattedTaxonomyItem'
 import {LearningTagPageModel} from '../../../../src/controllers/learningTag/model/learningTagPageModel'
+import {HttpException} from '../../../../src/lib/exception/HttpException'
 
 const session = require('supertest-session')
 import sinonChai = require('sinon-chai')
@@ -44,6 +45,12 @@ describe('LearningTag', () => {
 		new FormattedTaxonomyItem(4, "tag 3 | tag 4", "TAG4")
 	]
 	learningTagService.getTypeahead.resolves(typeahead)
+	learningTagService.getHyperlinksPage.resolves({
+		results: [],
+		page: 0,
+		size: 10,
+		totalResults: 0
+	} as any)
 
 	describe('Manage', () => {
 		it('should render the learning tag tree', async () => {
@@ -52,6 +59,51 @@ describe('LearningTag', () => {
 				.set({"roles": 'LEARNING_TAG_MANAGER'})
 			const res = await request.send()
 			expect(res.status).to.eql(200)
+		})
+		describe('Actions', () => {
+			it('Should show or hide author links', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Add a new tag')
+				expect(authorised.text).to.contain('Assign link to tag')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('Add a new tag')
+				expect(unauthorised.text).to.not.contain('Assign link to tag')
+
+			})
+			it('Should show or hide the assign course link depending on course manager role', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Assign course to tag')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('Assign course to tag')
+			})
+			it('Should show all actions for the super user', async() => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/manage')
+					.set({"roles": 'LEARNING_TAG_SUPER_ADMIN'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Assign course to tag')
+				expect(authorised.text).to.contain('Add a new tag')
+				expect(authorised.text).to.contain('Assign link to tag')
+			})
 		})
 	})
 	describe('Overview', () => {
@@ -62,13 +114,57 @@ describe('LearningTag', () => {
 			const res = await request.send()
 			expect(res.status).to.eql(200)
 		})
+		describe('Actions', () => {
+			it('Should show or hide author links', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Edit tag')
+				expect(authorised.text).to.contain('View courses and links')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('Edit tag')
+				expect(unauthorised.text).to.not.contain('View courses and links')
+
+			})
+			it('Should show or hide the assign course link depending on course manager role', async () => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('View courses and links')
+
+				const unauthorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.send()
+				expect(unauthorised.status).to.eql(200)
+				expect(unauthorised.text).to.not.contain('View courses and links')
+			})
+			it('Should show all actions for the super user', async() => {
+				const authorised = await session(app)
+					.get('/content-management/learning-tags/1/overview')
+					.set({"roles": 'LEARNING_TAG_SUPER_ADMIN'})
+					.send()
+				expect(authorised.status).to.eql(200)
+				expect(authorised.text).to.contain('Edit tag')
+				expect(authorised.text).to.contain('View courses and links')
+			})
+		})
 	})
 	describe('Add learning tag', () => {
 		describe('Get', () => {
 			it('should load the page correctly', async () => {
 				const res = await session(app)
 					.get('/content-management/learning-tags')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send()
 				expect(res.status).to.eql(200)
 			})
@@ -86,7 +182,7 @@ describe('LearningTag', () => {
 				}
 				const request = session(app)
 					.post('/content-management/learning-tags/')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				const res = await request.send(body)
 				expect(res.status).to.eql(302)
 				expect(learningTagService.create).to.be.calledOnce
@@ -99,7 +195,7 @@ describe('LearningTag', () => {
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
+						.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					const res = await request.send(body)
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('Tag name is required')
@@ -113,7 +209,7 @@ describe('LearningTag', () => {
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
+						.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					const res = await request.send(body)
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('Unique URL is not in the correct format')
@@ -131,7 +227,7 @@ describe('LearningTag', () => {
 					}
 					const request = session(app)
 						.post('/content-management/learning-tags/')
-						.set({"roles": 'LEARNING_TAG_MANAGER'})
+						.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					const res = await request.send(body)
 					expect(res.status).to.eql(200)
 					expect(res.text).to.contain('A tag with this name already exists')
@@ -154,7 +250,7 @@ describe('LearningTag', () => {
 				}
 				const request = session(app)
 					.post('/content-management/learning-tags/1')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				const res = await request.send(body)
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('A tag with this name already exists')
@@ -169,7 +265,7 @@ describe('LearningTag', () => {
 				}
 				const request = session(app)
 					.post('/content-management/learning-tags/1')
-					.set({"roles": 'LEARNING_TAG_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				const res = await request.send(body)
 				expect(res.status).to.eql(200)
 				expect(res.text).to.contain('A learning tag cannot be its own parent')
@@ -188,7 +284,7 @@ describe('LearningTag', () => {
 			learningTagService.archive.resolves({})
 			const request = session(app)
 				.post('/content-management/learning-tags/1/archive')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_ARCHIVE'})
 			const res = await request.send()
 			expect(res.status).to.eql(302)
 			expect(learningTagService.archive).to.be.calledOnce
@@ -197,7 +293,7 @@ describe('LearningTag', () => {
 			learningTagService.unarchive.resolves({})
 			const request = session(app)
 				.post('/content-management/learning-tags/1/unarchive')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_ARCHIVE'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR,LEARNING_TAG_ARCHIVE'})
 			const res = await request.send()
 			expect(res.status).to.eql(302)
 			expect(learningTagService.unarchive).to.be.calledOnce
@@ -207,7 +303,7 @@ describe('LearningTag', () => {
 		it('should render the create a new hyperlink screen', async () => {
 			const res = await session(app)
 				.get('/content-management/learning-tags/1/hyperlinks/create')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				.send()
 			expect(res.status).to.eql(200)
 			expect(res.text).to.contain('Assign link to tag')
@@ -216,7 +312,7 @@ describe('LearningTag', () => {
 		it('should create a new hyperlink', async () => {
 			const res = await session(app)
 				.post('/content-management/learning-tags/1/hyperlinks')
-				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 				.send({
 					title: 'Link title',
 					url: 'https://test-url.com',
@@ -230,13 +326,201 @@ describe('LearningTag', () => {
 			it('should validate fields', async () => {
 				const res = await session(app)
 					.post('/content-management/learning-tags/1/hyperlinks')
-					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_COURSE_MANAGER'})
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
 					.send({
 						title: '',
 						url: 'http://test-url.com'
 					})
 				expect(res.text).to.contain('Enter a title')
 				expect(res.text).to.contain('Enter a valid URL. URLs must start with https://')
+			})
+			it('should validate duplicate title and URL that already exist', async () => {
+				learningTagService.createHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag",
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send({
+						title: 'Existing Link',
+						url: 'https://existing-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
+			})
+			it('should validate duplicate title only', async () => {
+				learningTagService.createHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send({
+						title: 'Existing Link',
+						url: 'https://new-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.not.contain('A link with this URL already exists for the tag')
+			})
+			it('should validate duplicate url only', async () => {
+				learningTagService.createHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send({
+						title: 'New Link',
+						url: 'https://existing-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.not.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
+			})
+		})
+	})
+	describe('Edit hyperlink', () => {
+		const hyperlink = {
+			id: 10,
+			title: 'Existing Link',
+			url: 'https://existing-url.com',
+			description: 'Existing Description'
+		}
+		beforeEach(() => {
+			learningTagService.getHyperlink.withArgs(1, 10).resolves(hyperlink as any)
+		})
+		it('should render the edit hyperlink screen', async () => {
+			const res = await session(app)
+				.get('/content-management/learning-tags/1/hyperlinks/10')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+				.send()
+			expect(res.status).to.eql(200)
+			expect(res.text).to.contain('Assign link to tag')
+			expect(res.text).to.contain('Edit link')
+		})
+		it('should edit an existing hyperlink', async () => {
+			learningTagService.editHyperlink.resolves()
+			const res = await session(app)
+				.post('/content-management/learning-tags/1/hyperlinks/10')
+				.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+				.send({
+					title: 'Updated Link title',
+					url: 'https://updated-url.com',
+					description: 'Updated Description'
+				})
+			expect(learningTagService.editHyperlink).to.be.calledOnce
+			expect(res.header.location).to.eql('/content-management/learning-tags/1/hyperlinks')
+			expect(res.status).to.eql(302)
+		})
+		describe('Validation', () => {
+			it('should validate duplicate title and URL that already exist on edit', async () => {
+				learningTagService.editHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks/10',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag",
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/10')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send({
+						title: 'Duplicate Title',
+						url: 'https://duplicate-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
+			})
+			it('should validate duplicate title only on edit', async () => {
+				learningTagService.editHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks/10',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field title is invalid: A link with this title already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/10')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send({
+						title: 'Duplicate Title',
+						url: 'https://new-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.contain('A link with this title already exists for the tag')
+				expect(res.text).to.not.contain('A link with this URL already exists for the tag')
+			})
+			it('should validate duplicate url only on edit', async () => {
+				learningTagService.editHyperlink.rejects(new HttpException(
+					'http://localhost:9003/api/learning-tags/1/hyperlinks/10',
+					400,
+					{
+						timestamp: "2026-09-14T14:12:02.241Z",
+						errors: [
+							"Field url is invalid: A link with this URL already exists for the tag"
+						],
+						status: 400,
+						message: "Validation error"
+					}
+				))
+				const res = await session(app)
+					.post('/content-management/learning-tags/1/hyperlinks/10')
+					.set({"roles": 'LEARNING_TAG_MANAGER,LEARNING_TAG_AUTHOR'})
+					.send({
+						title: 'New Title',
+						url: 'https://duplicate-url.com',
+						description: 'New Description'
+					})
+				expect(res.status).to.eql(200)
+				expect(res.text).to.not.contain('A link with this title already exists for the tag')
+				expect(res.text).to.contain('A link with this URL already exists for the tag')
 			})
 		})
 	})
