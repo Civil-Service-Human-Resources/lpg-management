@@ -72,13 +72,13 @@
                                 text: "Edit tag"
                             } %}
                             {% set actions = (actions.push(editAction), actions) %}
-                        {% endif %}
-                        {% if learningTag.parentId !== null %}
-                            {% set unlinkParentAction = {
-                                link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
-                                text: "Unlink parent tag"
-                            } %}
-                            {% set actions = (actions.push(unlinkParentAction), actions) %}
+                            {% if learningTag.parentId !== null %}
+                                {% set unlinkParentAction = {
+                                    link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
+                                    text: "Unlink parent tag"
+                                } %}
+                                {% set actions = (actions.push(unlinkParentAction), actions) %}
+                            {% endif %}
                         {% endif %}
                         {% if identity.isLearningTagCourseManager() or identity.isLearningTagAuthor() %}
                             {% set viewCoursesAction = {
