@@ -1,7 +1,7 @@
 {% from "../component/list/macro.njk" import list with context %}
 {% from "../component/menu/macro.njk" import menu %}
 {% from "../component/search/macro.njk" import search with context %}
-{% from "../component/pagination/macro.njk" import pagination with context %}
+{% from "pagination/macro.njk" import govukPagination %}
 
 {% extends "../component/Page.njk" %}
 
@@ -75,7 +75,15 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <p class="govuk-body">Showing {{ pagePagination.start }} - {{ pagePagination.end }} of {{ pagePagination.total }}</p>
-        {{ pagination(pagePagination.pagination) }}
+        {{ govukPagination({
+            previous: {
+                href: pagePagination.prevLink
+            },
+            next: {
+                href: pagePagination.nextLink
+            },
+            items: pagePagination.numberedPages
+        }) }}
     </div>
 </div>
 {% endblock %}

@@ -1,18 +1,18 @@
 import {SubmittableForm} from '../../models/submittableForm'
-import {PaginationPage} from '../../../lib/paginationService'
 import {BasicCourse} from '../../../learning-catalogue/courseTypeAhead'
 import {Hyperlink} from '../../../learning-catalogue/model/learningTag/hyperlink'
+import {Pagination} from '../../../lib/paginationService'
 
 export type ContentType = BasicCourse | Hyperlink
 
 export class RemoveContentFromLearningTagPageModel<T extends ContentType> extends SubmittableForm {
 
 	public results?: T[]
-	public pagePagination?: PaginationPage
+	public pagePagination?: Pagination
 	public ids: string[]
 	public allIds: string
 
-	constructor(results?: T[], pagePagination?: PaginationPage) {
+	constructor(results?: T[], pagePagination?: Pagination) {
 		super()
 		this.results = results
 		this.pagePagination = pagePagination

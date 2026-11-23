@@ -5,7 +5,7 @@
 {% from "button/macro.njk" import govukButton %}
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "./base.njk" %}
 
 {% block pageTitle %}
     {{ i18n.learningTags.title.add }} - {{ i18n.proposition_name }}

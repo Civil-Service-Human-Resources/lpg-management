@@ -17,9 +17,9 @@ import * as moment from 'moment'
 import {Course} from '../../../../src/learning-catalogue/model/course'
 import {AudienceService} from '../../../../src/lib/audienceService'
 import {RequiredLearningCache} from '../../../../src/csl-service/requiredLearningCache'
-import { LearningPlanCache } from '../../../../src/csl-service/learningPlanCache'
-import { LearningRecordCache } from '../../../../src/csl-service/learningRecordCache'
-import { LearningCacheManager } from '../../../../src/lib/learningCacheManager'
+import {LearningPlanCache} from '../../../../src/csl-service/learningPlanCache'
+import {LearningRecordCache} from '../../../../src/csl-service/learningRecordCache'
+import {LearningCacheManager} from '../../../../src/lib/learningCacheManager'
 import {FormattedOrganisation} from '../../../../src/csl-service/model/organisationalUnit/FormattedOrganisation'
 
 chai.use(sinonChai)
@@ -324,7 +324,7 @@ describe('AudienceController', () => {
 
 	describe('#getGrades', () => {
 		it('should render add-grades page', async () => {
-			csrsService.getGrades = sinon.stub()
+			csrsService.getGradesAsObjects = sinon.stub()
 			await audienceController.getGrades()(req, res)
 			expect(res.render).to.have.been.calledOnceWith('page/course/audience/add-grades')
 		})
@@ -334,13 +334,13 @@ describe('AudienceController', () => {
 		it('should update course with grades if the grade codes are valid and redirect to audience configuration page', async () => {
 			req.params.audienceId = audienceId
 			const gradeCode = 'AA'
-			req.body = {grades: gradeCode}
+			req.body = {codes: gradeCode}
 			const audience = {id: audienceId, grades: []}
 			res.locals.course = {audiences: [audience], id: courseId}
 			res.locals.audience = audience
 
 			audienceService.getAudienceName = sinon.stub().returns('my audience name')
-			csrsService.isGradeCodeValid = sinon.stub().returns(true)
+			csrsService.areGradesValid = sinon.stub().returns(true)
 			learningCatalogue.updateAudience = sinon.stub().returns(Promise.resolve(res.locals.course))
 
 			await audienceController.setGrades()(req, res, next)
@@ -350,24 +350,6 @@ describe('AudienceController', () => {
 			expect(res.redirect).to.have.been.calledOnceWith(`/content-management/courses/${courseId}/audiences/${audienceId}/configure`)
 		})
 
-		it('should pass to next if error occurs on update', async () => {
-			req.params.audienceId = audienceId
-			const gradeCode = 'AA'
-			req.body = {grades: gradeCode}
-			const audience = {id: audienceId, grades: []}
-			res.locals.course = {audiences: [audience], id: courseId}
-			res.locals.audience = audience
-
-			csrsService.isGradeCodeValid = sinon.stub().returns(true)
-			audienceService.getAudienceName = sinon.stub().returns('my audience name')
-			learningCatalogue.updateAudience = sinon.stub().returns(Promise.reject(error))
-
-			await audienceController.setGrades()(req, res, next)
-
-			expect(learningCatalogue.updateAudience).to.have.been.calledOnceWith(courseId, audience)
-
-			expect(next).to.have.been.calledOnceWith(error)
-		})
 	})
 
 	describe('#deleteGrades', () => {

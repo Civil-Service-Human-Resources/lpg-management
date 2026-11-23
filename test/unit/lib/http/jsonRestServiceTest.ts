@@ -11,6 +11,7 @@ import {Identity} from '../../../../src/identity/identity'
 import {JsonRestService} from '../../../../src/lib/http/jsonRestService'
 import * as sinonChai from 'sinon-chai'
 import {RestServiceConfig} from '../../../../src/lib/http/restServiceConfig'
+import {HttpException} from '../../../../src/lib/exception/HttpException'
 
 chai.use(chaiAsPromised)
 chai.use(sinonChai)
@@ -287,5 +288,47 @@ describe('JsonRestService tests', () => {
 			.throws(new Error(errorMessage))
 
 		return expect(restService.patch(path, course)).to.be.rejectedWith(errorMessage)
+	})
+
+	it('should throw HttpException containing error data when makeRawRequest fails with status 400', async () => {
+		const reqData = {
+			url: '/learning-tags/1/hyperlinks',
+			method: 'POST' as any,
+			data: {title: 'Sky news', url: 'https://news.sky.com'}
+		}
+		const errorPayload = {
+			timestamp: '2026-09-14T14:44:12.975Z',
+			errors: [
+				'Field title is invalid: A link with this title already exists for the tag',
+				'Field url is invalid: A link with this URL already exists for the tag'
+			],
+			status: 400,
+			message: 'Validation error'
+		}
+		const axiosError = {
+			response: {
+				status: 400,
+				data: errorPayload,
+				headers: {'content-type': 'application/json'}
+			}
+		}
+
+		http.request = sinon
+			.stub()
+			.withArgs(reqData)
+			.rejects(axiosError)
+
+		try {
+			await restService.makeRawRequest(reqData)
+			expect.fail('Expected makeRawRequest to throw HttpException')
+		} catch (e: any) {
+			expect(e).to.be.instanceOf(HttpException)
+			expect(e.statusCode).to.eql(400)
+			expect(e.data).to.eql(errorPayload)
+			expect(e.response).to.deep.eql({
+				status: 400,
+				data: errorPayload
+			})
+		}
 	})
 })

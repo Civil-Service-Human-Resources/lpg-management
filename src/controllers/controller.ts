@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response, Router} from 'express'
-import {Route} from './route'
+import {Route, RouteCollection} from './route'
 import * as winston from 'winston'
 import {getLogger} from '../utils/logger'
 import {IUserRole} from '../identity/identity'
@@ -26,7 +26,16 @@ export abstract class Controller {
 		return []
 	}
 
-	protected abstract getRequiredRole(): IUserRole | undefined
+	/*
+	An alternative to providing routes, provide a collection of routes that can have common middleware
+	 */
+	protected getRouteCollections(): RouteCollection[] {
+		return []
+	}
+
+	protected getRequiredRole(): IUserRole | undefined {
+		return undefined
+	}
 
 	protected getControllerMiddleware(): ((req: Request, res: Response, next: NextFunction) => void)[] {
 		return []
@@ -51,6 +60,7 @@ export abstract class Controller {
 			this.router.use(controllerMiddleware)
 		}
 		const controllerRoutes = this.getRoutes()
+		controllerRoutes.push(...this.getRouteCollections().flatMap(r => r.routes))
 		this.logger.debug(`Registering ${controllerRoutes.length} controller routes`)
 		for (const route of controllerRoutes) {
 			this.logger.debug(`Registering endpoint ${route.method} ${this.path}${route.path}`)

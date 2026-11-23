@@ -6,6 +6,7 @@
         name: link.id,
         value: link.id,
         text: link.title,
+        title: link.title,
         view: {
             text: "Go to " + link.title,
             href: link.url
@@ -26,15 +27,12 @@
     }), items) %}
 {% endfor %}
 {{ contentManager({
+    "type": "link",
     "name": "hyperlinkIds",
     "submitAction": params.submitAction,
     "allIds": params.allIds,
     "legend": {
         "html": params.legend.html
-    },
-    "selectAll": {
-        "text": "Select all links",
-        "removeText": "Remove links"
     },
     "items": items
 }) }}

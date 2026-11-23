@@ -15,6 +15,8 @@ import {Controller} from './controllers/controller'
 import {createOAuthConfig} from './lib/http/restServiceConfigFactory'
 import {buildOrganisationalUnitControllers} from './controllers/organisationalUnit/builder'
 import {buildLearningTagControllers} from './learning-catalogue/service/learningTagBuilder'
+import {SearchController} from './controllers/searchController'
+import {SearchService} from './learning-catalogue/service/searchService'
 
 process.env.TZ = config.SERVER_DEFAULT_TZ
 export const appInsights = require('applicationinsights')
@@ -62,6 +64,9 @@ middleware.applyAll(app)
 
 ctx.auth.configure(app)
 
+const searchService = new SearchService(ctx.learningCatalogue, ctx.pagination)
+const searchController = new SearchController(searchService)
+
 const learningTagControllers: Controller[] = buildLearningTagControllers(ctx.cslServiceConfig, ctx.courseService)
 
 const reportingControllers: Controller[] = buildReportingControllers(createOAuthConfig({
@@ -75,7 +80,8 @@ const organisationalUnitControllers: Controller[] = buildOrganisationalUnitContr
 const controllers: Controller[] = [
 	...reportingControllers,
 	...organisationalUnitControllers,
-	...learningTagControllers
+	...learningTagControllers,
+	searchController
 ]
 
 app.use(ctx.addToResponseLocals())
@@ -87,7 +93,7 @@ app.use(ctx.youtubeModuleController.router)
 app.use(ctx.linkModuleController.router)
 app.use(ctx.faceToFaceController.router)
 app.use(ctx.eventController.router)
-app.use(ctx.searchController.router)
+
 logger.debug(`Registering ${controllers.length} controllers`)
 controllers.forEach(c => {
 	app.use(c.path, c.buildRouter())

@@ -58,16 +58,6 @@ describe('Learning Catalogue tests', () => {
 			return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith('/courses/management?page=0&size=10&visibility=PRIVATE&visibility=PUBLIC')
 		})
 
-		it('should call courseService when searching courses', async () => {
-			courseService.listAllWithPagination = sinon.stub()
-
-			await learningCatalogue.searchCourses('test', 0, 10)
-
-			return expect(courseService.listAllWithPagination).to.have.been.calledOnceWith(
-				`/search/management/courses?status=DRAFT&status=PUBLISHED&status=ARCHIVED&query=test&page=0&size=10&visibility=PRIVATE&visibility=PUBLIC`
-			)
-		})
-
 		it('should call courseService  when creating a course', async () => {
 			const course: Course = plainToInstance(Course, {id: "id", title: "title"})
 			courseService.create = sinon.stub().resolves(course)

@@ -6,20 +6,21 @@
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             {{ params.legend.html | safe }}
         </legend>
-        <div class='content-manager' data-module='govuk-checkboxes'>
+        <div class='content-manager' data-module='govuk-checkboxes' data-type='{{ params.type }}'>
             <ul class='content-manager__list'>
                 <li class='content-manager__item content-manager__item--header '>
                     <div class='content-manager__title-row'>
                         <div class="content-manager__title">
                             <div class="govuk-checkboxes__item">
-                                <input class="govuk-checkboxes__input" id="all" name="ids" type="checkbox" value="all" data-behaviour="exclusive">
-                                <label class="govuk-label govuk-checkboxes__label content-manager__select-all-label" for="all">
-                                    {{ params.selectAll.text }}
+                                <input class="govuk-checkboxes__input content-manager__select-all" id="all" name="ids" type="checkbox" value="all" data-behaviour="exclusive">
+                                <label class="govuk-label govuk-checkboxes__label" for="all">
+                                    <span class='content-manager__select-all-label'>Select all {{ params.type }}s</span>
+                                    <span class='content-manager__selected-count' role='status'></span>
                                 </label>
                             </div>
                         </div>
                         <div class='content-manager__remove-action'>
-                            <button class='content-manager__button-link'>{{ params.selectAll.removeText }}</button>
+                            <button class='content-manager__button-link content-manager__remove-text'>Remove {{ params.type }}</button>
                         </div>
                     </div>
                 </li>
@@ -28,7 +29,7 @@
                         <div class='content-manager__title-row'>
                             <div class="content-manager__title">
                                 <div class="govuk-checkboxes__item">
-                                    <input class="govuk-checkboxes__input" {% if item.checked %}checked{% endif %}  id="{{ item.id }}" name="ids" type="checkbox" value="{{ item.value }}">
+                                    <input class="govuk-checkboxes__input content-manager__checkbox" {% if item.checked %}checked{% endif %}  id="{{ item.id }}" name="ids" type="checkbox" value="{{ item.value }}">
                                     <label class="govuk-label govuk-checkboxes__label" for="{{ item.id }}">
                                         {{ item.text }}
                                     </label>
@@ -52,6 +53,7 @@
                                         {% if action.href %}
                                             <a class='govuk-link' href='{{ action.href }}'>{{ action.text }}</a>
                                         {% elif action.remove %}
+                                            <input type='hidden' name='title[{{ item.id }}]' value='{{ item.title }}'>
                                             <button class='content-manager__button-link' formaction='{{ action.remove.formaction }}'>{{ action.remove.text }}</button>
                                         {% endif %}
                                     </div>

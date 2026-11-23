@@ -15,8 +15,12 @@ import {CourseTypeAhead} from './courseTypeAhead'
 import {HttpException} from '../lib/exception/HttpException'
 import {Status} from './model/status'
 import {LearningCacheManager} from '../lib/learningCacheManager'
+import {CourseSearchParams} from './model/search/courseSearchParams'
+import {CoursesResponse} from './model/search/coursesResponse'
+import {plainToInstance} from 'class-transformer'
 
 export class LearningCatalogue {
+	private _factory: CourseFactory
 	private _eventService: EntityService<Event>
 	private _moduleService: EntityService<Module>
 	private _courseService: EntityService<Course>
@@ -31,12 +35,12 @@ export class LearningCatalogue {
 				courseTypeaheadCache: CourseTypeAheadCache, learningCacheManager: LearningCacheManager) {
 		this._restService = config
 
-
 		this._eventService = new EntityService<Event>(this._restService, new EventFactory())
 
 		this._moduleService = new EntityService<Module>(this._restService, new ModuleFactory())
 
-		this._courseService = new EntityService<Course>(this._restService, new CourseFactory())
+		this._factory = new CourseFactory()
+		this._courseService = new EntityService<Course>(this._restService, this._factory)
 
 		this._audienceService = new EntityService<Audience>(this._restService, new AudienceFactory())
 
@@ -50,10 +54,12 @@ export class LearningCatalogue {
 		return await this._courseService.listAllWithPagination(`/courses/management?page=${page}&size=${size}&visibility=PRIVATE&visibility=PUBLIC`)
 	}
 
-	async searchCourses(query: string, page: number = 0, size: number = 10): Promise<DefaultPageResults<Course>> {
-		return await this._courseService.listAllWithPagination(
-			`/search/management/courses?status=DRAFT&status=PUBLISHED&status=ARCHIVED&query=${query}&page=${page}&size=${size}&visibility=PRIVATE&visibility=PUBLIC`
-		)
+	async searchCourses(params: CourseSearchParams): Promise<CoursesResponse> {
+		const response = await this._restService.getRequest<CoursesResponse>({
+			params,
+			url: '/search/management/courses'
+		})
+		return plainToInstance(CoursesResponse, response.data)
 	}
 
 	async getCourseTypeAhead(): Promise<CourseTypeAhead> {

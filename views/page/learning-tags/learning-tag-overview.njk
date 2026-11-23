@@ -7,11 +7,10 @@
 {% from "error-summary/macro.njk" import govukErrorSummary %}
 {% from "button/macro.njk" import govukButton %}
 
-{% extends "../../component/Page.njk" %}
+{% extends "./base.njk" %}
 
 {% block pageTitle %}{{ learningTag.name }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% set banner = true %}
 {% set backButton = "/content-management/learning-tags/manage" %}
 
 
@@ -67,21 +66,23 @@
                     {{ statusWithLabel('Archived' if learningTag.archived else 'Published') }}
                     {% set actions = [ ] %}
                     {% if not learningTag.archived %}
-                        {% set editAction = {
-                            link: "/content-management/learning-tags/" + learningTag.id,
-                            text: "Edit tag"
-                        } %}
-                        {% set actions = (actions.push(editAction), actions) %}
-                        {% if learningTag.parentId !== null %}
-                            {% set unlinkParentAction = {
-                                link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
-                                text: "Unlink parent tag"
+                        {% if identity.isLearningTagAuthor() %}
+                            {% set editAction = {
+                                link: "/content-management/learning-tags/" + learningTag.id,
+                                text: "Edit tag"
                             } %}
-                            {% set actions = (actions.push(unlinkParentAction), actions) %}
+                            {% set actions = (actions.push(editAction), actions) %}
+                            {% if learningTag.parentId !== null %}
+                                {% set unlinkParentAction = {
+                                    link: "/content-management/learning-tags/" + learningTag.id + "/unlink-parent-confirm",
+                                    text: "Unlink parent tag"
+                                } %}
+                                {% set actions = (actions.push(unlinkParentAction), actions) %}
+                            {% endif %}
                         {% endif %}
-                        {% if identity.isLearningTagCourseManager() %}
+                        {% if identity.isLearningTagCourseManager() or identity.isLearningTagAuthor() %}
                             {% set viewCoursesAction = {
-                                link: "/content-management/learning-tags/" + learningTag.id + "/courses",
+                                link: "/content-management/learning-tags/" + learningTag.id + ("/courses" if identity.isLearningTagCourseManager() else "/hyperlinks"),
                                 text: "View courses and links"
                             } %}
                             {% set actions = (actions.push(viewCoursesAction), actions) %}

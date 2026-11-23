@@ -34,7 +34,6 @@ import {DateRangeCommandFactory} from './controllers/command/factory/dateRangeCo
 import {DateRange} from './learning-catalogue/model/dateRange'
 import {DateRangeFactory} from './learning-catalogue/model/factory/dateRangeFactory'
 import {LinkModule} from './learning-catalogue/model/linkModule'
-import {SearchController} from './controllers/searchController'
 import {LearnerRecord} from './learner-record'
 import {OrganisationalUnitService} from './csrs/service/organisationalUnitService'
 import {ReportService} from './report-service'
@@ -106,7 +105,6 @@ export class ApplicationContext {
 	profileCache: ProfileCache
 	organisationalUnitClient: OrganisationalUnitClient
 	organisationalUnitCache: OrganisationalUnitCache
-	searchController: SearchController
 	organisationalUnitService: OrganisationalUnitService
 	reportService: ReportService
 	audienceService: AudienceService
@@ -245,9 +243,6 @@ export class ApplicationContext {
 			this.csrsService,
 			this.audienceService
 		)
-
-		this.searchController = new SearchController(this.learningCatalogue, this.pagination)
-
 	}
 
 	addToResponseLocals() {

@@ -1,7 +1,6 @@
 import {Controller} from '../controller'
 import {SessionableObjectService} from '../reporting/utils'
 import {AssignCoursesToTagsModel} from './model/assignCoursesToTagsModel'
-import {IUserRole, learningTagManagerRole} from '../../identity/identity'
 import {LearningTagService} from '../../learning-catalogue/service/learningTagService'
 import {NextFunction, Request, Response} from 'express'
 import * as asyncHandler from 'express-async-handler'
@@ -17,30 +16,27 @@ export abstract class LearningTagControllerBase extends Controller {
 		this.getLearningTagFromRouterParamAndSetOnLocals()
 	}
 
-	protected getRequiredRole(): IUserRole | undefined {
-		return learningTagManagerRole
-	}
-
 	private getLearningTagFromRouterParamAndSetOnLocals() {
 		this.router.param('learningTagId', asyncHandler(async (req: Request, res: Response, next: NextFunction, learningTagId: number) => {
 			const learningTag: LearningTag = await this.learningTagService.getLearningTag(learningTagId)
 			if (learningTag) {
 				res.locals.learningTag = learningTag
-				if (req.params.hyperlinkId !== undefined) {
-					const hyperlink: Hyperlink = await this.learningTagService.getHyperlink(learningTagId, parseInt(req.params.hyperlinkId))
-					if (hyperlink) {
-						res.locals.hyperlink = hyperlink
-					} else {
-						res.status(404)
-						return res.render("page/not-found")
-					}
-				}
 				return next()
 			} else {
 				res.status(404)
 				return res.render("page/not-found")
 			}
-		})
-		)
+		}))
+		this.router.param('hyperlinkId', asyncHandler(async (req: Request, res: Response, next: NextFunction, hyperlinkId: number) => {
+			const learningTagId = res.locals.learningTag ? res.locals.learningTag.id : parseInt(req.params.learningTagId)
+			const hyperlink: Hyperlink = await this.learningTagService.getHyperlink(learningTagId, Number(hyperlinkId))
+			if (hyperlink) {
+				res.locals.hyperlink = hyperlink
+				return next()
+			} else {
+				res.status(404)
+				return res.render("page/not-found")
+			}
+		}))
 	}
 }

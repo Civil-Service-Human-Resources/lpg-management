@@ -3,6 +3,7 @@ import {OauthRestService} from '../../lib/http/oauthRestService'
 import {JsonpathService} from '../../lib/jsonpathService'
 import {FormattedOrganisation} from '../../csl-service/model/organisationalUnit/FormattedOrganisation'
 import {OrganisationalUnitService} from './organisationalUnitService'
+import {Grade} from '../model/profile'
 
 export class CsrsService {
 
@@ -29,6 +30,13 @@ export class CsrsService {
 		return areaOfWorkLookupResult.length > 0
 	}
 
+	async getGradesAsObjects() {
+		const gradeJson = await this.getGrades() as {'_embedded': {grades: {id: number, code: string, name: string}[]}}
+		return gradeJson._embedded.grades.map(em => {
+			return new Grade(em.id, em.code, em.name)
+		})
+	}
+
 	async getGrades() {
 		let grades = this.cacheService.cache.get(CsrsService.GRADES)
 
@@ -40,10 +48,9 @@ export class CsrsService {
 		return grades
 	}
 
-	async isGradeCodeValid(gradeCode: string) {
-		const gradesLookupResult = JsonpathService.queryWithLimit(await this.getGrades(), `$..grades[?(@.code==${JSON.stringify(gradeCode)})]`, 1)
-
-		return gradesLookupResult.length > 0
+	async areGradesValid(codes: string[]) {
+		const gradeCodes = (await this.getGradesAsObjects()).map(g => g.code)
+		return codes.every(code => gradeCodes.includes(code))
 	}
 
 	async isCoreLearningValid(interest: string) {

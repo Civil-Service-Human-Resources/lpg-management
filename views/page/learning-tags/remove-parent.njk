@@ -1,10 +1,8 @@
 {% from "button/macro.njk" import govukButton %}
 
-{% extends "../../component/Page.njk" %}
-
+{% extends "./base.njk" %}
 {% block pageTitle %}{{ i18n.learningTags.title.removeParent }} - {{ i18n.proposition_name }}{% endblock %}
 
-{% set banner = true %}
 {% set backButton = "/content-management/organisations/" + learningTag.id + "/overview" %}
 
 {% block content %}
