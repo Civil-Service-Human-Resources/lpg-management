@@ -8,6 +8,7 @@
 {% from "summary-list/macro.njk" import govukSummaryList %}
 {% from "back-link/macro.njk" import govukBackLink %}
 {% from "button/macro.njk" import govukButton %}
+{% from "details/macro.njk" import govukDetails %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -41,7 +42,7 @@
                                 text: "Type"
                             },
                             value: {
-                                text: i18n[course.getType()] | default("Course", true)
+                                text: i18n[course.type] | default("Course", true)
                             }
                         },
                         {
@@ -49,7 +50,15 @@
                                 text: "Cost"
                             },
                             value: {
-                                text: "£" + course.getCost() if course.getCost() else "Free"
+                                text: "£" + course.costInPounds if course.costInPounds else "Free"
+                            }
+                        },
+                        {
+                            key: {
+                                text: "Level"
+                            },
+                            value: {
+                                text: course.level | capitalize | default("Unspecified", true)
                             }
                         },
                         {
@@ -57,7 +66,7 @@
                                 text: "Grades"
                             },
                             value: {
-                                text: grades | join(", ") if grades.length > 0 else "Unspecified"
+                                text: course.grades | join(", ") if grades.length > 0 else "Unspecified"
                             }
                         },
                         {
@@ -65,7 +74,7 @@
                                 text: "Course visibility"
                             },
                             value: {
-                                text: course.getVisibility() | capitalize | default("Unspecified", true)
+                                text: course.visibility | capitalize | default("Unspecified", true)
                             }
                         }
                     ]
@@ -75,7 +84,7 @@
         <div class="section">
             <h2 class="govuk-heading-m">Course events</h2>
             {% block courseEvents %}
-                {{ courseEvents(course, faceToFaceModules, identity) }}
+                {{ courseEvents(course, course.faceToFaceModuleOverviews, identity) }}
             {% endblock %}
         </div>
         <div class="section">
@@ -89,7 +98,37 @@
                 {% endif %}
             </div>
             {% block audiences %}
-                {{ audiences(course, sortedAudiences, identity) }}
+                {% if course.audiences %}
+                    <ul class='audience-list'>
+                        {% for audience in course.audiences %}
+                            {% if params.audience.name != '' %}
+                                <li class="list-item">
+                                    <div class="title-container">
+                                        <h3 class="govuk-heading-s">{{ audience.name | default("Audience", true) }}</h3>
+                                        {% if course.status !== "Archived" and identity.hasLearningEdit() %}
+                                            <a class="govuk-body govuk-link edit-audience-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
+                                        {% endif %}
+                                    </div>
+                                    {{ govukDetails({
+                                        summaryText: 'View audience details',
+                                        html: audiences(audience)
+                                    }) }}
+                                </li>
+                            {% else %}
+                                <li class="list-item">
+                                    <div class="title-container">
+                                        <h3 class="govuk-heading-s">This audience has not been configured</h3>
+                                        {% if course.status !== "Archived" and identity.hasLearningEdit() %}
+                                            <a class="govuk-body govuk-link edit-audience-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Configure</a>
+                                        {% endif %}
+                                    </div>
+                               </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="govuk-body">This course has no audiences yet.</p>
+                {% endif %}
             {% endblock %}
         </div>
     </div>
@@ -111,7 +150,7 @@
                                 visuallyHiddenText: course.title
                             }) %}
                     {% endif %}
-                    {% if showDeleteCourseLink %}
+                    {% if course.canBeDeleted() and identity.hasLearningDelete() %}
                         {% set action = actions.push({
                                 link: '/content-management/courses/delete/' + course.id,
                                 text: 'Delete this course'

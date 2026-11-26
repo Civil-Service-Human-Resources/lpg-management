@@ -16,8 +16,8 @@
                 </div>
                 <div class="govuk-grid-column-one-third">
                     <p class="govuk-body type">{{ i18n[module.type] }}</p>
-                    {% if module.formattedDuration !== "0m" %}
-                        <p class="govuk-body">{{ module.formattedDuration }}</p>
+                    {% if module.duration !== 0 %}
+                        <p class="govuk-body">{{ module.duration | formatDuration }}</p>
                     {% endif %}
                 </div>
             </div>

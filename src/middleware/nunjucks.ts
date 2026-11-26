@@ -1,9 +1,9 @@
 import {Middleware} from './middleware'
 import {Express} from 'express'
-import {ENV, NSG_FLAG, NSG_URL} from '../config'
+import {ENV, NSG_URL} from '../config'
 import {DateTime} from '../lib/dateTime'
-import {Duration} from 'moment'
 import * as nunjucks from 'nunjucks'
+import {levels} from '../learning-catalogue/model/courseLevel'
 
 const appRoot = require('app-root-path')
 const jsonpath = require('jsonpath')
@@ -57,17 +57,8 @@ export class NunjucksMiddleware extends Middleware {
 		env.addFilter('dateWithMonthAsText', function(date: string) {
 				return date ? DateTime.convertDate(date) : 'date unset'
 			})
-		env.addFilter('formatDuration', function(duration: Duration) {
-				let years = ''
-				let months = ''
-				if (duration.years()) {
-					years = duration.years() + (duration.years() === 1 ? ' year ' : ' years ')
-				}
-				if (duration.months()) {
-					months = duration.months() + (duration.months() === 1 ? ' month' : ' months')
-				}
-
-				return years + months
+		env.addFilter('formatDuration', function(durationInSeconds: number) {
+				return DateTime.formatDuration(durationInSeconds)
 			})
 		env.addFilter('startsWith', (str: string, searchString: string) => {
 				return str.startsWith(searchString)
@@ -75,10 +66,10 @@ export class NunjucksMiddleware extends Middleware {
 
 		// Globals
 		env.addGlobal("datePlaceHolder", moment().format("DD MM YYYY"))
+		env.addGlobal('courseLevels', levels)
 		app.engine('html', nunjucks.render);
 		app.engine('njk', nunjucks.render);
 		app.set('view engine', 'html')
-		env.addGlobal('NSG_FLAG', NSG_FLAG)
 		env.addGlobal('NSG_URL', NSG_URL)
     }
     getName(): string {

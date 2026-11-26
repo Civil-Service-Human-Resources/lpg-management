@@ -1,58 +1,81 @@
-{% from "details/macro.njk" import govukDetails %}
-{% if sortedAudiences.length > 0 %}
-    <ul class="audience-list">
-        {% for audience in sortedAudiences %}
-            {% if audience.name != '' %}
-                {% set audienceTypeAsString = AudienceType[audience.type] %}
-                <li class="list-item">
-                    <div class="title-container">
-                        <h3 class="govuk-heading-s">{{ audience.name | default("Audience", true) }}</h3>
-                        {% if course.status !== "Archived" and identity.hasLearningEdit()%}
-                            <a class="govuk-body govuk-link edit-audience-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Edit</a>
-                        {% endif %}
-                    </div>
-                    {% set audienceHTML = '<ul class="list audience">
-                        <li class="audience-item u--border--bgrey"><span class="audience-header">Audience type</span><span class="audience-info">'
-                            + (i18n.audience.type[audienceTypeAsString] | default("Unspecified", true)) + '</span></li>' %}
-                    {% if audienceTypeAsString !== 'PRIVATE_COURSE' %}
-                        {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Organisations</span><span class="audience-info">'
-                            + (audienceIdToDepsMap[audience.id] | join(', ') | default("Unspecified", true)) + '</span></li>
-                        <li class="audience-item u--border--bgrey"><span class="audience-header">Grades</span><span class="audience-info">' + (audience.grades | jsonpath(gradeCodeToName) | join(', ') | default("Unspecified", true)) + '</span></li>
-                        <li class="audience-item u--border--bgrey"><span class="audience-header">Area of work</span><span class="audience-info">' + (audience.areasOfWork | join(', ') | default("Unspecified", true)) + '</span></li>
-                        <li class="audience-item u--border--bgrey"><span class="audience-header">Interests</span><span class="audience-info">' + (audience.interests | join(', ') | default("Unspecified", true)) + '</span></li>' %}
-                        {% if audienceTypeAsString == 'REQUIRED_LEARNING' %}
-                            {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span class="audience-header">Required by</span><span class="audience-info">' + (audience.requiredBy | formatDate | default("Unspecified", true)) + '</span></li>' %}
-                        {% endif %}
-                    {% else %}
-                        {% set audienceEvent = audienceIdToEvent[audience.id] %}
-                        {% set audienceHTML = audienceHTML + '<li class="audience-item u--border--bgrey"><span>' %}
-                        {% if audienceEvent %}
-                            {% set audienceHTML = audienceHTML + 'This is a private course assigned to this event: <a href="/content-management/courses/' + course.id
-                                + '/modules/' + eventIdToModuleId[audienceEvent.id] + '/events-overview/' + audienceEvent.id + '">' + audienceEvent.venue.location
-                                + ', ' + (audienceEvent.dateRanges[0].date | formatDate) + '</a>. You can invite anyone from your organisation using their email address.' %}
-                        {% else %}
-                            {% set audienceHTML = audienceHTML + 'No event assigned yet.' %}
-                        {% endif %}
-                        {% set audienceHTML = audienceHTML + '</span></li>' %}
-                    {% endif %}
-                    {% set audienceHTML = audienceHTML + '</ul>' %}
-                    {{ govukDetails({
-                        summaryText: 'View audience details',
-                        html: audienceHTML
-                    }) }}
-                </li>
-            {% else %}
-                <li class="list-item">
-                    <div class="title-container">
-                        <h3 class="govuk-heading-s">This audience has not been configured</h3>
-                        {% if course.status !== "Archived" and identity.hasLearningEdit()%}
-                            <a class="govuk-body govuk-link edit-audience-link" href="/content-management/courses/{{course.id}}/audiences/{{audience.id}}/configure">Configure</a>
-                        {% endif %}
-                    </div>
-               </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
-{% else %}
-    <p class="govuk-body">This course has no audiences yet.</p>
-{% endif %}
+{% from "summary-list/macro.njk" import govukSummaryList %}
+
+{% set requiredLearningHtml %}
+    <div class='audience-info'>
+        {% if params.requiredBy %}
+            <div>
+                Deadline: {{ params.requiredBy }}
+            </div>
+        {% endif %}
+        {% if params.frequency %}
+            <div>
+                Occurs every: {{ params.frequency }}
+            </div>
+        {% endif %}
+        {% if not params.frequency and not params.requiredBy %}
+            No required learning has been added
+        {% endif %}
+    </div>
+{% endset %}
+
+{% macro joinListOrDefault(list, default) %}
+    {{ list | join(', ') if list.length > 0 else default }}
+{% endmacro %}
+
+{{ govukSummaryList({
+    rows: [
+        {
+            key: {
+                text: "Audience type"
+            },
+            value: {
+                text: i18n.audience.type[params.type] | default("Unspecified", true),
+                classes: "audience-info"
+            }
+        },
+        {
+            key: {
+                text: "Organisations"
+            },
+            value: {
+                text: joinListOrDefault(params.organisations, "No organisations have been added"),
+                classes: "audience-info"
+            }
+        },
+        {
+            key: {
+                text: "Grades"
+            },
+            value: {
+                text: joinListOrDefault(params.grades, "No grades have been added"),
+                classes: "audience-info"
+            }
+        },
+        {
+            key: {
+                text: "Area of work"
+            },
+            value: {
+                text: joinListOrDefault(params.areasOfWork, "No areas of work have been added"),
+                classes: "audience-info"
+            }
+        },
+        {
+            key: {
+                text: "Interests"
+            },
+            value: {
+                text: joinListOrDefault(params.interests, "No core learning has been added"),
+                classes: "audience-info"
+            }
+        },
+        {
+            key: {
+                text: "Required learning"
+            },
+            value: {
+                html: requiredLearningHtml
+            }
+        }
+    ]
+}) }}

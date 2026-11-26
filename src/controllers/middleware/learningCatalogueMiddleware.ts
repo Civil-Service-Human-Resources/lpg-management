@@ -1,10 +1,10 @@
 import {NextFunction, Request, Response, Router} from 'express'
-import moment = require('moment')
 import {Course} from '../../learning-catalogue/model/course'
 import {LearningCatalogue} from '../../learning-catalogue'
 import {Audience} from '../../learning-catalogue/model/audience'
 import {CsrsService} from '../../csrs/service/csrsService'
 import {Module} from '../../learning-catalogue/model/module'
+import moment = require('moment')
 
 export interface LearningCatalogueMiddlewareSettings {
 	getModule: boolean,

@@ -2,6 +2,7 @@
 {% from "table/macro.njk" import govukTable %}
 {% from "../../component/coursePreview/macro.njk" import coursePreview with context %}
 {% from "../../component/courseModules/macro.njk" import courseModules with context %}
+{% from "../../component/progressBar/macro.njk" import progressBar %}
 
 {% extends "../../component/Page.njk" %}
 
@@ -43,43 +44,70 @@
                 <ul class="course-summary">
                     <li class="course-summary-item">
                         <div class="item-container">
-                            <span class="item item-header">Course type</span>
-                            <span class="item item-value type">{{ course.getType() | default("Unspecified", true) }}</span>
-                        </div>
-                    </li>
-                    <li class="course-summary-item">
-                        <div class="item-container">
-                            <span class="item item-header">Grades</span>
-                            <span class="item item-value">{{ course.getGrades() | default("Unspecified", true) }}</span>
-                        </div>
-                    </li>
-                    <li class="course-summary-item">
-                        <div class="item-container">
-                            <span class="item item-header">Duration</span>
-                            <span class="item item-value">{{ course.getDuration() | default("Unspecified", true) }}</span>
-                        </div>
-                    </li>
-                    <li class="course-summary-item">
-                        <div class="item-container">
-                            <span class="item item-header">Cost</span>
-                            <span class="item item-value">£{%- if course.getCost() === 0 -%}
-                                                                Free {%- else -%}
-                                                                {{ course.getCost() }}
-                                                            {%- endif %}
-                                                            (ex VAT)
+                            <span class="item item-header">Topics</span>
+                            <span class="item item-value type">
+                                {% if course.learningTags.length > 0 %}
+                                    <ul>
+                                        {% for topic in course.learningTags %}
+                                            <li>
+                                                <a href='/content-management/learning-tags/{{ topic.id }}/overview'>{{ topic.name }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
                             </span>
                         </div>
                     </li>
                     <li class="course-summary-item">
                         <div class="item-container">
+                            <span class="item item-header">Course type</span>
+                            <span class="item item-value type">{{ i18n[course.type] | default("Unspecified", true) }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Grades</span>
+                            <span class="item item-value">{{ course.grades | join(", ") if grades.length > 0 else undefined | default("Unspecified", true) }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Level</span>
+                            <div class="item item-value">
+                                {% if course.level %}
+                                    {{ progressBar({
+                                        label: course.level | capitalize,
+                                        orderedSegments: courseLevels,
+                                        progress: course.level
+                                    }) }}
+                                {% else %}
+                                    Unspecified
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Duration</span>
+                            <span class="item item-value">{{ course.duration | formatDuration | default("Unspecified", true) }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
+                            <span class="item item-header">Cost</span>
+                            <span class="item item-value">{{ "£" + course.costInPounds + " (ex VAT)" if course.costInPounds else "Free" }}</span>
+                        </div>
+                    </li>
+                    <li class="course-summary-item">
+                        <div class="item-container">
                             <span class="item item-header">Next available date</span>
-                            <span class="item item-value">{{ course.getNextAvailableDate() | default("Unspecified", true) }}</span>
+                            <span class="item item-value">{{ course.nextAvailableDate | default("Unspecified", true) }}</span>
                         </div>
                     </li>
                     <li class="course-summary-item">
                         <div class="item-container">
                             <span class="item item-header">Primary area</span>
-                            <span class="item item-value">{{ course.getAreasOfWork() | default("Unspecified", true) }}</span>
+                            <span class="item item-value">{{ course.areasOfWork | join(", ") if areasOfWork.length > 0 else undefined | default("Unspecified", true) }}</span>
                         </div>
                     </li>
                 </ul>

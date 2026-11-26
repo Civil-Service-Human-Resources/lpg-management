@@ -12,6 +12,7 @@ import {CancelEventResponse} from './model/CancelEventResponse'
 import {BookingResponse} from './model/booklngResponse'
 import {EventOverview} from './model/management/EventOverview'
 import {OauthRestService} from '../lib/http/oauthRestService'
+import {CourseOverview} from './model/management/CourseOverview'
 
 export class CslServiceClient {
 
@@ -114,6 +115,12 @@ export class CslServiceClient {
 		return (await this._http.getRequest<{hasRequests: boolean}>({
 			url: this.REGISTERED_LEARNER_OVERVIEW
 		})).data
+	}
+
+	async getCourseOverview(courseId: string) {
+		return await this._http.getRequestWithModel({
+			url: `/admin/management/courses/${courseId}/overview`
+		}, CourseOverview)
 	}
 
 }

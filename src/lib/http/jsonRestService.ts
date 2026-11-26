@@ -6,6 +6,7 @@ import {RestServiceConfig} from '../http/restServiceConfig'
 import {ReportResponse} from '../../csl-service/model/ReportResponse'
 import {DownloadableFile} from '../../csl-service/model/DownloadableFile'
 import {HttpException} from '../exception/HttpException'
+import {ClassConstructor, plainToInstance} from 'class-transformer'
 
 export class JsonRestService {
 	logger = getLogger('JsonRestService')
@@ -109,6 +110,11 @@ export class JsonRestService {
 
 	async getRequest<T>(req: AxiosRequestConfig) {
 		return await this.makeRawAuthenticatedRequest<T>({method: 'GET', ...req})
+	}
+
+	async getRequestWithModel<T>(req: AxiosRequestConfig, model: ClassConstructor<T>) {
+		const resp = await this.makeRawAuthenticatedRequest<T>({method: 'GET', ...req})
+		return plainToInstance(model, resp.data as T)
 	}
 
 	async putRequest<T>(req: AxiosRequestConfig) {

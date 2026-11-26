@@ -7,7 +7,6 @@
 {% from "../../component/list/macro.njk" import list %}
 {% from "../../component/menu/macro.njk" import menu %}
 {% from "../../component/statusWithLabel/macro.njk" import statusWithLabel with context %}
-{% from "../../component/courseEvents/macro.njk" import courseEvents with context %}
 {% from "../../component/audiences/macro.njk" import audiences with context %}
 
 {% block pageTitle %}{{ i18n.agencyToken.title.editAgencyToken if pageModel.tokenExists else i18n.agencyToken.title.addAgencyToken }} - {{ i18n.proposition_name }}{% endblock %}

@@ -5,7 +5,7 @@ import {Auth} from './identity/auth'
 import * as passport from 'passport'
 import {AuthConfig} from './identity/authConfig'
 import {LearningCatalogue} from './learning-catalogue'
-import {CourseController} from './controllers/courseController'
+import {CourseController} from './controllers/course/courseController'
 import {CourseFactory} from './learning-catalogue/model/factory/courseFactory'
 import {NextFunction, Request, Response} from 'express'
 import {PaginationService} from './lib/paginationService'
@@ -189,7 +189,8 @@ export class ApplicationContext {
 
 		this.courseValidator = new Validator<Course>(this.courseFactory)
 		this.courseService = new CourseService(this.learningCatalogue)
-		this.courseController = new CourseController(this.learningCatalogue, this.courseValidator, this.courseFactory, this.courseService, this.csrsService)
+		this.courseController = new CourseController(this.learningCatalogue, this.courseValidator, this.courseFactory, this.courseService, this.csrsService,
+			this.cslServiceClient)
 
 		this.homeController = new HomeController(this.learningCatalogue, this.pagination)
 

@@ -103,13 +103,11 @@ export class AudienceController {
 	getConfigureAudience() {
 		return async (req: Request, res: Response) => {
 			const gradeCodeToName = await this.csrsService.getGradeCodeToNameMapping()
-			const audienceIdToEvent = this.courseService.getAudienceIdToEventMapping(res.locals.course)
 			const requiredBy = res.locals.audience.requiredBy ? new Date(res.locals.audience.requiredBy) : null
 			res.render('page/course/audience/configure-audience', {
 				requiredBy,
 				AudienceType: Audience.Type,
 				gradeCodeToName,
-				audienceIdToEvent,
 			})
 		}
 	}

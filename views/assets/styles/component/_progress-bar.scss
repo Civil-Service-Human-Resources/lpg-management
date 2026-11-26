@@ -1,0 +1,18 @@
+.progress-bar__container {
+  display: flex;
+  height: 10px;
+  width: govuk-px-to-rem(120);
+  gap: govuk-spacing(1);
+  @include govuk-responsive-margin(1, top);
+}
+
+.progress-bar__segment {
+  flex: 1;
+  height: 100%;
+  border: 1.5px solid #4f4f4f;
+  background-color: #efefef;
+}
+
+.progress-bar__segment--filled {
+  background-color: #4f4f4f;
+}

@@ -93,6 +93,7 @@ export class LearningCatalogue {
 
 	async unarchiveCourse(course: Course): Promise<Course> {
 		course.status = Status.DRAFT
+		await this._cslService.clearCourseCache(course.id)
 		return await this._courseService.update(`/courses/${course.id}`, course)
 	}
 

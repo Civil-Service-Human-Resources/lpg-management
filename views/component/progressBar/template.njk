@@ -1,0 +1,8 @@
+<div class='progress-bar'>
+    <div class='progress-bar__label'>{{ params.label }}</div>
+    <div class='progress-bar__container'>
+        {% for segment in params.orderedSegments %}
+            <div class="progress-bar__segment {% if params.progress === segment %}progress-bar__segment--filled{% endif %}" aria-hidden="true"></div>
+        {% endfor %}
+    </div>
+</div>

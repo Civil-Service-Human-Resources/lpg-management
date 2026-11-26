@@ -7,10 +7,9 @@ import {NextFunction, Request, Response} from 'express'
 import {LearningCatalogue} from '../../../src/learning-catalogue'
 import {Course} from '../../../src/learning-catalogue/model/course'
 import * as sinon from 'sinon'
-import {CourseController} from '../../../src/controllers/courseController'
+import {CourseController} from '../../../src/controllers/course/courseController'
 import {CourseFactory} from '../../../src/learning-catalogue/model/factory/courseFactory'
 import {Validator} from '../../../src/learning-catalogue/validator/validator'
-import {Module} from '../../../src/learning-catalogue/model/module'
 import {CourseService} from '../../../src/lib/courseService'
 import {CsrsService} from '../../../src/csrs/service/csrsService'
 import {Status} from '../../../src/learning-catalogue/model/status'
@@ -45,63 +44,7 @@ describe('Course Controller Tests', function() {
 			callback(undefined)
 		}
 	})
-
-	describe('Course overview', () => {
-		it('should call course overview page', async function() {
-			const courseOverview: (request: Request, response: Response) => void = courseController.courseOverview()
-
-			csrsService.getDepartmentCodeToNameMapping = sinon.stub()
-			csrsService.getGradeCodeToNameMapping = sinon.stub()
-			courseService.getAudienceIdToEventMapping = sinon.stub()
-			courseService.getEventIdToModuleIdMapping = sinon.stub()
-			courseService.getCourseUrl = sinon.stub().returns('https://localhost/course/abc123')
-			courseService.getUniqueGrades = sinon.stub().returns(['G1', 'G2', 'G3'])
-			courseService.sortAudiences = sinon.stub().resolves([])
-
-			const course = new Course()
-			course.modules = []
-			res.locals.course = course
-
-			await courseOverview(req, res)
-
-			expect(res.render).to.have.been.calledOnceWith('page/course/course-overview')
-			expect(courseService.getUniqueGrades).to.have.been.calledOnceWith(course)
-		})
-	})
-
-	describe('Course preview', () => {
-		it('should render course preview page', async function() {
-			const course: Course = new Course()
-			const module: Module = new Module()
-
-			module.duration = 3600
-			course.modules = [module]
-			res.locals.course = course
-
-			await courseController.coursePreview()(req, res)
-
-			expect(res.render).to.have.been.calledOnceWith('page/course/course-preview')
-		})
-
-		it('should render course preview page with duration 0m', async function() {
-			const course: Course = new Course()
-			const module: Module = new Module()
-
-			module.duration = 0
-			module.formattedDuration = '0 minutes'
-			course.modules = [module]
-
-			const coursePreview: (request: Request, response: Response) => void = courseController.coursePreview()
-
-			res.locals.course = course
-
-			await coursePreview(req, res)
-
-			expect(res.render).to.have.been.calledOnceWith('page/course/course-preview')
-			expect(course.modules[0].formattedDuration).to.equal('0 minutes')
-		})
-	})
-
+	
 	describe('Course visibility', () => {
 		it('should render course visibility page', async () => {
 			await courseController.getCourseVisibility()(req, res)

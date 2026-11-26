@@ -23,11 +23,7 @@
 {% block head %}
     <meta name="theme-color" content="0b0c0c" />
   <!--[if !IE 8]><!-->
-    {% if NSG_FLAG === true %}
-      <link href="/styles/main-nsg.css?v=" rel="stylesheet" />
-    {% else %}
       <link href="/styles/main.css?v=" rel="stylesheet" />
-    {% endif %}
   <!--<![endif]-->
 
   {# For Internet Explorer 8, you need to compile specific stylesheet #}
@@ -56,15 +52,9 @@
 {% endblock %}
 
 {% block header %}
-{% set logotype = "crown" if not NSG_FLAG %}
-{% if NSG_FLAG %}
-  {% set orgHtml %}
-    <a class="moj-header__link moj-header__link--organisation-name" href="{{ NSG_URL }}">National School<br> of Government<br> and Public Services</a>
-  {% endset %}
-{% else %}
-  {% set organisationLabelText = "GOV.UK" %}
-  {% set nsgUrl = "https://gov.uk" %}
-{% endif %}
+{% set orgHtml %}
+  <a class="moj-header__link moj-header__link--organisation-name" href="{{ NSG_URL }}">National School<br> of Government<br> and Public Services</a>
+{% endset %}
 
 {{ mojHeader({
     organisationLabel: {

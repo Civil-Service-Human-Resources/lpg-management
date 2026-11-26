@@ -75,7 +75,6 @@ describe('AudienceController', () => {
 
 			csrsService.getDepartmentCodeToNameMapping = sinon.stub()
 			csrsService.getGradeCodeToNameMapping = sinon.stub()
-			courseService.getAudienceIdToEventMapping = sinon.stub()
 
 			await audienceController.getConfigureAudience()(req, res)
 

@@ -1,31 +1,31 @@
-import _ = require('lodash')
-
 import {NextFunction, Request, Response, Router} from 'express'
-import {CourseFactory} from '../learning-catalogue/model/factory/courseFactory'
-import {LearningCatalogue} from '../learning-catalogue'
-import {Course} from '../learning-catalogue/model/course'
-import {Validator} from '../learning-catalogue/validator/validator'
-import {Module} from '../learning-catalogue/model/module'
-import {CourseService} from '../lib/courseService'
-import {CsrsService} from '../csrs/service/csrsService'
-import {Audience} from '../learning-catalogue/model/audience'
-import {DateTime} from '../lib/dateTime'
-import {Validate} from './formValidator'
-import {FormController} from './formController'
+import {CourseFactory} from '../../learning-catalogue/model/factory/courseFactory'
+import {LearningCatalogue} from '../../learning-catalogue'
+import {Course} from '../../learning-catalogue/model/course'
+import {Validator} from '../../learning-catalogue/validator/validator'
+import {CourseService} from '../../lib/courseService'
+import {CsrsService} from '../../csrs/service/csrsService'
+import {Validate} from '../formValidator'
+import {FormController} from '../formController'
 import * as asyncHandler from 'express-async-handler'
-import { getLogger } from '../utils/logger'
-import {applyLearningCatalogueMiddleware} from './middleware/learningCatalogueMiddleware'
-import {roleCheckMiddleware} from './middleware/roleCheckMiddleware'
+import {getLogger} from '../../utils/logger'
+import {applyLearningCatalogueMiddleware} from '../middleware/learningCatalogueMiddleware'
+import {roleCheckMiddleware} from '../middleware/roleCheckMiddleware'
 import {
-	learningViewingRole,
-	learningArchiveRole, learningCreateRole,
+	learningArchiveRole,
+	learningCreateRole,
 	learningDeleteRole,
 	learningEditRole,
 	learningPublishRole,
 	learningUnarchiveRole,
-} from '../identity/identity'
+} from '../../identity/identity'
+import {CslServiceClient} from '../../csl-service/client'
+
 const { xss } = require('express-xss-sanitizer')
 
+/**
+ * @Deprecated Migrate to CourseControllerV2
+ */
 export class CourseController implements FormController {
 	logger = getLogger('CourseController')
 	learningCatalogue: LearningCatalogue
@@ -34,13 +34,16 @@ export class CourseController implements FormController {
 	router: Router
 	courseService: CourseService
 	csrsService: CsrsService
+	cslService: CslServiceClient
 
-	constructor(learningCatalogue: LearningCatalogue, courseValidator: Validator<Course>, courseFactory: CourseFactory, courseService: CourseService, csrsService: CsrsService) {
+	constructor(learningCatalogue: LearningCatalogue, courseValidator: Validator<Course>, courseFactory: CourseFactory, courseService: CourseService, csrsService: CsrsService,
+				cslService: CslServiceClient) {
 		this.learningCatalogue = learningCatalogue
 		this.validator = courseValidator
 		this.courseFactory = courseFactory
 		this.courseService = courseService
 		this.csrsService = csrsService
+		this.cslService = cslService
 		this.router = Router()
 		this.configureRouterPaths()
 	}
@@ -48,9 +51,6 @@ export class CourseController implements FormController {
 	/* istanbul ignore next */
 	private configureRouterPaths() {
 		applyLearningCatalogueMiddleware({getModule: false, getEvent: false}, this.router, this.learningCatalogue)
-		this.router.get('/content-management/courses/:courseId/overview', asyncHandler(roleCheckMiddleware(learningViewingRole)), xss(), asyncHandler(this.courseOverview()))
-		this.router.get('/content-management/courses/:courseId/preview', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.coursePreview())
-
 		this.router.get('/content-management/courses/visibility/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.getCourseVisibility())
 		this.router.post('/content-management/courses/visibility/', asyncHandler(roleCheckMiddleware(learningCreateRole)), xss(), this.setCourseVisibility())
 		this.router.get('/content-management/courses/visibility/:courseId', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.getCourseVisibility())
@@ -77,69 +77,6 @@ export class CourseController implements FormController {
 		this.router.post('/content-management/courses/:courseId/status/archive', asyncHandler(roleCheckMiddleware(learningArchiveRole)), xss(), this.archiveCourse())
 		this.router.post('/content-management/courses/:courseId/status/unarchive', asyncHandler(roleCheckMiddleware(learningUnarchiveRole)), xss(), this.unarchiveCourse())
 		this.router.get('/content-management/courses/:courseId/sortDateRanges-modules', asyncHandler(roleCheckMiddleware(learningEditRole)), xss(), this.sortModules())
-	}
-
-	courseOverview() {
-		return async (req: Request, res: Response) => {
-			const faceToFaceModules = res.locals.course.modules.filter((module: Module) => module.type == Module.Type.FACE_TO_FACE)
-			const departmentCodeToName = await this.csrsService.getDepartmentCodeToNameMapping()
-			const gradeCodeToName = await this.csrsService.getGradeCodeToNameMapping()
-			const audienceIdToEvent = this.courseService.getAudienceIdToEventMapping(res.locals.course)
-			const eventIdToModuleId = this.courseService.getEventIdToModuleIdMapping(res.locals.course)
-
-			const grades = this.courseService.getUniqueGrades(res.locals.course)
-			const audienceIdToDepsMap: any = {}
-
-			const sortedAudiences = (await this.courseService.sortAudiences(res.locals.course.audiences))
-				.map(a => {
-					audienceIdToDepsMap[a.id] = (a.departments || [])
-						.map(d => departmentCodeToName[d])
-						.sort()
-					return a
-				})
-
-			const courseUrl = this.courseService.getCourseUrl(res.locals.course.id)
-
-			res.render('page/course/course-overview', {
-				faceToFaceModules,
-				AudienceType: Audience.Type,
-				audienceIdToDepsMap,
-				gradeCodeToName,
-				audienceIdToEvent,
-				eventIdToModuleId,
-				grades,
-				sortedAudiences,
-				courseUrl,
-				showDeleteCourseLink: res.locals.course.hasBeenPublished !== undefined 
-					&& res.locals.course.status === "Draft" 
-					&& res.locals.course.hasBeenPublished === false
-					&& req.user?.hasLearningDelete()
-			})
-		}
-	}
-
-	coursePreview() {
-		return async (request: Request, response: Response) => {
-			const modules: Module[] = response.locals.course.modules
-
-			for (let module of modules) {
-				if (module.type === Module.Type.FACE_TO_FACE) {
-					const events = _.get(module, 'events', [])
-					// @ts-ignore
-					events.sort(function compare(a, b) {
-						const dateA = new Date(_.get(a, 'startDate', ''))
-						const dateB = new Date(_.get(b, 'startDate', ''))
-						// @ts-ignore
-						return dateA - dateB
-					})
-					if (events && events.length > 0) {
-						module.duration = events[0].getDuration()
-					}
-				}
-				module.formattedDuration = DateTime.formatDuration(module.duration)
-			}
-			response.render('page/course/course-preview')
-		}
 	}
 
 	getCourseVisibility() {
