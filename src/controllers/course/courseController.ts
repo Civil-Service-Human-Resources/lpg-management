@@ -19,7 +19,6 @@ import {
 	learningPublishRole,
 	learningUnarchiveRole,
 } from '../../identity/identity'
-import {CslServiceClient} from '../../csl-service/client'
 
 const { xss } = require('express-xss-sanitizer')
 
@@ -34,16 +33,13 @@ export class CourseController implements FormController {
 	router: Router
 	courseService: CourseService
 	csrsService: CsrsService
-	cslService: CslServiceClient
 
-	constructor(learningCatalogue: LearningCatalogue, courseValidator: Validator<Course>, courseFactory: CourseFactory, courseService: CourseService, csrsService: CsrsService,
-				cslService: CslServiceClient) {
+	constructor(learningCatalogue: LearningCatalogue, courseValidator: Validator<Course>, courseFactory: CourseFactory, courseService: CourseService, csrsService: CsrsService) {
 		this.learningCatalogue = learningCatalogue
 		this.validator = courseValidator
 		this.courseFactory = courseFactory
 		this.courseService = courseService
 		this.csrsService = csrsService
-		this.cslService = cslService
 		this.router = Router()
 		this.configureRouterPaths()
 	}
